@@ -10,7 +10,7 @@ var logger = Logger();
 
 class AudioState extends ChangeNotifier {
   late AudioPlayer player;
-  ConcatenatingAudioSource playlist = ConcatenatingAudioSource(children: []);
+  late ConcatenatingAudioSource playlist;
   static int _nextMediaId = 0;
 
   AudioState() {
@@ -51,7 +51,7 @@ class AudioState extends ChangeNotifier {
       }
 
       if (response.body == 'null') {
-        // isLoading = false;
+        //isLoading = false;
 
         return;
       }

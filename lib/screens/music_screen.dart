@@ -203,6 +203,7 @@ class _MusicScreenState extends State<MusicScreen> {
             ],
           ),
         ),
+        // if (ref.watch(musikDimainkanProvider).id.isNotEmpty)
         GestureDetector(
           child: SizedBox(
             width: double.infinity,
