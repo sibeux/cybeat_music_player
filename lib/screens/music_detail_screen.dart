@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/widgets/capitalize.dart';
+import 'package:cybeat_music_player/widgets/control_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
@@ -294,99 +295,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.repeat,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.skip_previous,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      StreamBuilder<PlayerState?>(
-                        stream: audioPlayer.playerStateStream,
-                        builder: (context, snapshot) {
-                          final playerState = snapshot.data;
-                          final processingState = playerState?.processingState;
-                          final playing = playerState?.playing;
-                          if (processingState == ProcessingState.loading ||
-                              processingState == ProcessingState.buffering) {
-                            return IconButton(
-                              icon: const Icon(
-                                Icons.pause_circle_filled,
-                                size: 60,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {},
-                            );
-                          }
-                          if (playing != true) {
-                            return IconButton(
-                              icon: const Icon(Icons.play_circle_fill),
-                              iconSize: 60.0,
-                              color: Colors.white,
-                              onPressed: audioPlayer.play,
-                            );
-                          } else if (processingState !=
-                              ProcessingState.completed) {
-                            return IconButton(
-                              icon: const Icon(Icons.pause_circle_filled),
-                              iconSize: 60.0,
-                              color: Colors.white,
-                              onPressed: audioPlayer.pause,
-                            );
-                          } else {
-                            return IconButton(
-                              icon: const Icon(Icons.replay),
-                              iconSize: 64.0,
-                              onPressed: () => audioPlayer.seek(
-                                Duration.zero,
-                                index: audioPlayer.effectiveIndices!.first,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.skip_next,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.list_alt,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
+                  child: ControlButtons(audioPlayer: audioPlayer),
                 ),
               ],
             ),
@@ -397,7 +306,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
   }
 
   void _initStreams() {
-
     _playerCompleteSubscription = audioPlayer.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         audioPlayer.seek(Duration.zero);
@@ -410,3 +318,5 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
     return min + Random().nextInt(max - min);
   }
 }
+
+
