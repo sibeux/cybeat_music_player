@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/components/dominant_color.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/providers/music_state.dart';
+import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/screens/music_detail_screen.dart';
+import 'package:cybeat_music_player/widgets/capitalize.dart';
 import 'package:cybeat_music_player/widgets/music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +16,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+
+var isPlaying = false;
 
 class MusicScreen extends StatefulWidget {
   const MusicScreen({super.key});
@@ -34,6 +40,11 @@ class _MusicScreenState extends State<MusicScreen> {
       dominantColor = color;
     });
   }
+
+  // Future<void> playMusic(String url) async {
+  //   await player.setSourceUrl(url);
+  //   await player.resume();
+  // }
 
   @override
   void initState() {
@@ -103,6 +114,28 @@ class _MusicScreenState extends State<MusicScreen> {
                             childCurrent: const MusicScreen(),
                           ),
                         );
+
+                        if (context.read<MusicState>().currentMediaItem?.id ==
+                                "" ||
+                            context.read<MusicState>().currentMediaItem?.id !=
+                                sequence[index].tag.id) {
+                          getDominantColor(
+                                  sequence[index].tag.artUri.toString())
+                              .then((color) {
+                            setColor(color!);
+                          });
+
+                          audioState.player.seek(Duration.zero, index: index);
+
+                          audioState.player.setAudioSource(audioState.playlist,
+                              initialIndex: index);
+
+                          context.read<PlayingState>().play();
+                          context.read<MusicState>().setCurrentMediaItem(
+                              sequence[index].tag as MediaItem);
+
+                          audioState.player.play();
+                        }
                       },
                     );
                   });
@@ -218,106 +251,114 @@ class _MusicScreenState extends State<MusicScreen> {
             ],
           ),
         ),
-        // if (ref.watch(musikDimainkanProvider).id.isNotEmpty)
-        GestureDetector(
-          child: SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Stack(
-                alignment: AlignmentDirectional.bottomStart,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 25,
-                        height: 45,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.white,
-                              Colors.grey,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(100),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          width: double.infinity,
+        if (context.watch<PlayingState>().isPlaying)
+          GestureDetector(
+            child: SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: Stack(
+                  alignment: AlignmentDirectional.bottomStart,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 25,
                           height: 45,
-                          decoration: BoxDecoration(
-                            color: dominantColor,
-                            borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(100),
-                                bottomRight: Radius.circular(100)),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.only(left: 35),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  // capitalizeEachWord(ref
-                                  //     .watch(musikDimainkanProvider)
-                                  //     .artist),
-                                  '',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.normal),
-                                ),
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.white,
+                                Colors.grey,
                               ],
+                            ),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(100),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Stack(
-                      children: [
-                        SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.network(
-                              // ref.watch(musikDimainkanProvider).cover,
-                              'https://picsum.photos/250?image=9',
-                              fit: BoxFit.cover,
+                        Expanded(
+                          child: Container(
+                            width: double.infinity,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: dominantColor,
+                              borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(100),
+                                  bottomRight: Radius.circular(100)),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 35),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    capitalizeEachWord(context
+                                            .watch<MusicState>()
+                                            .currentMediaItem
+                                            ?.title ??
+                                        ''),
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    capitalizeEachWord(context
+                                            .watch<MusicState>()
+                                            .currentMediaItem
+                                            ?.artist ??
+                                        ''),
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    Container(
+                      alignment: Alignment.center,
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Stack(
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.network(
+                                context
+                                    .watch<MusicState>()
+                                    .currentMediaItem!
+                                    .artUri
+                                    .toString(),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          onTap: () {},
-        )
+            onTap: () {},
+          )
       ]),
     );
   }

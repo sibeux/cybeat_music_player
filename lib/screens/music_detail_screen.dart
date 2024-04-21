@@ -11,7 +11,9 @@ import 'package:shimmer/shimmer.dart';
 
 class MusicDetailScreen extends StatefulWidget {
   const MusicDetailScreen({
-    super.key, required this.player, required this.mediaItem,
+    super.key,
+    required this.player,
+    required this.mediaItem,
   });
 
   final AudioPlayer player;
@@ -40,12 +42,26 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
 
   String get _positionText => formatDuration(position);
 
-  AudioPlayer get player => widget.player;
+  AudioPlayer get audioPlayer => widget.player;
 
   MediaItem get mediaItem => widget.mediaItem;
 
   @override
   void initState() {
+    _durationSubscription = audioPlayer.durationStream.listen((event) {
+      setState(() {
+        duration = event;
+      });
+    });
+
+    _positionSubscription = audioPlayer.positionStream.listen((event) {
+      setState(() {
+        position = event;
+      });
+    });
+
+    _initStreams();
+
     super.initState();
   }
 
@@ -69,8 +85,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Stack(
       children: [
         Stack(
@@ -247,7 +261,8 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                           return;
                         }
                         final position = value * durasi.inMilliseconds;
-                        player.seek(Duration(milliseconds: position.round()));
+                        audioPlayer
+                            .seek(Duration(milliseconds: position.round()));
                       },
                     ),
                   ),
@@ -304,16 +319,48 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                       const SizedBox(
                         width: 10,
                       ),
-                      IconButton(
-                        icon: const Icon(
-                          true
-                              ? Icons.pause_circle_filled
-                              : Icons.play_circle_fill,
-                          size: 60,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          
+                      StreamBuilder<PlayerState?>(
+                        stream: audioPlayer.playerStateStream,
+                        builder: (context, snapshot) {
+                          final playerState = snapshot.data;
+                          final processingState = playerState?.processingState;
+                          final playing = playerState?.playing;
+                          if (processingState == ProcessingState.loading ||
+                              processingState == ProcessingState.buffering) {
+                            return IconButton(
+                              icon: const Icon(
+                                Icons.pause_circle_filled,
+                                size: 60,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {},
+                            );
+                          }
+                          if (playing != true) {
+                            return IconButton(
+                              icon: const Icon(Icons.play_circle_fill),
+                              iconSize: 60.0,
+                              color: Colors.white,
+                              onPressed: audioPlayer.play,
+                            );
+                          } else if (processingState !=
+                              ProcessingState.completed) {
+                            return IconButton(
+                              icon: const Icon(Icons.pause_circle_filled),
+                              iconSize: 60.0,
+                              color: Colors.white,
+                              onPressed: audioPlayer.pause,
+                            );
+                          } else {
+                            return IconButton(
+                              icon: const Icon(Icons.replay),
+                              iconSize: 64.0,
+                              onPressed: () => audioPlayer.seek(
+                                Duration.zero,
+                                index: audioPlayer.effectiveIndices!.first,
+                              ),
+                            );
+                          }
                         },
                       ),
                       const SizedBox(
@@ -336,9 +383,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                           size: 30,
                           color: Colors.white,
                         ),
-                        onPressed: () {
-                          
-                        },
+                        onPressed: () {},
                       ),
                     ],
                   ),
@@ -349,6 +394,16 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
         )
       ],
     );
+  }
+
+  void _initStreams() {
+
+    _playerCompleteSubscription = audioPlayer.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        audioPlayer.seek(Duration.zero);
+        audioPlayer.pause();
+      }
+    });
   }
 
   int random(int min, int max) {
