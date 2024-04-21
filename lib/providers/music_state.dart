@@ -8,6 +8,5 @@ class MusicState extends ChangeNotifier{
 
   void setCurrentMediaItem(MediaItem mediaItem){
     _currentMediaItem = mediaItem;
-    notifyListeners();
   }
 }

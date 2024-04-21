@@ -30,15 +30,9 @@ class _MusicScreenState extends State<MusicScreen> {
   var isLoading = true;
   bool isLoadingVertical = false;
   final int increment = 10;
-  Color dominantColor = Colors.transparent;
+  Color dominantColor = Colors.black;
 
   StreamSubscription? _playerCompleteSubscription;
-
-  void setColor(Color color) {
-    setState(() {
-      dominantColor = color;
-    });
-  }
 
   @override
   void initState() {
@@ -50,6 +44,12 @@ class _MusicScreenState extends State<MusicScreen> {
   void dispose() {
     _playerCompleteSubscription?.cancel();
     super.dispose();
+  }
+
+  void setColor(Color color) {
+    setState(() {
+      dominantColor = color;
+    });
   }
 
   Future _loadMoreVertical() async {
@@ -114,20 +114,21 @@ class _MusicScreenState extends State<MusicScreen> {
                                 "" ||
                             context.read<MusicState>().currentMediaItem?.id !=
                                 sequence[index].tag.id) {
-                          getDominantColor(
-                                  sequence[index].tag.artUri.toString())
-                              .then((color) {
-                            setColor(color!);
-                          });
-
                           audioState.player.seek(Duration.zero, index: index);
 
                           audioState.player.setAudioSource(audioState.playlist,
                               initialIndex: index);
 
                           context.read<PlayingState>().play();
+
                           context.read<MusicState>().setCurrentMediaItem(
                               sequence[index].tag as MediaItem);
+
+                          getDominantColor(
+                                  sequence[index].tag.artUri.toString())
+                              .then((color) {
+                            setColor(color!);
+                          });
 
                           audioState.player.play();
                         }
@@ -255,6 +256,12 @@ class _MusicScreenState extends State<MusicScreen> {
                 context
                     .read<MusicState>()
                     .setCurrentMediaItem(currentItem!.tag as MediaItem);
+
+                getDominantColor(currentItem.tag.artUri.toString())
+                    .then((color) {
+                  dominantColor = color!;
+                });
+
                 return GestureDetector(
                   child: SizedBox(
                     width: double.infinity,

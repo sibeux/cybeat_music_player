@@ -8,13 +8,7 @@ class DominantColorState extends ChangeNotifier {
 
   void setDominantColor(String artUri) {
     getDominantColor(artUri).then((color) {
-      setColor(color!);
-    _dominantColor = color;
+      _dominantColor = color!;
     });
-    notifyListeners();
-  }
-
-  void setColor(Color color) {
-    _dominantColor = color;
   }
 }
