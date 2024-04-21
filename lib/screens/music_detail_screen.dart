@@ -37,7 +37,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
 
   StreamSubscription? _durationSubscription;
   StreamSubscription? _positionSubscription;
-  StreamSubscription? _playerCompleteSubscription;
 
   String get _durationText => formatDuration(duration);
 
@@ -61,8 +60,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
       });
     });
 
-    _initStreams();
-
     super.initState();
   }
 
@@ -79,7 +76,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
   void dispose() {
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
-    _playerCompleteSubscription?.cancel();
 
     super.dispose();
   }
@@ -303,15 +299,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
         )
       ],
     );
-  }
-
-  void _initStreams() {
-    _playerCompleteSubscription = audioPlayer.playerStateStream.listen((state) {
-      if (state.processingState == ProcessingState.completed) {
-        audioPlayer.seek(Duration.zero);
-        audioPlayer.pause();
-      }
-    });
   }
 
   int random(int min, int max) {
