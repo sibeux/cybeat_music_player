@@ -100,33 +100,37 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 // ClipRRect is used to clip the image to a rounded rectangle
                 // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar
                 child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(
-                    sigmaY: 35,
-                    sigmaX: 35,
-                  ),
-                  child: Image.network(
-                    mediaItem.artUri.toString(),
-                    scale: 5,
-                    fit: BoxFit.cover,
-                    filterQuality: FilterQuality.low,
-                    color: Colors.black.withOpacity(0.5),
-                    colorBlendMode: BlendMode.darken,
-                    errorBuilder: (context, exception, stackTrace) {
-                      return Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color.fromARGB(255, 126, 248, 60),
-                              Color.fromARGB(255, 253, 123, 123),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                    imageFilter: ImageFilter.blur(
+                      sigmaY: 35,
+                      sigmaX: 35,
+                    ),
+                    child: StreamBuilder(
+                        stream: audioPlayer.sequenceStateStream,
+                        builder: (context, snapshot) {
+                          final currentItem = snapshot.data?.currentSource;
+                          return Image.network(
+                            currentItem!.tag.artUri.toString(),
+                            scale: 5,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.low,
+                            color: Colors.black.withOpacity(0.5),
+                            colorBlendMode: BlendMode.darken,
+                            errorBuilder: (context, exception, stackTrace) {
+                              return Container(
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Color.fromARGB(255, 126, 248, 60),
+                                      Color.fromARGB(255, 253, 123, 123),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        })),
               ),
             ),
           ],
@@ -156,146 +160,158 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               ),
             ],
           ),
-          body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  width: 340,
-                  height: 350,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      mediaItem.artUri.toString(),
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.low,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Shimmer(
-                          gradient: const LinearGradient(
-                            colors: [Colors.grey, Colors.white],
-                          ),
-                          child: Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, exception, stackTrace) {
-                        return Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            color: Colors.grey,
-                            child: const Icon(
-                              Icons.music_note_rounded,
-                              color: Colors.white,
-                              size: 50,
-                            ));
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    capitalizeEachWord(mediaItem.title),
-                    style: TextStyle(
-                      overflow: TextOverflow.ellipsis,
-                      fontSize: 25,
-                      color: Colors.white,
-                      fontWeight: FontWeight.values[5],
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  capitalizeEachWord(mediaItem.artist!),
-                  style: const TextStyle(
-                    overflow: TextOverflow.ellipsis,
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Padding(
+          body: StreamBuilder(
+              stream: audioPlayer.sequenceStateStream,
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return const CircularProgressIndicator();
+                }
+                final currentItem = snapshot.data?.currentSource;
+
+                return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  // child: Divider(
-                  //   color: Colors.white,
-                  //   thickness: 1,
-                  child: SliderTheme(
-                    data: const SliderThemeData(
-                      trackHeight: 1,
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8),
-                      overlayShape: RoundSliderOverlayShape(overlayRadius: 20),
-                    ),
-                    child: Slider(
-                      value: (position != null &&
-                              duration != null &&
-                              position!.inMilliseconds > 0 &&
-                              position!.inMilliseconds <
-                                  duration!.inMilliseconds)
-                          ? position!.inMilliseconds / duration!.inMilliseconds
-                          : 0.0,
-                      activeColor: HexColor('#fefffe'),
-                      inactiveColor: HexColor('#726878'),
-                      onChanged: (value) {
-                        final durasi = duration;
-                        if (durasi == null) {
-                          return;
-                        }
-                        final position = value * durasi.inMilliseconds;
-                        audioPlayer
-                            .seek(Duration(milliseconds: position.round()));
-                      },
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Text(
-                        _positionText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        width: 340,
+                        height: 350,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            currentItem!.tag.artUri.toString(),
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.low,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Shimmer(
+                                gradient: const LinearGradient(
+                                  colors: [Colors.grey, Colors.white],
+                                ),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  color: Colors.grey,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, exception, stackTrace) {
+                              return Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  color: Colors.grey,
+                                  child: const Icon(
+                                    Icons.music_note_rounded,
+                                    color: Colors.white,
+                                    size: 50,
+                                  ));
+                            },
+                          ),
                         ),
                       ),
-                      Text(
-                        _durationText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          capitalizeEachWord(currentItem.tag.title),
+                          style: TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                            fontSize: 25,
+                            color: Colors.white,
+                            fontWeight: FontWeight.values[5],
+                          ),
                         ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        capitalizeEachWord(currentItem.tag.artist ?? ''),
+                        style: const TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        // child: Divider(
+                        //   color: Colors.white,
+                        //   thickness: 1,
+                        child: SliderTheme(
+                          data: const SliderThemeData(
+                            trackHeight: 1,
+                            thumbShape:
+                                RoundSliderThumbShape(enabledThumbRadius: 8),
+                            overlayShape:
+                                RoundSliderOverlayShape(overlayRadius: 20),
+                          ),
+                          child: Slider(
+                            value: (position != null &&
+                                    duration != null &&
+                                    position!.inMilliseconds > 0 &&
+                                    position!.inMilliseconds <
+                                        duration!.inMilliseconds)
+                                ? position!.inMilliseconds /
+                                    duration!.inMilliseconds
+                                : 0.0,
+                            activeColor: HexColor('#fefffe'),
+                            inactiveColor: HexColor('#726878'),
+                            onChanged: (value) {
+                              final durasi = duration;
+                              if (durasi == null) {
+                                return;
+                              }
+                              final position = value * durasi.inMilliseconds;
+                              audioPlayer.seek(
+                                  Duration(milliseconds: position.round()));
+                            },
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _positionText,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              _durationText,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: ControlButtons(audioPlayer: audioPlayer),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: ControlButtons(audioPlayer: audioPlayer),
-                ),
-              ],
-            ),
-          ),
+                );
+              }),
         )
       ],
     );
@@ -305,5 +321,3 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
     return min + Random().nextInt(max - min);
   }
 }
-
-
