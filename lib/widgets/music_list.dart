@@ -3,15 +3,17 @@ import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/widgets/capitalize.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 
 class MusicList extends StatelessWidget {
   const MusicList({
     super.key,
-    required this.mediaItem,
+    required this.mediaItem, required this.audioPlayer,
   });
 
   final MediaItem mediaItem;
+  final AudioPlayer audioPlayer;
 
   @override
   Widget build(BuildContext context) {

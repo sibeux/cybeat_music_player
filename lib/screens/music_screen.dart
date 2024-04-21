@@ -7,7 +7,6 @@ import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/screens/music_detail_screen.dart';
-import 'package:cybeat_music_player/widgets/capitalize.dart';
 import 'package:cybeat_music_player/widgets/music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
@@ -94,6 +93,7 @@ class _MusicScreenState extends State<MusicScreen> {
                     return InkWell(
                       child: MusicList(
                         mediaItem: sequence[index].tag as MediaItem,
+                        audioPlayer: audioState.player,
                       ),
                       onTap: () {
                         Navigator.push(
@@ -247,11 +247,14 @@ class _MusicScreenState extends State<MusicScreen> {
           ),
         ),
         if (context.watch<PlayingState>().isPlaying)
-          StreamBuilder(
+          StreamBuilder<SequenceState?>(
             stream: audioState.player.sequenceStateStream,
             builder: (context, snapshot) {
-              final currentItem = snapshot.data?.currentSource;
               if (snapshot.hasData) {
+                final currentItem = snapshot.data?.currentSource;
+                context
+                    .read<MusicState>()
+                    .setCurrentMediaItem(currentItem!.tag as MediaItem);
                 return GestureDetector(
                   child: SizedBox(
                     width: double.infinity,
@@ -297,8 +300,7 @@ class _MusicScreenState extends State<MusicScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          capitalizeEachWord(
-                                              currentItem!.tag.title ?? ''),
+                                          currentItem.tag.title ?? '',
                                           style: const TextStyle(
                                               color: Colors.white,
                                               overflow: TextOverflow.ellipsis,
@@ -306,8 +308,7 @@ class _MusicScreenState extends State<MusicScreen> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                         Text(
-                                          capitalizeEachWord(
-                                              currentItem.tag.artist ?? ''),
+                                          currentItem.tag.artist ?? '',
                                           style: const TextStyle(
                                               color: Colors.white,
                                               overflow: TextOverflow.ellipsis,
