@@ -261,7 +261,7 @@ class _MusicScreenState extends State<MusicScreen> {
                 // sementara masih bug di sini
                 getDominantColor(currentItem.tag.artUri.toString())
                     .then((color) {
-                  dominantColor;
+                  dominantColor = color!;
                 });
 
                 return GestureDetector(
