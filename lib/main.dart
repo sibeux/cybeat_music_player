@@ -1,4 +1,5 @@
 import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/providers/dominant_color_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/screens/music_screen.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(lazy: false, create: (_) => AudioState()),
         ChangeNotifierProvider(create: (_) => PlayingState()),
         ChangeNotifierProvider(create: (_) => MusicState()),
+        ChangeNotifierProvider(create: (_) => DominantColorState()),
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/widgets/capitalize.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
@@ -40,9 +41,9 @@ class AudioState extends ChangeNotifier {
                   Uri.parse(item['link_gdrive']),
                   tag: MediaItem(
                     id: '${_nextMediaId++}',
-                    title: item['title'],
-                    artist: item['artist'],
-                    album: item['album'],
+                    title: capitalizeEachWord(item['title']),
+                    artist: capitalizeEachWord(item['artist']),
+                    album: capitalizeEachWord(item['album']),
                     artUri: Uri.parse(item['cover']),
                   ),
                 ))

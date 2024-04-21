@@ -41,11 +41,6 @@ class _MusicScreenState extends State<MusicScreen> {
     });
   }
 
-  // Future<void> playMusic(String url) async {
-  //   await player.setSourceUrl(url);
-  //   await player.resume();
-  // }
-
   @override
   void initState() {
     super.initState();
