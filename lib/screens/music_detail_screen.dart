@@ -100,37 +100,46 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 // ClipRRect is used to clip the image to a rounded rectangle
                 // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar
                 child: ImageFiltered(
-                    imageFilter: ImageFilter.blur(
-                      sigmaY: 35,
-                      sigmaX: 35,
-                    ),
-                    child: StreamBuilder(
-                        stream: audioPlayer.sequenceStateStream,
-                        builder: (context, snapshot) {
-                          final currentItem = snapshot.data?.currentSource;
-                          return Image.network(
-                            currentItem!.tag.artUri.toString(),
-                            scale: 5,
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.low,
-                            color: Colors.black.withOpacity(0.5),
-                            colorBlendMode: BlendMode.darken,
-                            errorBuilder: (context, exception, stackTrace) {
-                              return Container(
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Color.fromARGB(255, 126, 248, 60),
-                                      Color.fromARGB(255, 253, 123, 123),
-                                    ],
-                                  ),
+                  imageFilter: ImageFilter.blur(
+                    sigmaY: 35,
+                    sigmaX: 35,
+                  ),
+                  child: StreamBuilder<SequenceState?>(
+                    stream: audioPlayer.sequenceStateStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final currentItem = snapshot.data?.currentSource;
+                        return Image.network(
+                          currentItem!.tag.artUri.toString(),
+                          scale: 5,
+                          fit: BoxFit.cover,
+                          filterQuality: FilterQuality.low,
+                          color: Colors.black.withOpacity(0.5),
+                          colorBlendMode: BlendMode.darken,
+                          errorBuilder: (context, exception, stackTrace) {
+                            return Container(
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color.fromARGB(255, 126, 248, 60),
+                                    Color.fromARGB(255, 253, 123, 123),
+                                  ],
                                 ),
-                              );
-                            },
-                          );
-                        })),
+                              ),
+                            );
+                          },
+                        );
+                        
+                      }
+
+                      return const CircularProgressIndicator();
+
+                      
+                    },
+                  ),
+                ),
               ),
             ),
           ],
