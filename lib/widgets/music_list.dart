@@ -1,7 +1,9 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/widgets/capitalize.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
 
 class MusicList extends StatelessWidget {
   const MusicList({
@@ -13,14 +15,14 @@ class MusicList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final musikDimainkan = ref.watch(musikDimainkanProvider);
+    final musikDimainkan =context.watch<MusicState>().currentMediaItem;
     String colorTitle = "#313031";
     double marginList = 18;
 
-    // if (musikDimainkan.id == music.id) {
-    //   colorTitle = '#8238be';
-    //   marginList = 12;
-    // }
+    if (musikDimainkan?.id == mediaItem.id) {
+      colorTitle = '#8238be';
+      marginList = 12;
+    }
 
     return SizedBox(
       height: 70,

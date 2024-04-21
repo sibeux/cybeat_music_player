@@ -357,7 +357,21 @@ class _MusicScreenState extends State<MusicScreen> {
                 ),
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.bottomToTop,
+                  duration: const Duration(milliseconds: 300),
+                  reverseDuration: const Duration(milliseconds: 300),
+                  child: MusicDetailScreen(
+                    player: audioState.player,
+                    mediaItem: context.read<MusicState>().currentMediaItem!,
+                  ),
+                  childCurrent: const MusicScreen(),
+                ),
+              );
+            },
           )
       ]),
     );
