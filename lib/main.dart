@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DominantColorState()),
       ],
       child: const MaterialApp(
+        title: 'Okejek',
         debugShowCheckedModeBanner: false,
         showPerformanceOverlay: false,
         home: MusicScreen(),
