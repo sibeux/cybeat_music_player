@@ -11,11 +11,10 @@ var logger = Logger();
 class AudioState extends ChangeNotifier {
   late AudioPlayer player;
   late ConcatenatingAudioSource playlist;
-  static int _nextMediaId = 0;
+  static int _nextMediaId = 1;
 
   AudioState() {
     player = AudioPlayer();
-    getMusicData();
     _init();
   }
 
@@ -26,35 +25,12 @@ class AudioState extends ChangeNotifier {
         logger.e('A stream error occurred: $e');
       },
     );
-    try {
-      await player.setAudioSource(playlist);
-    } catch (e) {
-      logger.e('Error loading audio source: $e');
-    }
-  }
 
-  @override
-  void dispose() {
-    player.dispose();
-    super.dispose();
-  }
-
-  void getMusicData() async {
     const url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/db.php';
 
     try {
       final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode >= 400) {
-        logger.e('Failed to load items');
-      }
-
-      if (response.body == 'null') {
-        //isLoading = false;
-
-        return;
-      }
 
       final List<dynamic> listData = json.decode(response.body);
 
@@ -72,8 +48,16 @@ class AudioState extends ChangeNotifier {
                 ))
             .toList(),
       );
+
+      await player.setAudioSource(playlist);
     } catch (e) {
-      logger.e('Error loading items: $e');
+      logger.e('Error loading audio source: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
   }
 }

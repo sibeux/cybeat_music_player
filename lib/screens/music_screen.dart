@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/screens/music_detail_screen.dart';
 import 'package:cybeat_music_player/widgets/music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
@@ -86,9 +87,23 @@ class _MusicScreenState extends State<MusicScreen> {
                   itemBuilder: (context, index) {
                     return InkWell(
                       child: MusicList(
-                        mediaItem: state!.currentSource!.tag as MediaItem,
+                        mediaItem: sequence[index].tag as MediaItem,
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.bottomToTop,
+                            duration: const Duration(milliseconds: 300),
+                            reverseDuration: const Duration(milliseconds: 300),
+                            child: MusicDetailScreen(
+                              player: audioState.player,
+                              mediaItem: sequence[index].tag as MediaItem,
+                            ),
+                            childCurrent: const MusicScreen(),
+                          ),
+                        );
+                      },
                     );
                   });
             }
