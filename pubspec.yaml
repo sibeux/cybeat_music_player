@@ -47,6 +47,7 @@ dependencies:
   riverpod: ^2.5.1
   flutter_riverpod: ^2.5.1
   palette_generator: ^0.3.3+3
+  just_audio_background: ^0.0.1-beta.11
 
 dev_dependencies:
   flutter_test:
