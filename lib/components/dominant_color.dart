@@ -6,5 +6,5 @@ Future<Color?> getDominantColor(String url) async {
   final PaletteGenerator paletteGenerator =
       await PaletteGenerator.fromImageProvider(NetworkImage(url));
 
-  return paletteGenerator.dominantColor?.color;
+  return paletteGenerator.mutedColor?.color;
 }

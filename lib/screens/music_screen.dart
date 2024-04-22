@@ -17,6 +17,8 @@ import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/floating_playing_music.dart';
+
 var isPlaying = false;
 
 class MusicScreen extends StatefulWidget {
@@ -121,10 +123,7 @@ class _MusicScreenState extends State<MusicScreen> {
                         context.read<MusicState>().setCurrentMediaItem(
                             sequence[index].tag as MediaItem);
 
-                        getDominantColor(sequence[index].tag.artUri.toString())
-                            .then((color) {
-                          setColor(color!);
-                        });
+
 
                         audioState.player.play();
                       }
@@ -180,46 +179,48 @@ class _MusicScreenState extends State<MusicScreen> {
                           children: [
                             StreamBuilder<SequenceState?>(
                               builder: (context, snapshot) {
+                                List<IndexedAudioSource> sequence = [];
                                 if (snapshot.hasData) {
                                   final state = snapshot.data;
-                                  final sequence = state?.sequence ?? [];
-                                  return InkWell(
-                                    onTap: () {
-                                      _shuffleMusic(audioState, sequence);
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8),
-                                      margin: const EdgeInsets.only(left: 18),
-                                      width: 180,
-                                      height: 35,
-                                      decoration: BoxDecoration(
-                                        color: HexColor('#ac8bc9'),
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.play_circle_fill,
-                                            color: HexColor('#fefffe'),
-                                            size: 30,
-                                          ),
-                                          const SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            'Shuffle Playback',
-                                            style: TextStyle(
-                                              color: HexColor('#fefffe'),
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
+                                  sequence = state?.sequence ?? [];
                                 }
-                                return Container();
+                                return InkWell(
+                                  onTap: () {
+                                    if (snapshot.hasData) {
+                                      _shuffleMusic(audioState, sequence);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
+                                    margin: const EdgeInsets.only(left: 18),
+                                    width: 180,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: HexColor('#ac8bc9'),
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.play_circle_fill,
+                                          color: HexColor('#fefffe'),
+                                          size: 30,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          'Shuffle Playback',
+                                          style: TextStyle(
+                                            color: HexColor('#fefffe'),
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
                               },
                               stream: audioState.player.sequenceStateStream,
                             ),
@@ -267,123 +268,13 @@ class _MusicScreenState extends State<MusicScreen> {
                       .read<MusicState>()
                       .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
-                  // sementara masih bug di sini
-                  getDominantColor(currentItem.tag.artUri.toString())
-                      .then((color) {
-                    dominantColor = color!;
-                  });
+                  context
+                      .read<DominantColorState>()
+                      .setDominantColor(currentItem.tag.artUri.toString());
 
-                  return GestureDetector(
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        child: Stack(
-                          alignment: AlignmentDirectional.bottomStart,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 25,
-                                  height: 45,
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.white,
-                                        Colors.grey,
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(100),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: 45,
-                                    decoration: BoxDecoration(
-                                      color: dominantColor,
-                                      borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(100),
-                                          bottomRight: Radius.circular(100)),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 35),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            currentItem.tag.title ?? '',
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                overflow: TextOverflow.ellipsis,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            currentItem.tag.artist ?? '',
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                overflow: TextOverflow.ellipsis,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.normal),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Stack(
-                                children: [
-                                  SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Image.network(
-                                        currentItem.tag.artUri.toString(),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.bottomToTop,
-                          duration: const Duration(milliseconds: 300),
-                          reverseDuration: const Duration(milliseconds: 300),
-                          child: MusicDetailScreen(
-                            player: audioState.player,
-                            mediaItem:
-                                context.read<MusicState>().currentMediaItem!,
-                          ),
-                          childCurrent: const MusicScreen(),
-                        ),
-                      );
-                    },
+                  return FloatingPlayingMusic(
+                    audioState: audioState,
+                    currentItem: currentItem,
                   );
                 }
                 return const SizedBox();
