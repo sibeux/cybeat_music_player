@@ -12,12 +12,10 @@ class FloatingPlayingMusic extends StatefulWidget {
     super.key,
     required this.audioState,
     required this.currentItem,
-    required this.paletteColor,
   });
 
   final AudioState audioState;
   final IndexedAudioSource? currentItem;
-  final Color paletteColor;
 
   @override
   State<FloatingPlayingMusic> createState() => _FloatingPlayingMusicState();
@@ -141,7 +139,10 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
               player: widget.audioState.player,
               mediaItem: context.read<MusicState>().currentMediaItem!,
             ),
-            childCurrent: build(context),
+            childCurrent: FloatingPlayingMusic(
+              audioState: widget.audioState,
+              currentItem: widget.currentItem,
+            )
           ),
         );
       },

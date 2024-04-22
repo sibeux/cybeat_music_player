@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/components/dominant_color.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
@@ -120,9 +119,6 @@ class _MusicScreenState extends State<MusicScreen> {
 
                         context.read<MusicState>().setCurrentMediaItem(
                             sequence[index].tag as MediaItem);
-
-                        getDominantColor(sequence[index].tag.artUri.toString())
-                            .then((value) => setColor(value!));
 
                         audioState.player.play();
                       }
@@ -267,11 +263,7 @@ class _MusicScreenState extends State<MusicScreen> {
                       .read<MusicState>()
                       .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
-                  getDominantColor(currentItem.tag.artUri.toString())
-                      .then((color) => dominantColor = color!);
-
                   return FloatingPlayingMusic(
-                    paletteColor: dominantColor,
                     audioState: audioState,
                     currentItem: currentItem,
                   );
@@ -310,10 +302,6 @@ class _MusicScreenState extends State<MusicScreen> {
     context
         .read<MusicState>()
         .setCurrentMediaItem(sequence[index].tag as MediaItem);
-
-    getDominantColor(sequence[index].tag.artUri.toString()).then((color) {
-      setColor(color!);
-    });
 
     audioState.player.play();
   }
