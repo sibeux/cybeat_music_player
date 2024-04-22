@@ -1,3 +1,4 @@
+import 'package:cybeat_music_player/components/dominant_color.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
@@ -23,9 +24,18 @@ class FloatingPlayingMusic extends StatefulWidget {
 }
 
 class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
+  Color colors = Colors.black;
 
   @override
   Widget build(BuildContext context) {
+    getDominantColor(widget.currentItem!.tag.artUri.toString()).then((color) {
+      if (colors != color) {
+        setState(() {
+          colors = color!;
+        });
+      }
+    });
+
     return GestureDetector(
       child: SizedBox(
         width: double.infinity,
@@ -57,7 +67,7 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                       width: double.infinity,
                       height: 45,
                       decoration: BoxDecoration(
-                        color: widget.paletteColor,
+                        color: colors,
                         borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(100),
                             bottomRight: Radius.circular(100)),

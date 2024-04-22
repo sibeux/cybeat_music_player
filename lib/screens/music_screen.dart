@@ -268,13 +268,7 @@ class _MusicScreenState extends State<MusicScreen> {
                       .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
                   getDominantColor(currentItem.tag.artUri.toString())
-                      .then((color) {
-                        if (dominantColor != color) {
-                          setColor(color!);
-                        } else {
-                          return;
-                        }
-                  });
+                      .then((color) => dominantColor = color!);
 
                   return FloatingPlayingMusic(
                     paletteColor: dominantColor,
