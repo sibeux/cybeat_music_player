@@ -123,8 +123,6 @@ class _MusicScreenState extends State<MusicScreen> {
                         context.read<MusicState>().setCurrentMediaItem(
                             sequence[index].tag as MediaItem);
 
-
-
                         audioState.player.play();
                       }
                     },
@@ -262,17 +260,20 @@ class _MusicScreenState extends State<MusicScreen> {
             StreamBuilder<SequenceState?>(
               stream: audioState.player.sequenceStateStream,
               builder: (context, snapshot) {
+                Color paletteColor = Colors.black;
                 if (snapshot.hasData) {
                   final currentItem = snapshot.data?.currentSource;
                   context
                       .read<MusicState>()
                       .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
-                  context
-                      .read<DominantColorState>()
-                      .setDominantColor(currentItem.tag.artUri.toString());
+                  getDominantColor(currentItem.tag.artUri.toString())
+                      .then((value) {
+                    paletteColor = value!;
+                  });
 
                   return FloatingPlayingMusic(
+                    paletteColor: paletteColor,
                     audioState: audioState,
                     currentItem: currentItem,
                   );

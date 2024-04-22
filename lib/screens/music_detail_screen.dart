@@ -8,10 +8,7 @@ import 'package:cybeat_music_player/widgets/control_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../providers/dominant_color_state.dart';
 
 class MusicDetailScreen extends StatefulWidget {
   const MusicDetailScreen({

@@ -8,26 +8,29 @@ import '../components/dominant_color.dart';
 import '../providers/audio_state.dart';
 import '../providers/music_state.dart';
 import '../screens/music_detail_screen.dart';
-import '../screens/music_screen.dart';
 
 class FloatingPlayingMusic extends StatefulWidget {
   const FloatingPlayingMusic({
     super.key,
     required this.audioState,
     required this.currentItem,
+    required this.paletteColor,
   });
 
   final AudioState audioState;
   final IndexedAudioSource? currentItem;
+  final Color paletteColor;
 
   @override
   State<FloatingPlayingMusic> createState() => _FloatingPlayingMusicState();
 }
 
 class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
+
   @override
   Widget build(BuildContext context) {
-    final Color colors = Colors.black;
+    print(widget.currentItem!.tag.id);
+    print(widget.paletteColor);
 
     return GestureDetector(
       child: SizedBox(
@@ -60,7 +63,7 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                       width: double.infinity,
                       height: 45,
                       decoration: BoxDecoration(
-                        color: colors,
+                        color: widget.paletteColor,
                         borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(100),
                             bottomRight: Radius.circular(100)),
