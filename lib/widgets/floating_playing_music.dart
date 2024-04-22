@@ -1,10 +1,7 @@
-import 'package:cybeat_music_player/providers/dominant_color_state.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-
-import '../components/dominant_color.dart';
 import '../providers/audio_state.dart';
 import '../providers/music_state.dart';
 import '../screens/music_detail_screen.dart';
@@ -26,9 +23,9 @@ class FloatingPlayingMusic extends StatefulWidget {
 }
 
 class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
+
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       child: SizedBox(
         width: double.infinity,

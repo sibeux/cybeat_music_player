@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/dominant_color.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/providers/dominant_color_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/screens/music_detail_screen.dart';
@@ -267,6 +266,15 @@ class _MusicScreenState extends State<MusicScreen> {
                   context
                       .read<MusicState>()
                       .setCurrentMediaItem(currentItem!.tag as MediaItem);
+
+                  getDominantColor(currentItem.tag.artUri.toString())
+                      .then((color) {
+                        if (dominantColor != color) {
+                          setColor(color!);
+                        } else {
+                          return;
+                        }
+                  });
 
                   return FloatingPlayingMusic(
                     paletteColor: dominantColor,
