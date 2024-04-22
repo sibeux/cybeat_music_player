@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/widgets/capitalize.dart';
+import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';

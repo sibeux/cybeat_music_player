@@ -3,7 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/widgets/capitalize.dart';
+import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/widgets/control_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';

@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
-import 'package:cybeat_music_player/widgets/capitalize.dart';
+import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
