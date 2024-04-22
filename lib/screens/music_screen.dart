@@ -76,10 +76,6 @@ class _MusicScreenState extends State<MusicScreen> {
       child: Text('No music yet! Add some!'),
     );
 
-    // if (isLoading) {
-    //   content = const ShimmerMusicList();;
-    // }
-
     content = LazyLoadScrollView(
         isLoading: isLoadingVertical,
         onEndOfPage: () => _loadMoreVertical(),
@@ -140,7 +136,7 @@ class _MusicScreenState extends State<MusicScreen> {
             return const ShimmerMusicList();
           },
           stream: audioState.player.sequenceStateStream,
-        ));
+        ),);
 
     if (_error != null) {
       content = Center(
