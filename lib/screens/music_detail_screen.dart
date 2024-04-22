@@ -131,12 +131,9 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                             );
                           },
                         );
-                        
                       }
 
                       return const CircularProgressIndicator();
-
-                      
                     },
                   ),
                 ),
@@ -184,41 +181,44 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                       const SizedBox(
                         height: 15,
                       ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        width: 340,
-                        height: 350,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                            currentItem!.tag.artUri.toString(),
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.low,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Shimmer(
-                                gradient: const LinearGradient(
-                                  colors: [Colors.grey, Colors.white],
-                                ),
-                                child: Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  color: Colors.grey,
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, exception, stackTrace) {
-                              return Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  color: Colors.grey,
-                                  child: const Icon(
-                                    Icons.music_note_rounded,
-                                    color: Colors.white,
-                                    size: 50,
-                                  ));
-                            },
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          width: 340,
+                          height: 350,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.network(
+                              currentItem!.tag.artUri.toString(),
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.low,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Shimmer(
+                                  gradient: const LinearGradient(
+                                    colors: [Colors.grey, Colors.white],
+                                  ),
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    color: Colors.grey,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, exception, stackTrace) {
+                                return Container(
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    color: Colors.grey,
+                                    child: const Icon(
+                                      Icons.music_note_rounded,
+                                      color: Colors.white,
+                                      size: 50,
+                                    ));
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -240,13 +240,16 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Text(
-                        capitalizeEachWord(currentItem.tag.artist ?? ''),
-                        style: const TextStyle(
-                          overflow: TextOverflow.ellipsis,
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          capitalizeEachWord(currentItem.tag.artist ?? ''),
+                          style: const TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       const SizedBox(
@@ -254,6 +257,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
+                        // to create one straight line
                         // child: Divider(
                         //   color: Colors.white,
                         //   thickness: 1,
