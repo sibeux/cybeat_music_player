@@ -30,7 +30,6 @@ class MusicScreen extends StatefulWidget {
 
 class _MusicScreenState extends State<MusicScreen> {
   String? _error;
-  var isLoading = true;
   bool isLoadingVertical = false;
   final int increment = 10;
   Color dominantColor = Colors.black;
@@ -123,6 +122,9 @@ class _MusicScreenState extends State<MusicScreen> {
                         context.read<MusicState>().setCurrentMediaItem(
                             sequence[index].tag as MediaItem);
 
+                        getDominantColor(sequence[index].tag.artUri.toString())
+                            .then((value) => setColor(value!));
+
                         audioState.player.play();
                       }
                     },
@@ -153,7 +155,7 @@ class _MusicScreenState extends State<MusicScreen> {
         centerTitle: true,
         toolbarHeight: 60,
         title: Text(
-          'WhatsApp Audio',
+          '日本の歌',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: HexColor('#1e0b2b'),
@@ -260,20 +262,14 @@ class _MusicScreenState extends State<MusicScreen> {
             StreamBuilder<SequenceState?>(
               stream: audioState.player.sequenceStateStream,
               builder: (context, snapshot) {
-                Color paletteColor = Colors.black;
                 if (snapshot.hasData) {
                   final currentItem = snapshot.data?.currentSource;
                   context
                       .read<MusicState>()
                       .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
-                  getDominantColor(currentItem.tag.artUri.toString())
-                      .then((value) {
-                    paletteColor = value!;
-                  });
-
                   return FloatingPlayingMusic(
-                    paletteColor: paletteColor,
+                    paletteColor: dominantColor,
                     audioState: audioState,
                     currentItem: currentItem,
                   );

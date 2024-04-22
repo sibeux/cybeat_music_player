@@ -101,9 +101,9 @@ class ControlButtons extends StatelessWidget {
         processingState == ProcessingState.buffering) {
       return IconButton(
         icon: const Icon(
-          Icons.pause_circle_filled,
+          Icons.play_circle_filled,
           size: 60,
-          color: Colors.white,
+          color: Colors.grey,
         ),
         onPressed: () {},
       );

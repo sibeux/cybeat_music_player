@@ -26,11 +26,8 @@ class FloatingPlayingMusic extends StatefulWidget {
 }
 
 class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
-
   @override
   Widget build(BuildContext context) {
-    print(widget.currentItem!.tag.id);
-    print(widget.paletteColor);
 
     return GestureDetector(
       child: SizedBox(
