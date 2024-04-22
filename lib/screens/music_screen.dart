@@ -77,66 +77,66 @@ class _MusicScreenState extends State<MusicScreen> {
     );
 
     content = LazyLoadScrollView(
-        isLoading: isLoadingVertical,
-        onEndOfPage: () => _loadMoreVertical(),
-        child: StreamBuilder<SequenceState?>(
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final state = snapshot.data;
-              final sequence = state?.sequence ?? [];
-              return ListView.builder(
-                  itemCount: sequence.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      child: MusicList(
-                        mediaItem: sequence[index].tag as MediaItem,
-                        audioPlayer: audioState.player,
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.bottomToTop,
-                            duration: const Duration(milliseconds: 300),
-                            reverseDuration: const Duration(milliseconds: 300),
-                            child: MusicDetailScreen(
-                              player: audioState.player,
-                              mediaItem: sequence[index].tag as MediaItem,
-                            ),
-                            childCurrent: const MusicScreen(),
+      isLoading: isLoadingVertical,
+      onEndOfPage: () => _loadMoreVertical(),
+      child: StreamBuilder<SequenceState?>(
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final state = snapshot.data;
+            final sequence = state?.sequence ?? [];
+            return ListView.builder(
+                itemCount: sequence.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    child: MusicList(
+                      mediaItem: sequence[index].tag as MediaItem,
+                      audioPlayer: audioState.player,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.bottomToTop,
+                          duration: const Duration(milliseconds: 300),
+                          reverseDuration: const Duration(milliseconds: 300),
+                          child: MusicDetailScreen(
+                            player: audioState.player,
+                            mediaItem: sequence[index].tag as MediaItem,
                           ),
-                        );
+                          childCurrent: const MusicScreen(),
+                        ),
+                      );
 
-                        if (context.read<MusicState>().currentMediaItem?.id ==
-                                "" ||
-                            context.read<MusicState>().currentMediaItem?.id !=
-                                sequence[index].tag.id) {
-                          audioState.player.seek(Duration.zero, index: index);
+                      if (context.read<MusicState>().currentMediaItem?.id ==
+                              "" ||
+                          context.read<MusicState>().currentMediaItem?.id !=
+                              sequence[index].tag.id) {
+                        audioState.player.seek(Duration.zero, index: index);
 
-                          audioState.player.setAudioSource(audioState.playlist,
-                              initialIndex: index);
+                        audioState.player.setAudioSource(audioState.playlist,
+                            initialIndex: index);
 
-                          context.read<PlayingState>().play();
+                        context.read<PlayingState>().play();
 
-                          context.read<MusicState>().setCurrentMediaItem(
-                              sequence[index].tag as MediaItem);
+                        context.read<MusicState>().setCurrentMediaItem(
+                            sequence[index].tag as MediaItem);
 
-                          getDominantColor(
-                                  sequence[index].tag.artUri.toString())
-                              .then((color) {
-                            setColor(color!);
-                          });
+                        getDominantColor(sequence[index].tag.artUri.toString())
+                            .then((color) {
+                          setColor(color!);
+                        });
 
-                          audioState.player.play();
-                        }
-                      },
-                    );
-                  });
-            }
-            return const ShimmerMusicList();
-          },
-          stream: audioState.player.sequenceStateStream,
-        ),);
+                        audioState.player.play();
+                      }
+                    },
+                  );
+                });
+          }
+          return const ShimmerMusicList();
+        },
+        stream: audioState.player.sequenceStateStream,
+      ),
+    );
 
     if (_error != null) {
       content = Center(
@@ -164,220 +164,268 @@ class _MusicScreenState extends State<MusicScreen> {
           ),
         ),
       ),
-      body: Column(children: [
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      color: HexColor('#fefffe'),
+      body: Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Container(
+                        color: HexColor('#fefffe'),
+                        width: double.infinity,
+                        height: 50,
+                        child: Row(
+                          children: [
+                            StreamBuilder<SequenceState?>(
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  final state = snapshot.data;
+                                  final sequence = state?.sequence ?? [];
+                                  return InkWell(
+                                    onTap: () {
+                                      _shuffleMusic(audioState, sequence);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      margin: const EdgeInsets.only(left: 18),
+                                      width: 180,
+                                      height: 35,
+                                      decoration: BoxDecoration(
+                                        color: HexColor('#ac8bc9'),
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.play_circle_fill,
+                                            color: HexColor('#fefffe'),
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            'Shuffle Playback',
+                                            style: TextStyle(
+                                              color: HexColor('#fefffe'),
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              },
+                              stream: audioState.player.sequenceStateStream,
+                            ),
+                            const Expanded(
+                              child: SizedBox(),
+                            ),
+                            IconButton(
+                              highlightColor: Colors.black.withOpacity(0.02),
+                              icon: Icon(
+                                Icons.list_rounded,
+                                size: 30,
+                                color: HexColor('#8d8c8c'),
+                              ),
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          color: HexColor('#fefffe'),
+                          padding: const EdgeInsets.only(top: 8),
+                          width: double.infinity,
+                          child: content,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  color: Colors.blue,
+                  width: 30,
+                  height: double.infinity,
+                )
+              ],
+            ),
+          ),
+          if (context.watch<PlayingState>().isPlaying)
+            StreamBuilder<SequenceState?>(
+              stream: audioState.player.sequenceStateStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final currentItem = snapshot.data?.currentSource;
+                  context
+                      .read<MusicState>()
+                      .setCurrentMediaItem(currentItem!.tag as MediaItem);
+
+                  // sementara masih bug di sini
+                  getDominantColor(currentItem.tag.artUri.toString())
+                      .then((color) {
+                    dominantColor = color!;
+                  });
+
+                  return GestureDetector(
+                    child: SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: Row(
-                        children: [
-                          InkWell(
-                            onTap: () {},
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              margin: const EdgeInsets.only(left: 18),
-                              width: 180,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                color: HexColor('#ac8bc9'),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.play_circle_fill,
-                                    color: HexColor('#fefffe'),
-                                    size: 30,
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Shuffle Playback',
-                                    style: TextStyle(
-                                      color: HexColor('#fefffe'),
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const Expanded(
-                            child: SizedBox(),
-                          ),
-                          IconButton(
-                            highlightColor: Colors.black.withOpacity(0.02),
-                            icon: Icon(
-                              Icons.list_rounded,
-                              size: 30,
-                              color: HexColor('#8d8c8c'),
-                            ),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        color: HexColor('#fefffe'),
-                        padding: const EdgeInsets.only(top: 8),
-                        width: double.infinity,
-                        child: content,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                color: Colors.blue,
-                width: 30,
-                height: double.infinity,
-              )
-            ],
-          ),
-        ),
-        if (context.watch<PlayingState>().isPlaying)
-          StreamBuilder<SequenceState?>(
-            stream: audioState.player.sequenceStateStream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final currentItem = snapshot.data?.currentSource;
-                context
-                    .read<MusicState>()
-                    .setCurrentMediaItem(currentItem!.tag as MediaItem);
-
-                // sementara masih bug di sini
-                getDominantColor(currentItem.tag.artUri.toString())
-                    .then((color) {
-                  dominantColor = color!;
-                });
-
-                return GestureDetector(
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Stack(
-                        alignment: AlignmentDirectional.bottomStart,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 25,
-                                height: 45,
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Colors.white,
-                                      Colors.grey,
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(100),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
+                        child: Stack(
+                          alignment: AlignmentDirectional.bottomStart,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 25,
                                   height: 45,
-                                  decoration: BoxDecoration(
-                                    color: dominantColor,
-                                    borderRadius: const BorderRadius.only(
-                                        topRight: Radius.circular(100),
-                                        bottomRight: Radius.circular(100)),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 35),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          currentItem.tag.title ?? '',
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          currentItem.tag.artist ?? '',
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.normal),
-                                        ),
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.white,
+                                        Colors.grey,
                                       ],
                                     ),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(100),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                            child: Stack(
-                              children: [
-                                SizedBox(
-                                  width: 40,
-                                  height: 40,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: Image.network(
-                                      currentItem.tag.artUri.toString(),
-                                      fit: BoxFit.cover,
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 45,
+                                    decoration: BoxDecoration(
+                                      color: dominantColor,
+                                      borderRadius: const BorderRadius.only(
+                                          topRight: Radius.circular(100),
+                                          bottomRight: Radius.circular(100)),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 35),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            currentItem.tag.title ?? '',
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                overflow: TextOverflow.ellipsis,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            currentItem.tag.artist ?? '',
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                overflow: TextOverflow.ellipsis,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.normal),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                            Container(
+                              alignment: Alignment.center,
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Stack(
+                                children: [
+                                  SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Image.network(
+                                        currentItem.tag.artUri.toString(),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.bottomToTop,
-                        duration: const Duration(milliseconds: 300),
-                        reverseDuration: const Duration(milliseconds: 300),
-                        child: MusicDetailScreen(
-                          player: audioState.player,
-                          mediaItem:
-                              context.read<MusicState>().currentMediaItem!,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.bottomToTop,
+                          duration: const Duration(milliseconds: 300),
+                          reverseDuration: const Duration(milliseconds: 300),
+                          child: MusicDetailScreen(
+                            player: audioState.player,
+                            mediaItem:
+                                context.read<MusicState>().currentMediaItem!,
+                          ),
+                          childCurrent: const MusicScreen(),
                         ),
-                        childCurrent: const MusicScreen(),
-                      ),
-                    );
-                  },
-                );
-              }
-              return const SizedBox();
-            },
-          )
-      ]),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            )
+        ],
+      ),
     );
+  }
+
+  void _shuffleMusic(AudioState audioState, List<IndexedAudioSource> sequence) {
+    final index = random(0, audioState.playlist.length - 1);
+
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.bottomToTop,
+        duration: const Duration(milliseconds: 300),
+        reverseDuration: const Duration(milliseconds: 300),
+        child: MusicDetailScreen(
+          player: audioState.player,
+          mediaItem: sequence[index].tag as MediaItem,
+        ),
+        childCurrent: const MusicScreen(),
+      ),
+    );
+
+    audioState.player.seek(Duration.zero, index: index);
+
+    audioState.player.setAudioSource(audioState.playlist, initialIndex: index);
+
+    context.read<PlayingState>().play();
+
+    context
+        .read<MusicState>()
+        .setCurrentMediaItem(sequence[index].tag as MediaItem);
+
+    getDominantColor(sequence[index].tag.artUri.toString()).then((color) {
+      setColor(color!);
+    });
+
+    audioState.player.play();
   }
 
   int random(int min, int max) {
