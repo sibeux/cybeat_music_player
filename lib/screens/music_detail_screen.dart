@@ -5,7 +5,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/widgets/control_buttons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shimmer/shimmer.dart';
@@ -241,6 +240,9 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                                       color: Colors.white,
                                       fontWeight: FontWeight.values[5],
                                     ),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
                                   ),
                                   Text(
                                     capitalizeEachWord(
