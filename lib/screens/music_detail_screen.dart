@@ -5,6 +5,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/widgets/control_buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shimmer/shimmer.dart';
@@ -221,40 +222,61 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                         ),
                       ),
                       const SizedBox(
-                        height: 15,
+                        height: 35,
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Container(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            capitalizeEachWord(currentItem.tag.title),
-                            style: TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              fontSize: 25,
-                              color: Colors.white,
-                              fontWeight: FontWeight.values[5],
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    capitalizeEachWord(currentItem.tag.title),
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.values[5],
+                                    ),
+                                  ),
+                                  Text(
+                                    capitalizeEachWord(
+                                        currentItem.tag.artist ?? ''),
+                                    style: const TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Container(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            capitalizeEachWord(currentItem.tag.artist ?? ''),
-                            style: const TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.normal,
+                            const SizedBox(
+                              width: 15,
                             ),
-                          ),
+                            Transform.scale(
+                              scale: 1.5,
+                              child: GestureDetector(
+                                onTap: () {},
+                                child:
+                                    currentItem.tag.extras?['favorite'] == '1'
+                                        ? const Icon(
+                                            Icons.star_rounded,
+                                            color: Colors.amber,
+                                            size: 30,
+                                          )
+                                        : const Icon(
+                                            Icons.star_outline_rounded,
+                                            color: Colors.white,
+                                            size: 30,
+                                          ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                       const SizedBox(
