@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
@@ -174,20 +173,19 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 }
                 final currentItem = snapshot.data?.currentSource;
 
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Column(
                     children: [
-                      const SizedBox(
-                        height: 15,
-                      ),
+                      // cover kecil
                       Expanded(
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
-                          width: 340,
-                          height: 350,
+                          width: double.infinity,
+                          height: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 30, horizontal: 10),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(15),
                             child: Image.network(
                               currentItem!.tag.artUri.toString(),
                               fit: BoxFit.cover,
@@ -226,74 +224,81 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                         height: 15,
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          capitalizeEachWord(currentItem.tag.title),
-                          style: TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            fontSize: 25,
-                            color: Colors.white,
-                            fontWeight: FontWeight.values[5],
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            capitalizeEachWord(currentItem.tag.title),
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 25,
+                              color: Colors.white,
+                              fontWeight: FontWeight.values[5],
+                            ),
                           ),
                         ),
                       ),
+
                       const SizedBox(
                         height: 10,
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          capitalizeEachWord(currentItem.tag.artist ?? ''),
-                          style: const TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            capitalizeEachWord(currentItem.tag.artist ?? ''),
+                            style: const TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(
-                        height: 30,
+                        height: 40,
+                      ),
+                      // to create one straight line
+                      // child: Divider(
+                      //   color: Colors.white,
+                      //   thickness: 1,
+                      SliderTheme(
+                        data: const SliderThemeData(
+                          trackHeight: 1,
+                          thumbShape:
+                              RoundSliderThumbShape(enabledThumbRadius: 5),
+                          overlayShape:
+                              RoundSliderOverlayShape(overlayRadius: 10),
+                        ),
+                        child: Slider(
+                          value: (position != null &&
+                                  duration != null &&
+                                  position!.inMilliseconds > 0 &&
+                                  position!.inMilliseconds <
+                                      duration!.inMilliseconds)
+                              ? position!.inMilliseconds /
+                                  duration!.inMilliseconds
+                              : 0.0,
+                          activeColor: HexColor('#fefffe'),
+                          inactiveColor: HexColor('#726878'),
+                          onChanged: (value) {
+                            final durasi = duration;
+                            if (durasi == null) {
+                              return;
+                            }
+                            final position = value * durasi.inMilliseconds;
+                            audioPlayer
+                                .seek(Duration(milliseconds: position.round()));
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 3,
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        // to create one straight line
-                        // child: Divider(
-                        //   color: Colors.white,
-                        //   thickness: 1,
-                        child: SliderTheme(
-                          data: const SliderThemeData(
-                            trackHeight: 1,
-                            thumbShape:
-                                RoundSliderThumbShape(enabledThumbRadius: 8),
-                            overlayShape:
-                                RoundSliderOverlayShape(overlayRadius: 20),
-                          ),
-                          child: Slider(
-                            value: (position != null &&
-                                    duration != null &&
-                                    position!.inMilliseconds > 0 &&
-                                    position!.inMilliseconds <
-                                        duration!.inMilliseconds)
-                                ? position!.inMilliseconds /
-                                    duration!.inMilliseconds
-                                : 0.0,
-                            activeColor: HexColor('#fefffe'),
-                            inactiveColor: HexColor('#726878'),
-                            onChanged: (value) {
-                              final durasi = duration;
-                              if (durasi == null) {
-                                return;
-                              }
-                              final position = value * durasi.inMilliseconds;
-                              audioPlayer.seek(
-                                  Duration(milliseconds: position.round()));
-                            },
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -318,8 +323,13 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                         height: 15,
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(0.0),
                         child: ControlButtons(audioPlayer: audioPlayer),
+                      ),
+                      const SizedBox(
+                        // buat ngatur jarak antara control buttons
+                        // dan bottom navigation
+                        height: 25,
                       ),
                     ],
                   ),
@@ -328,9 +338,5 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
         )
       ],
     );
-  }
-
-  int random(int min, int max) {
-    return min + Random().nextInt(max - min);
   }
 }

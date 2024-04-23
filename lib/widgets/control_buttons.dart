@@ -20,9 +20,6 @@ class ControlButtons extends StatelessWidget {
             return _repeatButton(context, snapshot.data ?? LoopMode.off);
           },
         ),
-        const SizedBox(
-          width: 10,
-        ),
         IconButton(
           icon: const Icon(
             Icons.skip_previous,
@@ -34,18 +31,12 @@ class ControlButtons extends StatelessWidget {
             audioPlayer.play();
           },
         ),
-        const SizedBox(
-          width: 10,
-        ),
         StreamBuilder<PlayerState>(
           stream: audioPlayer.playerStateStream,
           builder: (_, snapshot) {
             final playerState = snapshot.data;
             return _playPauseButton(playerState);
           },
-        ),
-        const SizedBox(
-          width: 10,
         ),
         IconButton(
           icon: const Icon(
@@ -57,9 +48,6 @@ class ControlButtons extends StatelessWidget {
             audioPlayer.seekToNext();
             audioPlayer.play();
           },
-        ),
-        const SizedBox(
-          width: 10,
         ),
         StreamBuilder<bool>(
           stream: audioPlayer.shuffleModeEnabledStream,
