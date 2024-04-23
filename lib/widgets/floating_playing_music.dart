@@ -22,14 +22,17 @@ class FloatingPlayingMusic extends StatefulWidget {
 }
 
 class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
-  Color colors = Colors.black;
+  Color? colorContainer = Colors.black;
+  Color? colorInfoMusic = Colors.white;
 
   @override
   Widget build(BuildContext context) {
-    getDominantColor(widget.currentItem!.tag.artUri.toString()).then((color) {
-      if (colors != color) {
+    getDominantColor(widget.currentItem!.tag.artUri.toString())
+        .then((paletteGenerator) {
+      if (colorContainer != paletteGenerator[0]) {
         setState(() {
-          colors = color!;
+          colorContainer = paletteGenerator[0];
+          colorInfoMusic = paletteGenerator[1];
         });
       }
     });
@@ -65,7 +68,7 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                       width: double.infinity,
                       height: 45,
                       decoration: BoxDecoration(
-                        color: colors,
+                        color: colorContainer,
                         borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(100),
                             bottomRight: Radius.circular(100)),
@@ -79,16 +82,16 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                             Text(
                               // String ini dianggap setState()
                               widget.currentItem!.tag.title ?? '',
-                              style: const TextStyle(
-                                  color: Colors.white,
+                              style: TextStyle(
+                                  color: colorInfoMusic,
                                   overflow: TextOverflow.ellipsis,
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
                               widget.currentItem!.tag.artist ?? '',
-                              style: const TextStyle(
-                                  color: Colors.white,
+                              style: TextStyle(
+                                  color: colorInfoMusic,
                                   overflow: TextOverflow.ellipsis,
                                   fontSize: 12,
                                   fontWeight: FontWeight.normal),
@@ -132,18 +135,17 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
         Navigator.push(
           context,
           PageTransition(
-            type: PageTransitionType.bottomToTop,
-            duration: const Duration(milliseconds: 300),
-            reverseDuration: const Duration(milliseconds: 300),
-            child: MusicDetailScreen(
-              player: widget.audioState.player,
-              mediaItem: context.read<MusicState>().currentMediaItem!,
-            ),
-            childCurrent: FloatingPlayingMusic(
-              audioState: widget.audioState,
-              currentItem: widget.currentItem,
-            )
-          ),
+              type: PageTransitionType.bottomToTop,
+              duration: const Duration(milliseconds: 300),
+              reverseDuration: const Duration(milliseconds: 300),
+              child: MusicDetailScreen(
+                player: widget.audioState.player,
+                mediaItem: context.read<MusicState>().currentMediaItem!,
+              ),
+              childCurrent: FloatingPlayingMusic(
+                audioState: widget.audioState,
+                currentItem: widget.currentItem,
+              )),
         );
       },
     );
