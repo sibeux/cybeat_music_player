@@ -75,7 +75,6 @@ class MusicList extends StatelessWidget {
                       height: 30,
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        // capitalizeEachWord(music.title),
                         capitalizeEachWord(mediaItem.title),
                         style: TextStyle(
                             fontSize: 16,
@@ -114,8 +113,7 @@ class MusicList extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 fontWeight: FontWeight.values[4],
                               ),
-                              // '${capitalizeEachWord(music.artist)} | ${capitalizeEachWord(music.album)}',
-                              '${capitalizeEachWord(mediaItem.artist!)} | ${capitalizeEachWord(mediaItem.album!)}}',
+                              '${capitalizeEachWord(mediaItem.artist!)} | ${capitalizeEachWord(mediaItem.album!)}',
                             ),
                           )),
                         ],
