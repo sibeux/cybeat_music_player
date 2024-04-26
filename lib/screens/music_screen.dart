@@ -105,12 +105,17 @@ class _MusicScreenState extends State<MusicScreen> {
             return AzListView(
                 data: musicItems,
                 itemCount: sequence.length,
-                indexBarItemHeight: 20,
+                indexBarAlignment: Alignment.topRight,
                 indexBarOptions: IndexBarOptions(
+                  indexHintDecoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.7),
+                    shape: BoxShape.circle,
+                  ),
                   selectItemDecoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: HexColor('#6a5081'),
                   ),
+                  needRebuild: true,
                   selectTextStyle: TextStyle(
                     color: HexColor('#fefffe'),
                     fontSize: 12,

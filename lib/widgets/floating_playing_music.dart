@@ -73,31 +73,54 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                             topRight: Radius.circular(100),
                             bottomRight: Radius.circular(100)),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 35),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              // String ini dianggap setState()
-                              widget.currentItem!.tag.title ?? '',
-                              style: TextStyle(
-                                  color: colorInfoMusic,
-                                  overflow: TextOverflow.ellipsis,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 35),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    // String ini dianggap setState()
+                                    widget.currentItem!.tag.title ?? '',
+                                    style: TextStyle(
+                                        color: colorInfoMusic,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    widget.currentItem!.tag.artist ?? '',
+                                    style: TextStyle(
+                                        color: colorInfoMusic,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ],
+                              ),
                             ),
-                            Text(
-                              widget.currentItem!.tag.artist ?? '',
-                              style: TextStyle(
-                                  color: colorInfoMusic,
-                                  overflow: TextOverflow.ellipsis,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.normal),
+                          ),
+                          StreamBuilder<PlayerState>(
+                            stream: widget.audioState.player.playerStateStream,
+                            builder: (_, snapshot) {
+                              final playerState = snapshot.data;
+                              return _playPauseButton(playerState);
+                            },
+                          ),
+                          IconButton(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            icon: const Icon(
+                              Icons.skip_next_rounded,
+                              color: Colors.white,
                             ),
-                          ],
-                        ),
+                            onPressed: () {},
+                          ),
+                          const SizedBox(width: 5),
+                        ],
                       ),
                     ),
                   ),
@@ -149,5 +172,41 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
         );
       },
     );
+  }
+
+  Widget _playPauseButton(PlayerState? playerState) {
+    final processingState = playerState?.processingState;
+    final playing = playerState?.playing;
+    if (processingState == ProcessingState.loading ||
+        processingState == ProcessingState.buffering) {
+      return IconButton(
+        icon: const Icon(
+          Icons.play_circle_filled,
+          color: Colors.grey,
+        ),
+        onPressed: () {},
+      );
+    }
+    if (playing != true) {
+      return IconButton(
+        icon: const Icon(Icons.play_circle_fill),
+        color: Colors.white,
+        onPressed: widget.audioState.player.play,
+      );
+    } else if (processingState != ProcessingState.completed) {
+      return IconButton(
+        icon: const Icon(Icons.pause_circle_filled),
+        color: Colors.white,
+        onPressed: widget.audioState.player.pause,
+      );
+    } else {
+      return IconButton(
+        icon: const Icon(Icons.replay),
+        onPressed: () => widget.audioState.player.seek(
+          Duration.zero,
+          index: widget.audioState.player.effectiveIndices!.first,
+        ),
+      );
+    }
   }
 }
