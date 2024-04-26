@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/widgets/control_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:shimmer/shimmer.dart';
+// import 'package:shimmer/shimmer.dart';
 
 class MusicDetailScreen extends StatefulWidget {
   const MusicDetailScreen({
@@ -85,12 +86,17 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
       children: [
         Stack(
           children: [
-            Shimmer.fromColors(
-              baseColor: Colors.grey.shade300,
-              highlightColor: Colors.grey.shade100,
-              child: Container(
-                color: Colors.black,
-              ),
+            // Shimmer.fromColors(
+            //   baseColor: Colors.grey.shade300,
+            //   highlightColor: Colors.grey.shade100,
+            //   child: Container(
+            //     color: Colors.black,
+            //   ),
+            // ),
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black,
             ),
             SizedBox(
               width: double.infinity,
@@ -108,14 +114,19 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         final currentItem = snapshot.data?.currentSource;
-                        return Image.network(
-                          currentItem!.tag.artUri.toString(),
-                          scale: 5,
+                        return CachedNetworkImage(
+                          imageUrl: currentItem!.tag.artUri.toString(),
                           fit: BoxFit.cover,
                           filterQuality: FilterQuality.low,
                           color: Colors.black.withOpacity(0.5),
+                          memCacheHeight: 20,
+                          memCacheWidth: 20,
                           colorBlendMode: BlendMode.darken,
-                          errorBuilder: (context, exception, stackTrace) {
+                          progressIndicatorBuilder: (context, url, progress) =>
+                              Container(
+                            color: Colors.black,
+                          ),
+                          errorWidget: (context, exception, stackTrace) {
                             return Container(
                               decoration: const BoxDecoration(
                                 gradient: LinearGradient(
@@ -186,35 +197,22 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                               vertical: 30, horizontal: 10),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(15),
-                            child: Image.network(
-                              currentItem!.tag.artUri.toString(),
+                            child: CachedNetworkImage(
+                              imageUrl: currentItem!.tag.artUri.toString(),
                               fit: BoxFit.cover,
                               filterQuality: FilterQuality.low,
-                              loadingBuilder: (BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Shimmer(
-                                  gradient: const LinearGradient(
-                                    colors: [Colors.grey, Colors.white],
-                                  ),
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    color: Colors.grey,
-                                  ),
+                              progressIndicatorBuilder:
+                                  (context, url, progress) {
+                                return Image.asset(
+                                  'assets/images/placeholder_cover_music.png',
+                                  fit: BoxFit.cover,
                                 );
                               },
-                              errorBuilder: (context, exception, stackTrace) {
-                                return Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    color: Colors.grey,
-                                    child: const Icon(
-                                      Icons.music_note_rounded,
-                                      color: Colors.white,
-                                      size: 50,
-                                    ));
+                              errorWidget: (context, exception, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/placeholder_cover_music.png',
+                                  fit: BoxFit.cover,
+                                );
                               },
                             ),
                           ),

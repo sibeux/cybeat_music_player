@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:flutter/material.dart';
@@ -52,17 +53,23 @@ class MusicList extends StatelessWidget {
               ),
               // cover image
               Container(
-                width: 40,
-                height: 40,
-                margin: const EdgeInsets.only(right: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  image: DecorationImage(
-                    image: NetworkImage(mediaItem.artUri.toString()),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+                  width: 40,
+                  height: 40,
+                  margin: const EdgeInsets.only(right: 5),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    child: CachedNetworkImage(
+                        imageUrl: mediaItem.artUri.toString(),
+                        filterQuality: FilterQuality.low,
+                        placeholder: (context, url) => Image.asset(
+                              'assets/images/placeholder_cover_music.png',
+                              fit: BoxFit.cover,
+                            ),
+                        errorWidget: (context, url, error) => Image.asset(
+                              'assets/images/placeholder_cover_music.png',
+                              fit: BoxFit.cover,
+                            )),
+                  )),
               const SizedBox(
                 width: 2,
               ),
