@@ -14,10 +14,21 @@ import 'package:just_audio/just_audio.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:azlistview/azlistview.dart';
 
 import '../widgets/floating_playing_music.dart';
 
 var isPlaying = false;
+
+class AzListMusic extends ISuspensionBean {
+  final String title;
+  final String tag;
+
+  AzListMusic({required this.title, required this.tag});
+
+  @override
+  String getSuspensionTag() => tag;
+}
 
 class MusicScreen extends StatefulWidget {
   const MusicScreen({super.key});
@@ -31,6 +42,7 @@ class _MusicScreenState extends State<MusicScreen> {
   bool isLoadingVertical = false;
   final int increment = 10;
   Color dominantColor = Colors.black;
+  List<AzListMusic> musicItems = [];
 
   StreamSubscription? _playerCompleteSubscription;
 
@@ -83,8 +95,27 @@ class _MusicScreenState extends State<MusicScreen> {
           if (snapshot.hasData) {
             final state = snapshot.data;
             final sequence = state?.sequence ?? [];
-            return ListView.builder(
+
+            musicItems = sequence
+                .map((e) => AzListMusic(
+                    title: e.tag.title,
+                    tag: e.tag.title.substring(0, 1).toUpperCase()))
+                .toList();
+
+            return AzListView(
+                data: musicItems,
                 itemCount: sequence.length,
+                indexBarItemHeight: 20,
+                indexBarOptions: IndexBarOptions(
+                  selectItemDecoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: HexColor('#6a5081'),
+                  ),
+                  selectTextStyle: TextStyle(
+                    color: HexColor('#fefffe'),
+                    fontSize: 12,
+                  ),
+                ),
                 itemBuilder: (context, index) {
                   return InkWell(
                     child: MusicList(
@@ -231,6 +262,9 @@ class _MusicScreenState extends State<MusicScreen> {
                               ),
                               onPressed: () {},
                             ),
+                            const SizedBox(
+                              width: 15,
+                            ),
                           ],
                         ),
                       ),
@@ -245,11 +279,6 @@ class _MusicScreenState extends State<MusicScreen> {
                     ],
                   ),
                 ),
-                Container(
-                  color: Colors.blue,
-                  width: 30,
-                  height: double.infinity,
-                )
               ],
             ),
           ),

@@ -139,6 +139,9 @@ class MusicList extends StatelessWidget {
                 ),
                 onPressed: () {},
               ),
+              const SizedBox(
+                width: 15,
+              ),
             ],
           ),
           const SizedBox(
