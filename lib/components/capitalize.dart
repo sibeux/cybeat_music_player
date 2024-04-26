@@ -1,8 +1,11 @@
 String capitalizeEachWord(String input) {
   input = input.trim();
-  if (input.contains('&quot;')) {
+
+  if (input.contains('&quot;') || input.contains('&amp;')) {
     input = input.replaceAll('&quot;', '"');
+    input = input.replaceAll('&amp;', '&');
   }
+
   return input
       .split(' ')
       .where((word) => word.isNotEmpty)
@@ -12,6 +15,18 @@ String capitalizeEachWord(String input) {
 
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+    // Find the index of the first letter
+    int index = 0;
+    while (index < length && !RegExp(r'[a-zA-Z]').hasMatch(this[index])) {
+      index++;
+    }
+
+    // If index is at the end, return the original string
+    if (index == length) {
+      return this;
+    }
+
+    // Capitalize the first letter and return the modified string
+    return "${substring(0, index)}${this[index].toUpperCase()}${substring(index + 1).toLowerCase()}";
   }
 }
