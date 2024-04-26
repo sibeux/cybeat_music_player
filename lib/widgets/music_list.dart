@@ -53,23 +53,24 @@ class MusicList extends StatelessWidget {
               ),
               // cover image
               Container(
-                  width: 40,
-                  height: 40,
-                  margin: const EdgeInsets.only(right: 5),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(5)),
-                    child: CachedNetworkImage(
-                        imageUrl: mediaItem.artUri.toString(),
-                        filterQuality: FilterQuality.low,
-                        placeholder: (context, url) => Image.asset(
-                              'assets/images/placeholder_cover_music.png',
-                              fit: BoxFit.cover,
-                            ),
-                        errorWidget: (context, url, error) => Image.asset(
-                              'assets/images/placeholder_cover_music.png',
-                              fit: BoxFit.cover,
-                            )),
-                  )),
+                width: 40,
+                height: 40,
+                margin: const EdgeInsets.only(right: 5),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  child: CachedNetworkImage(
+                      imageUrl: mediaItem.artUri.toString(),
+                      filterQuality: FilterQuality.low,
+                      placeholder: (context, url) => Image.asset(
+                            'assets/images/placeholder_cover_music.png',
+                            fit: BoxFit.cover,
+                          ),
+                      errorWidget: (context, url, error) => Image.asset(
+                            'assets/images/placeholder_cover_music.png',
+                            fit: BoxFit.cover,
+                          )),
+                ),
+              ),
               const SizedBox(
                 width: 2,
               ),

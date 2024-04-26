@@ -54,80 +54,94 @@ class ShimmerLoading extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Container(
+                        width: 40,
+                        height: 40,
+                        margin: const EdgeInsets.only(right: 5),
+                        child: ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(5)),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                        )),
                     const SizedBox(
                       width: 2,
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 230,
-                          height: 30,
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                              width: double.infinity,
-                              height: 22,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(5),
-                              )),
-                        ),
-                        SizedBox(
-                          width: 230,
-                          height: 20,
-                          child: Row(
-                            children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                width: 10,
-                                height: 30,
-                                child: Icon(
-                                  Icons.audiotrack_outlined,
-                                  color: HexColor('#b4b5b4'),
-                                  size: 15,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 7,
-                              ),
-                              Expanded(
-                                  child: Container(
-                                      width: 30,
-                                      height: 30,
-                                      alignment: Alignment.centerLeft,
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 95,
-                                            height: 15,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey,
-                                              borderRadius:
-                                                  BorderRadius.circular(3),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            width: 8,
-                                          ),
-                                          Expanded(
-                                            child: Container(
-                                                height: 15,
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 0, 0),
-                                                  borderRadius:
-                                                      BorderRadius.circular(3),
-                                                )),
-                                          )
-                                        ],
-                                      ))),
-                            ],
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 230,
+                            height: 30,
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                                width: double.infinity,
+                                height: 22,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(5),
+                                )),
                           ),
-                        )
-                      ],
-                    ),
-                    const Expanded(
-                      child: SizedBox(),
+                          SizedBox(
+                            width: 230,
+                            height: 20,
+                            child: Row(
+                              children: [
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  width: 10,
+                                  height: 30,
+                                  child: Icon(
+                                    Icons.audiotrack_outlined,
+                                    color: HexColor('#b4b5b4'),
+                                    size: 15,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 7,
+                                ),
+                                Expanded(
+                                    child: Container(
+                                        width: 30,
+                                        height: 30,
+                                        alignment: Alignment.centerLeft,
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 95,
+                                              height: 15,
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(3),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 8,
+                                            ),
+                                            Expanded(
+                                              child: Container(
+                                                  height: 15,
+                                                  decoration: BoxDecoration(
+                                                    color: const Color.fromARGB(
+                                                        255, 255, 0, 0),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            3),
+                                                  )),
+                                            )
+                                          ],
+                                        ))),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     IconButton(
                       highlightColor: Colors.black.withOpacity(0.02),
