@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   await JustAudioBackground.init(
@@ -38,11 +41,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PlayingState()),
         ChangeNotifierProvider(create: (_) => MusicState()),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         title: 'Okejek',
+        builder: (context, child){
+          // create multiple builders
+          child = FToastBuilder()(context, child);
+          return child;
+        },
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         showPerformanceOverlay: false,
-        home: MusicScreen(),
+        home: const MusicScreen(),
       ),
     );
   }

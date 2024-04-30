@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ControlButtons extends StatelessWidget {
   const ControlButtons({
@@ -76,6 +77,26 @@ class ControlButtons extends StatelessWidget {
         final enable = !isEnabled;
         if (enable) {
           await audioPlayer.shuffle();
+
+          Fluttertoast.showToast(
+            msg: 'Shuffle enabled',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            fontSize: 10.0,
+          );
+        } else {
+          Fluttertoast.showToast(
+            msg: 'Shuffle disabled',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            fontSize: 10.0,
+          );
         }
         await audioPlayer.setShuffleModeEnabled(enable);
       },
