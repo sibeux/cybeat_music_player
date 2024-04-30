@@ -353,7 +353,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                       const SizedBox(
                         // buat ngatur jarak antara control buttons
                         // dan bottom navigation
-                        height: 25,
+                        height: 35,
                       ),
                     ],
                   ),

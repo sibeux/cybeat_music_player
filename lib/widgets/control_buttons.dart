@@ -1,6 +1,6 @@
+import 'package:cybeat_music_player/components/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class ControlButtons extends StatelessWidget {
   const ControlButtons({
@@ -76,27 +76,11 @@ class ControlButtons extends StatelessWidget {
       onPressed: () async {
         final enable = !isEnabled;
         if (enable) {
-          await audioPlayer.shuffle();
+          showToast('Shuffle enabled');
 
-          Fluttertoast.showToast(
-            msg: 'Shuffle enabled',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.white,
-            textColor: Colors.black,
-            fontSize: 10.0,
-          );
+          await audioPlayer.shuffle();
         } else {
-          Fluttertoast.showToast(
-            msg: 'Shuffle disabled',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.white,
-            textColor: Colors.black,
-            fontSize: 10.0,
-          );
+          showToast('Shuffle disabled');
         }
         await audioPlayer.setShuffleModeEnabled(enable);
       },
@@ -149,6 +133,13 @@ class ControlButtons extends StatelessWidget {
       const Icon(Icons.repeat, color: Colors.amber, size: 30),
       const Icon(Icons.repeat_one, color: Colors.lightBlueAccent, size: 30),
     ];
+
+    final msg = [
+      'Repeat off',
+      'Repeat all',
+      'Repeat one',
+    ];
+
     const cycleModes = [
       LoopMode.off,
       LoopMode.all,
@@ -158,6 +149,8 @@ class ControlButtons extends StatelessWidget {
     return IconButton(
       icon: icons[index],
       onPressed: () {
+        showToast(msg[(index + 1) % msg.length]);
+
         audioPlayer.setLoopMode(
             cycleModes[(cycleModes.indexOf(loopMode) + 1) % cycleModes.length]);
       },
