@@ -45,7 +45,10 @@ class AudioState extends ChangeNotifier {
                     artist: capitalizeEachWord(item['artist']),
                     album: capitalizeEachWord(item['album']),
                     artUri: Uri.parse(item['cover']),
-                    extras: {'favorite': item['favorite']},
+                    extras: {
+                      'favorite': item['favorite'],
+                      'music_id': item['id_music'],
+                    },
                   ),
                 ))
             .toList(),

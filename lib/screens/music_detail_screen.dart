@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/components/toast.dart';
+import 'package:cybeat_music_player/database/favorite.dart';
 import 'package:cybeat_music_player/widgets/control_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -263,7 +265,25 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                             Transform.scale(
                               scale: 1.5,
                               child: GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  if (currentItem.tag.extras?['favorite'] ==
+                                      '1') {
+                                    setfavorite(
+                                        currentItem.tag.extras?['music_id'],
+                                        '0');
+                                    currentItem.tag.extras?['favorite'] = '0';
+                                    showToast(
+                                        'Removed from favorite');
+                                  } else {
+                                    setfavorite(
+                                        currentItem.tag.extras?['music_id'],
+                                        '1');
+                                    currentItem.tag.extras?['favorite'] = '1';
+                                    showToast(
+                                        'Added to favorite');
+                                  }
+                                  setState(() {});
+                                },
                                 child:
                                     currentItem.tag.extras?['favorite'] == '1'
                                         ? const Icon(
