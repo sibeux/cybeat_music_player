@@ -6,11 +6,6 @@ String capitalizeEachWord(String input) {
   var unescape = HtmlUnescape();
   input = (unescape.convert(input));
 
-  // if (input.contains('&quot;') || input.contains('&amp;')) {
-  //   input = input.replaceAll('&quot;', '"');
-  //   input = input.replaceAll('&amp;', '&');
-  // }
-
   return input
       .split(' ')
       .where((word) => word.isNotEmpty)
