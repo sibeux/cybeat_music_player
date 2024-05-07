@@ -1,10 +1,15 @@
+import 'package:html_unescape/html_unescape.dart';
+
 String capitalizeEachWord(String input) {
   input = input.trim();
 
-  if (input.contains('&quot;') || input.contains('&amp;')) {
-    input = input.replaceAll('&quot;', '"');
-    input = input.replaceAll('&amp;', '&');
-  }
+  var unescape = HtmlUnescape();
+  input = (unescape.convert(input));
+
+  // if (input.contains('&quot;') || input.contains('&amp;')) {
+  //   input = input.replaceAll('&quot;', '"');
+  //   input = input.replaceAll('&amp;', '&');
+  // }
 
   return input
       .split(' ')
