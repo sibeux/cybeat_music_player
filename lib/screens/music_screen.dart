@@ -97,9 +97,12 @@ class _MusicScreenState extends State<MusicScreen> {
             final sequence = state?.sequence ?? [];
 
             musicItems = sequence
-                .map((e) => AzListMusic(
+                .map(
+                  (e) => AzListMusic(
                     title: e.tag.title,
-                    tag: e.tag.title.substring(0, 1).toUpperCase()))
+                    tag: e.tag.title.substring(0, 1).toUpperCase(),
+                  ),
+                )
                 .toList();
 
             return AzListView(
