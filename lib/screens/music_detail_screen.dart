@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class MusicDetailScreen extends StatefulWidget {
   const MusicDetailScreen({
@@ -234,41 +235,43 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  /*Text(
+                                  AutoSizeText(
                                     capitalizeEachWord(currentItem.tag.title),
+                                    minFontSize: 18,
+                                    maxLines: 1,
                                     style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
                                       fontSize: 18,
                                       color: Colors.white,
                                       fontWeight: FontWeight.values[5],
                                     ),
-                                  ),*/
-                                  SizedBox(
-                                    height: 30,
-                                    child: Marquee(
-                                      text: capitalizeEachWord(
-                                          currentItem.tag.title),
-                                      style: TextStyle(
-                                        overflow: TextOverflow.ellipsis,
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.values[5],
+                                    overflowReplacement: SizedBox(
+                                      height: 30,
+                                      child: Marquee(
+                                        text: capitalizeEachWord(
+                                            currentItem.tag.title),
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.values[5],
+                                        ),
+                                        scrollAxis: Axis.horizontal,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        // spacing end of text
+                                        blankSpace: 30,
+                                        // second needed before slide again
+                                        pauseAfterRound:
+                                        const Duration(seconds: 5),
+                                        // text gonna slide first time after this second
+                                        startAfter: const Duration(seconds: 5),
+                                        decelerationCurve: Curves.easeOut,
+                                        // speed of slide text
+                                        velocity: 35,
+                                        accelerationCurve: Curves.linear,
                                       ),
-                                      scrollAxis: Axis.horizontal,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      // spacing end of text
-                                      blankSpace: 30,
-                                      // second needed before slide again
-                                      pauseAfterRound: const Duration(seconds: 5),
-                                      // text gonna slide first time after this second
-                                      startAfter: const Duration(seconds: 5),
-                                      decelerationCurve: Curves.easeOut,
-                                      // speed of slide text
-                                      velocity: 35,
-                                      accelerationCurve: Curves.linear,
                                     ),
                                   ),
+
                                   const SizedBox(
                                     height: 5,
                                   ),
