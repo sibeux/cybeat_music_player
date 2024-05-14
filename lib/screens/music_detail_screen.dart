@@ -158,6 +158,8 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            centerTitle: true,
+            toolbarHeight: 70,
             leading: IconButton(
               icon: const Icon(
                 Icons.keyboard_arrow_down,
@@ -167,6 +169,29 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
+            ),
+            title: const Column(
+              children: [
+                Text(
+                  'PLAYING FROM PLAYLIST',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  "日本の歌",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             actions: [
               IconButton(
