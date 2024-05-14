@@ -1,6 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cybeat_music_player/components/dominant_color.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:marquee/marquee.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '../providers/audio_state.dart';
@@ -82,14 +84,49 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    // String ini dianggap setState()
+                                  // Text(
+                                  // String ini dianggap setState()
+                                  //   widget.currentItem!.tag.title ?? '',
+                                  //   style: TextStyle(
+                                  //       color: colorInfoMusic,
+                                  //       overflow: TextOverflow.ellipsis,
+                                  //       fontSize: 14,
+                                  //       fontWeight: FontWeight.bold),
+                                  // ),
+                                  AutoSizeText(
                                     widget.currentItem!.tag.title ?? '',
+                                    minFontSize: 14,
+                                    maxLines: 1,
                                     style: TextStyle(
-                                        color: colorInfoMusic,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold),
+                                      color: colorInfoMusic,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflowReplacement: SizedBox(
+                                      height: 20,
+                                      child: Marquee(
+                                        text:
+                                            widget.currentItem!.tag.title ?? '',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: colorInfoMusic,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        scrollAxis: Axis.horizontal,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        // spacing end of text
+                                        blankSpace: 30,
+                                        // second needed before slide again
+                                        pauseAfterRound:
+                                            const Duration(seconds: 0),
+                                        // text gonna slide first time after this second
+                                        startAfter: const Duration(seconds: 2),
+                                        decelerationCurve: Curves.easeOut,
+                                        // speed of slide text
+                                        velocity: 35,
+                                        accelerationCurve: Curves.linear,
+                                      ),
+                                    ),
                                   ),
                                   Text(
                                     widget.currentItem!.tag.artist ?? '',
@@ -117,7 +154,9 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                               Icons.skip_next_rounded,
                               color: Colors.white,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              widget.audioState.player.seekToNext();
+                            },
                           ),
                           const SizedBox(width: 5),
                         ],

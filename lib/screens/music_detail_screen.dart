@@ -240,7 +240,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                                     minFontSize: 18,
                                     maxLines: 1,
                                     style: TextStyle(
-                                      fontSize: 18,
                                       color: Colors.white,
                                       fontWeight: FontWeight.values[5],
                                     ),
@@ -256,14 +255,14 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                                         ),
                                         scrollAxis: Axis.horizontal,
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         // spacing end of text
                                         blankSpace: 30,
                                         // second needed before slide again
                                         pauseAfterRound:
-                                        const Duration(seconds: 5),
+                                            const Duration(seconds: 0),
                                         // text gonna slide first time after this second
-                                        startAfter: const Duration(seconds: 5),
+                                        startAfter: const Duration(seconds: 2),
                                         decelerationCurve: Curves.easeOut,
                                         // speed of slide text
                                         velocity: 35,
@@ -271,7 +270,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                                       ),
                                     ),
                                   ),
-
                                   const SizedBox(
                                     height: 5,
                                   ),
