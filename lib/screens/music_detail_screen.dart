@@ -1,15 +1,17 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cybeat_music_player/providers/audio_source_state.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/cover_detail_music.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/favorite_button.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/control_buttons.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/title_detail_music.dart';
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
+
+import '../widgets/detail_screen/progress_bar_music.dart';
 
 class MusicDetailScreen extends StatefulWidget {
   const MusicDetailScreen({
@@ -26,41 +28,12 @@ class MusicDetailScreen extends StatefulWidget {
 }
 
 class _MusicDetailScreenState extends State<MusicDetailScreen> {
-  Duration? duration;
-  Duration? position;
-
-  String formatDuration(Duration? duration) {
-    if (duration == null) return 'buffering';
-    String minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
-    String seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
-  }
-
-  StreamSubscription? _durationSubscription;
-  StreamSubscription? _positionSubscription;
-
-  String get _durationText => formatDuration(duration);
-
-  String get _positionText => formatDuration(position);
-
   AudioPlayer get audioPlayer => widget.player;
 
   MediaItem get mediaItem => widget.mediaItem;
 
   @override
   void initState() {
-    _durationSubscription = audioPlayer.durationStream.listen((event) {
-      setState(() {
-        duration = event;
-      });
-    });
-
-    _positionSubscription = audioPlayer.positionStream.listen((event) {
-      setState(() {
-        position = event;
-      });
-    });
-
     super.initState();
   }
 
@@ -75,15 +48,13 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
 
   @override
   void dispose() {
-    _durationSubscription?.cancel();
-    _positionSubscription?.cancel();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('mediaItem: $mediaItem');
+    final currentItem = context.watch<AudioSourceState>().audioSource;
+    
     return Stack(
       children: [
         Stack(
@@ -111,46 +82,36 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                     sigmaY: 35,
                     sigmaX: 35,
                   ),
-                  child: StreamBuilder<SequenceState?>(
-                    stream: audioPlayer.sequenceStateStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final currentItem = snapshot.data?.currentSource;
-                        return CachedNetworkImage(
-                          imageUrl: currentItem!.tag.artUri.toString(),
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.low,
-                          color: Colors.black.withOpacity(0.5),
-                          memCacheHeight: 20,
-                          memCacheWidth: 20,
-                          colorBlendMode: BlendMode.darken,
-                          progressIndicatorBuilder: (context, url, progress) =>
-                              Container(
-                            color: Colors.black,
+                  child: CachedNetworkImage(
+                    imageUrl: currentItem!.tag.artUri.toString(),
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.low,
+                    color: Colors.black.withOpacity(0.5),
+                    memCacheHeight: 20,
+                    memCacheWidth: 20,
+                    colorBlendMode: BlendMode.darken,
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        Container(
+                      color: Colors.black,
+                    ),
+                    errorWidget: (context, exception, stackTrace) {
+                      return Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color.fromARGB(255, 126, 248, 60),
+                              Color.fromARGB(255, 253, 123, 123),
+                            ],
                           ),
-                          errorWidget: (context, exception, stackTrace) {
-                            return Container(
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color.fromARGB(255, 126, 248, 60),
-                                    Color.fromARGB(255, 253, 123, 123),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }
-
-                      return const CircularProgressIndicator();
+                        ),
+                      );
                     },
                   ),
                 ),
               ),
-            ),
+            )
           ],
         ),
         Scaffold(
@@ -235,57 +196,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 // child: Divider(
                 //   color: Colors.white,
                 //   thickness: 1,
-                SliderTheme(
-                  data: const SliderThemeData(
-                    trackHeight: 1,
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
-                    overlayShape: RoundSliderOverlayShape(overlayRadius: 10),
-                  ),
-                  child: Slider(
-                    value: (position != null &&
-                            duration != null &&
-                            position!.inMilliseconds > 0 &&
-                            position!.inMilliseconds < duration!.inMilliseconds)
-                        ? position!.inMilliseconds / duration!.inMilliseconds
-                        : 0.0,
-                    activeColor: HexColor('#fefffe'),
-                    inactiveColor: HexColor('#726878'),
-                    onChanged: (value) {
-                      final durasi = duration;
-                      if (durasi == null) {
-                        return;
-                      }
-                      final position = value * durasi.inMilliseconds;
-                      audioPlayer
-                          .seek(Duration(milliseconds: position.round()));
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  height: 3,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _positionText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        _durationText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ProgressBarMusic(audioPlayer: audioPlayer),
                 const SizedBox(
                   height: 15,
                 ),
