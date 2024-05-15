@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/cover_detail_music.dart';
