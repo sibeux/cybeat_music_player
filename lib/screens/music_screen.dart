@@ -160,7 +160,7 @@ class _MusicScreenState extends State<MusicScreen> {
                         context.read<MusicState>().setCurrentMediaItem(
                             sequence[index].tag as MediaItem);
 
-                            context
+                        context
                             .read<AudioSourceState>()
                             .setAudioSource(sequence[index]);
 
@@ -346,6 +346,8 @@ class _MusicScreenState extends State<MusicScreen> {
     context
         .read<MusicState>()
         .setCurrentMediaItem(sequence[index].tag as MediaItem);
+
+    context.read<AudioSourceState>().setAudioSource(sequence[index]);
 
     audioState.player.play();
   }

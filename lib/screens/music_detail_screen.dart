@@ -1,16 +1,14 @@
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/providers/audio_source_state.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/cover_detail_music.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/favorite_button.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/control_buttons.dart';
-import 'package:cybeat_music_player/widgets/detail_screen/title_detail_music.dart';
+import 'package:cybeat_music_player/widgets/detail_screen/title_artist_detail_music.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:provider/provider.dart';
 
+import '../widgets/detail_screen/cover_blur.dart';
 import '../widgets/detail_screen/progress_bar_music.dart';
 
 class MusicDetailScreen extends StatefulWidget {
@@ -53,7 +51,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentItem = context.watch<AudioSourceState>().audioSource;
     
     return Stack(
       children: [
@@ -71,45 +68,13 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               height: double.infinity,
               color: Colors.black,
             ),
-            SizedBox(
+            const SizedBox(
               width: double.infinity,
               height: double.infinity,
               child: ClipRRect(
                 // ClipRRect is used to clip the image to a rounded rectangle
                 // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar
-                child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(
-                    sigmaY: 35,
-                    sigmaX: 35,
-                  ),
-                  child: CachedNetworkImage(
-                    imageUrl: currentItem!.tag.artUri.toString(),
-                    fit: BoxFit.cover,
-                    filterQuality: FilterQuality.low,
-                    color: Colors.black.withOpacity(0.5),
-                    memCacheHeight: 20,
-                    memCacheWidth: 20,
-                    colorBlendMode: BlendMode.darken,
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Container(
-                      color: Colors.black,
-                    ),
-                    errorWidget: (context, exception, stackTrace) {
-                      return Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color.fromARGB(255, 126, 248, 60),
-                              Color.fromARGB(255, 253, 123, 123),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                child: CoverBlur(),
               ),
             )
           ],
