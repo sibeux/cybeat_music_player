@@ -3,9 +3,8 @@ import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/components/capitalize.dart';
-import 'package:cybeat_music_player/components/toast.dart';
-import 'package:cybeat_music_player/database/favorite.dart';
+import 'package:cybeat_music_player/widgets/detail_screen/cover_detail_music.dart';
+import 'package:cybeat_music_player/widgets/detail_screen/favorite_button.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/control_buttons.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/title_detail_music.dart';
 import 'package:flutter/material.dart';
@@ -204,193 +203,103 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               ),
             ],
           ),
-          body: StreamBuilder(
-            stream: audioPlayer.sequenceStateStream,
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
-                return const CircularProgressIndicator();
-              }
-              final currentItem = snapshot.data?.currentSource;
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                  children: [
-                    // cover kecil
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 30, horizontal: 10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: CachedNetworkImage(
-                            imageUrl: currentItem!.tag.artUri.toString(),
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.low,
-                            maxHeightDiskCache: 500,
-                            maxWidthDiskCache: 500,
-                            progressIndicatorBuilder: (context, url, progress) {
-                              return Image.asset(
-                                'assets/images/placeholder_cover_music.png',
-                                fit: BoxFit.cover,
-                              );
-                            },
-                            errorWidget: (context, exception, stackTrace) {
-                              return Image.asset(
-                                'assets/images/placeholder_cover_music.png',
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              children: [
+                // cover kecil
+                CoverDetailMusic(
+                  player: audioPlayer,
+                ),
+                const SizedBox(
+                  height: 35,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      TitleArtistDetailMusic(player: audioPlayer),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      FavoriteButton(
+                        player: audioPlayer,
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                // to create one straight line
+                // child: Divider(
+                //   color: Colors.white,
+                //   thickness: 1,
+                SliderTheme(
+                  data: const SliderThemeData(
+                    trackHeight: 1,
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+                    overlayShape: RoundSliderOverlayShape(overlayRadius: 10),
+                  ),
+                  child: Slider(
+                    value: (position != null &&
+                            duration != null &&
+                            position!.inMilliseconds > 0 &&
+                            position!.inMilliseconds < duration!.inMilliseconds)
+                        ? position!.inMilliseconds / duration!.inMilliseconds
+                        : 0.0,
+                    activeColor: HexColor('#fefffe'),
+                    inactiveColor: HexColor('#726878'),
+                    onChanged: (value) {
+                      final durasi = duration;
+                      if (durasi == null) {
+                        return;
+                      }
+                      final position = value * durasi.inMilliseconds;
+                      audioPlayer
+                          .seek(Duration(milliseconds: position.round()));
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 3,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _positionText,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 35,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TitleDetailMusic(currentItem: currentItem),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  capitalizeEachWord(
-                                      currentItem.tag.artist ?? ''),
-                                  style: const TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Transform.scale(
-                            scale: 1.5,
-                            child: GestureDetector(
-                              onTap: () {
-                                if (currentItem.tag.extras?['favorite'] ==
-                                    '1') {
-                                  setfavorite(
-                                      currentItem.tag.extras?['music_id'], '0');
-                                  currentItem.tag.extras?['favorite'] = '0';
-                                  showToast('Removed from favorite');
-                                } else {
-                                  setfavorite(
-                                      currentItem.tag.extras?['music_id'], '1');
-                                  currentItem.tag.extras?['favorite'] = '1';
-                                  showToast('Added to favorite');
-                                }
-                                setState(() {});
-                              },
-                              child: currentItem.tag.extras?['favorite'] == '1'
-                                  ? const Icon(
-                                      Icons.star_rounded,
-                                      color: Colors.amber,
-                                      size: 30,
-                                    )
-                                  : const Icon(
-                                      Icons.star_outline_rounded,
-                                      color: Colors.white,
-                                      size: 30,
-                                    ),
-                            ),
-                          )
-                        ],
+                      Text(
+                        _durationText,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    // to create one straight line
-                    // child: Divider(
-                    //   color: Colors.white,
-                    //   thickness: 1,
-                    SliderTheme(
-                      data: const SliderThemeData(
-                        trackHeight: 1,
-                        thumbShape:
-                            RoundSliderThumbShape(enabledThumbRadius: 5),
-                        overlayShape:
-                            RoundSliderOverlayShape(overlayRadius: 10),
-                      ),
-                      child: Slider(
-                        value: (position != null &&
-                                duration != null &&
-                                position!.inMilliseconds > 0 &&
-                                position!.inMilliseconds <
-                                    duration!.inMilliseconds)
-                            ? position!.inMilliseconds /
-                                duration!.inMilliseconds
-                            : 0.0,
-                        activeColor: HexColor('#fefffe'),
-                        inactiveColor: HexColor('#726878'),
-                        onChanged: (value) {
-                          final durasi = duration;
-                          if (durasi == null) {
-                            return;
-                          }
-                          final position = value * durasi.inMilliseconds;
-                          audioPlayer
-                              .seek(Duration(milliseconds: position.round()));
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 3,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _positionText,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            _durationText,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: ControlButtons(audioPlayer: audioPlayer),
-                    ),
-                    const SizedBox(
-                      // buat ngatur jarak antara control buttons
-                      // dan bottom navigation
-                      height: 35,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              );
-            },
+                const SizedBox(
+                  height: 15,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: ControlButtons(audioPlayer: audioPlayer),
+                ),
+                const SizedBox(
+                  // buat ngatur jarak antara control buttons
+                  // dan bottom navigation
+                  height: 35,
+                ),
+              ],
+            ),
           ),
         )
       ],
