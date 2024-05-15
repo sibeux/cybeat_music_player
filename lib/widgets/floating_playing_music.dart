@@ -183,6 +183,9 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                         child: Image.network(
                           widget.currentItem!.tag.artUri.toString(),
                           fit: BoxFit.cover,
+                          filterQuality: FilterQuality.low,
+                          cacheHeight: 150,
+                          cacheWidth: 150,
                         ),
                       ),
                     ),

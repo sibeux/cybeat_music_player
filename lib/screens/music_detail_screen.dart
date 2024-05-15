@@ -229,8 +229,8 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                               imageUrl: currentItem!.tag.artUri.toString(),
                               fit: BoxFit.cover,
                               filterQuality: FilterQuality.low,
-                              memCacheHeight: 500,
-                              memCacheWidth: 500,
+                              maxHeightDiskCache: 500,
+                              maxWidthDiskCache: 500,
                               progressIndicatorBuilder:
                                   (context, url, progress) {
                                 return Image.asset(

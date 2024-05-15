@@ -60,6 +60,9 @@ class MusicList extends StatelessWidget {
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
                   child: CachedNetworkImage(
                       imageUrl: mediaItem.artUri.toString(),
+                      fit: BoxFit.cover,
+                      maxHeightDiskCache: 150,
+                      maxWidthDiskCache: 150,
                       filterQuality: FilterQuality.low,
                       placeholder: (context, url) => Image.asset(
                             'assets/images/placeholder_cover_music.png',
