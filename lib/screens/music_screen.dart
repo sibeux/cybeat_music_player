@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/providers/audio_source_state.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
@@ -160,10 +159,6 @@ class _MusicScreenState extends State<MusicScreen> {
                         context.read<MusicState>().setCurrentMediaItem(
                             sequence[index].tag as MediaItem);
 
-                        context
-                            .read<AudioSourceState>()
-                            .setAudioSource(sequence[index]);
-
                         audioState.player.play();
                       }
                     },
@@ -305,8 +300,6 @@ class _MusicScreenState extends State<MusicScreen> {
                       .read<MusicState>()
                       .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
-                  context.read<AudioSourceState>().setAudioSource(currentItem);
-
                   return FloatingPlayingMusic(
                     audioState: audioState,
                     currentItem: currentItem,
@@ -346,8 +339,6 @@ class _MusicScreenState extends State<MusicScreen> {
     context
         .read<MusicState>()
         .setCurrentMediaItem(sequence[index].tag as MediaItem);
-
-    context.read<AudioSourceState>().setAudioSource(sequence[index]);
 
     audioState.player.play();
   }

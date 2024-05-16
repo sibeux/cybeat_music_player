@@ -1,4 +1,3 @@
-
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/cover_detail_music.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/favorite_button.dart';
@@ -50,7 +49,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Stack(
       children: [
         Stack(
@@ -67,13 +65,15 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               height: double.infinity,
               color: Colors.black,
             ),
-            const SizedBox(
+            SizedBox(
               width: double.infinity,
               height: double.infinity,
               child: ClipRRect(
                 // ClipRRect is used to clip the image to a rounded rectangle
                 // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar
-                child: CoverBlur(),
+                child: CoverBlur(
+                  player: audioPlayer,
+                ),
               ),
             )
           ],

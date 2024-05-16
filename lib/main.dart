@@ -1,4 +1,3 @@
-import 'package:cybeat_music_player/providers/audio_source_state.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
@@ -41,11 +40,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(lazy: false, create: (_) => AudioState()),
         ChangeNotifierProvider(create: (_) => PlayingState()),
         ChangeNotifierProvider(create: (_) => MusicState()),
-        ChangeNotifierProvider(create: (_) => AudioSourceState()),
       ],
       child: MaterialApp(
         title: 'Okejek',
-        builder: (context, child){
+        builder: (context, child) {
           // create multiple builders
           child = FToastBuilder()(context, child);
           return child;
