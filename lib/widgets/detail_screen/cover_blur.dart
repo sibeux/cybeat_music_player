@@ -16,10 +16,11 @@ class CoverBlur extends StatelessWidget {
     return StreamBuilder<SequenceState?>(
       stream: player?.sequenceStateStream,
       builder: (context, snapshot) {
-        IndexedAudioSource? currentItem;
+        String cover = 'https://raw.githubusercontent.com/sibeux/license-sibeux/MyProgram/placeholder_cover_music.png';
 
         if (snapshot.hasData) {
-          currentItem = snapshot.data?.currentSource;
+          final currentItem = snapshot.data?.currentSource;
+          cover = currentItem!.tag.artUri.toString();
         }
 
         return ImageFiltered(
@@ -28,7 +29,7 @@ class CoverBlur extends StatelessWidget {
             sigmaX: 35,
           ),
           child: CachedNetworkImage(
-            imageUrl: currentItem!.tag.artUri.toString(),
+            imageUrl: cover,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.low,
             color: Colors.black.withOpacity(0.5),

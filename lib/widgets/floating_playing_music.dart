@@ -93,17 +93,17 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                                   //       fontSize: 14,
                                   //       fontWeight: FontWeight.bold),
                                   // ),
-                                  AutoSizeText(
-                                    widget.currentItem!.tag.title ?? '',
-                                    minFontSize: 14,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: colorInfoMusic,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    overflowReplacement: SizedBox(
-                                      height: 20,
-                                      child: Marquee(
+                                  SizedBox(
+                                    height: 20,
+                                    child: AutoSizeText(
+                                      widget.currentItem!.tag.title ?? '',
+                                      minFontSize: 14,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        color: colorInfoMusic,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflowReplacement: Marquee(
                                         text:
                                             widget.currentItem!.tag.title ?? '',
                                         style: TextStyle(

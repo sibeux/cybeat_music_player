@@ -15,10 +15,11 @@ class CoverDetailMusic extends StatelessWidget {
     return StreamBuilder<SequenceState?>(
       stream: player.sequenceStateStream,
       builder: (context, snapshot) {
-        IndexedAudioSource? currentItem;
+        String cover = 'https://raw.githubusercontent.com/sibeux/license-sibeux/MyProgram/placeholder_cover_music.png';
 
         if (snapshot.hasData) {
-          currentItem = snapshot.data?.currentSource;
+          final currentItem = snapshot.data?.currentSource;
+          cover = currentItem!.tag.artUri.toString();
         }
 
         return Expanded(
@@ -29,7 +30,7 @@ class CoverDetailMusic extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: CachedNetworkImage(
-                imageUrl: currentItem!.tag.artUri.toString(),
+                imageUrl: cover,
                 fit: BoxFit.cover,
                 filterQuality: FilterQuality.low,
                 maxHeightDiskCache: 500,

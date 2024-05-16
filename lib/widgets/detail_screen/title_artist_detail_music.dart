@@ -14,10 +14,13 @@ class TitleArtistDetailMusic extends StatelessWidget {
     return StreamBuilder<SequenceState?>(
         stream: player?.sequenceStateStream,
         builder: (context, snapshot) {
-          IndexedAudioSource? currentItem;
+          String title = '';
+          String artist = '';
 
           if (snapshot.hasData) {
-            currentItem = snapshot.data?.currentSource;
+            final currentItem = snapshot.data?.currentSource;
+            title = currentItem?.tag.title ?? '';
+            artist = currentItem?.tag.artist ?? '';
           }
 
           return Expanded(
@@ -28,7 +31,7 @@ class TitleArtistDetailMusic extends StatelessWidget {
                 SizedBox(
                   height: 30,
                   child: AutoSizeText(
-                    capitalizeEachWord(currentItem?.tag.title),
+                    capitalizeEachWord(title),
                     minFontSize: 18,
                     maxLines: 1,
                     style: TextStyle(
@@ -36,7 +39,7 @@ class TitleArtistDetailMusic extends StatelessWidget {
                       fontWeight: FontWeight.values[5],
                     ),
                     overflowReplacement: Marquee(
-                      text: capitalizeEachWord(currentItem?.tag.title),
+                      text: capitalizeEachWord(title),
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -61,7 +64,7 @@ class TitleArtistDetailMusic extends StatelessWidget {
                   height: 5,
                 ),
                 Text(
-                  capitalizeEachWord(currentItem?.tag.artist ?? ''),
+                  capitalizeEachWord(artist),
                   style: const TextStyle(
                     overflow: TextOverflow.ellipsis,
                     fontSize: 14,
