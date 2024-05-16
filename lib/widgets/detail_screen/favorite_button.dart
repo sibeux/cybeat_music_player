@@ -21,41 +21,39 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     return StreamBuilder<SequenceState?>(
       stream: widget.player.sequenceStateStream,
       builder: (context, snapshot) {
+        IndexedAudioSource? currentItem;
+
         if (snapshot.hasData) {
-          final currentItem = snapshot.data?.currentSource;
-          return Transform.scale(
-            scale: 1.5,
-            child: GestureDetector(
-              onTap: () {
-                if (currentItem?.tag.extras?['favorite'] == '1') {
-                  setfavorite(currentItem?.tag.extras?['music_id'], '0');
-                  currentItem?.tag.extras?['favorite'] = '0';
-                  showToast('Removed from favorite');
-                } else {
-                  setfavorite(currentItem?.tag.extras?['music_id'], '1');
-                  currentItem?.tag.extras?['favorite'] = '1';
-                  showToast('Added to favorite');
-                }
-                setState(() {});
-              },
-              child: currentItem?.tag.extras?['favorite'] == '1'
-                  ? const Icon(
-                      Icons.star_rounded,
-                      color: Colors.amber,
-                      size: 30,
-                    )
-                  : const Icon(
-                      Icons.star_outline_rounded,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-            ),
-          );
+          currentItem = snapshot.data?.currentSource;
         }
-        return const Icon(
-          Icons.star_outline_rounded,
-          color: Colors.white,
-          size: 30,
+        
+        return Transform.scale(
+          scale: 1.5,
+          child: GestureDetector(
+            onTap: () {
+              if (currentItem?.tag.extras?['favorite'] == '1') {
+                setfavorite(currentItem?.tag.extras?['music_id'], '0');
+                currentItem?.tag.extras?['favorite'] = '0';
+                showToast('Removed from favorite');
+              } else {
+                setfavorite(currentItem?.tag.extras?['music_id'], '1');
+                currentItem?.tag.extras?['favorite'] = '1';
+                showToast('Added to favorite');
+              }
+              setState(() {});
+            },
+            child: currentItem?.tag.extras?['favorite'] == '1'
+                ? const Icon(
+                    Icons.star_rounded,
+                    color: Colors.amber,
+                    size: 30,
+                  )
+                : const Icon(
+                    Icons.star_outline_rounded,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+          ),
         );
       },
     );

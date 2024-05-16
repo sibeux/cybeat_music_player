@@ -11,12 +11,15 @@ class TitleArtistDetailMusic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return StreamBuilder<SequenceState?>(
-      stream: player?.sequenceStateStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final currentItem = snapshot.data?.currentSource;
+        stream: player?.sequenceStateStream,
+        builder: (context, snapshot) {
+          IndexedAudioSource? currentItem;
+
+          if (snapshot.hasData) {
+            currentItem = snapshot.data?.currentSource;
+          }
+
           return Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,12 +72,6 @@ class TitleArtistDetailMusic extends StatelessWidget {
               ],
             ),
           );
-        }
-
-        return const SizedBox();
-      },
-
-      
-    );
+        });
   }
 }

@@ -15,39 +15,41 @@ class CoverDetailMusic extends StatelessWidget {
     return StreamBuilder<SequenceState?>(
       stream: player.sequenceStateStream,
       builder: (context, snapshot) {
+        IndexedAudioSource? currentItem;
+
         if (snapshot.hasData) {
-          final currentItem = snapshot.data?.currentSource;
-          return Expanded(
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: CachedNetworkImage(
-                  imageUrl: currentItem!.tag.artUri.toString(),
-                  fit: BoxFit.cover,
-                  filterQuality: FilterQuality.low,
-                  maxHeightDiskCache: 500,
-                  maxWidthDiskCache: 500,
-                  progressIndicatorBuilder: (context, url, progress) {
-                    return Image.asset(
-                      'assets/images/placeholder_cover_music.png',
-                      fit: BoxFit.cover,
-                    );
-                  },
-                  errorWidget: (context, exception, stackTrace) {
-                    return Image.asset(
-                      'assets/images/placeholder_cover_music.png',
-                      fit: BoxFit.cover,
-                    );
-                  },
-                ),
+          currentItem = snapshot.data?.currentSource;
+        }
+
+        return Expanded(
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: CachedNetworkImage(
+                imageUrl: currentItem!.tag.artUri.toString(),
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.low,
+                maxHeightDiskCache: 500,
+                maxWidthDiskCache: 500,
+                progressIndicatorBuilder: (context, url, progress) {
+                  return Image.asset(
+                    'assets/images/placeholder_cover_music.png',
+                    fit: BoxFit.cover,
+                  );
+                },
+                errorWidget: (context, exception, stackTrace) {
+                  return Image.asset(
+                    'assets/images/placeholder_cover_music.png',
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
             ),
-          );
-        }
-        return const SizedBox.shrink();
+          ),
+        );
       },
     );
   }
