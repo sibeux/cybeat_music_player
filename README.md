@@ -1,4 +1,7 @@
 # cybeat_music_player
+Mobile application to play music
+<br><br>
+![image](https://sibeux.my.id/assets/img/CYBEAT.svg)
 
 A new Flutter project.
 
