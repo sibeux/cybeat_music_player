@@ -29,34 +29,52 @@ class AudioState extends ChangeNotifier {
 
     const url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/db.php';
+    const api =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
     try {
       final response = await http.get(Uri.parse(url));
+      final apiResponse = await http.get(Uri.parse(api));
 
       final List<dynamic> listData = json.decode(response.body);
+      final List<dynamic> apiData = json.decode(apiResponse.body);
 
       playlist = ConcatenatingAudioSource(
-        children: listData
-            .map((item) => AudioSource.uri(
-                  Uri.parse(item['link_gdrive']),
-                  tag: MediaItem(
-                    id: '${_nextMediaId++}',
-                    title: capitalizeEachWord(item['title']),
-                    artist: capitalizeEachWord(item['artist']),
-                    album: capitalizeEachWord(item['album']),
-                    artUri: Uri.parse(item['cover']),
-                    extras: {
-                      'favorite': item['favorite'],
-                      'music_id': item['id_music'],
-                    },
-                  ),
-                ))
-            .toList(),
+        children: listData.map(
+          (item) {
+            return AudioSource.uri(
+              // Uri.parse(item['link_gdrive']),
+              Uri.parse(
+                  urlMusic(item['link_gdrive'], apiData[0]['gdrive_api'])),
+              tag: MediaItem(
+                id: '${_nextMediaId++}',
+                title: capitalizeEachWord(item['title']),
+                artist: capitalizeEachWord(item['artist']),
+                album: capitalizeEachWord(item['album']),
+                artUri: Uri.parse(item['cover']),
+                extras: {
+                  'favorite': item['favorite'],
+                  'music_id': item['id_music'],
+                },
+              ),
+            );
+          },
+        ).toList(),
       );
 
       await player.setAudioSource(playlist);
     } catch (e) {
       logger.e('Error loading audio source: $e');
+    }
+  }
+
+  String urlMusic(String url, String key) {
+    if (url.contains('drive.google.com')) {
+      RegExp regExp = RegExp(r'/d/([a-zA-Z0-9_-]+)');
+      Match? match = regExp.firstMatch(url);
+      return 'https://www.googleapis.com/drive/v3/files/${match!.group(1)}?alt=media&key=$key';
+    } else {
+      return url;
     }
   }
 
