@@ -45,7 +45,7 @@ class AudioState extends ChangeNotifier {
             return AudioSource.uri(
               // Uri.parse(item['link_gdrive']),
               Uri.parse(
-                  urlMusic(item['link_gdrive'], apiData[0]['gdrive_api'])),
+                  filteredUrl(item['link_gdrive'], apiData[0]['gdrive_api'])),
               tag: MediaItem(
                 id: '${_nextMediaId++}',
                 title: capitalizeEachWord(item['title']),
@@ -68,7 +68,7 @@ class AudioState extends ChangeNotifier {
     }
   }
 
-  String urlMusic(String url, String key) {
+  String filteredUrl(String url, String key) {
     if (url.contains('drive.google.com')) {
       RegExp regExp = RegExp(r'/d/([a-zA-Z0-9_-]+)');
       Match? match = regExp.firstMatch(url);
