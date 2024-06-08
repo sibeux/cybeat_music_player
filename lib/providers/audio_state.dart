@@ -51,7 +51,9 @@ class AudioState extends ChangeNotifier {
                 title: capitalizeEachWord(item['title']),
                 artist: capitalizeEachWord(item['artist']),
                 album: capitalizeEachWord(item['album']),
-                artUri: Uri.parse(item['cover']),
+                // artUri: Uri.parse(item['cover']),
+                artUri: Uri.parse(
+                    filteredUrl(item['cover'], apiData[0]['gdrive_api'])),
                 extras: {
                   'favorite': item['favorite'],
                   'music_id': item['id_music'],
