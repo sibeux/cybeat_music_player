@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/widgets/detail_screen/appbar_title.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/cover_detail_music.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/favorite_button.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/control_buttons.dart';
@@ -94,28 +95,8 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 Navigator.of(context).pop();
               },
             ),
-            title: const Column(
-              children: [
-                Text(
-                  'PLAYING FROM PLAYLIST',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  "日本の歌",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            title: AppbarTitle(
+              player: audioPlayer,
             ),
             actions: [
               IconButton(
