@@ -12,69 +12,93 @@ class TitleArtistDetailMusic extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<SequenceState?>(
-        stream: player?.sequenceStateStream,
-        builder: (context, snapshot) {
-          String title = '';
-          String artist = '';
+      stream: player?.sequenceStateStream,
+      builder: (context, snapshot) {
+        String title = '';
+        String artist = '';
 
-          if (snapshot.hasData) {
-            final currentItem = snapshot.data?.currentSource;
-            title = currentItem?.tag.title ?? '';
-            artist = currentItem?.tag.artist ?? '';
-          }
+        if (snapshot.hasData) {
+          final currentItem = snapshot.data?.currentSource;
+          title = currentItem?.tag.title ?? '';
+          artist = currentItem?.tag.artist ?? '';
+        }
 
-          return Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 30,
-                  child: AutoSizeText(
-                    capitalizeEachWord(title),
-                    minFontSize: 18,
-                    maxLines: 1,
+        return Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 30,
+                child: AutoSizeText(
+                  capitalizeEachWord(title),
+                  minFontSize: 18,
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.values[5],
+                  ),
+                  overflowReplacement: Marquee(
+                    text: capitalizeEachWord(title),
                     style: TextStyle(
+                      fontSize: 18,
                       color: Colors.white,
                       fontWeight: FontWeight.values[5],
                     ),
-                    overflowReplacement: Marquee(
-                      text: capitalizeEachWord(title),
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.values[5],
-                      ),
-                      scrollAxis: Axis.horizontal,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      // spacing end of text
-                      blankSpace: 30,
-                      // second needed before slide again
-                      pauseAfterRound: const Duration(seconds: 0),
-                      // text gonna slide first time after this second
-                      startAfter: const Duration(seconds: 2),
-                      decelerationCurve: Curves.easeOut,
-                      // speed of slide text
-                      velocity: 35,
-                      accelerationCurve: Curves.linear,
-                    ),
+                    scrollAxis: Axis.horizontal,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // spacing end of text
+                    blankSpace: 30,
+                    // second needed before slide again
+                    pauseAfterRound: const Duration(seconds: 0),
+                    // text gonna slide first time after this second
+                    startAfter: const Duration(seconds: 2),
+                    decelerationCurve: Curves.easeOut,
+                    // speed of slide text
+                    velocity: 35,
+                    accelerationCurve: Curves.linear,
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Text(
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                height: 30,
+                child: AutoSizeText(
                   capitalizeEachWord(artist),
+                  minFontSize: 14,
+                  maxLines: 1,
                   style: const TextStyle(
-                    overflow: TextOverflow.ellipsis,
-                    fontSize: 14,
                     color: Colors.white,
                     fontWeight: FontWeight.normal,
                   ),
+                  overflowReplacement: Marquee(
+                    text: capitalizeEachWord(artist),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    scrollAxis: Axis.horizontal,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // spacing end of text
+                    blankSpace: 30,
+                    // second needed before slide again
+                    pauseAfterRound: const Duration(seconds: 0),
+                    // text gonna slide first time after this second
+                    startAfter: const Duration(seconds: 2),
+                    decelerationCurve: Curves.easeOut,
+                    // speed of slide text
+                    velocity: 35,
+                    accelerationCurve: Curves.linear,
+                  ),
                 ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
