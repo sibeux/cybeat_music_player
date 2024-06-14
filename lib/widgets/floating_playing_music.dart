@@ -24,7 +24,7 @@ class FloatingPlayingMusic extends StatefulWidget {
   State<FloatingPlayingMusic> createState() => _FloatingPlayingMusicState();
 }
 
-class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
+class _FloatingPlayingMusicState extends State<FloatingPlayingMusic>{
   Color? colorContainer = Colors.black;
   Color? colorInfoMusic = Colors.white;
 
@@ -71,6 +71,7 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                       width: double.infinity,
                       height: 45,
                       decoration: BoxDecoration(
+                        // color: colorContainer,
                         color: colorContainer,
                         borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(100),

@@ -9,14 +9,15 @@ class SpectrumAnimation extends StatefulWidget {
 }
 
 class _SpectrumAnimationState extends State<SpectrumAnimation>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(vsync: this);
+    _controller = AnimationController(
+      vsync: this,
+    );
   }
 
   @override
@@ -27,15 +28,13 @@ class _SpectrumAnimationState extends State<SpectrumAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return Lottie.asset(
-      'assets/animations/music-spectrum.json',
+    return Lottie.network(
+      'https://raw.githubusercontent.com/xvrh/lottie-flutter/master/example/assets/Mobilo/B.json',
       controller: _controller,
       onLoaded: (composition) {
-        // Configure the AnimationController with the duration of the
-        // Lottie file and start the animation.
         _controller
           ..duration = composition.duration
-          ..forward();
+          ..repeat();
       },
     );
   }
