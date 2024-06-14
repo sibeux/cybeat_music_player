@@ -2,5 +2,6 @@
     "cmake.sourceDirectory": "C:/Users/Nasrul Wahabi/Documents/mobile-developer/Flutter Applications/cybeat_music_player/windows/flutter",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive",
-    "cmake.configureOnOpen": true
+    "cmake.configureOnOpen": true,
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
 }

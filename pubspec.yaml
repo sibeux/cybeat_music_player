@@ -57,6 +57,7 @@ dependencies:
   html_unescape: ^2.0.0
   marquee: ^2.2.3
   auto_size_text: ^3.0.0
+  lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +87,7 @@ flutter:
 
   assets:
     - assets/images/placeholder_cover_music.png
+    - assets/animations/music-spectrum.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

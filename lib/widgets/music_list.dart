@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/widgets/spectrum_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
@@ -23,9 +24,18 @@ class MusicList extends StatelessWidget {
     String colorTitle = "#313031";
     double marginList = 18;
 
+    Widget indexIcon = Text(
+      mediaItem.id.toString().padLeft(2, '0'),
+      style: TextStyle(
+          fontSize: 12,
+          color: HexColor('#8d8c8c'),
+          fontWeight: FontWeight.bold),
+    );
+
     if (musikDimainkan?.id == mediaItem.id) {
       colorTitle = '#8238be';
       marginList = 12;
+      indexIcon = const SpectrumAnimation();
     }
 
     return SizedBox(
@@ -43,13 +53,7 @@ class MusicList extends StatelessWidget {
                 margin: EdgeInsets.only(
                   left: marginList,
                 ),
-                child: Text(
-                  mediaItem.id.toString().padLeft(2, '0'),
-                  style: TextStyle(
-                      fontSize: 12,
-                      color: HexColor('#8d8c8c'),
-                      fontWeight: FontWeight.bold),
-                ),
+                child: indexIcon,
               ),
               // cover image
               Container(
