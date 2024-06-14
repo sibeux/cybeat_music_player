@@ -98,8 +98,10 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                                     child: AutoSizeText(
                                       widget.currentItem!.tag.title ?? '',
                                       minFontSize: 14,
+                                      maxFontSize: 14,
                                       maxLines: 1,
                                       style: TextStyle(
+                                        // fontSize: 14,
                                         color: colorInfoMusic,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -128,13 +130,40 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                                       ),
                                     ),
                                   ),
-                                  Text(
-                                    widget.currentItem!.tag.artist ?? '',
-                                    style: TextStyle(
-                                        color: colorInfoMusic,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.normal),
+                                  SizedBox(
+                                    height: 20,
+                                    child: AutoSizeText(
+                                      widget.currentItem!.tag.artist ?? '',
+                                      minFontSize: 12,
+                                      maxFontSize: 12,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                          // fontSize: 12,
+                                          color: colorInfoMusic,
+                                          fontWeight: FontWeight.normal),
+                                      overflowReplacement: Marquee(
+                                        text: widget.currentItem!.tag.artist ??
+                                            '',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: colorInfoMusic,
+                                            fontWeight: FontWeight.normal),
+                                        scrollAxis: Axis.horizontal,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        // spacing end of text
+                                        blankSpace: 30,
+                                        // second needed before slide again
+                                        pauseAfterRound:
+                                            const Duration(seconds: 0),
+                                        // text gonna slide first time after this second
+                                        startAfter: const Duration(seconds: 2),
+                                        decelerationCurve: Curves.easeOut,
+                                        // speed of slide text
+                                        velocity: 35,
+                                        accelerationCurve: Curves.linear,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),

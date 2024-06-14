@@ -33,6 +33,7 @@ class TitleArtistDetailMusic extends StatelessWidget {
                 child: AutoSizeText(
                   capitalizeEachWord(title),
                   minFontSize: 18,
+                  maxFontSize: 18,
                   maxLines: 1,
                   style: TextStyle(
                     color: Colors.white,
@@ -68,8 +69,10 @@ class TitleArtistDetailMusic extends StatelessWidget {
                 child: AutoSizeText(
                   capitalizeEachWord(artist),
                   minFontSize: 14,
+                  maxFontSize: 14,
                   maxLines: 1,
                   style: const TextStyle(
+                    // fontSize: 14,
                     color: Colors.white,
                     fontWeight: FontWeight.normal,
                   ),
