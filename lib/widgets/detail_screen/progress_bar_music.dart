@@ -19,6 +19,7 @@ class _ProgressBarMusicState extends State<ProgressBarMusic> {
 
   Duration? duration;
   Duration? position;
+  Duration? buffered;
 
   String formatDuration(Duration? duration) {
     if (duration == null) return 'buffering';
@@ -29,6 +30,7 @@ class _ProgressBarMusicState extends State<ProgressBarMusic> {
 
   StreamSubscription? _durationSubscription;
   StreamSubscription? _positionSubscription;
+  StreamSubscription? _bufferedSubscription;
 
   String get _durationText => formatDuration(duration);
 
@@ -41,6 +43,12 @@ class _ProgressBarMusicState extends State<ProgressBarMusic> {
     _durationSubscription = audioPlayer.durationStream.listen((event) {
       setState(() {
         duration = event;
+      });
+    });
+
+    _bufferedSubscription = audioPlayer.bufferedPositionStream.listen((event) {
+      setState(() {
+        buffered = event;
       });
     });
 
@@ -57,6 +65,7 @@ class _ProgressBarMusicState extends State<ProgressBarMusic> {
   void dispose() {
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
+    _bufferedSubscription?.cancel();
     super.dispose();
   }
 
@@ -82,7 +91,16 @@ class _ProgressBarMusicState extends State<ProgressBarMusic> {
                 ? position!.inMilliseconds /
                     duration!.inMilliseconds
                 : 0.0,
+            secondaryTrackValue: (buffered != null &&
+                    duration != null &&
+                    buffered!.inMilliseconds > 0 &&
+                    buffered!.inMilliseconds <
+                        duration!.inMilliseconds)
+                ? buffered!.inMilliseconds /
+                    duration!.inMilliseconds
+                : 0.0,
             activeColor: HexColor('#fefffe'),
+            secondaryActiveColor: HexColor('#ac8bc9'),
             inactiveColor: HexColor('#726878'),
             onChanged: (value) {
               final durasi = duration;

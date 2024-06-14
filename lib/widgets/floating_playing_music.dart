@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cybeat_music_player/components/dominant_color.dart';
+import 'package:cybeat_music_player/widgets/animated_rotate_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
@@ -194,32 +195,8 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                   ),
                 ],
               ),
-              Container(
-                alignment: Alignment.center,
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                          widget.currentItem!.tag.artUri.toString(),
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.low,
-                          cacheHeight: 150,
-                          cacheWidth: 150,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              AnimatedRotateCover(
+                imageUrl: widget.currentItem!.tag.artUri.toString(),
               ),
             ],
           ),
