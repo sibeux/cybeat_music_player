@@ -28,14 +28,19 @@ class _SpectrumAnimationState extends State<SpectrumAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return Lottie.network(
-      'https://raw.githubusercontent.com/xvrh/lottie-flutter/master/example/assets/Mobilo/B.json',
-      controller: _controller,
-      onLoaded: (composition) {
-        _controller
-          ..duration = composition.duration
-          ..repeat();
-      },
+    // return Lottie.asset(
+    //   'assets/animations/music-spectrum-2.json',
+    //   controller: _controller,
+    //   onLoaded: (composition) {
+    //     _controller
+    //       ..duration = composition.duration
+    //       ..repeat();
+    //   },
+    // );
+
+    return const Icon(
+      Icons.music_note,
+      color: Colors.purple,
     );
   }
 }
