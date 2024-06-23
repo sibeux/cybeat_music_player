@@ -1,7 +1,9 @@
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
-import 'package:cybeat_music_player/screens/music_screen.dart';
+import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
+// ignore: unused_import
+import 'package:cybeat_music_player/screens/test/music_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(lazy: false, create: (_) => AudioState()),
+        ChangeNotifierProvider(lazy: true, create: (_) => AudioState()),
         ChangeNotifierProvider(create: (_) => PlayingState()),
         ChangeNotifierProvider(create: (_) => MusicState()),
       ],
@@ -51,7 +53,8 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         showPerformanceOverlay: false,
-        home: const MusicScreen(),
+        // home: const TestingMusicScreen(),
+        home: const AzListMusicScreen(),
       ),
     );
   }

@@ -11,12 +11,11 @@ import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 
-import '../widgets/floating_playing_music.dart';
+import './/./widgets/floating_playing_music.dart';
 
 var isPlaying = false;
 
@@ -30,14 +29,14 @@ class AzListMusic extends ISuspensionBean {
   String getSuspensionTag() => tag;
 }
 
-class MusicScreen extends StatefulWidget {
-  const MusicScreen({super.key});
+class AzListMusicScreen extends StatefulWidget {
+  const AzListMusicScreen({super.key});
 
   @override
-  State<MusicScreen> createState() => _MusicScreenState();
+  State<AzListMusicScreen> createState() => _AzListMusicScreenState();
 }
 
-class _MusicScreenState extends State<MusicScreen> {
+class _AzListMusicScreenState extends State<AzListMusicScreen> {
   String? _error;
   bool isLoadingVertical = false;
   final int increment = 10;
@@ -88,11 +87,12 @@ class _MusicScreenState extends State<MusicScreen> {
     );
 
     content = StreamBuilder<SequenceState?>(
+      stream: audioState.player.sequenceStateStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final state = snapshot.data;
           final sequence = state?.sequence ?? [];
-    
+
           musicItems = sequence
               .map(
                 (e) => AzListMusic(
@@ -101,70 +101,72 @@ class _MusicScreenState extends State<MusicScreen> {
                 ),
               )
               .toList();
-    
+
           return AzListView(
-              data: musicItems,
-              itemCount: sequence.length,
-              indexBarAlignment: Alignment.topRight,
-              indexBarOptions: IndexBarOptions(
-                indexHintDecoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.7),
-                  shape: BoxShape.circle,
-                ),
-                selectItemDecoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: HexColor('#6a5081'),
-                ),
-                needRebuild: true,
-                selectTextStyle: TextStyle(
-                  color: HexColor('#fefffe'),
-                  fontSize: 12,
-                ),
+            data: musicItems,
+            itemCount: sequence.length,
+            indexBarAlignment: Alignment.topRight,
+            indexBarOptions: IndexBarOptions(
+              indexHintDecoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.7),
+                shape: BoxShape.circle,
               ),
-              itemBuilder: (context, index) {
-                return InkWell(
-                  child: MusicList(
-                    mediaItem: sequence[index].tag as MediaItem,
-                    audioPlayer: audioState.player,
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.bottomToTop,
-                        duration: const Duration(milliseconds: 300),
-                        reverseDuration: const Duration(milliseconds: 300),
-                        child: MusicDetailScreen(
-                          player: audioState.player,
-                          mediaItem: sequence[index].tag as MediaItem,
-                        ),
-                        childCurrent: const MusicScreen(),
+              selectItemDecoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: HexColor('#6a5081'),
+              ),
+              needRebuild: false,
+              selectTextStyle: TextStyle(
+                color: HexColor('#fefffe'),
+                fontSize: 12,
+              ),
+            ),
+            itemBuilder: (context, index) {
+              // akan diprint terus saat scroll
+              // print(index);
+              return InkWell(
+                child: MusicList(
+                  mediaItem: sequence[index].tag as MediaItem,
+                  audioPlayer: audioState.player,
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.bottomToTop,
+                      duration: const Duration(milliseconds: 300),
+                      reverseDuration: const Duration(milliseconds: 300),
+                      child: MusicDetailScreen(
+                        player: audioState.player,
+                        mediaItem: sequence[index].tag as MediaItem,
                       ),
-                    );
-    
-                    if (context.read<MusicState>().currentMediaItem?.id ==
-                            "" ||
-                        context.read<MusicState>().currentMediaItem?.id !=
-                            sequence[index].tag.id) {
-                      audioState.player.seek(Duration.zero, index: index);
-    
-                      audioState.player.setAudioSource(audioState.playlist,
-                          initialIndex: index);
-    
-                      context.read<PlayingState>().play();
-    
-                      context.read<MusicState>().setCurrentMediaItem(
-                          sequence[index].tag as MediaItem);
-    
-                      audioState.player.play();
-                    } 
-                  },
-                );
-              });
+                      childCurrent: const AzListMusicScreen(),
+                    ),
+                  );
+
+                  if (context.read<MusicState>().currentMediaItem?.id == "" ||
+                      context.read<MusicState>().currentMediaItem?.id !=
+                          sequence[index].tag.id) {
+                    audioState.player.seek(Duration.zero, index: index);
+
+                    audioState.player.setAudioSource(audioState.playlist,
+                        initialIndex: index);
+
+                    context.read<PlayingState>().play();
+
+                    context
+                        .read<MusicState>()
+                        .setCurrentMediaItem(sequence[index].tag as MediaItem);
+
+                    audioState.player.play();
+                  }
+                },
+              );
+            },
+          );
         }
         return const ShimmerMusicList();
       },
-      stream: audioState.player.sequenceStateStream,
     );
 
     if (_error != null) {
@@ -208,6 +210,7 @@ class _MusicScreenState extends State<MusicScreen> {
                         child: Row(
                           children: [
                             StreamBuilder<SequenceState?>(
+                              stream: audioState.player.sequenceStateStream,
                               builder: (context, snapshot) {
                                 List<IndexedAudioSource> sequence = [];
                                 if (snapshot.hasData) {
@@ -252,7 +255,6 @@ class _MusicScreenState extends State<MusicScreen> {
                                   ),
                                 );
                               },
-                              stream: audioState.player.sequenceStateStream,
                             ),
                             const Expanded(
                               child: SizedBox(),
@@ -322,7 +324,7 @@ class _MusicScreenState extends State<MusicScreen> {
           player: audioState.player,
           mediaItem: sequence[index].tag as MediaItem,
         ),
-        childCurrent: const MusicScreen(),
+        childCurrent: const AzListMusicScreen(),
       ),
     );
 

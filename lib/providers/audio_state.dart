@@ -13,6 +13,8 @@ class AudioState extends ChangeNotifier {
   late AudioPlayer player;
   late ConcatenatingAudioSource playlist;
   static int _nextMediaId = 1;
+  // qeueu untuk testing screen
+  List<MediaItem> queue = [];
 
   AudioState() {
     player = AudioPlayer();
@@ -63,6 +65,8 @@ class AudioState extends ChangeNotifier {
           },
         ).toList(),
       );
+
+      queue = playlist.sequence.map((e) => e.tag as MediaItem).toList();
 
       await player.setAudioSource(playlist);
     } catch (e) {
