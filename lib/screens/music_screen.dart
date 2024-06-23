@@ -87,88 +87,84 @@ class _MusicScreenState extends State<MusicScreen> {
       child: Text('No music yet! Add some!'),
     );
 
-    content = LazyLoadScrollView(
-      isLoading: isLoadingVertical,
-      onEndOfPage: () => _loadMoreVertical(),
-      child: StreamBuilder<SequenceState?>(
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final state = snapshot.data;
-            final sequence = state?.sequence ?? [];
-
-            musicItems = sequence
-                .map(
-                  (e) => AzListMusic(
-                    title: e.tag.title,
-                    tag: e.tag.title.substring(0, 1).toUpperCase(),
-                  ),
-                )
-                .toList();
-
-            return AzListView(
-                data: musicItems,
-                itemCount: sequence.length,
-                indexBarAlignment: Alignment.topRight,
-                indexBarOptions: IndexBarOptions(
-                  indexHintDecoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.7),
-                    shape: BoxShape.circle,
-                  ),
-                  selectItemDecoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: HexColor('#6a5081'),
-                  ),
-                  needRebuild: true,
-                  selectTextStyle: TextStyle(
-                    color: HexColor('#fefffe'),
-                    fontSize: 12,
-                  ),
+    content = StreamBuilder<SequenceState?>(
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final state = snapshot.data;
+          final sequence = state?.sequence ?? [];
+    
+          musicItems = sequence
+              .map(
+                (e) => AzListMusic(
+                  title: e.tag.title,
+                  tag: e.tag.title.substring(0, 1).toUpperCase(),
                 ),
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    child: MusicList(
-                      mediaItem: sequence[index].tag as MediaItem,
-                      audioPlayer: audioState.player,
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.bottomToTop,
-                          duration: const Duration(milliseconds: 300),
-                          reverseDuration: const Duration(milliseconds: 300),
-                          child: MusicDetailScreen(
-                            player: audioState.player,
-                            mediaItem: sequence[index].tag as MediaItem,
-                          ),
-                          childCurrent: const MusicScreen(),
+              )
+              .toList();
+    
+          return AzListView(
+              data: musicItems,
+              itemCount: sequence.length,
+              indexBarAlignment: Alignment.topRight,
+              indexBarOptions: IndexBarOptions(
+                indexHintDecoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.7),
+                  shape: BoxShape.circle,
+                ),
+                selectItemDecoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: HexColor('#6a5081'),
+                ),
+                needRebuild: true,
+                selectTextStyle: TextStyle(
+                  color: HexColor('#fefffe'),
+                  fontSize: 12,
+                ),
+              ),
+              itemBuilder: (context, index) {
+                return InkWell(
+                  child: MusicList(
+                    mediaItem: sequence[index].tag as MediaItem,
+                    audioPlayer: audioState.player,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.bottomToTop,
+                        duration: const Duration(milliseconds: 300),
+                        reverseDuration: const Duration(milliseconds: 300),
+                        child: MusicDetailScreen(
+                          player: audioState.player,
+                          mediaItem: sequence[index].tag as MediaItem,
                         ),
-                      );
-
-                      if (context.read<MusicState>().currentMediaItem?.id ==
-                              "" ||
-                          context.read<MusicState>().currentMediaItem?.id !=
-                              sequence[index].tag.id) {
-                        audioState.player.seek(Duration.zero, index: index);
-
-                        audioState.player.setAudioSource(audioState.playlist,
-                            initialIndex: index);
-
-                        context.read<PlayingState>().play();
-
-                        context.read<MusicState>().setCurrentMediaItem(
-                            sequence[index].tag as MediaItem);
-
-                        audioState.player.play();
-                      } 
-                    },
-                  );
-                });
-          }
-          return const ShimmerMusicList();
-        },
-        stream: audioState.player.sequenceStateStream,
-      ),
+                        childCurrent: const MusicScreen(),
+                      ),
+                    );
+    
+                    if (context.read<MusicState>().currentMediaItem?.id ==
+                            "" ||
+                        context.read<MusicState>().currentMediaItem?.id !=
+                            sequence[index].tag.id) {
+                      audioState.player.seek(Duration.zero, index: index);
+    
+                      audioState.player.setAudioSource(audioState.playlist,
+                          initialIndex: index);
+    
+                      context.read<PlayingState>().play();
+    
+                      context.read<MusicState>().setCurrentMediaItem(
+                          sequence[index].tag as MediaItem);
+    
+                      audioState.player.play();
+                    } 
+                  },
+                );
+              });
+        }
+        return const ShimmerMusicList();
+      },
+      stream: audioState.player.sequenceStateStream,
     );
 
     if (_error != null) {
