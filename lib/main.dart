@@ -2,6 +2,7 @@
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
+import 'package:cybeat_music_player/providers/playlist_state.dart';
 import 'package:cybeat_music_player/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(lazy: true, create: (_) => AudioState()),
         ChangeNotifierProvider(create: (_) => PlayingState()),
         ChangeNotifierProvider(create: (_) => MusicState()),
+        ChangeNotifierProvider(create: (_) => PlaylistState()),
       ],
       child: MaterialApp(
         title: 'Okejek',

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
@@ -18,10 +19,16 @@ class AudioState extends ChangeNotifier {
 
   AudioState() {
     player = AudioPlayer();
-    _init();
   }
 
-  Future<void> _init() async {
+  Future<void> clear() async {
+    await player.stop();
+    await player.dispose();
+    player = AudioPlayer();
+    notifyListeners();
+  }
+
+  Future<void> init(Playlist list) async {
     player.playbackEventStream.listen(
       (event) {},
       onError: (Object e, StackTrace stackTrace) {
@@ -29,8 +36,11 @@ class AudioState extends ChangeNotifier {
       },
     );
 
+    String type = list.type.toLowerCase();
+    _nextMediaId = 1;
+
     final String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/db.php';
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?uid=${list.uid}&type=$type';
     const api =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 

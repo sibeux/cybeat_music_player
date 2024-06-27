@@ -2,9 +2,14 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/providers/music_state.dart';
+import 'package:cybeat_music_player/providers/playing_state.dart';
+import 'package:cybeat_music_player/providers/playlist_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class GridViewPlaylistAlbum extends StatelessWidget {
   const GridViewPlaylistAlbum({
@@ -18,8 +23,25 @@ class GridViewPlaylistAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final playlistDimainkan = context.watch<PlaylistState>().currentPlaylist;
+    String colorTitle = "#313031";
+
+    if (playlistDimainkan?.uid == playlist.uid) {
+      colorTitle = '#8238be';
+    }
+
     return GestureDetector(
       onTap: () {
+        if (context.read<PlaylistState>().currentPlaylist?.uid == "" ||
+            context.read<PlaylistState>().currentPlaylist?.uid !=
+                playlist.uid) {
+          context.read<PlaylistState>().setCurrentPlaylist(playlist);
+          audioState.clear();
+          context.read<PlayingState>().pause();
+          context.read<MusicState>().clear();
+          audioState.init(playlist);
+          audioState.player.play();
+        }
         Navigator.push(
           context,
           PageTransition(
@@ -71,7 +93,8 @@ class GridViewPlaylistAlbum extends StatelessWidget {
                       maxFontSize: 14,
                       minFontSize: 14,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
+                        color: HexColor(colorTitle),
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 2,
