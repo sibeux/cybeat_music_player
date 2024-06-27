@@ -1,9 +1,11 @@
+// ignore_for_file: unused_import
+
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
-import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
-// ignore: unused_import
 import 'package:cybeat_music_player/screens/test/music_screen.dart';
+import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
+import 'package:cybeat_music_player/screens/test/palette_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -55,6 +57,7 @@ class MyApp extends StatelessWidget {
         showPerformanceOverlay: false,
         // home: const TestingMusicScreen(),
         home: const AzListMusicScreen(),
+        // home: const PaletteGeneratorApp(),
       ),
     );
   }

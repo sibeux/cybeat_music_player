@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedRotateCover extends StatefulWidget {
@@ -57,12 +58,20 @@ class _AnimatedRotateCoverState extends State<AnimatedRotateCover>
               height: 40,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  widget.imageUrl,
+                child: CachedNetworkImage(
+                  imageUrl: widget.imageUrl,
                   fit: BoxFit.cover,
+                  maxHeightDiskCache: 50,
+                  maxWidthDiskCache: 50,
                   filterQuality: FilterQuality.low,
-                  cacheHeight: 150,
-                  cacheWidth: 150,
+                  placeholder: (context, url) => Image.asset(
+                    'assets/images/placeholder_cover_music.png',
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => Image.asset(
+                    'assets/images/placeholder_cover_music.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

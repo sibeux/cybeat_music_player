@@ -7,7 +7,7 @@ import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/screens/music_detail_screen.dart';
 import 'package:cybeat_music_player/widgets/music_list.dart';
-import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
+// import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';

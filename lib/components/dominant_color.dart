@@ -3,7 +3,12 @@ import 'package:palette_generator/palette_generator.dart';
 
 Future<List<Color?>> getDominantColor(String url) async {
   final PaletteGenerator paletteGenerator =
-      await PaletteGenerator.fromImageProvider(NetworkImage(url));
+      await PaletteGenerator.fromImageProvider(
+    NetworkImage(url),
+    size: const Size(256.0, 170.0),
+    region: const Rect.fromLTRB(41.8, 4.4, 217.8, 170.0),
+    maximumColorCount: 20,
+  );
 
   final Map<String, Color?> color = {
     'lightMutedColor': paletteGenerator.lightMutedColor?.color,
@@ -26,7 +31,9 @@ Future<List<Color?>> getDominantColor(String url) async {
       fixColor = value;
     }
   }
-  return [paletteGenerator.dominantColor!.color, fixColor];
+  return [
+    paletteGenerator.dominantColor!.color, fixColor
+  ];
 }
 
 double isDark(Color background) {

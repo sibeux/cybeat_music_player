@@ -115,7 +115,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                 shape: BoxShape.circle,
                 color: HexColor('#6a5081'),
               ),
-              needRebuild: false,
+              needRebuild: true,
               selectTextStyle: TextStyle(
                 color: HexColor('#fefffe'),
                 fontSize: 12,
