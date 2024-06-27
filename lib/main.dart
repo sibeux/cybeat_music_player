@@ -3,6 +3,7 @@
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
+import 'package:cybeat_music_player/screens/home_screen.dart';
 import 'package:cybeat_music_player/screens/test/music_screen.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:cybeat_music_player/screens/test/palette_generator.dart';
@@ -22,6 +23,8 @@ Future<void> main() async {
   );
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.white,
+    statusBarBrightness: Brightness.dark,
     systemNavigationBarColor: Colors.white,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
@@ -56,7 +59,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         showPerformanceOverlay: false,
         // home: const TestingMusicScreen(),
-        home: const AzListMusicScreen(),
+        home: const HomeScreen(),
         // home: const PaletteGeneratorApp(),
       ),
     );
