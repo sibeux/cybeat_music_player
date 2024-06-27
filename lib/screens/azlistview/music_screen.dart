@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
@@ -30,7 +31,9 @@ class AzListMusic extends ISuspensionBean {
 }
 
 class AzListMusicScreen extends StatefulWidget {
-  const AzListMusicScreen({super.key});
+  const AzListMusicScreen({super.key, required this.playlist});
+
+  final Playlist playlist;
 
   @override
   State<AzListMusicScreen> createState() => _AzListMusicScreenState();
@@ -38,8 +41,6 @@ class AzListMusicScreen extends StatefulWidget {
 
 class _AzListMusicScreenState extends State<AzListMusicScreen> {
   String? _error;
-  bool isLoadingVertical = false;
-  final int increment = 10;
   Color dominantColor = Colors.black;
   List<AzListMusic> musicItems = [];
 
@@ -48,7 +49,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   @override
   void initState() {
     super.initState();
-    _loadMoreVertical();
   }
 
   @override
@@ -60,21 +60,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   void setColor(Color color) {
     setState(() {
       dominantColor = color;
-    });
-  }
-
-  Future _loadMoreVertical() async {
-    setState(() {
-      isLoadingVertical = true;
-    });
-
-    // Add in an artificial delay
-    await Future.delayed(
-      const Duration(seconds: 2),
-    );
-
-    setState(() {
-      isLoadingVertical = false;
     });
   }
 
@@ -140,7 +125,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                         player: audioState.player,
                         mediaItem: sequence[index].tag as MediaItem,
                       ),
-                      childCurrent: const AzListMusicScreen(),
+                      childCurrent: AzListMusicScreen(
+                        playlist: widget.playlist,
+                      ),
                     ),
                   );
 
@@ -182,12 +169,14 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           tooltip: 'Menu',
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         centerTitle: true,
         toolbarHeight: 60,
         title: Text(
-          '日本の歌',
+          widget.playlist.title,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: HexColor('#1e0b2b'),
@@ -324,7 +313,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
           player: audioState.player,
           mediaItem: sequence[index].tag as MediaItem,
         ),
-        childCurrent: const AzListMusicScreen(),
+        childCurrent: AzListMusicScreen(
+          playlist: widget.playlist,
+        ),
       ),
     );
 

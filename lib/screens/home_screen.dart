@@ -1,13 +1,17 @@
+import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/widgets/home_screen/grid_playlist_album.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.playListlist});
+
+  final List<Playlist> playListlist;
 
   @override
   Widget build(BuildContext context) {
+    playListlist.map((e) => print(e.title));
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
       appBar: AppBar(
@@ -85,7 +89,7 @@ class HomeScreen extends StatelessWidget {
           ),
           const Divider(
             color: Colors.black,
-            thickness: 3,
+            thickness: 2,
             height: 0,
           ),
           Expanded(
@@ -126,39 +130,14 @@ class HomeScreen extends StatelessWidget {
                       shrinkWrap: true,
                       primary: false,
                       crossAxisSpacing: 15,
-                      mainAxisSpacing: 20,
+                      mainAxisSpacing: 10,
                       crossAxisCount: 3,
                       childAspectRatio: 2 / 3.5,
-                      children: const <Widget>[
-                        GridViewPlaylistAlbum(text: '日本の歌'),
-                        GridViewPlaylistAlbum(
-                            text:
-                                'TV Anime "Haikyu!! Second Season" Original Soundtrack (Vol.1)'),
-                        GridViewPlaylistAlbum(
-                            text:
-                                'TV Anime "Haikyu!! Second Season" Original Soundtrack (Vol.1)'),
-                        GridViewPlaylistAlbum(text: '日本の歌'),
-                        GridViewPlaylistAlbum(
-                            text:
-                                'TV Anime "Haikyu!! Second Season" Original Soundtrack (Vol.1)'),
-                        GridViewPlaylistAlbum(text: '日本の歌'),
-                        GridViewPlaylistAlbum(
-                            text:
-                                'TV Anime "Haikyu!! Second Season" Original Soundtrack (Vol.1)'),
-                        GridViewPlaylistAlbum(text: '日本の歌'),
-                        GridViewPlaylistAlbum(
-                            text:
-                                'TV Anime "Haikyu!! Second Season" Original Soundtrack (Vol.1)'),
-                        GridViewPlaylistAlbum(text: '日本の歌'),
-                        GridViewPlaylistAlbum(
-                            text:
-                                'TV Anime "Haikyu!! Second Season" Original Soundtrack (Vol.1)'),
-                        GridViewPlaylistAlbum(text: '日本の歌'),
-                        GridViewPlaylistAlbum(
-                            text:
-                                'TV Anime "Haikyu!! Second Season" Original Soundtrack (Vol.1)'),
-                        GridViewPlaylistAlbum(text: '日本の歌'),
-                      ],
+                      children: playListlist
+                          .map((playlist) => GridViewPlaylistAlbum(
+                                playlist: playlist,
+                              ))
+                          .toList(),
                     )
                   ],
                 ),

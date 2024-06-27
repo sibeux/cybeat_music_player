@@ -29,13 +29,13 @@ class AudioState extends ChangeNotifier {
       },
     );
 
-    const url =
+    final String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/db.php';
     const api =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.post(Uri.parse(url));
       final apiResponse = await http.get(Uri.parse(api));
 
       final List<dynamic> listData = json.decode(response.body);

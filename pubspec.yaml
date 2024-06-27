@@ -58,6 +58,7 @@ dependencies:
   marquee: ^2.2.3
   auto_size_text: ^3.0.0
   lottie: ^3.1.2
+  flutter_native_splash: ^2.4.0
 
 dev_dependencies:
   flutter_test:

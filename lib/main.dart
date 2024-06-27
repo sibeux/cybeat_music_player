@@ -1,14 +1,11 @@
-// ignore_for_file: unused_import
 
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
-import 'package:cybeat_music_player/screens/home_screen.dart';
-import 'package:cybeat_music_player/screens/test/music_screen.dart';
-import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
-import 'package:cybeat_music_player/screens/test/palette_generator.dart';
+import 'package:cybeat_music_player/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -29,7 +26,9 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
 
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((fn) {
     runApp(const MyApp());
@@ -59,7 +58,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         showPerformanceOverlay: false,
         // home: const TestingMusicScreen(),
-        home: const HomeScreen(),
+        home: const SplashScreen(),
         // home: const PaletteGeneratorApp(),
       ),
     );
