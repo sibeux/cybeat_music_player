@@ -1,27 +1,38 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 class GridViewPlaylistAlbum extends StatelessWidget {
   const GridViewPlaylistAlbum({
     super.key,
     required this.playlist,
+    required this.audioState,
   });
 
   final Playlist playlist;
+  final AudioState audioState;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AzListMusicScreen(
-                      playlist: playlist,
-                    )));
+          context,
+          PageTransition(
+            type: PageTransitionType.leftToRightWithFade,
+            duration: const Duration(milliseconds: 300),
+            reverseDuration: const Duration(milliseconds: 300),
+            child: AzListMusicScreen(
+              playlist: playlist,
+              audioState: audioState,
+            ),
+            childCurrent: context.widget,
+          ),
+        );
       },
       child: Container(
         alignment: Alignment.centerLeft,

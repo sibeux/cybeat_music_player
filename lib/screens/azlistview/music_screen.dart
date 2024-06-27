@@ -31,9 +31,11 @@ class AzListMusic extends ISuspensionBean {
 }
 
 class AzListMusicScreen extends StatefulWidget {
-  const AzListMusicScreen({super.key, required this.playlist});
+  const AzListMusicScreen(
+      {super.key, required this.playlist, required this.audioState});
 
   final Playlist playlist;
+  final AudioState audioState;
 
   @override
   State<AzListMusicScreen> createState() => _AzListMusicScreenState();
@@ -43,6 +45,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   String? _error;
   Color dominantColor = Colors.black;
   List<AzListMusic> musicItems = [];
+  get audioState => widget.audioState;
 
   StreamSubscription? _playerCompleteSubscription;
 
@@ -65,8 +68,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final audioState = context.watch<AudioState>();
-
     Widget content = const Center(
       child: Text('No music yet! Add some!'),
     );
@@ -127,6 +128,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                       ),
                       childCurrent: AzListMusicScreen(
                         playlist: widget.playlist,
+                        audioState: audioState,
                       ),
                     ),
                   );
@@ -315,6 +317,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
         ),
         childCurrent: AzListMusicScreen(
           playlist: widget.playlist,
+          audioState: audioState,
         ),
       ),
     );
