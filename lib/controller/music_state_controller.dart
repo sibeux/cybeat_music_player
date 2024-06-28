@@ -5,6 +5,8 @@ import 'package:just_audio/just_audio.dart';
 
 // Buat sebuah controller untuk mengelola state.
 class MusicStateController extends GetxController {
+  var title = ''.obs;
+  var artist = ''.obs;
   var album = ''.obs;
   var cover = ''.obs;
 
@@ -19,7 +21,7 @@ class MusicStateController extends GetxController {
     super.onInit();
     // Subscribe ke stream dan perbarui state.
     playerSubscription = player.sequenceStateStream.listen((sequenceState) {
-      updateAlbum(sequenceState);
+      updateState(sequenceState);
     });
   }
 
@@ -30,7 +32,9 @@ class MusicStateController extends GetxController {
     super.onClose();
   }
 
-  void updateAlbum(SequenceState? sequenceState) {
+  void updateState(SequenceState? sequenceState) {
+    title.value = sequenceState?.currentSource?.tag.title ?? '';
+    artist.value = sequenceState?.currentSource?.tag.artist ?? '';
     album.value = sequenceState?.currentSource?.tag.album ?? '';
     cover.value = sequenceState?.currentSource?.tag.artUri.toString() ??
         'https://raw.githubusercontent.com/sibeux/license-sibeux/MyProgram/placeholder_cover_music.png';

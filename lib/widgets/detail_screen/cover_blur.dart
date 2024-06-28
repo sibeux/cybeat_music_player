@@ -17,36 +17,38 @@ class CoverBlur extends StatelessWidget {
   Widget build(BuildContext context) {
     final musicController = Get.put(MusicStateController(player: player!));
 
-    return ImageFiltered(
-      imageFilter: ImageFilter.blur(
-        sigmaY: 35,
-        sigmaX: 35,
-      ),
-      child: CachedNetworkImage(
-        imageUrl: musicController.cover.value,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.low,
-        color: Colors.black.withOpacity(0.5),
-        memCacheHeight: 20,
-        memCacheWidth: 20,
-        colorBlendMode: BlendMode.darken,
-        progressIndicatorBuilder: (context, url, progress) => Container(
-          color: Colors.black,
+    return Obx(
+      () => ImageFiltered(
+        imageFilter: ImageFilter.blur(
+          sigmaY: 35,
+          sigmaX: 35,
         ),
-        errorWidget: (context, exception, stackTrace) {
-          return Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color.fromARGB(255, 126, 248, 60),
-                  Color.fromARGB(255, 253, 123, 123),
-                ],
+        child: CachedNetworkImage(
+          imageUrl: musicController.cover.value,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.low,
+          color: Colors.black.withOpacity(0.5),
+          memCacheHeight: 20,
+          memCacheWidth: 20,
+          colorBlendMode: BlendMode.darken,
+          progressIndicatorBuilder: (context, url, progress) => Container(
+            color: Colors.black,
+          ),
+          errorWidget: (context, exception, stackTrace) {
+            return Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color.fromARGB(255, 126, 248, 60),
+                    Color.fromARGB(255, 253, 123, 123),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
