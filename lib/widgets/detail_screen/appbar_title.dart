@@ -1,4 +1,6 @@
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AppbarTitle extends StatelessWidget {
@@ -11,6 +13,7 @@ class AppbarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final musicController = Get.put(MusicStateController(player: player!));
     return Column(
       children: [
         const Text(
@@ -24,27 +27,17 @@ class AppbarTitle extends StatelessWidget {
         const SizedBox(
           height: 5,
         ),
-        StreamBuilder<SequenceState?>(
-          stream: player?.sequenceStateStream,
-          builder: (context, snapshot) {
-            String album = '';
-
-            if (snapshot.hasData) {
-              final currentItem = snapshot.data?.currentSource;
-              album = currentItem?.tag.album ?? '';
-            }
-
-            return Text(
-              // "日本の歌",
-              album,
-              style: const TextStyle(
-                color: Colors.white,
-                overflow: TextOverflow.ellipsis,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          },
+        Obx(
+          () => Text(
+            // "日本の歌",
+            musicController.album.value,
+            style: const TextStyle(
+              color: Colors.white,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         )
       ],
     );

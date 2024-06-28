@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -10,9 +9,9 @@ import 'package:cybeat_music_player/screens/music_detail_screen.dart';
 import 'package:cybeat_music_player/widgets/music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 
@@ -47,17 +46,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   List<AzListMusic> musicItems = [];
   get audioState => widget.audioState;
 
-  StreamSubscription? _playerCompleteSubscription;
-
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _playerCompleteSubscription?.cancel();
-    super.dispose();
   }
 
   void setColor(Color color) {
@@ -116,21 +107,30 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                   audioPlayer: audioState.player,
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.bottomToTop,
-                      duration: const Duration(milliseconds: 300),
-                      reverseDuration: const Duration(milliseconds: 300),
-                      child: MusicDetailScreen(
-                        player: audioState.player,
-                        mediaItem: sequence[index].tag as MediaItem,
-                      ),
-                      childCurrent: AzListMusicScreen(
-                        playlist: widget.playlist,
-                        audioState: audioState,
-                      ),
+                  // Navigator.push(
+                  //   context,
+                  //   PageTransition(
+                  //     type: PageTransitionType.bottomToTop,
+                  //     duration: const Duration(milliseconds: 300),
+                  //     reverseDuration: const Duration(milliseconds: 300),
+                  //     child: MusicDetailScreen(
+                  //       player: audioState.player,
+                  //       mediaItem: sequence[index].tag as MediaItem,
+                  //     ),
+                  //     childCurrent: AzListMusicScreen(
+                  //       playlist: widget.playlist,
+                  //       audioState: audioState,
+                  //     ),
+                  //   ),
+                  // );
+
+                  Get.to(
+                    () => MusicDetailScreen(
+                      player: audioState.player,
+                      mediaItem: sequence[index].tag as MediaItem,
                     ),
+                    transition: Transition.downToUp,
+                    duration: const Duration(milliseconds: 300),
                   );
 
                   if (context.read<MusicState>().currentMediaItem?.id == "" ||
@@ -172,7 +172,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           tooltip: 'Menu',
           onPressed: () {
-            Navigator.pop(context);
+            Get.back();
           },
         ),
         centerTitle: true,
@@ -305,21 +305,12 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   void _shuffleMusic(AudioState audioState, List<IndexedAudioSource> sequence) {
     final index = random(0, audioState.playlist.length - 1);
 
-    Navigator.push(
-      context,
-      PageTransition(
-        type: PageTransitionType.bottomToTop,
-        duration: const Duration(milliseconds: 300),
-        reverseDuration: const Duration(milliseconds: 300),
-        child: MusicDetailScreen(
-          player: audioState.player,
-          mediaItem: sequence[index].tag as MediaItem,
-        ),
-        childCurrent: AzListMusicScreen(
-          playlist: widget.playlist,
-          audioState: audioState,
-        ),
+    Get.to(
+      () => MusicDetailScreen(
+        player: audioState.player,
+        mediaItem: sequence[index].tag as MediaItem,
       ),
+      transition: Transition.downToUp,
     );
 
     audioState.player.seek(Duration.zero, index: index);

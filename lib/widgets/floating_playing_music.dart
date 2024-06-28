@@ -2,9 +2,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cybeat_music_player/components/dominant_color.dart';
 import 'package:cybeat_music_player/widgets/animated_rotate_cover.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '../providers/audio_state.dart';
 import '../providers/music_state.dart';
@@ -24,7 +24,7 @@ class FloatingPlayingMusic extends StatefulWidget {
   State<FloatingPlayingMusic> createState() => _FloatingPlayingMusicState();
 }
 
-class _FloatingPlayingMusicState extends State<FloatingPlayingMusic>{
+class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
   Color? colorContainer = Colors.black;
   Color? colorInfoMusic = Colors.white;
 
@@ -204,25 +204,17 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic>{
         ),
       ),
       onTap: () {
-        Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.bottomToTop,
-              duration: const Duration(milliseconds: 300),
-              reverseDuration: const Duration(milliseconds: 300),
-              child: MusicDetailScreen(
-                player: widget.audioState.player,
-                mediaItem: context.read<MusicState>().currentMediaItem!,
-              ),
-              childCurrent: FloatingPlayingMusic(
-                audioState: widget.audioState,
-                currentItem: widget.currentItem,
-              )),
+        Get.to(
+          () => MusicDetailScreen(
+            player: widget.audioState.player,
+            mediaItem: context.read<MusicState>().currentMediaItem!,
+          ),
+          transition: Transition.downToUp,
+          duration: const Duration(milliseconds: 300),
         );
       },
     );
   }
-
   Widget _playPauseButton(PlayerState? playerState) {
     final processingState = playerState?.processingState;
     final playing = playerState?.playing;

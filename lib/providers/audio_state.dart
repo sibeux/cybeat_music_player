@@ -39,13 +39,13 @@ class AudioState extends ChangeNotifier {
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
 
-    final String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?uid=${list.uid}&type=$type';
+    String url =
+        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?uid=${list.uid}&type=$type";
     const api =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
     try {
-      final response = await http.post(Uri.parse(url));
+      final response = await http.get(Uri.parse(url));
       final apiResponse = await http.get(Uri.parse(api));
 
       final List<dynamic> listData = json.decode(response.body);

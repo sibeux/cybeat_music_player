@@ -5,6 +5,7 @@ import 'package:cybeat_music_player/widgets/detail_screen/favorite_button.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/control_buttons.dart';
 import 'package:cybeat_music_player/widgets/detail_screen/title_artist_detail_music.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../widgets/detail_screen/cover_blur.dart';
@@ -92,7 +93,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Get.back();
               },
             ),
             title: AppbarTitle(

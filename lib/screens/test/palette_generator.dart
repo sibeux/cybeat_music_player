@@ -92,7 +92,7 @@ class _ImageColorsState extends State<ImageColors> {
       maximumColorCount: 20,
     );
     setState(() {
-      print(newRegion);
+      // print(newRegion);
     });
   }
 

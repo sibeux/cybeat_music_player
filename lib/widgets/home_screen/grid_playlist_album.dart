@@ -7,8 +7,8 @@ import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/providers/playlist_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class GridViewPlaylistAlbum extends StatelessWidget {
@@ -42,18 +42,13 @@ class GridViewPlaylistAlbum extends StatelessWidget {
           audioState.init(playlist);
           audioState.player.play();
         }
-        Navigator.push(
-          context,
-          PageTransition(
-            type: PageTransitionType.leftToRightWithFade,
-            duration: const Duration(milliseconds: 300),
-            reverseDuration: const Duration(milliseconds: 300),
-            child: AzListMusicScreen(
-              playlist: playlist,
-              audioState: audioState,
-            ),
-            childCurrent: context.widget,
+        Get.to(
+          () => AzListMusicScreen(
+            playlist: playlist,
+            audioState: audioState,
           ),
+          transition: Transition.leftToRightWithFade,
+          duration: const Duration(milliseconds: 300),
         );
       },
       child: Container(
