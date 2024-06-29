@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cybeat_music_player/components/dominant_color.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/widgets/animated_rotate_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,6 +41,9 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
       }
     });
 
+    final progressMusicController =
+        Get.put(ProgressMusicController(player: widget.audioState.player));
+
     return GestureDetector(
       child: SizedBox(
         width: double.infinity,
@@ -77,119 +81,154 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                             topRight: Radius.circular(100),
                             bottomRight: Radius.circular(100)),
                       ),
-                      child: Row(
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomEnd,
                         children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 35),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Text(
-                                  // String ini dianggap setState()
-                                  //   widget.currentItem!.tag.title ?? '',
-                                  //   style: TextStyle(
-                                  //       color: colorInfoMusic,
-                                  //       overflow: TextOverflow.ellipsis,
-                                  //       fontSize: 14,
-                                  //       fontWeight: FontWeight.bold),
-                                  // ),
-                                  SizedBox(
-                                    height: 20,
-                                    child: AutoSizeText(
-                                      widget.currentItem!.tag.title ?? '',
-                                      minFontSize: 14,
-                                      maxFontSize: 14,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                        // fontSize: 14,
-                                        color: colorInfoMusic,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      overflowReplacement: Marquee(
-                                        text:
-                                            widget.currentItem!.tag.title ?? '',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: colorInfoMusic,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        scrollAxis: Axis.horizontal,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        // spacing end of text
-                                        blankSpace: 30,
-                                        // second needed before slide again
-                                        pauseAfterRound:
-                                            const Duration(seconds: 0),
-                                        // text gonna slide first time after this second
-                                        startAfter: const Duration(seconds: 2),
-                                        decelerationCurve: Curves.easeOut,
-                                        // speed of slide text
-                                        velocity: 35,
-                                        accelerationCurve: Curves.linear,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                    child: AutoSizeText(
-                                      widget.currentItem!.tag.artist ?? '',
-                                      minFontSize: 12,
-                                      maxFontSize: 12,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                          // fontSize: 12,
-                                          color: colorInfoMusic,
-                                          fontWeight: FontWeight.normal),
-                                      overflowReplacement: Marquee(
-                                        text: widget.currentItem!.tag.artist ??
-                                            '',
-                                        style: TextStyle(
-                                            fontSize: 12,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 35),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // Text(
+                                      // String ini dianggap setState()
+                                      //   widget.currentItem!.tag.title ?? '',
+                                      //   style: TextStyle(
+                                      //       color: colorInfoMusic,
+                                      //       overflow: TextOverflow.ellipsis,
+                                      //       fontSize: 14,
+                                      //       fontWeight: FontWeight.bold),
+                                      // ),
+                                      SizedBox(
+                                        height: 20,
+                                        child: AutoSizeText(
+                                          widget.currentItem!.tag.title ?? '',
+                                          minFontSize: 14,
+                                          maxFontSize: 14,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            // fontSize: 14,
                                             color: colorInfoMusic,
-                                            fontWeight: FontWeight.normal),
-                                        scrollAxis: Axis.horizontal,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        // spacing end of text
-                                        blankSpace: 30,
-                                        // second needed before slide again
-                                        pauseAfterRound:
-                                            const Duration(seconds: 0),
-                                        // text gonna slide first time after this second
-                                        startAfter: const Duration(seconds: 2),
-                                        decelerationCurve: Curves.easeOut,
-                                        // speed of slide text
-                                        velocity: 35,
-                                        accelerationCurve: Curves.linear,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflowReplacement: Marquee(
+                                            text:
+                                                widget.currentItem!.tag.title ??
+                                                    '',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: colorInfoMusic,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            scrollAxis: Axis.horizontal,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            // spacing end of text
+                                            blankSpace: 30,
+                                            // second needed before slide again
+                                            pauseAfterRound:
+                                                const Duration(seconds: 0),
+                                            // text gonna slide first time after this second
+                                            startAfter:
+                                                const Duration(seconds: 2),
+                                            decelerationCurve: Curves.easeOut,
+                                            // speed of slide text
+                                            velocity: 35,
+                                            accelerationCurve: Curves.linear,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      SizedBox(
+                                        height: 20,
+                                        child: AutoSizeText(
+                                          widget.currentItem!.tag.artist ?? '',
+                                          minFontSize: 12,
+                                          maxFontSize: 12,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                              // fontSize: 12,
+                                              color: colorInfoMusic,
+                                              fontWeight: FontWeight.normal),
+                                          overflowReplacement: Marquee(
+                                            text: widget
+                                                    .currentItem!.tag.artist ??
+                                                '',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: colorInfoMusic,
+                                                fontWeight: FontWeight.normal),
+                                            scrollAxis: Axis.horizontal,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            // spacing end of text
+                                            blankSpace: 30,
+                                            // second needed before slide again
+                                            pauseAfterRound:
+                                                const Duration(seconds: 0),
+                                            // text gonna slide first time after this second
+                                            startAfter:
+                                                const Duration(seconds: 2),
+                                            decelerationCurve: Curves.easeOut,
+                                            // speed of slide text
+                                            velocity: 35,
+                                            accelerationCurve: Curves.linear,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
+                              StreamBuilder<PlayerState>(
+                                stream:
+                                    widget.audioState.player.playerStateStream,
+                                builder: (_, snapshot) {
+                                  final playerState = snapshot.data;
+                                  return _playPauseButton(playerState);
+                                },
+                              ),
+                              IconButton(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                icon: const Icon(
+                                  Icons.skip_next_rounded,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  widget.audioState.player.seekToNext();
+                                },
+                              ),
+                              const SizedBox(width: 5),
+                            ],
                           ),
-                          StreamBuilder<PlayerState>(
-                            stream: widget.audioState.player.playerStateStream,
-                            builder: (_, snapshot) {
-                              final playerState = snapshot.data;
-                              return _playPauseButton(playerState);
+                          Obx(
+                            () {
+                              final duration =
+                                  progressMusicController.duration.value;
+                              final position =
+                                  progressMusicController.position.value;
+
+                              return Container(
+                                padding: const EdgeInsets.only(right: 20),
+                                height: 3.5,
+                                child: LinearProgressIndicator(
+                                  value: (position.inMilliseconds > 0 &&
+                                          position.inMilliseconds <
+                                              duration.inMilliseconds)
+                                      ? position.inMilliseconds /
+                                          duration.inMilliseconds
+                                      : 0.0,
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: Colors.greenAccent,
+                                  backgroundColor: Colors.grey,
+                                ),
+                              );
                             },
                           ),
-                          IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            icon: const Icon(
-                              Icons.skip_next_rounded,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              widget.audioState.player.seekToNext();
-                            },
-                          ),
-                          const SizedBox(width: 5),
                         ],
                       ),
                     ),
@@ -215,6 +254,7 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
       },
     );
   }
+
   Widget _playPauseButton(PlayerState? playerState) {
     final processingState = playerState?.processingState;
     final playing = playerState?.playing;

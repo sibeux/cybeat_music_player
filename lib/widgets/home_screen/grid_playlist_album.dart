@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -24,6 +25,7 @@ class GridViewPlaylistAlbum extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final playlistDimainkan = context.watch<PlaylistState>().currentPlaylist;
+    final playlistPlayController = Get.put(PlaylistPlayController());
     String colorTitle = "#313031";
 
     if (playlistDimainkan?.uid == playlist.uid) {
@@ -40,7 +42,7 @@ class GridViewPlaylistAlbum extends StatelessWidget {
           context.read<PlayingState>().pause();
           context.read<MusicState>().clear();
           audioState.init(playlist);
-          audioState.player.play();
+          playlistPlayController.onPlaylist(playlist);
         }
         Get.to(
           () => AzListMusicScreen(

@@ -13,15 +13,18 @@ class AppbarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final musicController = Get.put(MusicStateController(player: player!));
+    final playlistPlayController = Get.put(PlaylistPlayController());
+
     return Column(
       children: [
-        const Text(
-          'PLAYING FROM ALBUM',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
+        Obx(
+          () => Text(
+            'PLAYING FROM ${playlistPlayController.playlistType.value}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         const SizedBox(
@@ -30,7 +33,7 @@ class AppbarTitle extends StatelessWidget {
         Obx(
           () => Text(
             // "日本の歌",
-            musicController.album.value,
+            playlistPlayController.playlistTitle.value,
             style: const TextStyle(
               color: Colors.white,
               overflow: TextOverflow.ellipsis,
