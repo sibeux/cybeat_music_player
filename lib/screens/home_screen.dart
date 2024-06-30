@@ -12,14 +12,14 @@ import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, required this.playListlist});
+  const HomeScreen(
+      {super.key, required this.playListlist, required this.audioState});
 
   final List<Playlist> playListlist;
+  final AudioState audioState;
 
   @override
   Widget build(BuildContext context) {
-    final audioState = context.watch<AudioState>();
-    
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
       appBar: AppBar(
@@ -142,10 +142,12 @@ class HomeScreen extends StatelessWidget {
                       crossAxisCount: 3,
                       childAspectRatio: 2 / 3.5,
                       children: playListlist
-                          .map((playlist) => GridViewPlaylistAlbum(
-                                playlist: playlist,
-                                audioState: audioState,
-                              ))
+                          .map(
+                            (playlist) => GridViewPlaylistAlbum(
+                              playlist: playlist,
+                              audioState: audioState,
+                            ),
+                          )
                           .toList(),
                     )
                   ],

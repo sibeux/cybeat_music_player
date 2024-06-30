@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/components/toast.dart';
-import 'package:cybeat_music_player/database/favorite.dart';
+import 'package:cybeat_music_player/controller/favorite.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 

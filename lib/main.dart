@@ -1,13 +1,14 @@
-
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/providers/playlist_state.dart';
-import 'package:cybeat_music_player/screens/splash_screen.dart';
+import 'package:cybeat_music_player/screens/splash/splash_link_music_screen.dart';
+import 'package:cybeat_music_player/screens/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/get_core.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -60,9 +61,22 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         showPerformanceOverlay: false,
-        // home: const TestingMusicScreen(),
-        home: const SplashScreen(),
-        // home: const PaletteGeneratorApp(),
+        initialRoute: '/',
+        getPages: [
+          GetPage(
+            name: '/',
+            page: () => const SplashScreen(
+              path: '/',
+            ),
+          ),
+          GetPage(
+            name: '/cybeat/category/:id',
+            page: () => SplashLinkMusicScreen(
+              path: 'category',
+              uid: Get.parameters['id'] ?? ''
+            ),
+          ),
+        ],
       ),
     );
   }

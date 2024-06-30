@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/providers/playing_state.dart';
@@ -31,9 +31,8 @@ class AzListMusic extends ISuspensionBean {
 
 class AzListMusicScreen extends StatefulWidget {
   const AzListMusicScreen(
-      {super.key, required this.playlist, required this.audioState});
+      {super.key, required this.audioState});
 
-  final Playlist playlist;
   final AudioState audioState;
 
   @override
@@ -164,6 +163,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       );
     }
 
+    final playlistPlayController = Get.put(PlaylistPlayController());
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: HexColor('#fefffe'),
@@ -177,14 +178,14 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
         ),
         centerTitle: true,
         toolbarHeight: 60,
-        title: Text(
-          widget.playlist.title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: HexColor('#1e0b2b'),
-            fontSize: 21,
-          ),
-        ),
+        title: Obx(() => Text(
+              playlistPlayController.playlistTitle.value,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: HexColor('#1e0b2b'),
+                fontSize: 21,
+              ),
+            )),
       ),
       body: Column(
         children: [

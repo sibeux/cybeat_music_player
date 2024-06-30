@@ -2,14 +2,18 @@ import 'dart:convert';
 
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({super.key, required this.path});
+
+  final String path;
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -30,10 +34,11 @@ class _SplashScreenState extends State<SplashScreen> {
     // delaying the user experience is a bad design practice!
     // ignore_for_file: avoid_print
 
-    String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php';
     const api =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
+
+    String url =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -62,6 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
         print('Error: $e');
       }
     }
+
     // print('ready in 3...');
     // await Future.delayed(const Duration(seconds: 1));
     // print('ready in 2...');
@@ -80,7 +86,15 @@ class _SplashScreenState extends State<SplashScreen> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return HomeScreen(playListlist: listPlaylist);
+
+    final audioState = context.watch<AudioState>();
+
+    switch (widget.path) {
+      case '/':
+        return HomeScreen(playListlist: listPlaylist, audioState: audioState);
+      default:
+        return HomeScreen(playListlist: listPlaylist, audioState: audioState);
+    }
   }
 
   String regexGdriveLink(String url, String key) {

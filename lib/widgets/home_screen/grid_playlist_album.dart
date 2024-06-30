@@ -46,7 +46,6 @@ class GridViewPlaylistAlbum extends StatelessWidget {
         }
         Get.to(
           () => AzListMusicScreen(
-            playlist: playlist,
             audioState: audioState,
           ),
           transition: Transition.leftToRightWithFade,
