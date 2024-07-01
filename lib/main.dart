@@ -70,6 +70,11 @@ class MyApp extends StatelessWidget {
             page: () => SplashLinkMusicScreen(
                 path: 'category', uid: Get.parameters['id'] ?? ''),
           ),
+          GetPage(
+            name: '/cybeat/album/:id',
+            page: () => SplashLinkMusicScreen(
+                path: 'album', uid: Get.parameters['id'] ?? ''),
+          ),
         ],
       ),
     );

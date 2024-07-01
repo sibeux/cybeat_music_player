@@ -10,8 +10,8 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 
-class GridViewPlaylistAlbum extends StatelessWidget {
-  const GridViewPlaylistAlbum({
+class GridPlaylistAlbum extends StatelessWidget {
+  const GridPlaylistAlbum({
     super.key,
     required this.playlist,
     required this.audioState,

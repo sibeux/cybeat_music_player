@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
+import 'package:cybeat_music_player/screens/splash/general_splash_screen.dart';
 import 'package:cybeat_music_player/screens/splash/splash_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -15,6 +17,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer' as developer;
 
 class SplashLinkMusicScreen extends StatefulWidget {
   const SplashLinkMusicScreen({
@@ -34,7 +37,6 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
   List<Playlist> listPlaylist = [];
   late ConcatenatingAudioSource playlist;
   int _nextMediaId = 1;
-  bool reallyEmpty = false;
 
   @override
   void initState() {
@@ -61,11 +63,20 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
       final List<dynamic> listData = json.decode(response.body);
       final List<dynamic> apiData = json.decode(apiResponse.body);
 
+      if (listData.isEmpty) {
+        await Future.delayed(const Duration(seconds: 2));
+        FlutterNativeSplash.remove();
+        Get.offAll(() => const SplashHomeScreen(
+              path: '/',
+            ));
+        showToast('Playlist not found');
+        return;
+      }
+
       playlist = ConcatenatingAudioSource(
         children: listData.map(
           (item) {
             return AudioSource.uri(
-              // Uri.parse(item['link_gdrive']),
               Uri.parse(regexGdriveLink(
                   item['link_gdrive'], apiData[0]['gdrive_api'])),
               tag: MediaItem(
@@ -73,7 +84,6 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
                 title: capitalizeEachWord(item['title']),
                 artist: capitalizeEachWord(item['artist']),
                 album: capitalizeEachWord(item['album']),
-                // artUri: Uri.parse(item['cover']),
                 artUri: Uri.parse(
                     regexGdriveLink(item['cover'], apiData[0]['gdrive_api'])),
                 extras: {
@@ -97,7 +107,7 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
 
       setState(() {
         listPlaylist = [list];
-        playlist.length == 0 ? reallyEmpty = true : reallyEmpty = false;
+        developer.log('print me');
       });
 
       FlutterNativeSplash.remove();
@@ -115,13 +125,13 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
     final playingStateController = Get.put(PlayingStateController());
 
     if (listPlaylist.isEmpty) {
-      return const SplashHomeScreen(path: '/');
+      return const GeneralSplashScreen();
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         playingStateController.pause();
         playlistPlayController.onPlaylist(listPlaylist[0]);
       });
-      audioState.clear();
+      audioState.recreate();
       context.read<AudioState>().setSourceAudio(playlist);
       context.read<MusicState>().clear();
       return AzListMusicScreen(

@@ -17,7 +17,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 
-import '../../widgets/floating_playing_music.dart';
+import '../widgets/floating_playing_music.dart';
 
 var isPlaying = false;
 

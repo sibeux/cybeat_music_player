@@ -19,6 +19,12 @@ class AudioState extends ChangeNotifier {
 
   AudioState() {
     player = AudioPlayer();
+    player.playbackEventStream.listen(
+      (event) {},
+      onError: (Object e, StackTrace stackTrace) {
+        logger.e('A stream error occurred: $e');
+      },
+    );
   }
 
   Future<void> clear() async {
@@ -28,13 +34,13 @@ class AudioState extends ChangeNotifier {
     // notifyListeners();
   }
 
+  Future<void> recreate() async {
+    await player.pause();
+    await player.dispose();
+    player = AudioPlayer();
+  }
+
   Future<void> init(Playlist list) async {
-    player.playbackEventStream.listen(
-      (event) {},
-      onError: (Object e, StackTrace stackTrace) {
-        logger.e('A stream error occurred: $e');
-      },
-    );
 
     String type = list.type.toLowerCase();
     _nextMediaId = 1;

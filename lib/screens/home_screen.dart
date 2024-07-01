@@ -4,7 +4,7 @@ import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
-import 'package:cybeat_music_player/widgets/home_screen/grid_playlist_album.dart';
+import 'package:cybeat_music_player/widgets/home_screen/list_album/scale_tap_playlist.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,7 +21,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PlayingStateController playingStateController = Get.put(PlayingStateController());
+    final PlayingStateController playingStateController =
+        Get.put(PlayingStateController());
 
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
@@ -146,7 +147,7 @@ class HomeScreen extends StatelessWidget {
                       childAspectRatio: 2 / 3.5,
                       children: playListlist
                           .map(
-                            (playlist) => GridViewPlaylistAlbum(
+                            (playlist) => ScaleTapPlaylist(
                               playlist: playlist,
                               audioState: audioState,
                             ),
