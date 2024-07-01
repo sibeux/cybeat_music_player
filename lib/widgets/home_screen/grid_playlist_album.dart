@@ -4,8 +4,6 @@ import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
-import 'package:cybeat_music_player/providers/playing_state.dart';
-import 'package:cybeat_music_player/providers/playlist_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,26 +22,20 @@ class GridViewPlaylistAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final playlistDimainkan = context.watch<PlaylistState>().currentPlaylist;
     final playlistPlayController = Get.put(PlaylistPlayController());
-    String colorTitle = "#313031";
-
-    if (playlistDimainkan?.uid == playlist.uid) {
-      colorTitle = '#8238be';
-    }
+    final playingStateController = Get.put(PlayingStateController());
 
     return GestureDetector(
       onTap: () {
-        if (context.read<PlaylistState>().currentPlaylist?.uid == "" ||
-            context.read<PlaylistState>().currentPlaylist?.uid !=
-                playlist.uid) {
-          context.read<PlaylistState>().setCurrentPlaylist(playlist);
+        if (playlistPlayController.playlistTitleValue != playlist.title ||
+            playlistPlayController.playlistTitleValue == "") {
           audioState.clear();
-          context.read<PlayingState>().pause();
+          playingStateController.pause();
           context.read<MusicState>().clear();
           audioState.init(playlist);
           playlistPlayController.onPlaylist(playlist);
         }
+
         Get.to(
           () => AzListMusicScreen(
             audioState: audioState,
@@ -83,18 +75,22 @@ class GridViewPlaylistAlbum extends StatelessWidget {
                 children: [
                   Container(
                     alignment: Alignment.centerLeft,
-                    child: AutoSizeText(
-                      playlist.title,
-                      textAlign: TextAlign.left,
-                      maxFontSize: 14,
-                      minFontSize: 14,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: HexColor(colorTitle),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                    ),
+                    child: Obx(() => AutoSizeText(
+                          playlist.title,
+                          textAlign: TextAlign.left,
+                          maxFontSize: 14,
+                          minFontSize: 14,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: HexColor(
+                                playlistPlayController.playlistTitleValue ==
+                                        playlist.title
+                                    ? '#8238be'
+                                    : '#313031'),
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                        )),
                   ),
                   Text(
                     "${playlist.type} ● Nasrul Wahabi",

@@ -91,6 +91,7 @@ flutter:
     - assets/images/placeholder_cover_music.png
     - assets/animations/music-spectrum.json
     - assets/animations/music-spectrum-2.json
+    - assets/images/cybeat_splash.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

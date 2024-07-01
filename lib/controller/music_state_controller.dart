@@ -50,6 +50,10 @@ class PlaylistPlayController extends GetxController {
     playlistTitle.value = playlist.title;
     playlistType.value = playlist.type.toUpperCase();
   }
+
+  String get playlistTitleValue {
+    return playlistTitle.value;
+  }
 }
 
 class ProgressMusicController extends GetxController{
@@ -90,5 +94,17 @@ class ProgressMusicController extends GetxController{
 
   void updatePosition(Duration? position) {
     this.position.value = position ?? Duration.zero;
+  }
+}
+
+class PlayingStateController extends GetxController {
+  var isPlaying = false.obs;
+
+  void play() {
+    isPlaying.value = true;
+  }
+
+  void pause() {
+    isPlaying.value = false;
   }
 }

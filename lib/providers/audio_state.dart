@@ -25,7 +25,7 @@ class AudioState extends ChangeNotifier {
     await player.stop();
     await player.dispose();
     player = AudioPlayer();
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> init(Playlist list) async {
@@ -82,6 +82,21 @@ class AudioState extends ChangeNotifier {
     } catch (e) {
       logger.e('Error loading audio source: $e');
     }
+  }
+
+  Future<void> setSourceAudio(ConcatenatingAudioSource playlist) async{
+    player.playbackEventStream.listen(
+      (event) {},
+      onError: (Object e, StackTrace stackTrace) {
+        logger.e('A stream error occurred: $e');
+      },
+    );
+
+    this.playlist = playlist;
+
+    queue = playlist.sequence.map((e) => e.tag as MediaItem).toList();
+
+    await player.setAudioSource(playlist);
   }
 
   String filteredUrl(String url, String key) {

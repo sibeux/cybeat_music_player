@@ -1,14 +1,11 @@
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
-import 'package:cybeat_music_player/providers/playing_state.dart';
-import 'package:cybeat_music_player/providers/playlist_state.dart';
 import 'package:cybeat_music_player/screens/splash/splash_link_music_screen.dart';
-import 'package:cybeat_music_player/screens/splash/splash_screen.dart';
+import 'package:cybeat_music_player/screens/splash/splash_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/get_core.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -47,9 +44,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(lazy: true, create: (_) => AudioState()),
-        ChangeNotifierProvider(create: (_) => PlayingState()),
         ChangeNotifierProvider(create: (_) => MusicState()),
-        ChangeNotifierProvider(create: (_) => PlaylistState()),
+        // ChangeNotifierProvider(create: (_) => PlaylistState()),
       ],
       child: GetMaterialApp(
         title: 'Okejek',
@@ -65,16 +61,14 @@ class MyApp extends StatelessWidget {
         getPages: [
           GetPage(
             name: '/',
-            page: () => const SplashScreen(
+            page: () => const SplashHomeScreen(
               path: '/',
             ),
           ),
           GetPage(
             name: '/cybeat/category/:id',
             page: () => SplashLinkMusicScreen(
-              path: 'category',
-              uid: Get.parameters['id'] ?? ''
-            ),
+                path: 'category', uid: Get.parameters['id'] ?? ''),
           ),
         ],
       ),

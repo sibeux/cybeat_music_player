@@ -4,7 +4,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
-import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/screens/music_detail_screen.dart';
 import 'package:cybeat_music_player/widgets/music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
@@ -30,8 +29,7 @@ class AzListMusic extends ISuspensionBean {
 }
 
 class AzListMusicScreen extends StatefulWidget {
-  const AzListMusicScreen(
-      {super.key, required this.audioState});
+  const AzListMusicScreen({super.key, required this.audioState});
 
   final AudioState audioState;
 
@@ -61,6 +59,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     Widget content = const Center(
       child: Text('No music yet! Add some!'),
     );
+
+    final  playingStateController =
+        Get.put(PlayingStateController());
 
     content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
@@ -140,7 +141,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                     audioState.player.setAudioSource(audioState.playlist,
                         initialIndex: index);
 
-                    context.read<PlayingState>().play();
+                    playingStateController.play();
 
                     context
                         .read<MusicState>()
@@ -212,7 +213,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                                 return InkWell(
                                   onTap: () {
                                     if (snapshot.hasData) {
-                                      _shuffleMusic(audioState, sequence);
+                                      _shuffleMusic(audioState, sequence,
+                                          playingStateController);
                                     }
                                   },
                                   child: Container(
@@ -280,30 +282,34 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
               ],
             ),
           ),
-          if (context.watch<PlayingState>().isPlaying)
-            StreamBuilder<SequenceState?>(
-              stream: audioState.player.sequenceStateStream,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final currentItem = snapshot.data?.currentSource;
-                  context
-                      .read<MusicState>()
-                      .setCurrentMediaItem(currentItem!.tag as MediaItem);
+          Obx(
+            () => playingStateController.isPlaying.value
+                ? StreamBuilder<SequenceState?>(
+                    stream: audioState.player.sequenceStateStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final currentItem = snapshot.data?.currentSource;
+                        context
+                            .read<MusicState>()
+                            .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
-                  return FloatingPlayingMusic(
-                    audioState: audioState,
-                    currentItem: currentItem,
-                  );
-                }
-                return const SizedBox();
-              },
-            )
+                        return FloatingPlayingMusic(
+                          audioState: audioState,
+                          currentItem: currentItem,
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  )
+                : const SizedBox(),
+          ),
         ],
       ),
     );
   }
 
-  void _shuffleMusic(AudioState audioState, List<IndexedAudioSource> sequence) {
+  void _shuffleMusic(AudioState audioState, List<IndexedAudioSource> sequence,
+      PlayingStateController playingStateController) {
     final index = random(0, audioState.playlist.length - 1);
 
     Get.to(
@@ -318,7 +324,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
     audioState.player.setAudioSource(audioState.playlist, initialIndex: index);
 
-    context.read<PlayingState>().play();
+    playingStateController.play();
 
     context
         .read<MusicState>()

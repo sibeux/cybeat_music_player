@@ -1,12 +1,13 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
-import 'package:cybeat_music_player/providers/playing_state.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:cybeat_music_player/widgets/home_screen/grid_playlist_album.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final PlayingStateController playingStateController = Get.put(PlayingStateController());
+
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
       appBar: AppBar(
@@ -155,24 +158,27 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          if (context.watch<PlayingState>().isPlaying)
-            StreamBuilder<SequenceState?>(
-              stream: audioState.player.sequenceStateStream,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final currentItem = snapshot.data?.currentSource;
-                  context
-                      .read<MusicState>()
-                      .setCurrentMediaItem(currentItem!.tag as MediaItem);
+          Obx(
+            () => playingStateController.isPlaying.value
+                ? StreamBuilder<SequenceState?>(
+                    stream: audioState.player.sequenceStateStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final currentItem = snapshot.data?.currentSource;
+                        context
+                            .read<MusicState>()
+                            .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
-                  return FloatingPlayingMusic(
-                    audioState: audioState,
-                    currentItem: currentItem,
-                  );
-                }
-                return const SizedBox();
-              },
-            )
+                        return FloatingPlayingMusic(
+                          audioState: audioState,
+                          currentItem: currentItem,
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  )
+                : const SizedBox(),
+          ),
         ],
       ),
     );

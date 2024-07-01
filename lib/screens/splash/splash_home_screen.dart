@@ -10,16 +10,16 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key, required this.path});
+class SplashHomeScreen extends StatefulWidget {
+  const SplashHomeScreen({super.key, required this.path});
 
   final String path;
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashHomeScreen> createState() => _SplashHomeScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashHomeScreenState extends State<SplashHomeScreen> {
   List<Playlist> listPlaylist = [];
 
   @override
