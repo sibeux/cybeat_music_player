@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/widgets/home_screen/list_album/grid_playlist_album.dart';
+import 'package:cybeat_music_player/widgets/home_screen/list_album/modal_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+// import 'dart:developer' as developer;
 
 double colorOnTap = 1;
 
@@ -24,7 +27,6 @@ class ScaleTapPlaylist extends StatefulWidget {
 class ScaleTapPlaylistState extends State<ScaleTapPlaylist>
     with SingleTickerProviderStateMixin {
   static const clickAnimationDurationMillis = 100;
-
   double _scaleTransformValue = 1;
 
   // needed for the "click" tap effect
@@ -37,7 +39,7 @@ class ScaleTapPlaylistState extends State<ScaleTapPlaylist>
       vsync: this,
       duration: const Duration(milliseconds: clickAnimationDurationMillis),
       lowerBound: 0.0,
-      upperBound: 0.05,
+      upperBound: 0.1,
     )..addListener(() {
         setState(() => _scaleTransformValue = 1 - animationController.value);
       });
@@ -65,7 +67,6 @@ class ScaleTapPlaylistState extends State<ScaleTapPlaylist>
 
   @override
   Widget build(BuildContext context) {
-
     onTap() {
       // print('tapped');
     }
@@ -73,15 +74,33 @@ class ScaleTapPlaylistState extends State<ScaleTapPlaylist>
     DateTime dateTime1 = DateTime.now();
 
     return GestureDetector(
-      onTap: () {
+      onLongPress: () {
+        HapticFeedback.vibrate();
+        showAlbumModalBottom(context, widget.playlist);
+      },
+      // onTap: () {
+      //   developer.log('tapped');
+      //   _shrinkButtonSize();
+      //   _restoreButtonSize();
+      // },
+      onPanDown: (details) {
         _shrinkButtonSize();
+      },
+      // onTapDown: (_) {
+      //   developer.log('tapdown');
+      //   _shrinkButtonSize();
+      //   dateTime1 = DateTime.now();
+      // },
+      onPanCancel: () {
+        // ini masih ada gunanya
         _restoreButtonSize();
       },
-      onTapDown: (_) {
-        _shrinkButtonSize();
-        dateTime1 = DateTime.now();
+      onPanEnd: (_) {
+        // ini masih ada gunanya
+        _restoreButtonSize();
       },
       onTapUp: (_) {
+        // sejauh ini nggak ada gunanya
         _restoreButtonSize();
         Duration difference = DateTime.now().difference(dateTime1);
         if (difference.inMilliseconds < 500) {
@@ -97,7 +116,7 @@ class ScaleTapPlaylistState extends State<ScaleTapPlaylist>
           );
         }
       },
-      onTapCancel: _restoreButtonSize,
+      onTapCancel: _restoreButtonSize, // ini kemungkinan ada sih
       child: Transform.scale(
         scale: _scaleTransformValue,
         child: SizedBox(

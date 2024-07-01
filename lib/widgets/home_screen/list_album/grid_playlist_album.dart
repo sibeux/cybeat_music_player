@@ -5,7 +5,9 @@ import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
@@ -92,12 +94,28 @@ class GridPlaylistAlbum extends StatelessWidget {
                           maxLines: 2,
                         )),
                   ),
-                  Text(
-                    "${playlist.type} ● Nasrul Wahabi",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  const SizedBox(
+                    height: 3,
+                  ),
+                  Row(
+                    children: [
+                      if (playlist.pin == "true")
+                      Icon(
+                        Icons.push_pin,
+                        size: 16,
+                        color: HexColor('#8238be'),
+                      ),
+                      Flexible(
+                        fit: FlexFit.tight,
+                        child: Text(
+                          "${playlist.type} ● Nasrul Wahabi",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),

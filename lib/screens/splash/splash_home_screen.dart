@@ -53,6 +53,7 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
           title: capitalizeEachWord(item['name']),
           image: regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
           type: capitalizeEachWord(item['type']),
+          pin: item['pin'],
           date: item['date'],
         );
       }).toList();

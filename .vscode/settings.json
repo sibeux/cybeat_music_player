@@ -4,4 +4,7 @@
     "java.configuration.updateBuildConfiguration": "interactive",
     "cmake.configureOnOpen": true,
     "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "editor.tokenColorCustomizations": {
+        "comments": "#5c6a82"
+    },
 }

@@ -3,6 +3,7 @@ class Playlist {
   final String title;
   final String image;
   final String type;
+  final String pin;
   final String date;
 
   Playlist({
@@ -10,6 +11,7 @@ class Playlist {
     required this.title,
     required this.image,
     required this.type,
+    required this.pin,
     required this.date,
   });
 }
