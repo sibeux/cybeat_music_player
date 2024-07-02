@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
@@ -7,17 +8,45 @@ import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:cybeat_music_player/widgets/home_screen/list_album/scale_tap_playlist.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
+import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen(
-      {super.key, required this.playListlist, required this.audioState});
+      {super.key, required this.playlistList, required this.audioState});
 
-  final List<Playlist> playListlist;
+  final List<Playlist> playlistList;
   final AudioState audioState;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _gridViewKey = GlobalKey();
+  final _homeAlbumGridController = Get.put(HomeAlbumGridController());
+
+  @override
+  void initState() {
+    _updateChildrenFromPlaylist();
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    if (widget.playlistList != oldWidget.playlistList) {
+      _updateChildrenFromPlaylist();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _updateChildrenFromPlaylist() {
+    _homeAlbumGridController.updateChildren(widget.playlistList);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,29 +160,17 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                         Expanded(child: SizedBox()),
-                        Icon(Icons.list)
+                        Icon(Icons.list_rounded),
                       ],
                     ),
                     const SizedBox(
                       height: 15,
                     ),
-                    GridView.count(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      primary: false,
-                      crossAxisSpacing: 15,
-                      mainAxisSpacing: 10,
-                      crossAxisCount: 3,
-                      childAspectRatio: 2 / 3.5,
-                      children: playListlist
-                          .map(
-                            (playlist) => ScaleTapPlaylist(
-                              playlist: playlist,
-                              audioState: audioState,
-                            ),
-                          )
-                          .toList(),
-                    )
+                    Obx(() => 
+                      _homeAlbumGridController.isTapped.value
+                          ? _getReorderableWidget()
+                          : _getReorderableWidget(),
+                    ),
                   ],
                 ),
               ),
@@ -162,7 +179,7 @@ class HomeScreen extends StatelessWidget {
           Obx(
             () => playingStateController.isPlaying.value
                 ? StreamBuilder<SequenceState?>(
-                    stream: audioState.player.sequenceStateStream,
+                    stream: widget.audioState.player.sequenceStateStream,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         final currentItem = snapshot.data?.currentSource;
@@ -171,7 +188,7 @@ class HomeScreen extends StatelessWidget {
                             .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
                         return FloatingPlayingMusic(
-                          audioState: audioState,
+                          audioState: widget.audioState,
                           currentItem: currentItem,
                         );
                       }
@@ -181,6 +198,48 @@ class HomeScreen extends StatelessWidget {
                 : const SizedBox(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _getReorderableWidget() {
+    final generatedChildren = _getGeneratedChildren();
+    return ReorderableBuilder(
+      onReorder: (p0) {},
+      children: generatedChildren,
+      builder: (context) {
+        return GridView(
+          key: _gridViewKey,
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          primary: false,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 10,
+            crossAxisCount: 3,
+            childAspectRatio: 2 / 3.5,
+          ),
+          children: context,
+        );
+      },
+    );
+  }
+
+  List<Widget> _getGeneratedChildren() {
+    return List<Widget>.generate(
+      widget.playlistList.length,
+      (index) => _getChild(index: index),
+    );
+  }
+
+  Widget _getChild({required int index}) {
+    final children = _homeAlbumGridController.children;
+    return CustomDraggable(
+      key: Key(children[index].toString()),
+      data: index,
+      child: ScaleTapPlaylist(
+        playlist: widget.playlistList[(children[index])],
+        audioState: widget.audioState,
       ),
     );
   }

@@ -92,9 +92,9 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
 
     switch (widget.path) {
       case '/':
-        return HomeScreen(playListlist: listPlaylist, audioState: audioState);
+        return HomeScreen(playlistList: listPlaylist, audioState: audioState);
       default:
-        return HomeScreen(playListlist: listPlaylist, audioState: audioState);
+        return HomeScreen(playlistList: listPlaylist, audioState: audioState);
     }
   }
 

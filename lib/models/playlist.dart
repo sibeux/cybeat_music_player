@@ -1,10 +1,10 @@
 class Playlist {
-  final String uid;
-  final String title;
-  final String image;
-  final String type;
-  final String pin;
-  final String date;
+  String uid;
+  String title;
+  String image;
+  String type;
+  String pin;
+  String date;
 
   Playlist({
     required this.uid,
@@ -14,4 +14,8 @@ class Playlist {
     required this.pin,
     required this.date,
   });
+
+  set setPin(String pin) {
+    this.pin = pin;
+  }
 }
