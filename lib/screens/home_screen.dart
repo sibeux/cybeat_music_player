@@ -6,7 +6,7 @@ import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:cybeat_music_player/widgets/home_screen/list_album/scale_tap_playlist.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cybeat_music_player/widgets/home_screen/sort/scale_tap_sort.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
@@ -140,25 +140,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     const SizedBox(
-                      height: 20,
+                      height: 15,
                     ),
                     const Row(
                       children: [
-                        Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.arrow_up_arrow_down,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              "Recents",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
+                        ScaleTapSort(),
                         Expanded(child: SizedBox()),
                         Icon(Icons.list_rounded),
                       ],
@@ -166,8 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 15,
                     ),
-                    Obx(() => 
-                      _homeAlbumGridController.isTapped.value
+                    Obx(
+                      () => _homeAlbumGridController.isTapped.value
                           ? _getReorderableWidget()
                           : _getReorderableWidget(),
                     ),

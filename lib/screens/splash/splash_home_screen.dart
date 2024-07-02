@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -21,6 +23,8 @@ class SplashHomeScreen extends StatefulWidget {
 
 class _SplashHomeScreenState extends State<SplashHomeScreen> {
   List<Playlist> listPlaylist = [];
+  final sortPreferencesController = Get.put(SortPreferencesController());
+  String get sort => sortPreferencesController.sortValue;
 
   @override
   void initState() {
@@ -34,11 +38,11 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
     // delaying the user experience is a bad design practice!
     // ignore_for_file: avoid_print
 
+    String url =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?sort=$sort';
+
     const api =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
-
-    String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php';
 
     try {
       final response = await http.get(Uri.parse(url));

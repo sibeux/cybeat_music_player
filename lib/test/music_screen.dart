@@ -5,7 +5,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
-import 'package:cybeat_music_player/screens/music_detail_screen.dart';
+// import 'package:cybeat_music_player/screens/music_detail_screen.dart';
 import 'package:cybeat_music_player/widgets/music_list.dart';
 // import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,6 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 // import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 
@@ -102,19 +101,19 @@ class _TestingMusicScreenState extends State<TestingMusicScreen> {
             audioPlayer: audioState.player,
           ),
           onTap: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.bottomToTop,
-                duration: const Duration(milliseconds: 300),
-                reverseDuration: const Duration(milliseconds: 300),
-                child: MusicDetailScreen(
-                  player: audioState.player,
-                  mediaItem: audioState.queue[index],
-                ),
-                childCurrent: const TestingMusicScreen(),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   PageTransition(
+            //     type: PageTransitionType.bottomToTop,
+            //     duration: const Duration(milliseconds: 300),
+            //     reverseDuration: const Duration(milliseconds: 300),
+            //     child: MusicDetailScreen(
+            //       player: audioState.player,
+            //       mediaItem: audioState.queue[index],
+            //     ),
+            //     childCurrent: const TestingMusicScreen(),
+            //   ),
+            // );
 
             if (context.read<MusicState>().currentMediaItem?.id == "" ||
                 context.read<MusicState>().currentMediaItem?.id !=
@@ -283,19 +282,19 @@ class _TestingMusicScreenState extends State<TestingMusicScreen> {
       PlayingStateController playingStateController) {
     final index = random(0, audioState.playlist.length - 1);
 
-    Navigator.push(
-      context,
-      PageTransition(
-        type: PageTransitionType.bottomToTop,
-        duration: const Duration(milliseconds: 300),
-        reverseDuration: const Duration(milliseconds: 300),
-        child: MusicDetailScreen(
-          player: audioState.player,
-          mediaItem: sequence[index].tag as MediaItem,
-        ),
-        childCurrent: const TestingMusicScreen(),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   PageTransition(
+    //     type: PageTransitionType.bottomToTop,
+    //     duration: const Duration(milliseconds: 300),
+    //     reverseDuration: const Duration(milliseconds: 300),
+    //     child: MusicDetailScreen(
+    //       player: audioState.player,
+    //       mediaItem: sequence[index].tag as MediaItem,
+    //     ),
+    //     childCurrent: const TestingMusicScreen(),
+    //   ),
+    // );
 
     audioState.player.seek(Duration.zero, index: index);
 
