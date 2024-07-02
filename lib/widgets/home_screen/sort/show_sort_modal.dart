@@ -92,7 +92,6 @@ class ListTileBottomModal extends StatelessWidget {
           onTap: () {
             sortPreferencesController.saveSortBy(title);
             Get.back();
-            debugPrint('sort value: ${sortPreferencesController.sortValue}');
           },
         ));
   }

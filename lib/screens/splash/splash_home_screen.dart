@@ -24,7 +24,6 @@ class SplashHomeScreen extends StatefulWidget {
 class _SplashHomeScreenState extends State<SplashHomeScreen> {
   List<Playlist> listPlaylist = [];
   final sortPreferencesController = Get.put(SortPreferencesController());
-  String get sort => sortPreferencesController.sortValue;
 
   @override
   void initState() {
@@ -32,11 +31,14 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
     initialization();
   }
 
-  void initialization() async {
+  Future<void> initialization() async {
     // This is where you can initialize the resources needed by your app while
     // the splash screen is displayed.  Remove the following example because
     // delaying the user experience is a bad design practice!
     // ignore_for_file: avoid_print
+
+    await sortPreferencesController.getSortBy();
+    final sort = sortPreferencesController.sort.value;
 
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?sort=$sort';
@@ -45,7 +47,7 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.post(Uri.parse(url));
       final apiResponse = await http.get(Uri.parse(api));
 
       final List<dynamic> listData = json.decode(response.body);

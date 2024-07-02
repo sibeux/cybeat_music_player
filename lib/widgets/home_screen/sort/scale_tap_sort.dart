@@ -81,24 +81,27 @@ class ScaleTapSortState extends State<ScaleTapSort>
         scale: _scaleTransformValue,
         child: SizedBox(
           child: Opacity(
-              opacity: colorOnTap,
-              child: Row(
-                children: [
-                  const Icon(
-                    CupertinoIcons.arrow_up_arrow_down,
-                    size: 20,
+            opacity: colorOnTap,
+            child: Row(
+              children: [
+                const Icon(
+                  CupertinoIcons.arrow_up_arrow_down,
+                  size: 20,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Obx(
+                  () => Text(
+                    sortPreferencesController.sortValue == 'uid'
+                        ? "Recents"
+                        : "Alphabetical",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Obx(() => Text(
-                        sortPreferencesController.sortValue == 'uid'
-                            ? "Recents"
-                            : "Alphabetical",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ))
-                ],
-              )),
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );
