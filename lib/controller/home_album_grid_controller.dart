@@ -11,6 +11,7 @@ class HomeAlbumGridController extends GetxController {
   var selectedAlbum = RxList<Playlist?>([]);
   var isTapped = false.obs;
   var jumlahPin = 0.obs;
+  var isLoading = true.obs;
 
   // diakses oleh splash_home_screen.dart
   var initiateAlbum = RxList<Playlist>([]);
@@ -48,6 +49,8 @@ class HomeAlbumGridController extends GetxController {
 
   Future<void> initializeAlbum(String sort) async {
     jumlahPin.value = 0;
+    isLoading.value = true;
+    
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?sort=$sort';
 
@@ -84,6 +87,9 @@ class HomeAlbumGridController extends GetxController {
       if (kDebugMode) {
         print('Error: $e');
       }
+    } finally {
+      // ini tetap dieksekusi baik berhasil atau gagal
+      isLoading.value = false;
     }
   }
 

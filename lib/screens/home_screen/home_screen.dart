@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 timeToFade: const Duration(milliseconds: 500),
                 padding: const EdgeInsets.only(top: 55),
                 thickness: 5,
-                thumbColor: HexColor('#ac8bc9').withOpacity(0.6),
+                thumbColor: HexColor('#ac8bc9').withOpacity(0.5),
                 trackVisibility: false,
                 child: SingleChildScrollView(
                   controller: _scrollController,
@@ -171,8 +171,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             Obx(
                               () => _homeAlbumGridController.isTapped.value
-                                  ? _getReorderableWidget()
-                                  : _getReorderableWidget(),
+                                  ? _homeAlbumGridController.isLoading.value
+                                      ? const SizedBox(
+                                          height: 400,
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        )
+                                      : _getReorderableWidget()
+                                  : _homeAlbumGridController.isLoading.value
+                                      ? const SizedBox(
+                                          height: 400,
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        )
+                                      : _getReorderableWidget(),
                             ),
                           ],
                         ),
