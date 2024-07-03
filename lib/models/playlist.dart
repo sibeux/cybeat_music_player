@@ -4,6 +4,7 @@ class Playlist {
   String image;
   String type;
   String pin;
+  String datePin;
   String date;
 
   Playlist({
@@ -12,6 +13,7 @@ class Playlist {
     required this.image,
     required this.type,
     required this.pin,
+    required this.datePin,
     required this.date,
   });
 

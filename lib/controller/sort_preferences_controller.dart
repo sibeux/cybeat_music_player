@@ -1,3 +1,4 @@
+import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -5,7 +6,8 @@ class SortPreferencesController extends GetxController {
   final sort = ''.obs;
   final isTapSort = false.obs;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  
+  final homeAlbumGridController = Get.put(HomeAlbumGridController());
+
   @override
   void onInit() {
     super.onInit();
@@ -20,10 +22,12 @@ class SortPreferencesController extends GetxController {
       case 'Recents':
         sort.value = 'uid';
         prefs.setString('sort', 'uid');
+        homeAlbumGridController.initializeAlbum('uid');
         break;
       case 'Alphabetical':
-        prefs.setString('sort', 'title');
         sort.value = 'title';
+        prefs.setString('sort', 'title');
+        homeAlbumGridController.initializeAlbum('title');
         break;
     }
   }
@@ -32,12 +36,6 @@ class SortPreferencesController extends GetxController {
     final SharedPreferences prefs = await _prefs;
     final sort = prefs.getString('sort') ?? 'uid';
     this.sort.value = sort;
-  }
-
-  get sortValueFromShared async {
-    final SharedPreferences prefs = await _prefs;
-    final sort = prefs.getString('sort') ?? 'uid';
-    return sort;
   }
 
   get sortValue => sort.value;

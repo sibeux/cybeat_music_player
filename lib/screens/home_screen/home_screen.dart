@@ -7,6 +7,7 @@ import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:cybeat_music_player/screens/home_screen/list_album/scale_tap_playlist.dart';
 import 'package:cybeat_music_player/screens/home_screen/sort/scale_tap_sort.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
@@ -29,6 +30,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _gridViewKey = GlobalKey();
   final _homeAlbumGridController = Get.put(HomeAlbumGridController());
+  final _scrollController = ScrollController();
+  bool _isScrollbarVisible = false;
 
   @override
   void initState() {
@@ -45,7 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _updateChildrenFromPlaylist() {
-    _homeAlbumGridController.updateChildren(widget.playlistList);
+    // tidak perlu update children karena sudah diupdate di initiaeAlbum
+    // _homeAlbumGridController.updateChildren(widget.playlistList);
   }
 
   @override
@@ -135,29 +139,50 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const Row(
-                      children: [
-                        ScaleTapSort(),
-                        Expanded(child: SizedBox()),
-                        Icon(Icons.list_rounded),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Obx(
-                      () => _homeAlbumGridController.isTapped.value
-                          ? _getReorderableWidget()
-                          : _getReorderableWidget(),
-                    ),
-                  ],
+              padding: const EdgeInsets.only(left: 20, right: 10),
+              child: RawScrollbar(
+                radius: const Radius.circular(10),
+                controller: _scrollController,
+                thumbVisibility: _isScrollbarVisible,
+                timeToFade: const Duration(milliseconds: 500),
+                padding: const EdgeInsets.only(top: 55),
+                thickness: 5,
+                thumbColor: HexColor('#ac8bc9').withOpacity(0.6),
+                trackVisibility: false,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            const Row(
+                              children: [
+                                ScaleTapSort(),
+                                Expanded(child: SizedBox()),
+                                Icon(Icons.list_rounded),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Obx(
+                              () => _homeAlbumGridController.isTapped.value
+                                  ? _getReorderableWidget()
+                                  : _getReorderableWidget(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // ini sama aja padding kanan 20
+                      const SizedBox(
+                        width: 10,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -190,6 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _getReorderableWidget() {
     final generatedChildren = _getGeneratedChildren();
+
     return ReorderableBuilder(
       onReorder: (p0) {},
       children: generatedChildren,

@@ -103,6 +103,7 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
             json.decode(apiResponse.body)[0]['gdrive_api']),
         type: capitalizeEachWord(listData[0]['type']),
         pin: listData[0]['pin'],
+        datePin: listData[0]['date_pin'],
         date: listData[0]['date'],
       );
 
