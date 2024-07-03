@@ -9,7 +9,7 @@ import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import '../providers/audio_state.dart';
 import '../providers/music_state.dart';
-import '../screens/music_detail_screen.dart';
+import '../screens/detail_screen/music_detail_screen.dart';
 
 class FloatingPlayingMusic extends StatefulWidget {
   const FloatingPlayingMusic({

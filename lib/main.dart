@@ -1,7 +1,7 @@
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
-import 'package:cybeat_music_player/screens/splash/splash_link_music_screen.dart';
-import 'package:cybeat_music_player/screens/splash/splash_home_screen.dart';
+import 'package:cybeat_music_player/screens/splash_screen/splash_link_music_screen.dart';
+import 'package:cybeat_music_player/screens/splash_screen/splash_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
