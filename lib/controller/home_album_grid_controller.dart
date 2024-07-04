@@ -43,14 +43,27 @@ class HomeAlbumGridController extends GetxController {
     selectedAlbum.insert(
         indexPin, currentAlbum); // Sisipkan kembali elemen ke indeks pin
 
+    setPinData(uid: uid);
     jumlahPin.value++;
     isTapped.value = !isTapped.value;
+  }
+
+  Future<void> setPinData({required String uid}) async {
+    String url = 'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/pin_playlist.php?action=pin&uid=$uid';
+
+    try{
+      await http.post(Uri.parse(url));
+    }catch(e){
+      if (kDebugMode) {
+        print('Error set pin: $e');
+      }
+    }
   }
 
   Future<void> initializeAlbum(String sort) async {
     jumlahPin.value = 0;
     isLoading.value = true;
-    
+
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?sort=$sort';
 

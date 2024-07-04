@@ -7,7 +7,6 @@ import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:cybeat_music_player/screens/home_screen/list_album/scale_tap_playlist.dart';
 import 'package:cybeat_music_player/screens/home_screen/sort/scale_tap_sort.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
@@ -31,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final _gridViewKey = GlobalKey();
   final _homeAlbumGridController = Get.put(HomeAlbumGridController());
   final _scrollController = ScrollController();
-  bool _isScrollbarVisible = false;
 
   @override
   void initState() {
@@ -143,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: RawScrollbar(
                 radius: const Radius.circular(10),
                 controller: _scrollController,
-                thumbVisibility: _isScrollbarVisible,
+                thumbVisibility: false,
                 timeToFade: const Duration(milliseconds: 500),
                 padding: const EdgeInsets.only(top: 55),
                 thickness: 5,

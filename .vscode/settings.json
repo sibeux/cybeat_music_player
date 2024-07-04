@@ -7,4 +7,5 @@
     "editor.tokenColorCustomizations": {
         "comments": "#5c6a82"
     },
+    "accessibility.underlineLinks": true,
 }
