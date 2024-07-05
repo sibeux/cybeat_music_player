@@ -20,7 +20,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" android:host="sibeux.my.id" android:pathPrefix="/cybeat/"/>
-                <data android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "cybeat://sibeux.my.id” -->
+                <data android:scheme="cybeat" android:host="sibeux.my.id" android:pathPrefix="/cybeat/"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

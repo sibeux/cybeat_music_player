@@ -122,6 +122,7 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                     homeAlbumGridController.pinAlbum(playlist.uid);
                     playlist.setPin = 'true';
                   } else{
+                    homeAlbumGridController.unpinAlbum(playlist.uid);
                     playlist.setPin = 'false';
                   }
                   Get.back();

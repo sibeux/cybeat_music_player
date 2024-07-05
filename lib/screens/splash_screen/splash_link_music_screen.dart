@@ -103,13 +103,13 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
             json.decode(apiResponse.body)[0]['gdrive_api']),
         type: capitalizeEachWord(listData[0]['type']),
         pin: listData[0]['pin'],
-        datePin: listData[0]['date_pin'],
+        datePin: listData[0]['date_pin'] ?? '',
         date: listData[0]['date'],
       );
 
       setState(() {
         listPlaylist = [list];
-        developer.log('print me');
+        developer.log('${listPlaylist[0].title} is loaded');
       });
 
       FlutterNativeSplash.remove();

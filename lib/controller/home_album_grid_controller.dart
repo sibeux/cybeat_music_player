@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+
+final sortPreferencesController = Get.put(SortPreferencesController());
 
 class HomeAlbumGridController extends GetxController {
   var children = RxList([]);
@@ -12,6 +15,8 @@ class HomeAlbumGridController extends GetxController {
   var isTapped = false.obs;
   var jumlahPin = 0.obs;
   var isLoading = true.obs;
+  var alphabeticalList = RxList<Playlist>([]);
+  var recentsList = RxList<Playlist>([]);
 
   // diakses oleh splash_home_screen.dart
   var initiateAlbum = RxList<Playlist>([]);
@@ -26,6 +31,24 @@ class HomeAlbumGridController extends GetxController {
       playlist.length,
       (index) => playlist[index],
     );
+
+    alphabeticalList.value = List.generate(
+      playlist.length,
+      (index) => playlist[index],
+    );
+
+    alphabeticalList.sort((a, b) {
+      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+    });
+
+    recentsList.value = List.generate(
+      playlist.length,
+      (index) => playlist[index],
+    );
+
+    recentsList.sort((a, b) {
+      return b.date.compareTo(a.date);
+    });
 
     isTapped.value = !isTapped.value;
   }
@@ -43,17 +66,63 @@ class HomeAlbumGridController extends GetxController {
     selectedAlbum.insert(
         indexPin, currentAlbum); // Sisipkan kembali elemen ke indeks pin
 
-    setPinData(uid: uid);
+    setPinData(action: 'pin', uid: uid);
     jumlahPin.value++;
     isTapped.value = !isTapped.value;
   }
 
-  Future<void> setPinData({required String uid}) async {
-    String url = 'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/pin_playlist.php?action=pin&uid=$uid';
+  void unpinAlbum(String uid) {
+    final numPin = jumlahPin.value;
+    final currentIndex = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+    final alphabeticalIndex = alphabeticalList.indexWhere((playlist) => playlist.uid == uid);
+    final recentsIndex = recentsList.indexWhere((playlist) => playlist.uid == uid);
+    int normalIndex = 0;
 
-    try{
+    if (sortPreferencesController.sortValue == 'title') {
+      normalIndex = alphabeticalIndex + numPin - 1;
+    } else if (sortPreferencesController.sortValue == 'uid') {
+      normalIndex = recentsIndex + numPin - 1;
+    }
+
+    // check current index
+    final currentChild =
+        children[currentIndex];
+    final currentAlbum =
+        selectedAlbum[currentIndex];
+
+    // remove data from current index
+    children.removeAt(currentIndex);
+    selectedAlbum.removeAt(currentIndex);
+
+    // insert data to normal index
+    children.insert(normalIndex, currentChild);
+    selectedAlbum.insert(
+        normalIndex, currentAlbum);
+
+    setPinData(action: 'unpin', uid: uid);
+    jumlahPin.value--;
+    isTapped.value = !isTapped.value;
+  }
+
+  Future<void> setPinData({required String action, required String uid}) async {
+    String url = '';
+
+    switch (action) {
+      case 'pin':
+        url =
+            'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/pin_playlist.php?action=pin&uid=$uid';
+        break;
+      case 'unpin':
+        url =
+            'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/pin_playlist.php?action=unpin&uid=$uid';
+        break;
+      default:
+        break;
+    }
+
+    try {
       await http.post(Uri.parse(url));
-    }catch(e){
+    } catch (e) {
       if (kDebugMode) {
         print('Error set pin: $e');
       }
