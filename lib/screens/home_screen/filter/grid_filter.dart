@@ -62,22 +62,32 @@ class FilterPlaylistAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: 80,
-      height: 35,
-      decoration: BoxDecoration(
-        color: _filterAlbumController.getSelectedFilter.toString() == text.toLowerCase()
-            ? HexColor('#ac8bc9')
-            : Colors.grey,
-        borderRadius: BorderRadius.circular(50),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-            fontSize: 14,
-            color: HexColor('#fefffe'),
-            fontWeight: FontWeight.bold),
+    return Obx(
+      () => Container(
+        alignment: Alignment.center,
+        width: 80,
+        height: 35,
+        decoration: BoxDecoration(
+          color: _filterAlbumController.getSelectedFilter.toString() ==
+                  text.toLowerCase()
+              ? HexColor('#ac8bc9')
+              : _filterAlbumController.getSelectedFilter.toString() == ''
+                  ? Colors.grey
+                  : Colors.transparent,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+              fontSize: 14,
+              color: _filterAlbumController.getSelectedFilter.toString() ==
+                  text.toLowerCase()
+              ? HexColor('#fefffe')
+              : _filterAlbumController.getSelectedFilter.toString() == ''
+                  ? HexColor('#fefffe')
+                  : Colors.transparent,
+              fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

@@ -71,8 +71,13 @@ class ScaleTapFilterState extends State<ScaleTapFilter>
       },
       onTapCancel: () => _restoreButtonSize(),
       onTapUp: (details) {
-        if (widget.filter != filterAlbumCOntroller.selectedFilter.value) {
+        if (widget.filter != filterAlbumCOntroller.selectedFilter.value &&
+            filterAlbumCOntroller.selectedFilter.value == '') {
           filterAlbumCOntroller.onTapFilter(filter: widget.filter);
+        } else if (widget.filter ==
+                filterAlbumCOntroller.selectedFilter.value ||
+            widget.filter == 'cancel') {
+          filterAlbumCOntroller.onResetFilter();
         }
         _restoreButtonSize();
       },
