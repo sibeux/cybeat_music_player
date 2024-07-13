@@ -4,6 +4,7 @@ import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
+import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:cybeat_music_player/screens/home_screen/list_album/scale_tap_playlist.dart';
 import 'package:cybeat_music_player/screens/home_screen/sort/scale_tap_sort.dart';
@@ -111,19 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                const Row(
-                  children: [
-                    FilterPlaylistAlbum(
-                      text: 'Playlist',
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    FilterPlaylistAlbum(
-                      text: "Album",
-                    )
-                  ],
-                ),
+                const GridFilter(),
               ],
             ),
           ),
@@ -176,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: CircularProgressIndicator(),
                                           ),
                                         )
-                                      : _getReorderableWidget()
+                                      : _getReorderableAlbum()
                                   : _homeAlbumGridController.isLoading.value
                                       ? const SizedBox(
                                           height: 400,
@@ -184,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: CircularProgressIndicator(),
                                           ),
                                         )
-                                      : _getReorderableWidget(),
+                                      : _getReorderableAlbum(),
                             ),
                           ],
                         ),
@@ -225,7 +214,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _getReorderableWidget() {
+  // mengambil data dari playlistList
+
+  Widget _getReorderableAlbum() {
     final generatedChildren = _getGeneratedChildren();
 
     return ReorderableBuilder(
@@ -264,33 +255,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ScaleTapPlaylist(
         playlist: widget.playlistList[(children[index])],
         audioState: widget.audioState,
-      ),
-    );
-  }
-}
-
-class FilterPlaylistAlbum extends StatelessWidget {
-  const FilterPlaylistAlbum({
-    super.key,
-    required this.text,
-  });
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: 80,
-      height: 35,
-      decoration: BoxDecoration(
-          color: HexColor('#ac8bc9'), borderRadius: BorderRadius.circular(50)),
-      child: Text(
-        text,
-        style: TextStyle(
-            fontSize: 14,
-            color: HexColor('#fefffe'),
-            fontWeight: FontWeight.bold),
       ),
     );
   }
