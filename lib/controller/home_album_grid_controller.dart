@@ -155,6 +155,7 @@ class HomeAlbumGridController extends GetxController {
           title: capitalizeEachWord(item['name']),
           image: regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
           type: capitalizeEachWord(item['type']),
+          artist: capitalizeEachWord(item['artist']),
           pin: item['pin'],
           datePin: item['date_pin'] ?? '',
           date: item['date'],
