@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
@@ -55,6 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final PlayingStateController playingStateController =
         Get.put(PlayingStateController());
+    final FilterAlbumController filterAlbumController =
+        Get.put(FilterAlbumController());
 
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
@@ -112,7 +115,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                const GridFilter(),
+                Obx(
+                  () => filterAlbumController.isTapped.value
+                      ? const GridFilter()
+                      : const GridFilter(),
+                ),
               ],
             ),
           ),

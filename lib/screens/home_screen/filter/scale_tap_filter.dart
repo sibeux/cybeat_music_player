@@ -1,14 +1,19 @@
 import 'dart:async';
+import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 double colorOnTap = 1;
 
 class ScaleTapFilter extends StatefulWidget {
   const ScaleTapFilter({
-    super.key, required this.child,
+    super.key,
+    required this.child,
+    required this.filter,
   });
 
   final Widget child;
+  final String filter;
 
   @override
   ScaleTapFilterState createState() => ScaleTapFilterState();
@@ -58,19 +63,19 @@ class ScaleTapFilterState extends State<ScaleTapFilter>
 
   @override
   Widget build(BuildContext context) {
+    final filterAlbumCOntroller = Get.put(FilterAlbumController());
+
     return GestureDetector(
-      onPanDown: (details) {
+      onTapDown: (details) {
         _shrinkButtonSize();
       },
-      onPanCancel: () {
-        // ini masih ada gunanya
+      onTapCancel: () => _restoreButtonSize(),
+      onTapUp: (details) {
+        if (widget.filter != filterAlbumCOntroller.selectedFilter.value) {
+          filterAlbumCOntroller.onTapFilter(filter: widget.filter);
+        }
         _restoreButtonSize();
       },
-      onPanEnd: (_) {
-        // ini masih ada gunanya
-        _restoreButtonSize();
-      },
-      onTapCancel: _restoreButtonSize, // ini kemungkinan ada sih
       child: SizedBox(
         child: Opacity(
           opacity: colorOnTap,

@@ -1,10 +1,12 @@
-import 'package:cybeat_music_player/screens/home_screen/filter/scale_tap_filter.dart';
+import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
+import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 final _filterKey = GlobalKey();
+final _filterAlbumController = Get.put(FilterAlbumController());
 
 class GridFilter extends StatelessWidget {
   const GridFilter({super.key});
@@ -33,32 +35,14 @@ class GridFilter extends StatelessWidget {
 
   List<Widget> _getGeneratedFilter() {
     return List<Widget>.generate(
-      3,
+      _filterAlbumController.generateFilter.length,
       (index) => _getFilter(index: index),
     );
   }
 
   Widget _getFilter({required int index}) {
-    final children = [0, 1, 2];
-    final generatedFilter = [
-      ScaleTapFilter(
-        child: Container(
-          height: 35,
-          width: 35,
-          decoration: BoxDecoration(
-            color: HexColor('#ac8bc9'),
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: const Icon(
-            Icons.cancel,
-            color: Colors.white,
-            size: 32,
-          ),
-        ),
-      ),
-      const ScaleTapFilter(child: FilterPlaylistAlbum(text: 'Playlist')),
-      const ScaleTapFilter(child: FilterPlaylistAlbum(text: 'Album')),
-    ];
+    final children = _filterAlbumController.children;
+    final generatedFilter = _filterAlbumController.generateFilter;
 
     return CustomDraggable(
       key: Key(children[index].toString()),
@@ -83,8 +67,9 @@ class FilterPlaylistAlbum extends StatelessWidget {
       width: 80,
       height: 35,
       decoration: BoxDecoration(
-        // color: HexColor('#ac8bc9'),
-        color: Colors.grey,
+        color: _filterAlbumController.getSelectedFilter.toString() == text.toLowerCase()
+            ? HexColor('#ac8bc9')
+            : Colors.grey,
         borderRadius: BorderRadius.circular(50),
       ),
       child: Text(
