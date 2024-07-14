@@ -106,7 +106,7 @@ class GridPlaylistAlbum extends StatelessWidget {
                       Flexible(
                         fit: FlexFit.tight,
                         child: Text(
-                          "${playlist.type} ● ${playlist.artist}",
+                          "${playlist.type} ● ${playlist.author}",
                           style: const TextStyle(
                             fontSize: 12,
                             overflow: TextOverflow.ellipsis,

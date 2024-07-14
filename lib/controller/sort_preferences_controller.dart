@@ -22,12 +22,12 @@ class SortPreferencesController extends GetxController {
       case 'Recents':
         sort.value = 'uid';
         prefs.setString('sort', 'uid');
-        homeAlbumGridController.initializeAlbum('uid');
+        homeAlbumGridController.initializeAlbum();
         break;
       case 'Alphabetical':
         sort.value = 'title';
         prefs.setString('sort', 'title');
-        homeAlbumGridController.initializeAlbum('title');
+        homeAlbumGridController.initializeAlbum();
         break;
     }
   }

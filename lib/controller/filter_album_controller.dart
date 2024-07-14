@@ -1,3 +1,4 @@
+import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/scale_tap_filter.dart';
 import 'package:flutter/material.dart';
@@ -45,11 +46,11 @@ class FilterAlbumController extends GetxController {
   );
 
   var children = RxList([0, 1, 2]);
-
   var selectedFilter = ''.obs;
   var isTapped = false.obs;
+  final homeAlbumGridController = Get.put(HomeAlbumGridController());
 
-  void onTapFilter({required String filter}) {
+  Future<void> onTapFilter({required String filter}) async {
     var index =
         generateFilter.indexWhere((element) => element.filter == filter);
 
@@ -63,11 +64,12 @@ class FilterAlbumController extends GetxController {
     children.insert(0, 4);
     generateFilter.insert(0, cancelButton);
 
-    selectedFilter.value = filter;
     isTapped.value = !isTapped.value;
+    selectedFilter.value = filter;
+    homeAlbumGridController.initializeAlbum();
   }
 
-  void onResetFilter() {
+  Future<void> onResetFilter() async {
     var initialIndex = initialFilter
         .indexWhere((element) => element.filter == selectedFilter.value);
     var currentIndex = generateFilter
@@ -84,8 +86,9 @@ class FilterAlbumController extends GetxController {
     children.insert(initialIndex, currentChild);
     generateFilter.insert(initialIndex, currentFilter);
 
-    selectedFilter.value = '';
     isTapped.value = !isTapped.value;
+    selectedFilter.value = '';
+    homeAlbumGridController.initializeAlbum();
   }
 
   get getSelectedFilter => selectedFilter.value;

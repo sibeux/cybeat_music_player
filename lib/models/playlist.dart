@@ -3,7 +3,7 @@ class Playlist {
   String title;
   String image;
   String type;
-  String artist;
+  String author;
   String pin;
   String datePin;
   String date;
@@ -13,7 +13,7 @@ class Playlist {
     required this.title,
     required this.image,
     required this.type,
-    required this.artist,
+    required this.author,
     required this.pin,
     required this.datePin,
     required this.date,

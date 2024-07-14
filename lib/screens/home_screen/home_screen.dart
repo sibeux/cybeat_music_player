@@ -172,7 +172,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: CircularProgressIndicator(),
                                           ),
                                         )
-                                      : _getReorderableAlbum()
+                                      : _homeAlbumGridController
+                                              .initiateAlbum.isEmpty
+                                          ? const Center(
+                                              child: Text('No album found'),
+                                            )
+                                          : _getReorderableAlbum()
                                   : _homeAlbumGridController.isLoading.value
                                       ? const SizedBox(
                                           height: 400,
@@ -180,7 +185,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: CircularProgressIndicator(),
                                           ),
                                         )
-                                      : _getReorderableAlbum(),
+                                      : _homeAlbumGridController
+                                              .initiateAlbum.isEmpty
+                                          ? const Center(
+                                              child: Text('No album found'),
+                                            )
+                                          : _getReorderableAlbum(),
                             ),
                           ],
                         ),

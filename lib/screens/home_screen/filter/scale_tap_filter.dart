@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -37,7 +36,9 @@ class ScaleTapFilterState extends State<ScaleTapFilter>
       lowerBound: 0.0,
       upperBound: 0.1,
     )..addListener(() {
-        setState(() => _scaleTransformValue = 1 - animationController.value);
+        if (mounted) {
+          setState(() => _scaleTransformValue = 1 - animationController.value);
+        }
       });
   }
 
@@ -54,10 +55,7 @@ class ScaleTapFilterState extends State<ScaleTapFilter>
   }
 
   void _restoreButtonSize() {
-    Future.delayed(
-      const Duration(milliseconds: clickAnimationDurationMillis),
-      () => animationController.reverse(),
-    );
+    animationController.reverse();
     colorOnTap = 1;
   }
 

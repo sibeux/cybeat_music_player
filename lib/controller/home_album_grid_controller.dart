@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 final sortPreferencesController = Get.put(SortPreferencesController());
+final filterAlbumController = Get.put(FilterAlbumController());
 
 class HomeAlbumGridController extends GetxController {
   var children = RxList([]);
@@ -129,12 +131,15 @@ class HomeAlbumGridController extends GetxController {
     }
   }
 
-  Future<void> initializeAlbum(String sort) async {
+  Future<void> initializeAlbum() async {
     jumlahPin.value = 0;
     isLoading.value = true;
+    
+    String sort = sortPreferencesController.sortValue;
+    String filter = filterAlbumController.getSelectedFilter;
 
     String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?sort=$sort';
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?sort=$sort&filter=$filter';
 
     const api =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
@@ -155,7 +160,7 @@ class HomeAlbumGridController extends GetxController {
           title: capitalizeEachWord(item['name']),
           image: regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
           type: capitalizeEachWord(item['type']),
-          artist: capitalizeEachWord(item['artist']),
+          author: capitalizeEachWord(item['author']),
           pin: item['pin'],
           datePin: item['date_pin'] ?? '',
           date: item['date'],

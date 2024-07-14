@@ -35,8 +35,7 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
     // ignore_for_file: avoid_print
 
     await sortPreferencesController.getSortBy();
-    final sort = sortPreferencesController.sort.value;
-    await homeAlbumGridController.initializeAlbum(sort);
+    await homeAlbumGridController.initializeAlbum();
 
     setState(() {
       playlistList = homeAlbumGridController.initiateAlbum;

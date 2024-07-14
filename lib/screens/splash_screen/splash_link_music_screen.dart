@@ -102,7 +102,7 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
         image: regexGdriveLink(listData[0]['image'],
             json.decode(apiResponse.body)[0]['gdrive_api']),
         type: capitalizeEachWord(listData[0]['type']),
-        artist: capitalizeEachWord(listData[0]['artist']),
+        author: capitalizeEachWord(listData[0]['author']),
         pin: listData[0]['pin'],
         datePin: listData[0]['date_pin'] ?? '',
         date: listData[0]['date'],
