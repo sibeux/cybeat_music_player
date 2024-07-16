@@ -7,6 +7,7 @@ class Playlist {
   String pin;
   String datePin;
   String date;
+  String editable;
 
   Playlist({
     required this.uid,
@@ -17,6 +18,7 @@ class Playlist {
     required this.pin,
     required this.datePin,
     required this.date,
+    required this.editable,
   });
 
   set setPin(String pin) {

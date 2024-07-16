@@ -164,6 +164,7 @@ class HomeAlbumGridController extends GetxController {
           pin: item['pin'],
           datePin: item['date_pin'] ?? '',
           date: item['date'],
+          editable: item['editable'],
         );
       }).toList();
 

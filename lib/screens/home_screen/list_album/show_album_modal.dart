@@ -72,9 +72,9 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                       const SizedBox(
                         height: 3,
                       ),
-                      const Text(
-                        'Nasrul Wahabi',
-                        style: TextStyle(
+                      Text(
+                        playlist.author,
+                        style: const TextStyle(
                           overflow: TextOverflow.ellipsis,
                           fontSize: 13,
                           color: Colors.grey,

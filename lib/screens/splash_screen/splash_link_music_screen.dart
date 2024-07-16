@@ -106,6 +106,7 @@ class _SplashLinkMusicScreenState extends State<SplashLinkMusicScreen> {
         pin: listData[0]['pin'],
         datePin: listData[0]['date_pin'] ?? '',
         date: listData[0]['date'],
+        editable: listData[0]['editable'],
       );
 
       setState(() {
