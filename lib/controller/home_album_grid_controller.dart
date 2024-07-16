@@ -75,9 +75,12 @@ class HomeAlbumGridController extends GetxController {
 
   void unpinAlbum(String uid) {
     final numPin = jumlahPin.value;
-    final currentIndex = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
-    final alphabeticalIndex = alphabeticalList.indexWhere((playlist) => playlist.uid == uid);
-    final recentsIndex = recentsList.indexWhere((playlist) => playlist.uid == uid);
+    final currentIndex =
+        selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+    final alphabeticalIndex =
+        alphabeticalList.indexWhere((playlist) => playlist.uid == uid);
+    final recentsIndex =
+        recentsList.indexWhere((playlist) => playlist.uid == uid);
     int normalIndex = 0;
 
     if (sortPreferencesController.sortValue == 'title') {
@@ -87,10 +90,8 @@ class HomeAlbumGridController extends GetxController {
     }
 
     // check current index
-    final currentChild =
-        children[currentIndex];
-    final currentAlbum =
-        selectedAlbum[currentIndex];
+    final currentChild = children[currentIndex];
+    final currentAlbum = selectedAlbum[currentIndex];
 
     // remove data from current index
     children.removeAt(currentIndex);
@@ -98,8 +99,7 @@ class HomeAlbumGridController extends GetxController {
 
     // insert data to normal index
     children.insert(normalIndex, currentChild);
-    selectedAlbum.insert(
-        normalIndex, currentAlbum);
+    selectedAlbum.insert(normalIndex, currentAlbum);
 
     setPinData(action: 'unpin', uid: uid);
     jumlahPin.value--;
@@ -134,7 +134,7 @@ class HomeAlbumGridController extends GetxController {
   Future<void> initializeAlbum() async {
     jumlahPin.value = 0;
     isLoading.value = true;
-    
+
     String sort = sortPreferencesController.sortValue;
     String filter = filterAlbumController.getSelectedFilter;
 
@@ -147,20 +147,25 @@ class HomeAlbumGridController extends GetxController {
     try {
       final response = await http.post(Uri.parse(url));
       final apiResponse = await http.get(Uri.parse(api));
+      final jumlahFavorite = await getSumFavoriteSong();
 
       final List<dynamic> listData = json.decode(response.body);
       final List<dynamic> apiData = json.decode(apiResponse.body);
 
+
       final list = listData.map((item) {
         jumlahPin.value =
             item['pin'] == 'true' ? jumlahPin.value + 1 : jumlahPin.value;
+
 
         return Playlist(
           uid: item['uid'],
           title: capitalizeEachWord(item['name']),
           image: regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
           type: capitalizeEachWord(item['type']),
-          author: capitalizeEachWord(item['author']),
+          author: item['type'] == 'favorite'
+              ? '$jumlahFavorite Songs'
+              : capitalizeEachWord(item['author']),
           pin: item['pin'],
           datePin: item['date_pin'] ?? '',
           date: item['date'],
@@ -180,6 +185,24 @@ class HomeAlbumGridController extends GetxController {
       // ini tetap dieksekusi baik berhasil atau gagal
       isLoading.value = false;
     }
+  }
+
+  Future<String> getSumFavoriteSong() async {
+    String url =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?count_favorite=true';
+
+    List<dynamic> listData = [];
+
+    try {
+      final response = await http.post(Uri.parse(url));
+      listData = json.decode(response.body);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error: $e');
+      }
+    }
+    
+    return listData[0]['count_favorite'];
   }
 
   String regexGdriveLink(String url, String key) {
