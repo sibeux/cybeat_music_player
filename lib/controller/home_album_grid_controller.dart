@@ -131,6 +131,26 @@ class HomeAlbumGridController extends GetxController {
     }
   }
 
+  void recentPlaylistUpdate(String uid) async {
+    String sort = sortPreferencesController.sortValue;
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if (sort == 'uid') {
+      final indexPin = jumlahPin.value;
+      final index =
+          selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+      final currentChild = children[index];
+      final currentAlbum = selectedAlbum[index];
+      children.removeAt(index);
+      selectedAlbum.removeAt(index);
+      children.insert(indexPin, currentChild);
+      selectedAlbum.insert(indexPin, currentAlbum);
+
+      isTapped.value = !isTapped.value;
+    }
+  }
+
   Future<void> initializeAlbum() async {
     jumlahPin.value = 0;
     isLoading.value = true;
@@ -152,11 +172,9 @@ class HomeAlbumGridController extends GetxController {
       final List<dynamic> listData = json.decode(response.body);
       final List<dynamic> apiData = json.decode(apiResponse.body);
 
-
       final list = listData.map((item) {
         jumlahPin.value =
             item['pin'] == 'true' ? jumlahPin.value + 1 : jumlahPin.value;
-
 
         return Playlist(
           uid: item['uid'],
@@ -201,7 +219,7 @@ class HomeAlbumGridController extends GetxController {
         print('Error: $e');
       }
     }
-    
+
     return listData[0]['count_favorite'];
   }
 

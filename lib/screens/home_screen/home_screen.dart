@@ -126,10 +126,22 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(
             height: 15,
           ),
-          const Divider(
-            color: Colors.black,
-            thickness: 2,
-            height: 0,
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 2,
+                  blurRadius: 2,
+                  offset: const Offset(0, 1), // changes position of shadow
+                ),
+              ],
+            ),
+            child: Divider(
+              color: Colors.grey.withOpacity(0.3),
+              thickness: 2,
+              height: 0,
+            ),
           ),
           Expanded(
             child: Padding(

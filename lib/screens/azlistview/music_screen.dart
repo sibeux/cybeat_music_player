@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -56,12 +57,14 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final playlistPlayController = Get.put(PlaylistPlayController());
+    final homeAlbumGridController = Get.put(HomeAlbumGridController());
+
     Widget content = const Center(
       child: Text('No music yet! Add some!'),
     );
 
-    final  playingStateController =
-        Get.put(PlayingStateController());
+    final playingStateController = Get.put(PlayingStateController());
 
     content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
@@ -147,6 +150,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                         .read<MusicState>()
                         .setCurrentMediaItem(sequence[index].tag as MediaItem);
 
+                    playlistPlayController.onPlaylistMusicPlay();
+
                     audioState.player.play();
                   }
                 },
@@ -164,8 +169,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       );
     }
 
-    final playlistPlayController = Get.put(PlaylistPlayController());
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: HexColor('#fefffe'),
@@ -174,7 +177,15 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           tooltip: 'Menu',
           onPressed: () {
+            // on pressed ini berlaku saat icon  back button di-klik,
+            // tidak berlaku saat nav back button di-klik
             Get.back();
+            print(playlistPlayController.needRebuild.value);
+            if (playlistPlayController.needRebuild.value) {
+              playlistPlayController.needRebuild.value = false;
+              homeAlbumGridController.recentPlaylistUpdate(
+                  playlistPlayController.playlistUid.value);
+            }
           },
         ),
         centerTitle: true,
