@@ -169,152 +169,163 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: HexColor('#fefffe'),
-        scrolledUnderElevation: 0.0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          tooltip: 'Menu',
-          onPressed: () {
-            // on pressed ini berlaku saat icon  back button di-klik,
-            // tidak berlaku saat nav back button di-klik
-            Get.back();
-            print(playlistPlayController.needRebuild.value);
-            if (playlistPlayController.needRebuild.value) {
-              playlistPlayController.needRebuild.value = false;
-              homeAlbumGridController.recentPlaylistUpdate(
-                  playlistPlayController.playlistUid.value);
-            }
-          },
-        ),
-        centerTitle: true,
-        toolbarHeight: 60,
-        title: Obx(() => Text(
-              playlistPlayController.playlistTitle.value,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: HexColor('#1e0b2b'),
-                fontSize: 21,
-              ),
-            )),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        color: HexColor('#fefffe'),
-                        width: double.infinity,
-                        height: 50,
-                        child: Row(
-                          children: [
-                            StreamBuilder<SequenceState?>(
-                              stream: audioState.player.sequenceStateStream,
-                              builder: (context, snapshot) {
-                                List<IndexedAudioSource> sequence = [];
-                                if (snapshot.hasData) {
-                                  final state = snapshot.data;
-                                  sequence = state?.sequence ?? [];
-                                }
-                                return InkWell(
-                                  onTap: () {
-                                    if (snapshot.hasData) {
-                                      _shuffleMusic(audioState, sequence,
-                                          playingStateController);
-                                    }
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    margin: const EdgeInsets.only(left: 18),
-                                    width: 180,
-                                    height: 35,
-                                    decoration: BoxDecoration(
-                                      color: HexColor('#ac8bc9'),
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.play_circle_fill,
-                                          color: HexColor('#fefffe'),
-                                          size: 30,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          'Shuffle Playback',
-                                          style: TextStyle(
-                                            color: HexColor('#fefffe'),
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Expanded(
-                              child: SizedBox(),
-                            ),
-                            IconButton(
-                              highlightColor: Colors.black.withOpacity(0.02),
-                              icon: Icon(
-                                Icons.list_rounded,
-                                size: 30,
-                                color: HexColor('#8d8c8c'),
-                              ),
-                              onPressed: () {},
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          color: HexColor('#fefffe'),
-                          padding: const EdgeInsets.only(top: 8),
-                          width: double.infinity,
-                          child: content,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Obx(
-            () => playingStateController.isPlaying.value
-                ? StreamBuilder<SequenceState?>(
-                    stream: audioState.player.sequenceStateStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final currentItem = snapshot.data?.currentSource;
-                        context
-                            .read<MusicState>()
-                            .setCurrentMediaItem(currentItem!.tag as MediaItem);
+    void rebuildPlaylist() {
+      if (playlistPlayController.needRebuild.value) {
+        playlistPlayController.needRebuild.value = false;
+        homeAlbumGridController
+            .recentPlaylistUpdate(playlistPlayController.playlistUid.value);
+      }
+    }
 
-                        return FloatingPlayingMusic(
-                          audioState: audioState,
-                          currentItem: currentItem,
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  )
-                : const SizedBox(),
+    return PopScope(
+      // logic saat back button bawaan hp ditekan
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          rebuildPlaylist();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: HexColor('#fefffe'),
+          scrolledUnderElevation: 0.0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_rounded),
+            tooltip: 'Menu',
+            onPressed: () {
+              // on pressed ini berlaku saat icon  back button di-klik,
+              // tidak berlaku saat nav back button di-klik
+              Get.back();
+              rebuildPlaylist();
+            },
           ),
-        ],
+          centerTitle: true,
+          toolbarHeight: 60,
+          title: Obx(() => Text(
+                playlistPlayController.playlistTitle.value,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: HexColor('#1e0b2b'),
+                  fontSize: 21,
+                ),
+              )),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(
+                          color: HexColor('#fefffe'),
+                          width: double.infinity,
+                          height: 50,
+                          child: Row(
+                            children: [
+                              StreamBuilder<SequenceState?>(
+                                stream: audioState.player.sequenceStateStream,
+                                builder: (context, snapshot) {
+                                  List<IndexedAudioSource> sequence = [];
+                                  if (snapshot.hasData) {
+                                    final state = snapshot.data;
+                                    sequence = state?.sequence ?? [];
+                                  }
+                                  return InkWell(
+                                    onTap: () {
+                                      if (snapshot.hasData) {
+                                        _shuffleMusic(audioState, sequence,
+                                            playingStateController);
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      margin: const EdgeInsets.only(left: 18),
+                                      width: 180,
+                                      height: 35,
+                                      decoration: BoxDecoration(
+                                        color: HexColor('#ac8bc9'),
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.play_circle_fill,
+                                            color: HexColor('#fefffe'),
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            'Shuffle Playback',
+                                            style: TextStyle(
+                                              color: HexColor('#fefffe'),
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const Expanded(
+                                child: SizedBox(),
+                              ),
+                              IconButton(
+                                highlightColor: Colors.black.withOpacity(0.02),
+                                icon: Icon(
+                                  Icons.list_rounded,
+                                  size: 30,
+                                  color: HexColor('#8d8c8c'),
+                                ),
+                                onPressed: () {},
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            color: HexColor('#fefffe'),
+                            padding: const EdgeInsets.only(top: 8),
+                            width: double.infinity,
+                            child: content,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Obx(
+              () => playingStateController.isPlaying.value
+                  ? StreamBuilder<SequenceState?>(
+                      stream: audioState.player.sequenceStateStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final currentItem = snapshot.data?.currentSource;
+                          context
+                              .read<MusicState>()
+                              .setCurrentMediaItem(currentItem!.tag as MediaItem);
+      
+                          return FloatingPlayingMusic(
+                            audioState: audioState,
+                            currentItem: currentItem,
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    )
+                  : const SizedBox(),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -133,15 +133,14 @@ class HomeAlbumGridController extends GetxController {
 
   void recentPlaylistUpdate(String uid) async {
     String sort = sortPreferencesController.sortValue;
+    final indexPin = jumlahPin.value;
+    final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+    final currentChild = children[index];
+    final currentAlbum = selectedAlbum[index];
 
     await Future.delayed(const Duration(milliseconds: 300));
 
-    if (sort == 'uid') {
-      final indexPin = jumlahPin.value;
-      final index =
-          selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
-      final currentChild = children[index];
-      final currentAlbum = selectedAlbum[index];
+    if (sort == 'uid' && currentAlbum?.pin == 'false') {
       children.removeAt(index);
       selectedAlbum.removeAt(index);
       children.insert(indexPin, currentChild);
