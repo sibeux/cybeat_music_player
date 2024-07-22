@@ -167,6 +167,14 @@ class HomeAlbumGridController extends GetxController {
       final response = await http.post(Uri.parse(url));
       final apiResponse = await http.get(Uri.parse(api));
       final jumlahFavorite = await getSumFavoriteSong();
+      final listJumlahCategory = await getSumCategorySong();
+
+      List jumlahCategory(String uid) {
+        return listJumlahCategory
+            .where((element) => element['category'] == uid)
+            .map((e) => e['type_count'])
+            .toList();
+      }
 
       final List<dynamic> listData = json.decode(response.body);
       final List<dynamic> apiData = json.decode(apiResponse.body);
@@ -180,9 +188,13 @@ class HomeAlbumGridController extends GetxController {
           title: capitalizeEachWord(item['name']),
           image: regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
           type: capitalizeEachWord(item['type']),
-          author: item['type'] == 'favorite'
-              ? '$jumlahFavorite Songs'
-              : capitalizeEachWord(item['author']),
+          author: item['type'] == 'album'
+              ? capitalizeEachWord(item['author'])
+              : item['type'] == 'favorite'
+                  ? '$jumlahFavorite Songs'
+                  : item['type'] == 'category'
+                      ? '${jumlahCategory(item['uid'])[0]} Songs'
+                      : capitalizeEachWord(item['author']),
           pin: item['pin'],
           datePin: item['date_pin'] ?? '',
           date: item['date'],
@@ -220,6 +232,24 @@ class HomeAlbumGridController extends GetxController {
     }
 
     return listData[0]['count_favorite'];
+  }
+
+  Future<List> getSumCategorySong() async {
+    String url =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?count_category=uid';
+
+    List<dynamic> listData = [];
+
+    try {
+      final response = await http.post(Uri.parse(url));
+      listData = json.decode(response.body);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error: $e');
+      }
+    }
+
+    return listData;
   }
 
   String regexGdriveLink(String url, String key) {

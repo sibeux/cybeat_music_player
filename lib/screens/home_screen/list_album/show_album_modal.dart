@@ -101,27 +101,29 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                 changeColor: false,
                 onTap: () {},
               ),
-              ListTileBottomModal(
-                  title: 'Remove from Your Library',
-                  icon: Icons.check_circle_rounded,
-                  changeColor: true,
-                  onTap: () {}),
+                ListTileBottomModal(
+                    title: 'Remove from Your Library',
+                    icon: Icons.check_circle_rounded,
+                    changeColor: true,
+                    onTap: () {}),
               ListTileBottomModal(
                   title: 'Download',
                   icon: Icons.downloading_outlined,
                   changeColor: false,
                   onTap: () {}),
               ListTileBottomModal(
-                title: playlist.pin == 'false' ? 'Pin album' : 'Unpin album',
+                title: playlist.pin == 'false'
+                    ? 'Pin ${playlist.type.toLowerCase()}'
+                    : 'Unpin ${playlist.type.toLowerCase()}',
                 icon: playlist.pin == 'false'
                     ? Icons.push_pin_outlined
                     : Icons.push_pin_rounded,
                 changeColor: playlist.pin == 'true' ? true : false,
                 onTap: () {
-                  if(playlist.pin == 'false'){
+                  if (playlist.pin == 'false') {
                     homeAlbumGridController.pinAlbum(playlist.uid);
                     playlist.setPin = 'true';
-                  } else{
+                  } else {
                     homeAlbumGridController.unpinAlbum(playlist.uid);
                     playlist.setPin = 'false';
                   }
