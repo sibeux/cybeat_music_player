@@ -74,20 +74,9 @@ class HomeAlbumGridController extends GetxController {
   }
 
   void unpinAlbum(String uid) {
-    final numPin = jumlahPin.value;
     final currentIndex =
         selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
-    final alphabeticalIndex =
-        alphabeticalList.indexWhere((playlist) => playlist.uid == uid);
-    final recentsIndex =
-        recentsList.indexWhere((playlist) => playlist.uid == uid);
-    int normalIndex = 0;
-
-    if (sortPreferencesController.sortValue == 'title') {
-      normalIndex = alphabeticalIndex + numPin - 1;
-    } else if (sortPreferencesController.sortValue == 'uid') {
-      normalIndex = recentsIndex + numPin - 1;
-    }
+    final int normalIndex = getNearestindex(children[currentIndex]);
 
     // check current index
     final currentChild = children[currentIndex];
@@ -250,6 +239,22 @@ class HomeAlbumGridController extends GetxController {
     }
 
     return listData;
+  }
+
+  int getNearestindex(int currentChild) {
+    final numPin = jumlahPin.value;
+    var selisih = selectedAlbum.length - 1;
+    var isNegative = false;
+    var index = 0;
+
+    for (var i = numPin; i < selectedAlbum.length; i++) {
+      if ((children[i] - currentChild).abs() < selisih) {
+        selisih = (children[i] - currentChild).abs();
+        isNegative = currentChild - children[i] < 0;
+        index = i;
+      }
+    }
+    return isNegative ? index - 1 : index;
   }
 
   String regexGdriveLink(String url, String key) {
