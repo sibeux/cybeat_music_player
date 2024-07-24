@@ -61,8 +61,10 @@ class HomeAlbumGridController extends GetxController {
     final currentChild = children[index]; // Simpan elemen dari indeks index
     final currentAlbum =
         selectedAlbum[index]; // Simpan elemen dari indeks index
+
     children.removeAt(index); // Hapus elemen dari indeks index
     selectedAlbum.removeAt(index); // Hapus elemen dari indeks index
+
     children.insert(
         indexPin, currentChild); // Sisipkan kembali elemen ke indeks pin
     selectedAlbum.insert(
@@ -76,7 +78,17 @@ class HomeAlbumGridController extends GetxController {
   void unpinAlbum(String uid) {
     final currentIndex =
         selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
-    final int normalIndex = getNearestindex(children[currentIndex]);
+    final alphabeticalIndex =
+        alphabeticalList.indexWhere((playlist) => playlist.uid == uid);
+    final recentsIndex =
+        recentsList.indexWhere((playlist) => playlist.uid == uid);
+    int normalIndex = 0;
+
+    if (sortPreferencesController.sortValue == 'title') {
+      normalIndex = getNearestindex(alphabeticalIndex, 'title');
+    } else if (sortPreferencesController.sortValue == 'uid') {
+      normalIndex = getNearestindex(recentsIndex, 'uid');
+    }
 
     // check current index
     final currentChild = children[currentIndex];
@@ -241,19 +253,30 @@ class HomeAlbumGridController extends GetxController {
     return listData;
   }
 
-  int getNearestindex(int currentChild) {
+  int getNearestindex(int filterIndex, String filter) {
     final numPin = jumlahPin.value;
     var selisih = selectedAlbum.length - 1;
     var isNegative = false;
     var index = 0;
 
     for (var i = numPin; i < selectedAlbum.length; i++) {
-      if ((children[i] - currentChild).abs() < selisih) {
-        selisih = (children[i] - currentChild).abs();
-        isNegative = currentChild - children[i] < 0;
-        index = i;
+      if (filter == 'title'){
+        final replacementIndex = alphabeticalList.indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid);
+        if ((replacementIndex - filterIndex).abs() < selisih) {
+          selisih = (replacementIndex - filterIndex).abs();
+          isNegative = filterIndex - replacementIndex < 0;
+          index = i;
+        }
+      } else if (filter == 'uid') {
+        final replacementIndex = recentsList.indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid);
+        if ((replacementIndex - filterIndex).abs() < selisih) {
+          selisih = (replacementIndex - filterIndex).abs();
+          isNegative = filterIndex - replacementIndex < 0;
+          index = i;
+        }
       }
     }
+
     return isNegative ? index - 1 : index;
   }
 
