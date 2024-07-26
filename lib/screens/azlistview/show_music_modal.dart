@@ -114,7 +114,6 @@ class ListTileBottomModal extends StatelessWidget {
         Get.back();
         switch (title.toLowerCase()) {
           case 'play now':
-            print('play now');
             if (context.read<MusicState>().currentMediaItem?.id == "" ||
                 context.read<MusicState>().currentMediaItem?.id !=
                     mediaItem.id) {
