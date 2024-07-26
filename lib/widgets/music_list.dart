@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/screens/azlistview/show_music_modal.dart';
 import 'package:cybeat_music_player/widgets/spectrum_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -145,7 +146,9 @@ class MusicList extends StatelessWidget {
                   size: 30,
                   color: HexColor('#b5b5b4'),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  showMusicModalBottom(context, mediaItem, audioPlayer);
+                },
               ),
               const SizedBox(
                 width: 15,
