@@ -98,7 +98,8 @@ class _TestingMusicScreenState extends State<TestingMusicScreen> {
         return InkWell(
           child: MusicList(
             mediaItem: audioState.queue[index],
-            audioPlayer: audioState.player,
+            audioPlayer: audioState.player, index: index,
+            audioState: audioState,
           ),
           onTap: () {
             // Navigator.push(

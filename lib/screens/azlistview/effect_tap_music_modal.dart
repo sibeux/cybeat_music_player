@@ -68,11 +68,6 @@ class EffectTapMusicModalState extends State<EffectTapMusicModal>
       onPanDown: (details) {
         _shrinkButtonSize();
       },
-      // onTapDown: (_) {
-      //   developer.log('tapdown');
-      //   _shrinkButtonSize();
-      //   dateTime1 = DateTime.now();
-      // },
       onPanCancel: () {
         // ini masih ada gunanya
         _restoreButtonSize();

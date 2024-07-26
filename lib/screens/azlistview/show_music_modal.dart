@@ -1,15 +1,16 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/effect_tap_music_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
-Future<dynamic> showMusicModalBottom(
-    BuildContext context, MediaItem mediaItem, AudioPlayer audioPlayer) {
-  Get.put(HomeAlbumGridController());
-
+Future<dynamic> showMusicModalBottom(BuildContext context, MediaItem mediaItem,
+    AudioPlayer audioPlayer, int index, AudioState audioState) {
   return showMaterialModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -42,13 +43,32 @@ Future<dynamic> showMusicModalBottom(
           ),
           const SizedBox(height: 10),
           // by default, ListTile has a padding of 16
-          const Column(
+          Column(
             children: [
               EffectTapMusicModal(
-                  child: ListTileBottomModal(title: 'Play now')),
+                  child: ListTileBottomModal(
+                title: 'Play now',
+                player: audioPlayer,
+                mediaItem: mediaItem,
+                index: index,
+                audioState: audioState,
+              )),
               EffectTapMusicModal(
-                  child: ListTileBottomModal(title: 'Add to playlist')),
-              EffectTapMusicModal(child: ListTileBottomModal(title: 'Delete')),
+                  child: ListTileBottomModal(
+                title: 'Add to playlist',
+                player: audioPlayer,
+                mediaItem: mediaItem,
+                index: index,
+                audioState: audioState,
+              )),
+              EffectTapMusicModal(
+                  child: ListTileBottomModal(
+                title: 'Delete',
+                player: audioPlayer,
+                mediaItem: mediaItem,
+                index: index,
+                audioState: audioState,
+              )),
             ],
           ),
           const SizedBox(
@@ -64,12 +84,23 @@ class ListTileBottomModal extends StatelessWidget {
   const ListTileBottomModal({
     super.key,
     required this.title,
+    required this.player,
+    required this.mediaItem,
+    required this.index,
+    required this.audioState,
   });
 
   final String title;
+  final AudioPlayer player;
+  final MediaItem mediaItem;
+  final int index;
+  final AudioState audioState;
 
   @override
   Widget build(BuildContext context) {
+    final playingStateController = Get.put(PlayingStateController());
+    final playlistPlayController = Get.put(PlaylistPlayController());
+
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       minVerticalPadding: 5,
@@ -80,15 +111,30 @@ class ListTileBottomModal extends StatelessWidget {
         fontWeight: FontWeight.bold,
       ),
       onTap: () {
+        Get.back();
         switch (title.toLowerCase()) {
           case 'play now':
-          // play music
+            print('play now');
+            if (context.read<MusicState>().currentMediaItem?.id == "" ||
+                context.read<MusicState>().currentMediaItem?.id !=
+                    mediaItem.id) {
+              player.seek(Duration.zero, index: index);
+
+              player.setAudioSource(audioState.playlist, initialIndex: index);
+
+              playingStateController.play();
+
+              context.read<MusicState>().setCurrentMediaItem(mediaItem);
+
+              playlistPlayController.onPlaylistMusicPlay();
+
+              player.play();
+            }
           case 'add to playlist':
           // add music to playlist
           case 'delete':
           // delete music
         }
-        Get.back();
       },
     );
   }

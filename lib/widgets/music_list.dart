@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/screens/azlistview/show_music_modal.dart';
@@ -14,10 +15,14 @@ class MusicList extends StatelessWidget {
     super.key,
     required this.mediaItem,
     required this.audioPlayer,
+    required this.index,
+    required this.audioState,
   });
 
   final MediaItem mediaItem;
   final AudioPlayer audioPlayer;
+  final int index;
+  final AudioState audioState;
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +152,8 @@ class MusicList extends StatelessWidget {
                   color: HexColor('#b5b5b4'),
                 ),
                 onPressed: () {
-                  showMusicModalBottom(context, mediaItem, audioPlayer);
+                  showMusicModalBottom(context, mediaItem, audioPlayer, index,
+                      audioState);
                 },
               ),
               const SizedBox(

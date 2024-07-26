@@ -108,6 +108,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                 child: MusicList(
                   mediaItem: sequence[index].tag as MediaItem,
                   audioPlayer: audioState.player,
+                  index: index,
+                  audioState: audioState,
                 ),
                 onTap: () {
                   // Navigator.push(
