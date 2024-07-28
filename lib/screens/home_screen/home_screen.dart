@@ -6,6 +6,7 @@ import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
+import 'package:cybeat_music_player/screens/search_album_screen/search_album_screen.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:cybeat_music_player/screens/home_screen/list_album/scale_tap_playlist.dart';
 import 'package:cybeat_music_player/screens/home_screen/sort/scale_tap_sort.dart';
@@ -97,10 +98,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Expanded(
                       child: SizedBox(),
                     ),
-                    const Icon(
-                      Icons.search_outlined,
-                      color: Colors.black,
-                      size: 30,
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(() => const SearchAlbumScreen());
+                      },
+                      child: const Icon(
+                        Icons.search_outlined,
+                        color: Colors.black,
+                        size: 30,
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
