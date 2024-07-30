@@ -13,104 +13,120 @@ class SearchAlbumList extends StatelessWidget {
     PlaylistPlayController playlistPlayController = Get.find();
     SearchAlbumController searchAlbumController = Get.find();
 
-    return ListView.builder(
-      itemCount: searchAlbumController.filteredAlbum.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            margin: const EdgeInsets.only(top: 15, bottom: 3),
-            height: 60,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    // cover image
-                    Container(
-                      width: 60,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ListView.builder(
+        itemCount: searchAlbumController.filteredAlbum.length,
+        itemBuilder: (context, index) {
+          return index == 0
+              ? const SizedBox(
+                  height: 15,
+                )
+              : Container(
+                  margin: const EdgeInsets.only(bottom: 15),
+                  child: InkWell(
+                    splashColor: Colors.transparent,
+                    onTap: () {
+                      print(index);
+                    },
+                    child: SizedBox(
                       height: 60,
-                      margin: const EdgeInsets.only(right: 5),
-                      child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(3)),
-                        child: CachedNetworkImage(
-                          imageUrl:
-                              searchAlbumController.filteredAlbum[index].image,
-                          fit: BoxFit.cover,
-                          maxHeightDiskCache: 150,
-                          maxWidthDiskCache: 150,
-                          filterQuality: FilterQuality.low,
-                          placeholder: (context, url) => Image.asset(
-                            'assets/images/placeholder_cover_music.png',
-                            fit: BoxFit.cover,
-                          ),
-                          errorWidget: (context, url, error) => Image.asset(
-                            'assets/images/placeholder_cover_music.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
+                      width: double.infinity,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: double.infinity,
-                            height: 30,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              searchAlbumController.filteredAlbum[index].title,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: HexColor(playlistPlayController
-                                              .playlistTitleValue ==
-                                          searchAlbumController
-                                              .filteredAlbum[index].title
-                                      ? '#8238be'
-                                      : '#313031'),
-                                  overflow: TextOverflow.ellipsis,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 20,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  width: 30,
-                                  height: 30,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: HexColor('#b4b5b4'),
-                                      overflow: TextOverflow.ellipsis,
-                                      fontWeight: FontWeight.values[4],
+                          Row(
+                            children: [
+                              // cover image
+                              Container(
+                                width: 60,
+                                height: 60,
+                                margin: const EdgeInsets.only(right: 5),
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(3)),
+                                  child: CachedNetworkImage(
+                                    imageUrl: searchAlbumController
+                                        .filteredAlbum[index].image,
+                                    fit: BoxFit.cover,
+                                    maxHeightDiskCache: 150,
+                                    maxWidthDiskCache: 150,
+                                    filterQuality: FilterQuality.low,
+                                    placeholder: (context, url) => Image.asset(
+                                      'assets/images/placeholder_cover_music.png',
+                                      fit: BoxFit.cover,
                                     ),
-                                    '${searchAlbumController.filteredAlbum[index].type} ● ${searchAlbumController.filteredAlbum[index].author}',
+                                    errorWidget: (context, url, error) =>
+                                        Image.asset(
+                                      'assets/images/placeholder_cover_music.png',
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
-                                )),
-                              ],
-                            ),
-                          )
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 30,
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        searchAlbumController
+                                            .filteredAlbum[index].title,
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: HexColor(playlistPlayController
+                                                        .playlistTitleValue ==
+                                                    searchAlbumController
+                                                        .filteredAlbum[index]
+                                                        .title
+                                                ? '#8238be'
+                                                : '#313031'),
+                                            overflow: TextOverflow.ellipsis,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 20,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              child: Container(
+                                            width: 30,
+                                            height: 30,
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: HexColor('#b4b5b4'),
+                                                overflow: TextOverflow.ellipsis,
+                                                fontWeight:
+                                                    FontWeight.values[4],
+                                              ),
+                                              '${searchAlbumController.filteredAlbum[index].type} ● ${searchAlbumController.filteredAlbum[index].author}',
+                                            ),
+                                          )),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+                  ),
+                );
+        },
+      ),
     );
   }
 }

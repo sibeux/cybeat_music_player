@@ -101,8 +101,14 @@ class SearchAlbumScreen extends StatelessWidget {
                   Obx(
                     () => searchAlbumController.isTypingValue
                         ? searchAlbumController.isSearch.value
-                            ? const SearchAlbumList()
-                            : const SearchAlbumList()
+                            ? searchAlbumController.filteredAlbum.isEmpty
+                                ? albumEmpty(
+                                    searchAlbumController.textValue.value)
+                                : const SearchAlbumList()
+                            : searchAlbumController.filteredAlbum.isEmpty
+                                ? albumEmpty(
+                                    searchAlbumController.textValue.value)
+                                : const SearchAlbumList()
                         : initialChild(),
                   ),
                   Container(
@@ -149,6 +155,47 @@ class SearchAlbumScreen extends StatelessWidget {
             ),
           ],
         ));
+  }
+
+  Widget albumEmpty(String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Couldn\'t find',
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.9),
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              "\"$value\"",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.9),
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              'Try searching again using a different spelling or keyword.',
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.7),
+                fontWeight: FontWeight.w500,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 50),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget initialChild() {
