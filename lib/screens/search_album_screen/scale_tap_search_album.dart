@@ -1,17 +1,23 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
-import 'package:cybeat_music_player/controller/search_album_controller.dart';
+import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/providers/music_state.dart';
+import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
 
 class ScaleTapSearchAlbum extends StatefulWidget {
   const ScaleTapSearchAlbum({
     super.key,
-    required this.index,
+    required this.audioState,
+    required this.playlist,
   });
 
-  final int index;
+  final Playlist playlist;
+  final AudioState audioState;
 
   @override
   ScaleTapSearchAlbumState createState() => ScaleTapSearchAlbumState();
@@ -23,7 +29,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
   double _scaleTransformValue = 1;
 
   PlaylistPlayController playlistPlayController = Get.find();
-  SearchAlbumController searchAlbumController = Get.find();
+  PlayingStateController playingStateController = Get.find();
 
   // needed for the "click" tap effect
   late final AnimationController animationController;
@@ -60,6 +66,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
 
   @override
   Widget build(BuildContext context) {
+    final audioState = widget.audioState;
     return GestureDetector(
       onPanDown: (details) {
         _shrinkButtonSize();
@@ -82,7 +89,25 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
               splashColor: Colors.transparent,
               // highlightcolor adalah saat ditahan
               highlightColor: Colors.transparent,
-              onTap: () {},
+              onTap: () {
+                if (playlistPlayController.playlistTitleValue !=
+                        widget.playlist.title ||
+                    playlistPlayController.playlistTitleValue == "") {
+                  audioState.clear();
+                  playingStateController.pause();
+                  context.read<MusicState>().clear();
+                  audioState.init(widget.playlist);
+                  playlistPlayController.onPlaylist(widget.playlist);
+                }
+
+                Get.to(
+                  () => AzListMusicScreen(
+                    audioState: audioState,
+                  ),
+                  transition: Transition.leftToRightWithFade,
+                  duration: const Duration(milliseconds: 300),
+                );
+              },
               child: SizedBox(
                 height: 60,
                 width: double.infinity,
@@ -100,8 +125,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(3)),
                             child: CachedNetworkImage(
-                              imageUrl: searchAlbumController
-                                  .filteredAlbum[widget.index]!.image,
+                              imageUrl: widget.playlist.image,
                               fit: BoxFit.cover,
                               maxHeightDiskCache: 150,
                               maxWidthDiskCache: 150,
@@ -128,30 +152,25 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                                 width: double.infinity,
                                 height: 30,
                                 alignment: Alignment.centerLeft,
-                                child: Text(
-                                  searchAlbumController
-                                      .filteredAlbum[widget.index]!.title,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: HexColor(playlistPlayController
-                                                  .playlistTitleValue ==
-                                              searchAlbumController
-                                                  .filteredAlbum[widget.index]!
-                                                  .title
-                                          ? '#8238be'
-                                          : '#313031'),
-                                      overflow: TextOverflow.ellipsis,
-                                      fontWeight: FontWeight.w500),
-                                ),
+                                child: Obx(() => Text(
+                                      widget.playlist.title,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: HexColor(playlistPlayController
+                                                      .playlistTitleValue ==
+                                                  widget.playlist.title
+                                              ? '#8238be'
+                                              : '#313031'),
+                                          overflow: TextOverflow.ellipsis,
+                                          fontWeight: FontWeight.w500),
+                                    )),
                               ),
                               SizedBox(
                                 width: double.infinity,
                                 height: 20,
                                 child: Row(
                                   children: [
-                                    if (searchAlbumController
-                                            .filteredAlbum[widget.index]!.pin ==
-                                        "true")
+                                    if (widget.playlist.pin == "true")
                                       Icon(
                                         Icons.push_pin,
                                         size: 16,
@@ -169,7 +188,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                                           overflow: TextOverflow.ellipsis,
                                           fontWeight: FontWeight.values[4],
                                         ),
-                                        '${searchAlbumController.filteredAlbum[widget.index]!.type} ● ${searchAlbumController.filteredAlbum[widget.index]!.author}',
+                                        '${widget.playlist.type} • ${widget.playlist.author}',
                                       ),
                                     )),
                                   ],

@@ -23,8 +23,10 @@ class SearchAlbumScreen extends StatelessWidget {
     PlayingStateController playingStateController = Get.find();
 
     return Scaffold(
+        backgroundColor: HexColor('#fefffe'),
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
+          backgroundColor: HexColor('#fefffe'),
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios_rounded,
@@ -106,11 +108,11 @@ class SearchAlbumScreen extends StatelessWidget {
                                 ? searchAlbumController.filteredAlbum.isEmpty
                                     ? albumEmpty(
                                         searchAlbumController.textValue.value)
-                                    : const SearchAlbumList()
+                                    : SearchAlbumList(audioState: audioState)
                                 : searchAlbumController.filteredAlbum.isEmpty
                                     ? albumEmpty(
                                         searchAlbumController.textValue.value)
-                                    : const SearchAlbumList()
+                                    : SearchAlbumList(audioState: audioState)
                         : initialChild(),
                   ),
                   Container(

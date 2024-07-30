@@ -254,7 +254,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // mengambil data dari playlistList
-
   Widget _getReorderableAlbum() {
     final generatedChildren = _getGeneratedChildren();
 

@@ -1,10 +1,13 @@
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/scale_tap_search_album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SearchAlbumList extends StatelessWidget {
-  const SearchAlbumList({super.key});
+  const SearchAlbumList({super.key, required this.audioState});
+
+  final AudioState audioState;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +23,10 @@ class SearchAlbumList extends StatelessWidget {
               ? const SizedBox(
                   height: 20,
                 )
-              : ScaleTapSearchAlbum(index: index,);
+              : ScaleTapSearchAlbum(
+                  playlist: searchAlbumController.filteredAlbum[index]!,
+                  audioState: audioState,
+                );
         },
       ),
     );
