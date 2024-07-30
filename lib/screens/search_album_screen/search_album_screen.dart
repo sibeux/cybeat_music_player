@@ -100,15 +100,17 @@ class SearchAlbumScreen extends StatelessWidget {
                 children: [
                   Obx(
                     () => searchAlbumController.isTypingValue
-                        ? searchAlbumController.isSearch.value
-                            ? searchAlbumController.filteredAlbum.isEmpty
-                                ? albumEmpty(
-                                    searchAlbumController.textValue.value)
-                                : const SearchAlbumList()
-                            : searchAlbumController.filteredAlbum.isEmpty
-                                ? albumEmpty(
-                                    searchAlbumController.textValue.value)
-                                : const SearchAlbumList()
+                        ? searchAlbumController.textValue.value.trim().isEmpty
+                            ? albumEmpty(searchAlbumController.textValue.value)
+                            : searchAlbumController.isSearch.value
+                                ? searchAlbumController.filteredAlbum.isEmpty
+                                    ? albumEmpty(
+                                        searchAlbumController.textValue.value)
+                                    : const SearchAlbumList()
+                                : searchAlbumController.filteredAlbum.isEmpty
+                                    ? albumEmpty(
+                                        searchAlbumController.textValue.value)
+                                    : const SearchAlbumList()
                         : initialChild(),
                   ),
                   Container(

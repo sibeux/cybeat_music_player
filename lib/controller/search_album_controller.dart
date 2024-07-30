@@ -9,11 +9,11 @@ class SearchAlbumController extends GetxController {
   var isTyping = false.obs;
   var textValue = ''.obs;
   var isKeybordFocus = false.obs;
-  var filteredAlbum = RxList<Playlist>([]);
+  var filteredAlbum = RxList<Playlist?>([]);
   var isSearch = false.obs;
 
   void onChanged(String value) {
-    isTyping.value = value.trim().isNotEmpty;
+    isTyping.value = value.isNotEmpty;
     textValue.value = value;
     isKeybordFocus.value = true;
     filterAlbum(value);
@@ -21,9 +21,9 @@ class SearchAlbumController extends GetxController {
   }
 
   void filterAlbum(String value) {
-    final results = homeAlbumGridController.alphabeticalList
+    final results = homeAlbumGridController.selectedAlbum
         .where((album) =>
-            album.title.toLowerCase().contains(value.toLowerCase()) ||
+            album!.title.toLowerCase().contains(value.toLowerCase()) ||
             album.type.toLowerCase().contains(value.toLowerCase()) ||
             album.author.toLowerCase().contains(value.toLowerCase()))
         .toList();
