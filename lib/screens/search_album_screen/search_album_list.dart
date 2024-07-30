@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -9,15 +10,17 @@ class SearchAlbumList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    HomeAlbumGridController homeAlbumGridController = Get.find();
+    PlaylistPlayController playlistPlayController = Get.find();
+    SearchAlbumController searchAlbumController = Get.find();
 
     return ListView.builder(
-      itemCount: homeAlbumGridController.alphabeticalList.length,
+      itemCount: searchAlbumController.filteredAlbum.length,
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: SizedBox(
-            height: 80,
+          child: Container(
+            margin: const EdgeInsets.only(top: 15, bottom: 3),
+            height: 60,
             width: double.infinity,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -33,8 +36,8 @@ class SearchAlbumList extends StatelessWidget {
                         borderRadius:
                             const BorderRadius.all(Radius.circular(3)),
                         child: CachedNetworkImage(
-                          imageUrl: homeAlbumGridController
-                              .alphabeticalList[index].image,
+                          imageUrl:
+                              searchAlbumController.filteredAlbum[index].image,
                           fit: BoxFit.cover,
                           maxHeightDiskCache: 150,
                           maxWidthDiskCache: 150,
@@ -62,11 +65,15 @@ class SearchAlbumList extends StatelessWidget {
                             height: 30,
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              homeAlbumGridController
-                                  .alphabeticalList[index].title,
-                              style: const TextStyle(
+                              searchAlbumController.filteredAlbum[index].title,
+                              style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.black,
+                                  color: HexColor(playlistPlayController
+                                              .playlistTitleValue ==
+                                          searchAlbumController
+                                              .filteredAlbum[index].title
+                                      ? '#8238be'
+                                      : '#313031'),
                                   overflow: TextOverflow.ellipsis,
                                   fontWeight: FontWeight.w500),
                             ),
@@ -88,7 +95,7 @@ class SearchAlbumList extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                       fontWeight: FontWeight.values[4],
                                     ),
-                                    '${homeAlbumGridController.alphabeticalList[index].type} ● ${homeAlbumGridController.alphabeticalList[index].author}',
+                                    '${searchAlbumController.filteredAlbum[index].type} ● ${searchAlbumController.filteredAlbum[index].author}',
                                   ),
                                 )),
                               ],
@@ -98,9 +105,6 @@ class SearchAlbumList extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(
-                  height: 10,
                 ),
               ],
             ),

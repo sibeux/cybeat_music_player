@@ -6,7 +6,6 @@ import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_list.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
@@ -101,7 +100,9 @@ class SearchAlbumScreen extends StatelessWidget {
                 children: [
                   Obx(
                     () => searchAlbumController.isTypingValue
-                        ? const SearchAlbumList()
+                        ? searchAlbumController.isSearch.value
+                            ? const SearchAlbumList()
+                            : const SearchAlbumList()
                         : initialChild(),
                   ),
                   Container(
