@@ -48,12 +48,14 @@ class PlaylistPlayController extends GetxController {
   var playlistTitle = ''.obs;
   var playlistType = ''.obs;
   var playlistUid = ''.obs;
+  var playlistEditable = ''.obs;
   var needRebuild = false.obs;
 
   void onPlaylist(Playlist playlist) {
     playlistTitle.value = playlist.title;
     playlistType.value = playlist.type.toUpperCase();
     playlistUid.value = playlist.uid;
+    playlistEditable.value = playlist.editable;
   }
 
   Future<void> onPlaylistMusicPlay() async {

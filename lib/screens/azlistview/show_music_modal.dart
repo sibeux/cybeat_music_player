@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -111,7 +112,6 @@ class ListTileBottomModal extends StatelessWidget {
         fontWeight: FontWeight.bold,
       ),
       onTap: () {
-        Get.back();
         switch (title.toLowerCase()) {
           case 'play now':
             if (context.read<MusicState>().currentMediaItem?.id == "" ||
@@ -128,13 +128,27 @@ class ListTileBottomModal extends StatelessWidget {
               playlistPlayController.onPlaylistMusicPlay();
 
               player.play();
+              Get.back();
             }
           case 'add to playlist':
-          // add music to playlist
+            // add music to playlist
+            showRemoveAlbumToast('Music has been added to the playlist');
           case 'delete':
-          // delete music
+            // delete music
+            deleteMusic(playlistPlayController.playlistEditable.value);
         }
       },
     );
+  }
+}
+
+void deleteMusic(String editable) {
+  if (editable == 'true') {
+    // delete music from playlist
+    showRemoveAlbumToast('Music has been deleted from the album');
+    Get.back();
+  } else {
+    // show alert dialog
+    showRemoveAlbumToast('You have no permission to delete this music');
   }
 }
