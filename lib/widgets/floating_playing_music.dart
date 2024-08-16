@@ -194,9 +194,9 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                               IconButton(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.skip_next_rounded,
-                                  color: Colors.white,
+                                  color: colorInfoMusic,
                                 ),
                                 onPressed: () {
                                   widget.audioState.player.seekToNext();
@@ -223,7 +223,7 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
                                           duration.inMilliseconds
                                       : 0.0,
                                   borderRadius: BorderRadius.circular(50),
-                                  color: Colors.greenAccent,
+                                  color: colorInfoMusic,
                                   backgroundColor: Colors.grey,
                                 ),
                               );
@@ -271,13 +271,13 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
     if (playing != true) {
       return IconButton(
         icon: const Icon(Icons.play_circle_fill),
-        color: Colors.white,
+        color: colorInfoMusic,
         onPressed: widget.audioState.player.play,
       );
     } else if (processingState != ProcessingState.completed) {
       return IconButton(
         icon: const Icon(Icons.pause_circle_filled),
-        color: Colors.white,
+        color: colorInfoMusic,
         onPressed: widget.audioState.player.pause,
       );
     } else {

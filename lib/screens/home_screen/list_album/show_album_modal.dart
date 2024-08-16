@@ -126,6 +126,7 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                     : Icons.push_pin_rounded,
                 changeColor: playlist.pin == 'true' ? true : false,
                 onTap: () {
+                  Get.back();
                   if (playlist.pin == 'false') {
                     homeAlbumGridController.pinAlbum(playlist.uid);
                     playlist.setPin = 'true';
@@ -133,14 +134,14 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                     homeAlbumGridController.unpinAlbum(playlist.uid);
                     playlist.setPin = 'false';
                   }
-                  Get.back();
                 },
               ),
               ListTileBottomModal(
-                  title: 'Share',
-                  icon: Icons.share_outlined,
-                  changeColor: false,
-                  onTap: () {}),
+                title: 'Share',
+                icon: Icons.share_outlined,
+                changeColor: false,
+                onTap: () {},
+              ),
             ],
           ),
         ],
