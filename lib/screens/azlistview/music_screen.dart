@@ -312,10 +312,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final currentItem = snapshot.data?.currentSource;
-                          context
-                              .read<MusicState>()
-                              .setCurrentMediaItem(currentItem!.tag as MediaItem);
-      
+                          context.read<MusicState>().setCurrentMediaItem(
+                              currentItem!.tag as MediaItem);
+
                           return FloatingPlayingMusic(
                             audioState: audioState,
                             currentItem: currentItem,

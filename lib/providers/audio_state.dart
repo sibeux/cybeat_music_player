@@ -41,7 +41,6 @@ class AudioState extends ChangeNotifier {
   }
 
   Future<void> init(Playlist list) async {
-
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
 
@@ -63,7 +62,11 @@ class AudioState extends ChangeNotifier {
             return AudioSource.uri(
               // Uri.parse(item['link_gdrive']),
               Uri.parse(
-                  filteredUrl(item['link_gdrive'], apiData[0]['gdrive_api'])),
+                filteredUrl(
+                  item['link_gdrive'],
+                  apiData[0]['gdrive_api'],
+                ),
+              ),
               tag: MediaItem(
                 id: '${_nextMediaId++}',
                 title: capitalizeEachWord(item['title']),
@@ -71,7 +74,11 @@ class AudioState extends ChangeNotifier {
                 album: capitalizeEachWord(item['album']),
                 // artUri: Uri.parse(item['cover']),
                 artUri: Uri.parse(
-                    filteredUrl(item['cover'], apiData[0]['gdrive_api'])),
+                  filteredUrl(
+                    item['cover'],
+                    apiData[0]['gdrive_api'],
+                  ),
+                ),
                 extras: {
                   'favorite': item['favorite'],
                   'music_id': item['id_music'],
@@ -90,7 +97,7 @@ class AudioState extends ChangeNotifier {
     }
   }
 
-  Future<void> setSourceAudio(ConcatenatingAudioSource playlist) async{
+  Future<void> setSourceAudio(ConcatenatingAudioSource playlist) async {
     player.playbackEventStream.listen(
       (event) {},
       onError: (Object e, StackTrace stackTrace) {

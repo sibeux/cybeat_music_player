@@ -98,7 +98,8 @@ class _TestingMusicScreenState extends State<TestingMusicScreen> {
         return InkWell(
           child: MusicList(
             mediaItem: audioState.queue[index],
-            audioPlayer: audioState.player, index: index,
+            audioPlayer: audioState.player,
+            index: index,
             audioState: audioState,
           ),
           onTap: () {
@@ -188,7 +189,8 @@ class _TestingMusicScreenState extends State<TestingMusicScreen> {
                                 return InkWell(
                                   onTap: () {
                                     if (snapshot.hasData) {
-                                      _shuffleMusic(audioState, sequence, playingStateController);
+                                      _shuffleMusic(audioState, sequence,
+                                          playingStateController);
                                     }
                                   },
                                   child: Container(

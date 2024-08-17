@@ -80,8 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: const Image(
-                        image: NetworkImage(
-                            'https://sibeux.my.id/images/sibe.png'),
+                        image: AssetImage('assets/images/cybeat_splash.png'),
                         width: 40,
                         height: 40,
                       ),
@@ -98,6 +97,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const Expanded(
                       child: SizedBox(),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        
+                      },
+                      child: const Icon(
+                        Icons.history,
+                        color: Colors.black,
+                        size: 30,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
                     ),
                     GestureDetector(
                       onTap: () {
