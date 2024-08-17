@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/recents_music.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/detail_screen/music_detail_screen.dart';
@@ -153,6 +154,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                         .setCurrentMediaItem(sequence[index].tag as MediaItem);
 
                     playlistPlayController.onPlaylistMusicPlay();
+
+                    setRecentsMusic(sequence[index].tag.extras!['music_id']);
 
                     audioState.player.play();
                   }
@@ -352,6 +355,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     context
         .read<MusicState>()
         .setCurrentMediaItem(sequence[index].tag as MediaItem);
+
+    setRecentsMusic(sequence[index].tag.extras!['music_id']);
 
     audioState.player.play();
   }

@@ -45,7 +45,7 @@ class AudioState extends ChangeNotifier {
     _nextMediaId = 1;
 
     String url =
-        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?uid=${list.uid}&type=$type";
+        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist?uid=${list.uid}&type=$type";
     const api =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
@@ -62,11 +62,7 @@ class AudioState extends ChangeNotifier {
             return AudioSource.uri(
               // Uri.parse(item['link_gdrive']),
               Uri.parse(
-                filteredUrl(
-                  item['link_gdrive'],
-                  apiData[0]['gdrive_api'],
-                ),
-              ),
+                  filteredUrl(item['link_gdrive'], apiData[0]['gdrive_api'])),
               tag: MediaItem(
                 id: '${_nextMediaId++}',
                 title: capitalizeEachWord(item['title']),
@@ -74,11 +70,7 @@ class AudioState extends ChangeNotifier {
                 album: capitalizeEachWord(item['album']),
                 // artUri: Uri.parse(item['cover']),
                 artUri: Uri.parse(
-                  filteredUrl(
-                    item['cover'],
-                    apiData[0]['gdrive_api'],
-                  ),
-                ),
+                    filteredUrl(item['cover'], apiData[0]['gdrive_api'])),
                 extras: {
                   'favorite': item['favorite'],
                   'music_id': item['id_music'],
