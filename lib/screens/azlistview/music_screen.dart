@@ -43,6 +43,10 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   Color dominantColor = Colors.black;
   List<AzListMusic> musicItems = [];
   get audioState => widget.audioState;
+  
+  final playlistPlayController = Get.put(PlaylistPlayController());
+  final homeAlbumGridController = Get.put(HomeAlbumGridController());
+  final playingStateController = Get.put(PlayingStateController());
 
   @override
   void initState() {
@@ -57,14 +61,10 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final playlistPlayController = Get.put(PlaylistPlayController());
-    final homeAlbumGridController = Get.put(HomeAlbumGridController());
 
     Widget content = const Center(
       child: Text('No music yet! Add some!'),
-    );
-
-    final playingStateController = Get.put(PlayingStateController());
+    );    
 
     content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
@@ -348,6 +348,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     audioState.player.setAudioSource(audioState.playlist, initialIndex: index);
 
     playingStateController.play();
+
+    playlistPlayController.onPlaylistMusicPlay();
 
     audioState.player.play();
   }

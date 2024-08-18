@@ -31,6 +31,7 @@ class SearchAlbumScreen extends StatelessWidget {
             ),
             tooltip: 'Back',
             onPressed: () {
+              // untuk menghilangkan keyboard
               FocusManager.instance.primaryFocus?.unfocus();
               searchAlbumController.isKeybordFocus.value
                   ? Future.delayed(const Duration(milliseconds: 200), () {

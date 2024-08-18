@@ -90,9 +90,12 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
               // highlightcolor adalah saat ditahan
               highlightColor: Colors.transparent,
               onTap: () {
-                if (playlistPlayController.playlistTitleValue !=
-                        widget.playlist.title ||
-                    playlistPlayController.playlistTitleValue == "") {
+                // untuk menghilangkan keyboard
+                FocusManager.instance.primaryFocus?.unfocus();
+
+                if (playlistPlayController.playlistUidValue !=
+                        widget.playlist.uid ||
+                    playlistPlayController.playlistUidValue == "") {
                   audioState.clear();
                   playingStateController.pause();
                   context.read<MusicState>().clear();
