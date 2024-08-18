@@ -100,7 +100,10 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                 title: 'Listen to music ad-free',
                 icon: Icons.diamond_outlined,
                 changeColor: false,
-                onTap: () {},
+                onTap: () {
+                  showRemoveAlbumToast(
+                      'Sorry, this feature is not available yet');
+                },
               ),
               ListTileBottomModal(
                   title: 'Remove from Your Library',
@@ -110,13 +113,16 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                     playlist.editable == 'true'
                         ? () {}
                         : showRemoveAlbumToast(
-                            'You have no permission to delete this album');
+                            'You have no permission to remove this ${playlist.type.toLowerCase()}');
                   }),
               ListTileBottomModal(
                   title: 'Download',
                   icon: Icons.downloading_outlined,
                   changeColor: false,
-                  onTap: () {}),
+                  onTap: () {
+                    showRemoveAlbumToast(
+                        'Sorry, this feature is not available yet');
+                  }),
               ListTileBottomModal(
                 title: playlist.pin == 'false'
                     ? 'Pin ${playlist.type.toLowerCase()}'
@@ -140,7 +146,10 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                 title: 'Share',
                 icon: Icons.share_outlined,
                 changeColor: false,
-                onTap: () {},
+                onTap: () {
+                  showRemoveAlbumToast(
+                      'Sorry, this feature is not available yet');
+                },
               ),
             ],
           ),

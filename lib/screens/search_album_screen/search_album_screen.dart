@@ -1,7 +1,7 @@
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/screens/search_album_screen/search_album_list.dart';
+import 'package:cybeat_music_player/screens/search_album_screen/search_album_builder.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

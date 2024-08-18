@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 ScaleTapSort(),
                                 Expanded(child: SizedBox()),
-                                Icon(Icons.list_rounded),
+                                Icon(Icons.grid_view_outlined),
                               ],
                             ),
                             const SizedBox(

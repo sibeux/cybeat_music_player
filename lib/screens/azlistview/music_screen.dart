@@ -61,9 +61,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = const SizedBox();
-
-    content = StreamBuilder<SequenceState?>(
+    Widget content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
