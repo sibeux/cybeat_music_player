@@ -61,6 +61,7 @@ class GridPlaylistAlbum extends StatelessWidget {
                 fit: BoxFit.cover,
                 filterQuality: FilterQuality.low,
               ),
+              // ini belum tau fungsinya, sementara yang dipakai placeholder
               errorWidget: (context, url, error) => Image.asset(
                 'assets/images/placeholder_cover_music.png',
                 fit: BoxFit.cover,

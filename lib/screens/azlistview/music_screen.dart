@@ -43,7 +43,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   Color dominantColor = Colors.black;
   List<AzListMusic> musicItems = [];
   get audioState => widget.audioState;
-  
+
   final playlistPlayController = Get.put(PlaylistPlayController());
   final homeAlbumGridController = Get.put(HomeAlbumGridController());
   final playingStateController = Get.put(PlayingStateController());
@@ -61,17 +61,30 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    Widget content = const Center(
-      child: Text('No music yet! Add some!'),
-    );    
+    Widget content = const SizedBox();
 
     content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Menampilkan shimmer saat data sedang dimuat
+          return const ShimmerMusicList();
+        }
         if (snapshot.hasData) {
           final state = snapshot.data;
           final sequence = state?.sequence ?? [];
+
+          if (sequence.isEmpty) {
+            return Center(
+              child: Text(
+                'No songs available in this ${playlistPlayController.playlistType.value.toLowerCase()}',
+                style: TextStyle(
+                  color: Colors.black.withOpacity(0.7),
+                  fontSize: 16,
+                ),
+              ),
+            );
+          }
 
           musicItems = sequence
               .map(
@@ -161,7 +174,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
             },
           );
         }
-        return const ShimmerMusicList();
+        return const SizedBox();
       },
     );
 
@@ -235,7 +248,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                                   }
                                   return InkWell(
                                     onTap: () {
-                                      if (snapshot.hasData) {
+                                      if (snapshot.hasData &&
+                                          sequence.isNotEmpty) {
                                         _shuffleMusic(audioState, sequence,
                                             playingStateController);
                                       }
