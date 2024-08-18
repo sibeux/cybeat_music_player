@@ -78,6 +78,10 @@ class PlaylistPlayController extends GetxController {
   String get playlistTitleValue {
     return playlistTitle.value;
   }
+
+  String get playlistUidValue {
+    return playlistUid.value;
+  }
 }
 
 class ProgressMusicController extends GetxController {

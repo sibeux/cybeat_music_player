@@ -1,10 +1,8 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
 import 'package:cybeat_music_player/screens/new_playlist_screen/show_new_playlist_modal.dart';
 import 'package:cybeat_music_player/screens/recents_screen/recents_screen.dart';
@@ -18,7 +16,6 @@ import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen(
@@ -254,9 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         final currentItem = snapshot.data?.currentSource;
-                        context
-                            .read<MusicState>()
-                            .setCurrentMediaItem(currentItem!.tag as MediaItem);
 
                         return FloatingPlayingMusic(
                           audioState: widget.audioState,

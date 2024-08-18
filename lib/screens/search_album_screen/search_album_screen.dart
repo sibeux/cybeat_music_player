@@ -1,15 +1,12 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_list.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:provider/provider.dart';
 
 class SearchAlbumScreen extends StatelessWidget {
   const SearchAlbumScreen({super.key, required this.audioState});
@@ -144,8 +141,6 @@ class SearchAlbumScreen extends StatelessWidget {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final currentItem = snapshot.data?.currentSource;
-                          context.read<MusicState>().setCurrentMediaItem(
-                              currentItem!.tag as MediaItem);
 
                           return FloatingPlayingMusic(
                             audioState: audioState,

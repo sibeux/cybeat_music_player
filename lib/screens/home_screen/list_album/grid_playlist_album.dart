@@ -83,8 +83,8 @@ class GridPlaylistAlbum extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: HexColor(
-                                playlistPlayController.playlistTitleValue ==
-                                        playlist.title
+                                playlistPlayController.playlistUidValue ==
+                                        playlist.uid
                                     ? '#8238be'
                                     : '#313031'),
                             fontWeight: FontWeight.bold,
