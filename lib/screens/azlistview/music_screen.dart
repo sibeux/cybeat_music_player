@@ -155,8 +155,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
                     playlistPlayController.onPlaylistMusicPlay();
 
-                    setRecentsMusic(sequence[index].tag.extras!['music_id']);
-
                     audioState.player.play();
                   }
                 },
@@ -317,6 +315,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                           final currentItem = snapshot.data?.currentSource;
                           context.read<MusicState>().setCurrentMediaItem(
                               currentItem!.tag as MediaItem);
+                          setRecentsMusic(
+                              currentItem.tag.extras!['music_id']);
 
                           return FloatingPlayingMusic(
                             audioState: audioState,
