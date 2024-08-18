@@ -76,7 +76,7 @@ class ListTileBottomModal extends StatelessWidget {
       ),
       onTap: () {
         Get.back();
-        Get.to(const AddPlaylistScreen());
+        Get.to(() => const AddPlaylistScreen());
       },
     );
   }

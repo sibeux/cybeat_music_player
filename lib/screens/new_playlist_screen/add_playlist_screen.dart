@@ -1,3 +1,4 @@
+import 'package:cybeat_music_player/controller/crud_playlist.dart';
 import 'package:cybeat_music_player/screens/new_playlist_screen/scale_tap_button_new.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,8 +12,8 @@ class AddPlaylistScreen extends StatefulWidget {
 }
 
 class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
-  final textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final textController = TextEditingController();
 
   @override
   void initState() {
@@ -95,15 +96,21 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
                 ),
               ),
               const SizedBox(height: 35),
-              const Center(
+              Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ScaleTapButtonNewPlaylist(
-                        child: TextButton(title: 'Cancel')),
-                    SizedBox(width: 20),
+                        child: TextButton(
+                      title: 'Cancel',
+                      textController: textController,
+                    )),
+                    const SizedBox(width: 20),
                     ScaleTapButtonNewPlaylist(
-                        child: TextButton(title: 'Create')),
+                        child: TextButton(
+                      title: 'Create',
+                      textController: textController,
+                    )),
                   ],
                 ),
               )
@@ -119,18 +126,24 @@ class TextButton extends StatelessWidget {
   const TextButton({
     super.key,
     required this.title,
+    required this.textController,
   });
 
   final String title;
+  final TextEditingController textController;
 
   @override
   Widget build(BuildContext context) {
+    
     return GestureDetector(
       onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
         if (title == 'Cancel') {
           Get.back();
         } else {
           // create playlist
+          addNewPlaylist(textController.text);
+          Get.back();
         }
       },
       child: Container(

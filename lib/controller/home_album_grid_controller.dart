@@ -187,7 +187,9 @@ class HomeAlbumGridController extends GetxController {
         return Playlist(
           uid: item['uid'],
           title: capitalizeEachWord(item['name']),
-          image: regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
+          image: item['image'] == null
+              ? ''
+              : regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
           type: capitalizeEachWord(item['type']),
           author: item['type'] == 'album'
               ? capitalizeEachWord(item['author'])
@@ -260,15 +262,17 @@ class HomeAlbumGridController extends GetxController {
     var index = 0;
 
     for (var i = numPin; i < selectedAlbum.length; i++) {
-      if (filter == 'title'){
-        final replacementIndex = alphabeticalList.indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid);
+      if (filter == 'title') {
+        final replacementIndex = alphabeticalList
+            .indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid);
         if ((replacementIndex - filterIndex).abs() < selisih) {
           selisih = (replacementIndex - filterIndex).abs();
           isNegative = filterIndex - replacementIndex < 0;
           index = i;
         }
       } else if (filter == 'uid') {
-        final replacementIndex = recentsList.indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid);
+        final replacementIndex = recentsList
+            .indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid);
         if ((replacementIndex - filterIndex).abs() < selisih) {
           selisih = (replacementIndex - filterIndex).abs();
           isNegative = filterIndex - replacementIndex < 0;
