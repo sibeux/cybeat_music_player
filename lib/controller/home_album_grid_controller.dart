@@ -284,6 +284,15 @@ class HomeAlbumGridController extends GetxController {
     return isNegative ? index - 1 : index;
   }
 
+  void removePlaylist(String uid) {
+    final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+
+    children.removeAt(index);
+    selectedAlbum.removeAt(index);
+
+    isTapped.value = !isTapped.value;
+  }
+
   String regexGdriveLink(String url, String key) {
     if (url.contains('drive.google.com')) {
       final regExp = RegExp(r'/d/([a-zA-Z0-9_-]+)');

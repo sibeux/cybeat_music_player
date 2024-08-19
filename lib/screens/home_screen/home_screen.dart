@@ -1,7 +1,6 @@
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
-import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
 import 'package:cybeat_music_player/screens/new_playlist_screen/show_new_playlist_modal.dart';
@@ -19,9 +18,8 @@ import 'package:just_audio/just_audio.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen(
-      {super.key, required this.playlistList, required this.audioState});
+      {super.key, required this.audioState});
 
-  final List<Playlist> playlistList;
   final AudioState audioState;
 
   @override
@@ -35,21 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    _updateChildrenFromPlaylist();
     super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant HomeScreen oldWidget) {
-    if (widget.playlistList != oldWidget.playlistList) {
-      _updateChildrenFromPlaylist();
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  void _updateChildrenFromPlaylist() {
-    // tidak perlu update children karena sudah diupdate di initiaeAlbum
-    // _homeAlbumGridController.updateChildren(widget.playlistList);
   }
 
   @override
@@ -293,19 +277,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _getGeneratedChildren() {
+    final selectedAlbum = _homeAlbumGridController.selectedAlbum;
     return List<Widget>.generate(
-      widget.playlistList.length,
+      selectedAlbum.length,
       (index) => _getChild(index: index),
     );
   }
 
   Widget _getChild({required int index}) {
     final children = _homeAlbumGridController.children;
+    final selectedAlbum = _homeAlbumGridController.initiateAlbum;
     return CustomDraggable(
       key: Key(children[index].toString()),
       data: index,
       child: ScaleTapPlaylist(
-        playlist: widget.playlistList[(children[index])],
+        playlist: selectedAlbum[(children[index])],
         audioState: widget.audioState,
       ),
     );
