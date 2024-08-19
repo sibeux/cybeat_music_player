@@ -26,10 +26,10 @@ void showModalDeletePlaylist(
           /// the action's text color to red.
           isDestructiveAction: true,
           onPressed: () {
+            Get.back();
             deletePlaylist(uid);
             showRemoveAlbumToast(
                 '${type.capitalizeFirst!} removed from your library');
-            Get.back();
           },
           child: const Text('Yes'),
         ),

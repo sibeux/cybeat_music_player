@@ -277,21 +277,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _getGeneratedChildren() {
-    final selectedAlbum = _homeAlbumGridController.selectedAlbum;
+    final initiateAlbum = _homeAlbumGridController.selectedAlbum;
     return List<Widget>.generate(
-      selectedAlbum.length,
+      initiateAlbum.length,
       (index) => _getChild(index: index),
     );
   }
 
   Widget _getChild({required int index}) {
     final children = _homeAlbumGridController.children;
-    final selectedAlbum = _homeAlbumGridController.initiateAlbum;
+    final initiateAlbum = _homeAlbumGridController.initiateAlbum;
     return CustomDraggable(
       key: Key(children[index].toString()),
       data: index,
       child: ScaleTapPlaylist(
-        playlist: selectedAlbum[(children[index])],
+        playlist: initiateAlbum[(children[index])],
         audioState: widget.audioState,
       ),
     );

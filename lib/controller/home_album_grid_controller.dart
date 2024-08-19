@@ -19,9 +19,7 @@ class HomeAlbumGridController extends GetxController {
   var isLoading = true.obs;
   var alphabeticalList = RxList<Playlist>([]);
   var recentsList = RxList<Playlist>([]);
-
-  // diakses oleh splash_home_screen.dart
-  var initiateAlbum = RxList<Playlist>([]);
+  var initiateAlbum = RxList<Playlist>([]); // diakses oleh home_screen.dart
 
   void updateChildren(List<Playlist> playlist) {
     children.value = List.generate(
