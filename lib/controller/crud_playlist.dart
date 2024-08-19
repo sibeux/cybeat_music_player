@@ -20,3 +20,18 @@ void addNewPlaylist(String name) async {
     homeAlbumGridController.initializeAlbum();
   }
 }
+
+void deletePlaylist(String id) async {
+  String url =
+      'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/crud_new_playlist?action=delete&playlist_uid=$id';
+
+  try {
+    await http.post(
+      Uri.parse(url),
+    );
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error delete playlist: $e');
+    }
+  }
+}

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/screens/home_screen/modal_delete_playlist/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -109,12 +110,20 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                   title: 'Remove from Your Library',
                   icon: Icons.check_circle_rounded,
                   changeColor: true,
-                  onTap: () {
-                    playlist.editable == 'true'
-                        ? () {}
-                        : showRemoveAlbumToast(
-                            'You have no permission to remove this ${playlist.type.toLowerCase()}');
-                  }),
+                  onTap: playlist.editable == 'true'
+                      ? () {
+                          Get.back();
+                          showModalDeletePlaylist(
+                            context,
+                            playlist.title,
+                            playlist.uid,
+                            playlist.type,
+                          );
+                        }
+                      : () {
+                          showRemoveAlbumToast(
+                              'You have no permission to delete this ${playlist.type.toLowerCase()}');
+                        }),
               ListTileBottomModal(
                   title: 'Download',
                   icon: Icons.downloading_outlined,
