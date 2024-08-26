@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/recents_music.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
@@ -19,18 +22,44 @@ class AudioState extends ChangeNotifier {
 
   AudioState() {
     player = AudioPlayer();
+
+    /**
+     * stream ini tidak digunakan, karena saat
+     * pertama kali buka album, stream ini akan
+     * di-dispose dan tidak bisa di-listen lagi.
+     * Maka, stream ini dipindahkan ke clear()
+     */
+
+    // player.playbackEventStream.listen(
+    //   (event) {},
+    //   onError: (Object e, StackTrace stackTrace) {
+    //     logger.e('A stream error occurred: $e');
+    //   },
+    // );
+  }
+
+  Future<void> clear() async {
+    final playingStateController = Get.put(PlayingStateController());
+    await player.stop();
+    await player.dispose();
+    player = AudioPlayer();
+    var uid = '';
+
     player.playbackEventStream.listen(
-      (event) {},
+      (event) {
+        if (playingStateController.isPlaying.value) {
+          final MediaItem item = queue[player.currentIndex!];
+
+          if (item.extras?['music_id'] != uid) {
+            uid = item.extras!['music_id'];
+            setRecentsMusic(item.extras!['music_id']);
+          }
+        }
+      },
       onError: (Object e, StackTrace stackTrace) {
         logger.e('A stream error occurred: $e');
       },
     );
-  }
-
-  Future<void> clear() async {
-    await player.stop();
-    await player.dispose();
-    player = AudioPlayer();
     // notifyListeners();
   }
 
