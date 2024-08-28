@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
+import 'package:cybeat_music_player/screens/home_screen/list_album/grid_playlist_album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -127,21 +127,11 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                           child: ClipRRect(
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(3)),
-                            child: CachedNetworkImage(
-                              imageUrl: widget.playlist.image,
-                              fit: BoxFit.cover,
-                              maxHeightDiskCache: 150,
-                              maxWidthDiskCache: 150,
-                              filterQuality: FilterQuality.low,
-                              placeholder: (context, url) => Image.asset(
-                                'assets/images/placeholder_cover_music.png',
-                                fit: BoxFit.cover,
-                              ),
-                              errorWidget: (context, url, error) => Image.asset(
-                                'assets/images/placeholder_cover_music.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                            child:
+                                FourCoverAlbum(
+                                    size: 60,
+                                    type: widget.playlist.type, playlist: widget.playlist,
+                                  ),
                           ),
                         ),
                         const SizedBox(

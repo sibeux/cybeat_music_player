@@ -20,6 +20,8 @@ class HomeAlbumGridController extends GetxController {
   var alphabeticalList = RxList<Playlist>([]);
   var recentsList = RxList<Playlist>([]);
   var initiateAlbum = RxList<Playlist>([]); // diakses oleh home_screen.dart
+  var fourCoverCategory = RxList<dynamic>([]);
+  var fourCoverPlaylist = RxList<dynamic>([]);
 
   void updateChildren(List<Playlist> playlist) {
     children.value = List.generate(
@@ -167,10 +169,12 @@ class HomeAlbumGridController extends GetxController {
       final apiResponse = await http.get(Uri.parse(api));
       final jumlahFavorite = await getSumFavoriteSong();
       final listJumlahCategory = await getSumCategorySong();
+      await getFourCoverAlbum(method: 'four_cover_category', type: 'category');
+      await getFourCoverAlbum(method: 'four_cover_category', type: 'playlist');
 
       List jumlahCategory(String uid) {
         return listJumlahCategory
-            .where((element) => element['category'] == uid)
+            .where((element) => element['uid'] == uid)
             .map((e) => e['type_count'])
             .toList();
       }
@@ -194,7 +198,7 @@ class HomeAlbumGridController extends GetxController {
               : item['type'] == 'favorite'
                   ? '$jumlahFavorite Songs'
                   : item['type'] == 'category'
-                      ? '${jumlahCategory(item['uid'])[0]} Songs'
+                      ? '${jumlahCategory(item['uid'])[0]} ${int.parse(jumlahCategory(item['uid'])[0]) <= 1 ? 'Song' : 'Songs'}'
                       : capitalizeEachWord(item['author']),
           pin: item['pin'],
           datePin: item['date_pin'] ?? '',
@@ -251,6 +255,29 @@ class HomeAlbumGridController extends GetxController {
     }
 
     return listData;
+  }
+
+  Future<void> getFourCoverAlbum(
+      {required String method, required String type}) async {
+    List<dynamic> fourCover = [];
+
+    String url =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/four_cover_album?method=$method&type=$type';
+
+    try {
+      final response = await http.post(Uri.parse(url));
+      fourCover = json.decode(response.body);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error: $e');
+      }
+    }
+
+    if (type == 'category') {
+      fourCoverCategory.value = fourCover;
+    } else if (type == 'playlist') {
+      fourCoverPlaylist.value = fourCover;
+    }
   }
 
   int getNearestindex(int filterIndex, String filter) {

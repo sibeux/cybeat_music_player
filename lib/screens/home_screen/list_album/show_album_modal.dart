@@ -1,7 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/screens/home_screen/list_album/grid_playlist_album.dart';
 import 'package:cybeat_music_player/screens/home_screen/modal_delete_playlist/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,22 +38,10 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                CachedNetworkImage(
-                  imageUrl: playlist.image,
-                  fit: BoxFit.cover,
-                  width: 50,
-                  height: 50,
-                  maxHeightDiskCache: 150,
-                  maxWidthDiskCache: 150,
-                  filterQuality: FilterQuality.low,
-                  placeholder: (context, url) => Image.asset(
-                    'assets/images/placeholder_cover_music.png',
-                    fit: BoxFit.cover,
-                  ),
-                  errorWidget: (context, url, error) => Image.asset(
-                    'assets/images/placeholder_cover_music.png',
-                    fit: BoxFit.cover,
-                  ),
+                FourCoverAlbum(
+                  size: 50,
+                  type: playlist.type,
+                  playlist: playlist,
                 ),
                 const SizedBox(width: 10),
                 Flexible(
