@@ -3,7 +3,7 @@ import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
-import 'package:cybeat_music_player/screens/new_playlist_screen/show_new_playlist_modal.dart';
+import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/show_new_playlist_modal.dart';
 import 'package:cybeat_music_player/screens/recents_screen/recents_screen.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_screen.dart';
 import 'package:cybeat_music_player/widgets/floating_playing_music.dart';

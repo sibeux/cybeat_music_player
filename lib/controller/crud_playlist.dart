@@ -38,3 +38,8 @@ void deletePlaylist(String id) async {
     }
   }
 }
+
+void updatePlaylist(String id, String name) async {
+  // final homeAlbumGridController = Get.put(HomeAlbumGridController());
+  
+}

@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/controller/crud_playlist.dart';
-import 'package:cybeat_music_player/screens/new_playlist_screen/scale_tap_button_new.dart';
+import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/scale_tap_button_new.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';

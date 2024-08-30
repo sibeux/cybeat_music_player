@@ -1,8 +1,9 @@
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/screens/crud_playlist_screen/edit_playlist_screen.dart/edit_playlist_screen.dart';
 import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
-import 'package:cybeat_music_player/screens/home_screen/modal_delete_playlist/modal_delete_playlist.dart';
+import 'package:cybeat_music_player/screens/crud_playlist_screen/modal_delete_playlist/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -93,6 +94,22 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                   showRemoveAlbumToast(
                       'Sorry, this feature is not available yet');
                 },
+              ),
+              ListTileBottomModal(
+                title: 'Edit ${playlist.type.toLowerCase()}',
+                icon: Icons.edit_outlined,
+                changeColor: false,
+                onTap: playlist.editable == 'true'
+                    ? () {
+                        Get.back();
+                        Get.to(() => EditPlaylistScreen(
+                              playlistName: playlist.title,
+                            ));
+                      }
+                    : () {
+                        showRemoveAlbumToast(
+                            'You have no permission to edit this ${playlist.type.toLowerCase()}');
+                      },
               ),
               ListTileBottomModal(
                   title: 'Remove from Your Library',
