@@ -170,7 +170,7 @@ class HomeAlbumGridController extends GetxController {
       final jumlahFavorite = await getSumFavoriteSong();
       final listJumlahCategory = await getSumCategorySong();
       await getFourCoverAlbum(method: 'four_cover_category', type: 'category');
-      await getFourCoverAlbum(method: 'four_cover_category', type: 'playlist');
+      await getFourCoverAlbum(method: 'four_cover_playlist', type: 'playlist');
 
       List jumlahCategory(String uid) {
         return listJumlahCategory
@@ -262,7 +262,7 @@ class HomeAlbumGridController extends GetxController {
     List<dynamic> fourCover = [];
 
     String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/four_cover_album?method=$method&type=$type';
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/four_cover_album?method=$method';
 
     try {
       final response = await http.post(Uri.parse(url));

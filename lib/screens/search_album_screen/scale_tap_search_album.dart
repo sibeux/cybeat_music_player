@@ -3,7 +3,7 @@ import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
-import 'package:cybeat_music_player/screens/home_screen/list_album/grid_playlist_album.dart';
+import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';

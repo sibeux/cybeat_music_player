@@ -1,7 +1,7 @@
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
-import 'package:cybeat_music_player/screens/home_screen/list_album/grid_playlist_album.dart';
+import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
 import 'package:cybeat_music_player/screens/home_screen/modal_delete_playlist/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
