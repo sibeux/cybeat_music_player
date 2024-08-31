@@ -12,6 +12,11 @@ class SearchAlbumController extends GetxController {
   var filteredAlbum = RxList<Playlist?>([]);
   var isSearch = false.obs;
 
+  void onTyping(String value) {
+    isTyping.value = value.isNotEmpty;
+    update();
+  }
+
   void onChanged(String value) {
     isTyping.value = value.isNotEmpty;
     textValue.value = value;

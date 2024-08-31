@@ -1,9 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cybeat_music_player/controller/search_album_controller.dart';
+import 'package:cybeat_music_player/screens/crud_playlist_screen/edit_playlist_screen.dart/show_discard_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
 
+final searchAlbumController = Get.put(SearchAlbumController());
 final FocusNode _focusNode = FocusNode();
-final textController = TextEditingController();
+final textController = searchAlbumController.controller;
 
 class EditPlaylistScreen extends StatelessWidget {
   const EditPlaylistScreen({super.key, required this.playlistName});
@@ -14,15 +18,22 @@ class EditPlaylistScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     textController.text = playlistName;
     var tapIndex = 0;
+    searchAlbumController.textValue.value = textController.text;
 
     return Scaffold(
+      backgroundColor: HexColor('#fefffe'),
       appBar: AppBar(
+        backgroundColor: HexColor('#fefffe'),
         toolbarHeight: 80,
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            Get.back();
+            if (searchAlbumController.textValue.value.toLowerCase() != playlistName.toLowerCase()) {
+              showModalDiscardDialog(context);
+            } else {
+              Get.back();
+            }
           },
         ),
         title: const Text(
@@ -34,22 +45,20 @@ class EditPlaylistScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              // default margin dari IconButton ke kanan adalah 24
-              // makanya leading gak perlu dikasih margin
-              margin: const EdgeInsets.only(right: 24),
-              child: Text(
-                'Save',
-                style: TextStyle(
-                  color: Colors.black.withOpacity(0.6),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
+          Obx(
+            () => searchAlbumController.isTypingValue &&
+                    searchAlbumController.textValue.value.toLowerCase() != playlistName.toLowerCase()
+                ? saveButton(
+                    color: Colors.black,
+                    onTap: () {
+                      Get.back();
+                    },
+                  )
+                : saveButton(
+                    color: Colors.black.withOpacity(0.4),
+                    onTap: () {},
+                  ),
+          )
         ],
       ),
       body: Column(
@@ -103,6 +112,7 @@ class EditPlaylistScreen extends StatelessWidget {
                   ),
                 ),
                 child: TextField(
+                  
                   onTap: () {
                     if (tapIndex == 0) {
                       textController.selection = TextSelection(
@@ -110,9 +120,11 @@ class EditPlaylistScreen extends StatelessWidget {
                         extentOffset: textController.text.length,
                       );
                       tapIndex++;
-                    } else {
-                      
-                    }
+                    } else {}
+                  },
+                  onChanged: (value) {
+                    searchAlbumController.onTyping(value);
+                    searchAlbumController.textValue.value = value;
                   },
                   controller: textController,
                   focusNode: _focusNode,
@@ -129,12 +141,37 @@ class EditPlaylistScreen extends StatelessWidget {
                           color: Colors.black
                               .withOpacity(0.7)), // Color when focused
                     ),
+                    hintText: 'Playlist Name',
+                    hintStyle:
+                        TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 40),
                   ),
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  GestureDetector saveButton({
+    required Color color,
+    required void Function() onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        // default margin dari IconButton ke kanan adalah 24
+        // makanya leading gak perlu dikasih margin
+        margin: const EdgeInsets.only(right: 24),
+        child: Text(
+          'Save',
+          style: TextStyle(
+            color: color,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }

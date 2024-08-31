@@ -7,6 +7,7 @@ void showModalDeletePlaylist(
     BuildContext context, String title, String uid, String type) {
   showCupertinoDialog<void>(
     context: context,
+    barrierDismissible: true,
     builder: (BuildContext context) => CupertinoAlertDialog(
       title: const Text('Delete Playlist'),
       content: Text('Are you sure you want to delete "$title"?'),
