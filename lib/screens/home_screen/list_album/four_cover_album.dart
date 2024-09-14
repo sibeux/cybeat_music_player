@@ -125,11 +125,13 @@ class CoverFullGrid extends StatelessWidget {
         fit: BoxFit.cover,
         filterQuality: FilterQuality.low,
       ),
-      errorWidget: (context, url, error) => Image.asset(
-        'assets/images/cybeat_splash.png',
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.low,
-      ),
+      errorWidget: (context, url, error) {
+        return Image.asset(
+          'assets/images/cybeat_splash.png',
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.low,
+        );
+      },
     );
   }
 }
