@@ -179,6 +179,14 @@ class HomeAlbumGridController extends GetxController {
             .toList();
       }
 
+      String sumAllsong(){
+        var sum = 0;
+        for (var i = 0; i < listJumlahCategory.length; i++) {
+          sum += int.parse(listJumlahCategory[i]['type_count']);
+        }
+        return sum.toString();
+      }
+
       final List<dynamic> listData = json.decode(response.body);
       final List<dynamic> apiData = json.decode(apiResponse.body);
 
@@ -198,7 +206,9 @@ class HomeAlbumGridController extends GetxController {
               : item['type'] == 'favorite'
                   ? '$jumlahFavorite Songs'
                   : item['type'] == 'category'
-                      ? '${jumlahCategory(item['uid'])[0]} ${int.parse(jumlahCategory(item['uid'])[0]) <= 1 ? 'Song' : 'Songs'}'
+                      ? item['uid'] == '481'
+                          ? '${sumAllsong()} Songs'
+                          : '${jumlahCategory(item['uid'])[0]} ${int.parse(jumlahCategory(item['uid'])[0]) <= 1 ? 'Song' : 'Songs'}'
                       : capitalizeEachWord(item['author']),
           pin: item['pin'],
           datePin: item['date_pin'] ?? '',
