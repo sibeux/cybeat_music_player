@@ -65,6 +65,7 @@ dependencies:
   shared_preferences: ^2.2.3
   draggable_scrollbar: ^0.1.0
   rxdart: ^0.28.0
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

@@ -7,6 +7,7 @@ import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 final sortPreferencesController = Get.put(SortPreferencesController());
 final filterAlbumController = Get.put(FilterAlbumController());
@@ -179,12 +180,16 @@ class HomeAlbumGridController extends GetxController {
             .toList();
       }
 
-      String sumAllsong(){
+      String sumAllsong() {
         var sum = 0;
         for (var i = 0; i < listJumlahCategory.length; i++) {
           sum += int.parse(listJumlahCategory[i]['type_count']);
         }
-        return sum.toString();
+        return NumberFormat("#,###", "id_ID").format(sum).toString();
+      }
+
+      String addDotNumb(int number) {
+        return NumberFormat("#,###", "id_ID").format(number);
       }
 
       final List<dynamic> listData = json.decode(response.body);
@@ -208,7 +213,7 @@ class HomeAlbumGridController extends GetxController {
                   : item['type'] == 'category'
                       ? item['uid'] == '481'
                           ? '${sumAllsong()} Songs'
-                          : '${jumlahCategory(item['uid'])[0]} ${int.parse(jumlahCategory(item['uid'])[0]) <= 1 ? 'Song' : 'Songs'}'
+                          : '${addDotNumb(int.parse(jumlahCategory(item['uid'])[0]))} ${int.parse(jumlahCategory(item['uid'])[0]) <= 1 ? 'Song' : 'Songs'}'
                       : capitalizeEachWord(item['author']),
           pin: item['pin'],
           datePin: item['date_pin'] ?? '',
