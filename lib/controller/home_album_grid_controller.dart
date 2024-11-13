@@ -18,7 +18,7 @@ class HomeAlbumGridController extends GetxController {
   var selectedAlbum = RxList<Playlist?>([]);
   var isTapped = false.obs;
   var jumlahPin = 0.obs;
-  var jumlahDitampilkan = 18.obs;
+  var jumlahDitampilkan = 15.obs;
   var isLoading = true.obs;
   var alphabeticalList = RxList<Playlist>([]);
   var recentsList = RxList<Playlist>([]);
@@ -174,7 +174,7 @@ class HomeAlbumGridController extends GetxController {
 
   Future<void> initializeAlbum() async {
     jumlahPin.value = 0;
-    jumlahDitampilkan.value = 18;
+    jumlahDitampilkan.value = 15;
     isLoading.value = true;
 
     String sort = sortPreferencesController.sortValue;

@@ -318,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _getGeneratedChildren() {
     final initiateAlbum = _homeAlbumGridController.selectedAlbum;
     return List<Widget>.generate(
-      initiateAlbum.length >= 18
+      initiateAlbum.length >= 15
           ? _homeAlbumGridController.jumlahDitampilkan.value
           : initiateAlbum.length,
       (index) => _getChild(index: index),
