@@ -95,6 +95,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
           return AzListView(
             data: musicItems,
+            // itemCount: 50,
             itemCount: sequence.length,
             indexBarAlignment: Alignment.topRight,
             indexBarOptions: IndexBarOptions(
@@ -213,14 +214,16 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
           ),
           centerTitle: true,
           toolbarHeight: 60,
-          title: Obx(() => Text(
-                playlistPlayController.playlistTitle.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: HexColor('#1e0b2b'),
-                  fontSize: 21,
-                ),
-              )),
+          title: Obx(
+            () => Text(
+              playlistPlayController.playlistTitle.value,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: HexColor('#1e0b2b'),
+                fontSize: 21,
+              ),
+            ),
+          ),
         ),
         body: Column(
           children: [
