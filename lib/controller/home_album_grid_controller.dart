@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 final sortPreferencesController = Get.put(SortPreferencesController());
 final filterAlbumController = Get.put(FilterAlbumController());
@@ -17,12 +18,31 @@ class HomeAlbumGridController extends GetxController {
   var selectedAlbum = RxList<Playlist?>([]);
   var isTapped = false.obs;
   var jumlahPin = 0.obs;
+  var jumlahDitampilkan = 18.obs;
   var isLoading = true.obs;
   var alphabeticalList = RxList<Playlist>([]);
   var recentsList = RxList<Playlist>([]);
   var initiateAlbum = RxList<Playlist>([]); // diakses oleh home_screen.dart
   var fourCoverCategory = RxList<dynamic>([]);
   var fourCoverPlaylist = RxList<dynamic>([]);
+
+  final RefreshController refreshController =
+      RefreshController(initialRefresh: false);
+
+  void onRefresh() async {
+    // monitor network fetch
+    await initializeAlbum();
+    // if failed,use refreshFailed()
+    refreshController.refreshCompleted();
+  }
+
+  void onLoading() async {
+    // monitor network fetch
+    await Future.delayed(const Duration(milliseconds: 1000));
+    jumlahDitampilkan.value = jumlahDitampilkan.value + 18;
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+    refreshController.loadComplete();
+  }
 
   void updateChildren(List<Playlist> playlist) {
     children.value = List.generate(
@@ -154,6 +174,7 @@ class HomeAlbumGridController extends GetxController {
 
   Future<void> initializeAlbum() async {
     jumlahPin.value = 0;
+    jumlahDitampilkan.value = 18;
     isLoading.value = true;
 
     String sort = sortPreferencesController.sortValue;

@@ -79,14 +79,15 @@ class FilterPlaylistAlbum extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-              fontSize: 14,
-              color: _filterAlbumController.getSelectedFilter.toString() ==
-                  text.toLowerCase()
-              ? HexColor('#fefffe')
-              : _filterAlbumController.getSelectedFilter.toString() == ''
-                  ? HexColor('#fefffe')
-                  : Colors.transparent,
-              fontWeight: FontWeight.bold),
+            fontSize: 14,
+            color: _filterAlbumController.getSelectedFilter.toString() ==
+                    text.toLowerCase()
+                ? HexColor('#fefffe')
+                : _filterAlbumController.getSelectedFilter.toString() == ''
+                    ? HexColor('#fefffe')
+                    : Colors.transparent,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

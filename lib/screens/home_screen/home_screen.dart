@@ -15,10 +15,10 @@ import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(
-      {super.key, required this.audioState});
+  const HomeScreen({super.key, required this.audioState});
 
   final AudioState audioState;
 
@@ -127,6 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 10,
                 ),
                 Obx(
+                  // dalam kasus ini, harus pakai 2 karena perlu rebuild widget
+                  // bisa harusnya satu widget aja, tapi benahi kode dulu
                   () => filterAlbumController.isTapped.value
                       ? const GridFilter()
                       : const GridFilter(),
@@ -166,63 +168,100 @@ class _HomeScreenState extends State<HomeScreen> {
                 thickness: 5,
                 thumbColor: HexColor('#ac8bc9').withOpacity(0.5),
                 trackVisibility: false,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            const Row(
-                              children: [
-                                ScaleTapSort(),
-                                Expanded(child: SizedBox()),
-                                Icon(Icons.grid_view_outlined),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            Obx(
-                              () => _homeAlbumGridController.isTapped.value
-                                  ? _homeAlbumGridController.isLoading.value
-                                      ? const SizedBox(
-                                          height: 400,
-                                          child: Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        )
-                                      : _homeAlbumGridController
-                                              .initiateAlbum.isEmpty
-                                          ? const Center(
-                                              child: Text('No album found'),
-                                            )
-                                          : _getReorderableAlbum()
-                                  : _homeAlbumGridController.isLoading.value
-                                      ? const SizedBox(
-                                          height: 400,
-                                          child: Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        )
-                                      : _homeAlbumGridController
-                                              .initiateAlbum.isEmpty
-                                          ? const Center(
-                                              child: Text('No album found'),
-                                            )
-                                          : _getReorderableAlbum(),
-                            ),
-                          ],
-                        ),
+                child: SmartRefresher(
+                  controller: _homeAlbumGridController.refreshController,
+                  onRefresh: _homeAlbumGridController.onRefresh,
+                  onLoading: _homeAlbumGridController.onLoading,
+                  enablePullDown: true,
+                  enablePullUp: true,
+                  header: const ClassicHeader(
+                    height: 40,
+                    refreshStyle: RefreshStyle.Follow,
+                    refreshingIcon: SizedBox(
+                      width: 25,
+                      height: 25,
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                        strokeWidth: 2,
                       ),
-                      // ini sama aja padding kanan 20
-                      const SizedBox(
-                        width: 10,
-                      )
-                    ],
+                    ),
+                    releaseText: 'Release to refresh',
+                    refreshingText: 'Loading data...',
+                    completeText: 'Success',
+                    idleText: 'Pull down to refresh',
+                    failedText: 'Failed',
+                    textStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                  footer: const ClassicFooter(
+                    height: 40,
+                    loadStyle: LoadStyle.ShowWhenLoading,
+                    loadingIcon: SizedBox(
+                      width: 25,
+                      height: 25,
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                    idleText: 'Pull up to load more',
+                    loadingText: 'Loading data...',
+                    noDataText: 'No more data',
+                    textStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              const Row(
+                                children: [
+                                  ScaleTapSort(),
+                                  Spacer(),
+                                  Icon(Icons.grid_view_outlined),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Obx(
+                                () => _homeAlbumGridController.isTapped.value ||
+                                        !_homeAlbumGridController.isTapped.value
+                                    ? _homeAlbumGridController.isLoading.value
+                                        ? const SizedBox(
+                                            height: 400,
+                                            child: Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          )
+                                        : _homeAlbumGridController
+                                                .initiateAlbum.isEmpty
+                                            ? const Center(
+                                                child: Text('No album found'),
+                                              )
+                                            : _getReorderableAlbum()
+                                    : const SizedBox(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // ini sama aja padding kanan 20
+                        const SizedBox(
+                          width: 10,
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -279,7 +318,9 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _getGeneratedChildren() {
     final initiateAlbum = _homeAlbumGridController.selectedAlbum;
     return List<Widget>.generate(
-      initiateAlbum.length,
+      initiateAlbum.length >= 18
+          ? _homeAlbumGridController.jumlahDitampilkan.value
+          : initiateAlbum.length,
       (index) => _getChild(index: index),
     );
   }

@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -49,35 +50,49 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MusicState()),
         // ChangeNotifierProvider(create: (_) => PlaylistState()),
       ],
-      child: GetMaterialApp(
-        title: 'Okejek',
-        builder: (context, child) {
-          // create multiple builders
-          child = FToastBuilder()(context, child);
-          return child;
+      child: RefreshConfiguration(
+        footerTriggerDistance: 15,
+        headerTriggerDistance: 50,
+        dragSpeedRatio: 0.91,
+        headerBuilder: () => const MaterialClassicHeader(),
+        footerBuilder: () => const ClassicFooter(),
+        enableLoadingWhenNoData: false,
+        enableRefreshVibrate: false,
+        enableLoadMoreVibrate: false,
+        shouldFooterFollowWhenNotFull: (state) {
+          // If you want load more with noMoreData state ,may be you should return false
+          return false;
         },
-        navigatorKey: navigatorKey,
-        debugShowCheckedModeBanner: false,
-        showPerformanceOverlay: false,
-        initialRoute: '/',
-        getPages: [
-          GetPage(
-            name: '/',
-            page: () => const SplashHomeScreen(
-              path: '/',
+        child: GetMaterialApp(
+          title: 'Okejek',
+          builder: (context, child) {
+            // create multiple builders
+            child = FToastBuilder()(context, child);
+            return child;
+          },
+          navigatorKey: navigatorKey,
+          debugShowCheckedModeBanner: false,
+          showPerformanceOverlay: false,
+          initialRoute: '/',
+          getPages: [
+            GetPage(
+              name: '/',
+              page: () => const SplashHomeScreen(
+                path: '/',
+              ),
             ),
-          ),
-          GetPage(
-            name: '/cybeat/category/:id',
-            page: () => SplashLinkMusicScreen(
-                path: 'category', uid: Get.parameters['id'] ?? ''),
-          ),
-          GetPage(
-            name: '/cybeat/album/:id',
-            page: () => SplashLinkMusicScreen(
-                path: 'album', uid: Get.parameters['id'] ?? ''),
-          ),
-        ],
+            GetPage(
+              name: '/cybeat/category/:id',
+              page: () => SplashLinkMusicScreen(
+                  path: 'category', uid: Get.parameters['id'] ?? ''),
+            ),
+            GetPage(
+              name: '/cybeat/album/:id',
+              page: () => SplashLinkMusicScreen(
+                  path: 'album', uid: Get.parameters['id'] ?? ''),
+            ),
+          ],
+        ),
       ),
     );
   }
