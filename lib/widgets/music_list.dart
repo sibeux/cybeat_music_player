@@ -152,8 +152,8 @@ class MusicList extends StatelessWidget {
                   color: HexColor('#b5b5b4'),
                 ),
                 onPressed: () {
-                  showMusicModalBottom(context, mediaItem, audioPlayer, index,
-                      audioState);
+                  showMusicModalBottom(
+                      context, mediaItem, audioPlayer, index, audioState);
                 },
               ),
               const SizedBox(

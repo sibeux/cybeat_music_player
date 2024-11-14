@@ -8,7 +8,6 @@ import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,7 +35,7 @@ class MusicDownloadController extends GetxController {
       type: 'offline',
     );
 
-    final playlistPlayController = Get.find<PlaylistPlayController>();
+    final playlistPlayController = Get.put(PlaylistPlayController());
 
     if (playlistPlayController.playlistTitleValue != playlist.title ||
         playlistPlayController.playlistTitleValue == "") {
@@ -56,20 +55,6 @@ class MusicDownloadController extends GetxController {
     );
   }
 
-  String _getFileExtension(String url) {
-    // Ambil ekstensi file berdasarkan URL
-    final extension = url.split('.').last;
-
-    // Periksa apakah ekstensi valid, jika tidak, gunakan default .mp3
-    if (['mp3', 'aac', 'flac', 'wav', 'ogg', 'm4a'].contains(extension)) {
-      return '.$extension';
-    } else if (extension.contains('drive')) {
-      return '';
-    } else {
-      return 'Error, $extension not supported';
-    }
-  }
-
   Future<void> checkListTempDir() async {
     final directory = await getTemporaryDirectory();
     final tempDirPath = directory.path;
@@ -80,24 +65,16 @@ class MusicDownloadController extends GetxController {
 
     // Mencetak nama file yang ada di dalamnya
     for (var file in files) {
-      if (kDebugMode) {
-        print('File found: ${file.path}');
-      }
+      logger.d('File found: ${file.path}');
     }
   }
 
   Future<void> downloadAndCacheMusic(MediaItem mediaItem) async {
     try {
-      String extension = _getFileExtension(mediaItem.extras!['url']);
-
-      if (extension.contains('Error')) {
-        showRemoveAlbumToast(extension);
-        return;
-      }
-
       // Dapatkan direktori cache
       final directory = await getTemporaryDirectory();
-      final filePath = '${directory.path}/${mediaItem.title}$extension';
+      final filePath =
+          '${directory.path}/${mediaItem.extras!['music_id']}_${mediaItem.title}';
 
       // Unduh file dari URL dan simpan di path cache
       final dio = Dio();
@@ -107,13 +84,9 @@ class MusicDownloadController extends GetxController {
       await saveDownloadedSong(mediaItem, filePath);
       showRemoveAlbumToast('Song downloaded successfully');
 
-      if (kDebugMode) {
-        print("Lagu berhasil diunduh dan disimpan di $filePath");
-      }
+      logger.d("Song successfully downloaded and saved in $filePath");
     } catch (e) {
-      if (kDebugMode) {
-        print("Error downloading song: $e");
-      }
+      logger.d("Error downloading song: $e");
     }
   }
 
@@ -121,16 +94,24 @@ class MusicDownloadController extends GetxController {
     // Menyimpan metadata (contohnya ID lagu dan path) ke SharedPreferences atau SQLite
     final prefs = await SharedPreferences.getInstance();
     final downloadedSongs = prefs.getStringList('downloadedSongs') ?? [];
+    final uidDownloadedSongs = prefs.getStringList('uidDownloadedSongs') ?? [];
+
     final songId = mediaItem.extras!['music_id'];
     final title = mediaItem.title;
     final artist = mediaItem.artist;
     final album = mediaItem.album;
     final artUri = mediaItem.artUri;
     final favorite = mediaItem.extras!['favorite'];
+    final isDownloaded = mediaItem.extras!['is_downloaded'];
+
     downloadedSongs
-        .add('$songId|$title|$artist|$album|$artUri|$favorite|$filePath');
+        .add('$songId|$title|$artist|$album|$artUri|$favorite|$isDownloaded|$filePath');
+    uidDownloadedSongs.add(songId);
 
     await prefs.setStringList('downloadedSongs', downloadedSongs);
+    await prefs.setStringList('uidDownloadedSongs', uidDownloadedSongs);
+
+    mediaItem.extras!['is_downloaded'] = true;
   }
 
   Future<void> getDownloadedSongs() async {
@@ -148,7 +129,8 @@ class MusicDownloadController extends GetxController {
         'album': parts[3],
         'cover': parts[4],
         'favorite': parts[5],
-        'filePath': parts[6],
+        'is_downloaded': parts[6],
+        'filePath': parts[7],
       };
     }).toList();
 
@@ -179,13 +161,16 @@ class MusicDownloadController extends GetxController {
 
         final prefs = await SharedPreferences.getInstance();
         final downloadedSongs = prefs.getStringList('downloadedSongs') ?? [];
+        final uidDownloadedSongs = prefs.getStringList('uidDownloadedSongs') ?? [];
         final songId = mediaItem.extras!['music_id'];
 
         // Cari dan hapus entri yang mengandung songId
         downloadedSongs.removeWhere((song) => song.startsWith('$songId|'));
+        uidDownloadedSongs.removeWhere((uid) => uid == songId);
 
         // Simpan kembali daftar yang sudah diperbarui
         await prefs.setStringList('downloadedSongs', downloadedSongs);
+        await prefs.setStringList('uidDownloadedSongs', uidDownloadedSongs);
 
         final list = downloadedSongs.map((songData) {
           final parts = songData.split('|');
@@ -196,7 +181,8 @@ class MusicDownloadController extends GetxController {
             'album': parts[3],
             'cover': parts[4],
             'favorite': parts[5],
-            'filePath': parts[6],
+            'is_downloaded': parts[6],
+            'filePath': parts[7],
           };
         }).toList();
 
@@ -219,18 +205,14 @@ class MusicDownloadController extends GetxController {
         audioState.init(playlist);
         playlistPlayController.onPlaylist(playlist);
 
-        if (kDebugMode) {
-          print('File deleted: $filePath');
-        }
+        mediaItem.extras!['is_downloaded'] = false;
+
+        logger.d('File deleted: $filePath');
       } else {
-        if (kDebugMode) {
-          print('File does not exist: $filePath');
-        }
+        logger.d('File does not exist: $filePath');
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error deleting file: $e');
-      }
+      logger.d('Error deleting file: $e');
     } finally {
       rebuildDelete.value = !rebuildDelete.value;
     }

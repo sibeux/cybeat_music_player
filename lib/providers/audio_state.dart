@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 var logger = Logger();
 
@@ -80,74 +81,82 @@ class AudioState extends ChangeNotifier {
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
     try {
-      final response = await http.get(Uri.parse(url));
-      final apiResponse = await http.get(Uri.parse(api));
-
-      final List<dynamic> listData = json.decode(response.body);
-      final List<dynamic> apiData = json.decode(apiResponse.body);
-
-      if (listData.isNotEmpty && type != 'offline') {
-        playlist = ConcatenatingAudioSource(
-          children: listData.map(
-            (item) {
-              return AudioSource.uri(
-                // Uri.parse(item['link_gdrive']),
-                Uri.parse(
-                  filteredUrl(item['link_gdrive'], apiData[0]['gdrive_api']),
-                ),
-                tag: MediaItem(
-                  id: '${_nextMediaId++}',
-                  title: capitalizeEachWord(item['title']),
-                  artist: capitalizeEachWord(item['artist']),
-                  album: capitalizeEachWord(item['album']),
-                  // artUri: Uri.parse(item['cover']),
-                  artUri: Uri.parse(
-                    filteredUrl(item['cover'], apiData[0]['gdrive_api']),
+      if (type == 'offline') {
+        final musicDownloadController = Get.find<MusicDownloadController>();
+        await musicDownloadController.getDownloadedSongs();
+        if (musicDownloadController.musicOfflineList.isNotEmpty) {
+          playlist = ConcatenatingAudioSource(
+            children: musicDownloadController.musicOfflineList.map(
+              (item) {
+                return AudioSource.uri(
+                  Uri.file(item['filePath']),
+                  tag: MediaItem(
+                    id: '${_nextMediaId++}',
+                    title: capitalizeEachWord(item['title']),
+                    artist: capitalizeEachWord(item['artist']),
+                    album: capitalizeEachWord(item['album']),
+                    artUri: Uri.parse(item['cover']),
+                    extras: {
+                      'favorite': item['favorite'],
+                      'music_id': item['id_music'],
+                      'url': item['filePath'],
+                      'is_downloaded': item['is_downloaded'],
+                    },
                   ),
-                  extras: {
-                    'favorite': item['favorite'],
-                    'music_id': item['id_music'],
-                    'url': filteredUrl(
-                      item['link_gdrive'],
-                      apiData[0]['gdrive_api'],
-                    ),
-                  },
-                ),
-              );
-            },
-          ).toList(),
-        );
+                );
+              },
+            ).toList(),
+          );
+        } else {
+          playlist = ConcatenatingAudioSource(
+            children: [],
+          );
+        }
       } else {
-        if (type == 'offline') {
-          final musicDownloadController = Get.find<MusicDownloadController>();
-          await musicDownloadController.getDownloadedSongs();
-          if (musicDownloadController.musicOfflineList.isNotEmpty) {
-            playlist = ConcatenatingAudioSource(
-              children: musicDownloadController.musicOfflineList.map(
-                (item) {
-                  return AudioSource.uri(
-                    Uri.file(item['filePath']),
-                    tag: MediaItem(
-                      id: '${_nextMediaId++}',
-                      title: capitalizeEachWord(item['title']),
-                      artist: capitalizeEachWord(item['artist']),
-                      album: capitalizeEachWord(item['album']),
-                      artUri: Uri.parse(item['cover']),
-                      extras: {
-                        'favorite': item['favorite'],
-                        'music_id': item['id_music'],
-                        'url': item['filePath'],
-                      },
+        final response = await http.get(Uri.parse(url));
+        final apiResponse = await http.get(Uri.parse(api));
+
+        final List<dynamic> listData = json.decode(response.body);
+        final List<dynamic> apiData = json.decode(apiResponse.body);
+
+        if (listData.isNotEmpty && type != 'offline') {
+          final prefs = await SharedPreferences.getInstance();
+          final uidDownloadedSongs =
+              prefs.getStringList('uidDownloadedSongs') ?? [];
+
+          playlist = ConcatenatingAudioSource(
+            children: listData.map(
+              (item) {
+                return AudioSource.uri(
+                  // Uri.parse(item['link_gdrive']),
+                  Uri.parse(
+                    filteredUrl(item['link_gdrive'], apiData[0]['gdrive_api']),
+                  ),
+                  tag: MediaItem(
+                    id: '${_nextMediaId++}',
+                    title: capitalizeEachWord(item['title']),
+                    artist: capitalizeEachWord(item['artist']),
+                    album: capitalizeEachWord(item['album']),
+                    // artUri: Uri.parse(item['cover']),
+                    artUri: Uri.parse(
+                      filteredUrl(item['cover'], apiData[0]['gdrive_api']),
                     ),
-                  );
-                },
-              ).toList(),
-            );
-          } else {
-            playlist = ConcatenatingAudioSource(
-              children: [],
-            );
-          }
+                    extras: {
+                      'favorite': item['favorite'],
+                      'music_id': item['id_music'],
+                      'url': filteredUrl(
+                        item['link_gdrive'],
+                        apiData[0]['gdrive_api'],
+                      ),
+                      'is_downloaded': uidDownloadedSongs.contains(item['id_music'])
+                          ? true
+                          : false,
+                    },
+                  ),
+                );
+              },
+            ).toList(),
+          );
         } else {
           playlist = ConcatenatingAudioSource(
             children: [],

@@ -66,13 +66,18 @@ Future<dynamic> showMusicModalBottom(BuildContext context, MediaItem mediaItem,
                 ),
               ),
               if (mediaItem.extras?['url'].contains('http'))
-                EffectTapMusicModal(
-                  child: ListTileBottomModal(
-                    title: 'Download',
-                    player: audioPlayer,
-                    mediaItem: mediaItem,
-                    index: index,
-                    audioState: audioState,
+                AbsorbPointer(
+                  absorbing: mediaItem.extras?['is_downloaded'] ?? false,
+                  child: EffectTapMusicModal(
+                    child: ListTileBottomModal(
+                      title: mediaItem.extras?['is_downloaded'] ?? false
+                          ? 'Downloaded'
+                          : 'Download',
+                      player: audioPlayer,
+                      mediaItem: mediaItem,
+                      index: index,
+                      audioState: audioState,
+                    ),
                   ),
                 ),
               EffectTapMusicModal(
@@ -121,8 +126,8 @@ class ListTileBottomModal extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       minVerticalPadding: 5,
       title: Text(title),
-      titleTextStyle: const TextStyle(
-        color: Colors.black,
+      titleTextStyle: TextStyle(
+        color: title.toLowerCase() == 'downloaded' ? Colors.grey : Colors.black,
         fontSize: 14,
         fontWeight: FontWeight.bold,
       ),
