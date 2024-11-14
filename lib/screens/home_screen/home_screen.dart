@@ -1,5 +1,6 @@
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
@@ -77,8 +78,25 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    const Expanded(
-                      child: SizedBox(),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        final musicDownloadController =
+                            Get.put(MusicDownloadController());
+                        musicDownloadController.goOfflineScreen(
+                          audioState: widget.audioState,
+                          playingStateController: playingStateController,
+                          context: context,
+                        );
+                      },
+                      child: const Icon(
+                        Icons.file_download_outlined,
+                        color: Colors.black,
+                        size: 30,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
                     ),
                     GestureDetector(
                       onTap: () {

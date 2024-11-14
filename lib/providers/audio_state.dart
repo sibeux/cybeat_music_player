@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/recents_music.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
@@ -85,31 +86,74 @@ class AudioState extends ChangeNotifier {
       final List<dynamic> listData = json.decode(response.body);
       final List<dynamic> apiData = json.decode(apiResponse.body);
 
-      playlist = ConcatenatingAudioSource(
-        children: listData.map(
-          (item) {
-            return AudioSource.uri(
-              // Uri.parse(item['link_gdrive']),
-              Uri.parse(
-                  filteredUrl(item['link_gdrive'], apiData[0]['gdrive_api'])),
-              tag: MediaItem(
-                id: '${_nextMediaId++}',
-                title: capitalizeEachWord(item['title']),
-                artist: capitalizeEachWord(item['artist']),
-                album: capitalizeEachWord(item['album']),
-                // artUri: Uri.parse(item['cover']),
-                artUri: Uri.parse(
-                    filteredUrl(item['cover'], apiData[0]['gdrive_api'])),
-                extras: {
-                  'favorite': item['favorite'],
-                  'music_id': item['id_music'],
+      if (listData.isNotEmpty && type != 'offline') {
+        playlist = ConcatenatingAudioSource(
+          children: listData.map(
+            (item) {
+              return AudioSource.uri(
+                // Uri.parse(item['link_gdrive']),
+                Uri.parse(
+                  filteredUrl(item['link_gdrive'], apiData[0]['gdrive_api']),
+                ),
+                tag: MediaItem(
+                  id: '${_nextMediaId++}',
+                  title: capitalizeEachWord(item['title']),
+                  artist: capitalizeEachWord(item['artist']),
+                  album: capitalizeEachWord(item['album']),
+                  // artUri: Uri.parse(item['cover']),
+                  artUri: Uri.parse(
+                    filteredUrl(item['cover'], apiData[0]['gdrive_api']),
+                  ),
+                  extras: {
+                    'favorite': item['favorite'],
+                    'music_id': item['id_music'],
+                    'url': filteredUrl(
+                      item['link_gdrive'],
+                      apiData[0]['gdrive_api'],
+                    ),
+                  },
+                ),
+              );
+            },
+          ).toList(),
+        );
+      } else {
+        if (type == 'offline') {
+          final musicDownloadController = Get.find<MusicDownloadController>();
+          await musicDownloadController.getDownloadedSongs();
+          if (musicDownloadController.musicOfflineList.isNotEmpty) {
+            playlist = ConcatenatingAudioSource(
+              children: musicDownloadController.musicOfflineList.map(
+                (item) {
+                  return AudioSource.uri(
+                    Uri.file(item['filePath']),
+                    tag: MediaItem(
+                      id: '${_nextMediaId++}',
+                      title: capitalizeEachWord(item['title']),
+                      artist: capitalizeEachWord(item['artist']),
+                      album: capitalizeEachWord(item['album']),
+                      artUri: Uri.parse(item['cover']),
+                      extras: {
+                        'favorite': item['favorite'],
+                        'music_id': item['id_music'],
+                        'url': item['filePath'],
+                      },
+                    ),
+                  );
                 },
-              ),
+              ).toList(),
             );
-          },
-        ).toList(),
-      );
-
+          } else {
+            playlist = ConcatenatingAudioSource(
+              children: [],
+            );
+          }
+        } else {
+          playlist = ConcatenatingAudioSource(
+            children: [],
+          );
+        }
+      }
       queue = playlist.sequence.map((e) => e.tag as MediaItem).toList();
 
       await player.setAudioSource(playlist);

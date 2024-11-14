@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -61,6 +62,12 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (playlistPlayController.playlistTitle.value.toLowerCase() ==
+        "offline music") {
+      final musicDownloadController = Get.find<MusicDownloadController>();
+      ever(
+          musicDownloadController.rebuildDelete, (callback) => setState(() {}));
+    }
     Widget content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
       builder: (context, snapshot) {
@@ -195,6 +202,10 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       // logic saat back button bawaan hp ditekan
       onPopInvoked: (didPop) {
         if (didPop) {
+          if (playlistPlayController.playlistType.value.toLowerCase() ==
+              'offline') {
+            return;
+          }
           rebuildPlaylist();
         }
       },
@@ -209,6 +220,10 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
               // on pressed ini berlaku saat icon  back button di-klik,
               // tidak berlaku saat nav back button di-klik
               Get.back();
+              if (playlistPlayController.playlistType.value.toLowerCase() ==
+                  'offline') {
+                return;
+              }
               rebuildPlaylist();
             },
           ),

@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/toast.dart';
+import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -47,29 +48,42 @@ Future<dynamic> showMusicModalBottom(BuildContext context, MediaItem mediaItem,
           Column(
             children: [
               EffectTapMusicModal(
-                  child: ListTileBottomModal(
-                title: 'Play now',
-                player: audioPlayer,
-                mediaItem: mediaItem,
-                index: index,
-                audioState: audioState,
-              )),
+                child: ListTileBottomModal(
+                  title: 'Play now',
+                  player: audioPlayer,
+                  mediaItem: mediaItem,
+                  index: index,
+                  audioState: audioState,
+                ),
+              ),
               EffectTapMusicModal(
+                child: ListTileBottomModal(
+                  title: 'Add to playlist',
+                  player: audioPlayer,
+                  mediaItem: mediaItem,
+                  index: index,
+                  audioState: audioState,
+                ),
+              ),
+              if (mediaItem.extras?['url'].contains('http'))
+                EffectTapMusicModal(
                   child: ListTileBottomModal(
-                title: 'Add to playlist',
-                player: audioPlayer,
-                mediaItem: mediaItem,
-                index: index,
-                audioState: audioState,
-              )),
+                    title: 'Download',
+                    player: audioPlayer,
+                    mediaItem: mediaItem,
+                    index: index,
+                    audioState: audioState,
+                  ),
+                ),
               EffectTapMusicModal(
-                  child: ListTileBottomModal(
-                title: 'Delete',
-                player: audioPlayer,
-                mediaItem: mediaItem,
-                index: index,
-                audioState: audioState,
-              )),
+                child: ListTileBottomModal(
+                  title: 'Delete',
+                  player: audioPlayer,
+                  mediaItem: mediaItem,
+                  index: index,
+                  audioState: audioState,
+                ),
+              ),
             ],
           ),
           const SizedBox(
@@ -101,6 +115,7 @@ class ListTileBottomModal extends StatelessWidget {
   Widget build(BuildContext context) {
     final playingStateController = Get.put(PlayingStateController());
     final playlistPlayController = Get.put(PlaylistPlayController());
+    final musicDownloadController = Get.put(MusicDownloadController());
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
@@ -133,22 +148,45 @@ class ListTileBottomModal extends StatelessWidget {
           case 'add to playlist':
             // add music to playlist
             showRemoveAlbumToast('Music has been added to the playlist');
+          case 'download':
+            // download music
+            showRemoveAlbumToast('Downloading music');
+            musicDownloadController.downloadAndCacheMusic(mediaItem);
+            Get.back();
           case 'delete':
             // delete music
-            deleteMusic(playlistPlayController.playlistEditable.value);
+            context.read<MusicState>().clear();
+            deleteMusic(
+              playlistPlayController.playlistEditable.value,
+              playlistPlayController.playlistType.value,
+              mediaItem,
+              audioState,
+            );
         }
       },
     );
   }
 }
 
-void deleteMusic(String editable) {
+void deleteMusic(
+  String editable,
+  String type,
+  MediaItem mediaItem,
+  AudioState audioState,
+) async {
   if (editable == 'true') {
-    // delete music from playlist
+    if (type.toLowerCase() == 'offline') {
+      // delete music from offline
+      final musicDownloadController = Get.find<MusicDownloadController>();
+      await musicDownloadController.deleteSpecificFile(
+        mediaItem.extras?['url'],
+        mediaItem,
+        audioState,
+      );
+    }
     showRemoveAlbumToast('Music has been deleted from the album');
     Get.back();
   } else {
-    // show alert dialog
     showRemoveAlbumToast('You have no permission to delete this music');
   }
 }
