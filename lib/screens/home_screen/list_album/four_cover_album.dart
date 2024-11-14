@@ -18,7 +18,7 @@ class FourCoverAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeAlbumGridController = Get.put(HomeAlbumGridController());
+    final homeAlbumGridController = Get.find<HomeAlbumGridController>();
 
     List listCover(String uid, String type) {
       final List<dynamic> list = type.toLowerCase() == 'playlist'

@@ -31,14 +31,14 @@ class HomeAlbumGridController extends GetxController {
 
   void onRefresh() async {
     // monitor network fetch
-    await initializeAlbum();
+    await Future.delayed(const Duration(milliseconds: 500));
+    initializeAlbum();
     // if failed,use refreshFailed()
     refreshController.refreshCompleted();
   }
 
   void onLoading() async {
     // monitor network fetch
-    await Future.delayed(const Duration(milliseconds: 1000));
     jumlahDitampilkan.value = jumlahDitampilkan.value + 18;
     // if failed,use loadFailed(),if no data return,use LoadNodata()
     refreshController.loadComplete();
