@@ -1,18 +1,22 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
+import 'package:cybeat_music_player/screens/azlistview/delete_music_dialog.dart';
 import 'package:cybeat_music_player/screens/azlistview/effect_tap_music_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 Future<dynamic> showMusicModalBottom(BuildContext context, MediaItem mediaItem,
     AudioPlayer audioPlayer, int index, AudioState audioState) {
+  final musicDownloadController = Get.find<MusicDownloadController>();
   return showMaterialModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -67,16 +71,32 @@ Future<dynamic> showMusicModalBottom(BuildContext context, MediaItem mediaItem,
               ),
               if (mediaItem.extras?['url'].contains('http'))
                 AbsorbPointer(
-                  absorbing: mediaItem.extras?['is_downloaded'] ?? false,
+                  absorbing: mediaItem.extras?['is_downloaded'] ||
+                      musicDownloadController.dataProgressDownload[
+                                  mediaItem.extras?['music_id']] !=
+                              null &&
+                          musicDownloadController.dataProgressDownload[
+                                  mediaItem.extras?['music_id']]!['progress'] !=
+                              0.0,
                   child: EffectTapMusicModal(
-                    child: ListTileBottomModal(
-                      title: mediaItem.extras?['is_downloaded'] ?? false
-                          ? 'Downloaded'
-                          : 'Download',
-                      player: audioPlayer,
-                      mediaItem: mediaItem,
-                      index: index,
-                      audioState: audioState,
+                    child: Obx(
+                      () => ListTileBottomModal(
+                        title: musicDownloadController.dataProgressDownload[
+                                        mediaItem.extras?['music_id']] !=
+                                    null &&
+                                musicDownloadController.dataProgressDownload[
+                                            mediaItem.extras?['music_id']]![
+                                        'progress'] !=
+                                    0.0
+                            ? 'Downloading'
+                            : mediaItem.extras?['is_downloaded'] ?? false
+                                ? 'Downloaded'
+                                : 'Download',
+                        player: audioPlayer,
+                        mediaItem: mediaItem,
+                        index: index,
+                        audioState: audioState,
+                      ),
                     ),
                   ),
                 ),
@@ -127,7 +147,11 @@ class ListTileBottomModal extends StatelessWidget {
       minVerticalPadding: 5,
       title: Text(title),
       titleTextStyle: TextStyle(
-        color: title.toLowerCase() == 'downloaded' ? Colors.grey : Colors.black,
+        color: title.toLowerCase() == 'downloaded'
+            ? Colors.grey
+            : title.toLowerCase() == 'downloading'
+                ? HexColor('#8238be')
+                : Colors.black,
         fontSize: 14,
         fontWeight: FontWeight.bold,
       ),
@@ -160,38 +184,14 @@ class ListTileBottomModal extends StatelessWidget {
             Get.back();
           case 'delete':
             // delete music
-            context.read<MusicState>().clear();
-            deleteMusic(
-              playlistPlayController.playlistEditable.value,
-              playlistPlayController.playlistType.value,
-              mediaItem,
-              audioState,
+            deleteMusicDialog(
+              context: context,
+              playlistPlayController: playlistPlayController,
+              mediaItem: mediaItem,
+              audioState: audioState,
             );
         }
       },
     );
-  }
-}
-
-void deleteMusic(
-  String editable,
-  String type,
-  MediaItem mediaItem,
-  AudioState audioState,
-) async {
-  if (editable == 'true') {
-    if (type.toLowerCase() == 'offline') {
-      // delete music from offline
-      final musicDownloadController = Get.find<MusicDownloadController>();
-      await musicDownloadController.deleteSpecificFile(
-        mediaItem.extras?['url'],
-        mediaItem,
-        audioState,
-      );
-    }
-    showRemoveAlbumToast('Music has been deleted from the album');
-    Get.back();
-  } else {
-    showRemoveAlbumToast('You have no permission to delete this music');
   }
 }

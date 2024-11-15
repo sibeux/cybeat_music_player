@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/recents_music.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:flutter/foundation.dart';

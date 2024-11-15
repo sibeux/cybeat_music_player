@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cybeat_music_player/components/dominant_color.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/progress_music_controller.dart';
 import 'package:cybeat_music_player/widgets/animated_rotate_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -1,7 +1,7 @@
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/playing_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/show_new_playlist_modal.dart';
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     GestureDetector(
                       onTap: () {
                         final musicDownloadController =
-                            Get.put(MusicDownloadController());
+                            Get.find<MusicDownloadController>();
                         musicDownloadController.goOfflineScreen(
                           audioState: widget.audioState,
                           playingStateController: playingStateController,

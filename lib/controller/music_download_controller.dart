@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/toast.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -17,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MusicDownloadController extends GetxController {
   var musicOfflineList = RxList<dynamic>([]);
   var rebuildDelete = false.obs;
+  var dataProgressDownload = <String, Map<String, dynamic>>{}.obs;
 
   void goOfflineScreen({
     required AudioState audioState,
@@ -76,17 +78,29 @@ class MusicDownloadController extends GetxController {
       final filePath =
           '${directory.path}/${mediaItem.extras!['music_id']}_${mediaItem.title}';
 
+      dataProgressDownload[mediaItem.extras!['music_id']] = {
+        'progress': 0.0,
+      };
+
       // Unduh file dari URL dan simpan di path cache
       final dio = Dio();
-      await dio.download(mediaItem.extras!['url'], filePath);
+      await dio.download(
+        mediaItem.extras!['url'],
+        filePath,
+        onReceiveProgress: (count, total) {
+          if (total != -1) {
+            final progress = count / total;
+            dataProgressDownload[mediaItem.extras!['music_id']]?['progress'] =
+                progress;
+            dataProgressDownload.refresh(); // Agar UI terupdate
+          }
+        },
+      );
 
       // Setelah file diunduh, simpan metadata di SharedPreferences atau SQLite
       await saveDownloadedSong(mediaItem, filePath);
-      showRemoveAlbumToast('Song downloaded successfully');
-
-      logger.d("Song successfully downloaded and saved in $filePath");
     } catch (e) {
-      logger.d("Error downloading song: $e");
+      logger.e("Error downloading song: $e");
     }
   }
 
@@ -104,14 +118,19 @@ class MusicDownloadController extends GetxController {
     final favorite = mediaItem.extras!['favorite'];
     final isDownloaded = mediaItem.extras!['is_downloaded'];
 
-    downloadedSongs
-        .add('$songId|$title|$artist|$album|$artUri|$favorite|$isDownloaded|$filePath');
+    downloadedSongs.add(
+        '$songId|$title|$artist|$album|$artUri|$favorite|$isDownloaded|$filePath');
     uidDownloadedSongs.add(songId);
 
     await prefs.setStringList('downloadedSongs', downloadedSongs);
     await prefs.setStringList('uidDownloadedSongs', uidDownloadedSongs);
 
     mediaItem.extras!['is_downloaded'] = true;
+
+    showRemoveAlbumToast('Song downloaded successfully');
+
+    dataProgressDownload.remove(mediaItem.extras!['music_id']);
+    logger.d("Song successfully downloaded and saved in $filePath");
   }
 
   Future<void> getDownloadedSongs() async {
@@ -161,7 +180,8 @@ class MusicDownloadController extends GetxController {
 
         final prefs = await SharedPreferences.getInstance();
         final downloadedSongs = prefs.getStringList('downloadedSongs') ?? [];
-        final uidDownloadedSongs = prefs.getStringList('uidDownloadedSongs') ?? [];
+        final uidDownloadedSongs =
+            prefs.getStringList('uidDownloadedSongs') ?? [];
         final songId = mediaItem.extras!['music_id'];
 
         // Cari dan hapus entri yang mengandung songId
@@ -209,10 +229,10 @@ class MusicDownloadController extends GetxController {
 
         logger.d('File deleted: $filePath');
       } else {
-        logger.d('File does not exist: $filePath');
+        logger.e('File does not exist: $filePath');
       }
     } catch (e) {
-      logger.d('Error deleting file: $e');
+      logger.e('Error deleting file: $e');
     } finally {
       rebuildDelete.value = !rebuildDelete.value;
     }

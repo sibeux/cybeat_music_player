@@ -1,4 +1,5 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/home_screen.dart';
@@ -19,6 +20,7 @@ class SplashHomeScreen extends StatefulWidget {
 class _SplashHomeScreenState extends State<SplashHomeScreen> {
   final sortPreferencesController = Get.put(SortPreferencesController());
   final homeAlbumGridController = Get.put(HomeAlbumGridController());
+  
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
 
     await sortPreferencesController.getSortBy();
     await homeAlbumGridController.initializeAlbum();
+    Get.put(MusicDownloadController());
 
     FlutterNativeSplash.remove();
     // print('ready in 3...');

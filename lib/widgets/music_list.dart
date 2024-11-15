@@ -1,11 +1,13 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/screens/azlistview/show_music_modal.dart';
 import 'package:cybeat_music_player/widgets/spectrum_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
@@ -27,15 +29,17 @@ class MusicList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final musikDimainkan = context.watch<MusicState>().currentMediaItem;
+    final musicDownloadController = Get.find<MusicDownloadController>();
     String colorTitle = "#313031";
     double marginList = 18;
 
     Widget indexIcon = Text(
       mediaItem.id.toString().padLeft(2, '0'),
       style: TextStyle(
-          fontSize: 12,
-          color: HexColor('#8d8c8c'),
-          fontWeight: FontWeight.bold),
+        fontSize: 12,
+        color: HexColor('#8d8c8c'),
+        fontWeight: FontWeight.bold,
+      ),
     );
 
     if (musikDimainkan?.id == mediaItem.id) {
@@ -59,7 +63,37 @@ class MusicList extends StatelessWidget {
                 margin: EdgeInsets.only(
                   left: marginList,
                 ),
-                child: indexIcon,
+                child: Obx(
+                  () => musicDownloadController.dataProgressDownload[
+                              mediaItem.extras!['music_id']] !=
+                          null
+                      ? musicDownloadController.dataProgressDownload[
+                                  mediaItem.extras!['music_id']]!['progress'] ==
+                              0.0
+                          ? indexIcon
+                          : SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                value: musicDownloadController
+                                        .dataProgressDownload[
+                                    mediaItem.extras!['music_id']]!['progress'],
+                                strokeWidth: 2,
+                                backgroundColor: HexColor('#8d8c8c'),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  HexColor('#8238be'),
+                                ),
+                              ),
+                            )
+                      : mediaItem.extras?['is_downloaded'] == true &&
+                              musikDimainkan?.id != mediaItem.id
+                          ? const Icon(
+                              Icons.download_done_rounded,
+                              color: Colors.green,
+                              size: 20,
+                            )
+                          : indexIcon,
+                ),
               ),
               // cover image
               Container(

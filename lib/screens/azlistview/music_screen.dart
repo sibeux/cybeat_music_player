@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/detail_screen/music_detail_screen.dart';
@@ -65,8 +66,12 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     if (playlistPlayController.playlistTitle.value.toLowerCase() ==
         "offline music") {
       final musicDownloadController = Get.find<MusicDownloadController>();
-      ever(
-          musicDownloadController.rebuildDelete, (callback) => setState(() {}));
+      ever(musicDownloadController.rebuildDelete, (callback) {
+        if (!context.mounted) return;
+        setState(() {
+
+        });
+      });
     }
     Widget content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
