@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class MusicList extends StatelessWidget {
   const MusicList({
@@ -56,44 +57,12 @@ class MusicList extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                alignment: Alignment.center,
-                margin: EdgeInsets.only(
-                  left: marginList,
-                ),
-                child: Obx(
-                  () => musicDownloadController.dataProgressDownload[
-                              mediaItem.extras!['music_id']] !=
-                          null
-                      ? musicDownloadController.dataProgressDownload[
-                                  mediaItem.extras!['music_id']]!['progress'] ==
-                              0.0
-                          ? indexIcon
-                          : SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                value: musicDownloadController
-                                        .dataProgressDownload[
-                                    mediaItem.extras!['music_id']]!['progress'],
-                                strokeWidth: 2,
-                                backgroundColor: HexColor('#8d8c8c'),
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  HexColor('#8238be'),
-                                ),
-                              ),
-                            )
-                      : mediaItem.extras?['is_downloaded'] == true &&
-                              musikDimainkan?.id != mediaItem.id
-                          ? const Icon(
-                              Icons.download_done_rounded,
-                              color: Colors.green,
-                              size: 20,
-                            )
-                          : indexIcon,
-                ),
+              IndexNumberList(
+                marginList: marginList,
+                musicDownloadController: musicDownloadController,
+                mediaItem: mediaItem,
+                indexIcon: indexIcon,
+                musikDimainkan: musikDimainkan,
               ),
               // cover image
               Container(
@@ -205,6 +174,71 @@ class MusicList extends StatelessWidget {
             color: HexColor('#e0e0e0').withOpacity(0.7),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class IndexNumberList extends StatelessWidget {
+  const IndexNumberList({
+    super.key,
+    required this.marginList,
+    required this.musicDownloadController,
+    required this.mediaItem,
+    required this.indexIcon,
+    required this.musikDimainkan,
+  });
+
+  final double marginList;
+  final MusicDownloadController musicDownloadController;
+  final MediaItem mediaItem;
+  final Widget indexIcon;
+  final MediaItem? musikDimainkan;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
+      margin: EdgeInsets.only(
+        left: marginList,
+      ),
+      child: Obx(
+        () => musicDownloadController
+                    .dataProgressDownload[mediaItem.extras!['music_id']] !=
+                null
+            ? musicDownloadController.dataProgressDownload[
+                        mediaItem.extras!['music_id']]!['progress'] ==
+                    0.0
+                ? indexIcon
+                : Transform.scale(
+                    scale: 0.8,
+                    child: CircularPercentIndicator(
+                      radius: 20,
+                      lineWidth: 2,
+                      percent: musicDownloadController.dataProgressDownload[
+                          mediaItem.extras!['music_id']]!['progress'],
+                      center: Text(
+                        '${(musicDownloadController.dataProgressDownload[mediaItem.extras!['music_id']]!['progress'] * 100).toStringAsFixed(0)}%',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: HexColor('#8238be'),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      progressColor: HexColor('#8238be'),
+                      backgroundColor: HexColor('#8d8c8c'),
+                    ),
+                  )
+            : mediaItem.extras?['is_downloaded'] == true &&
+                    musikDimainkan?.id != mediaItem.id
+                ? const Icon(
+                    Icons.download_done_rounded,
+                    color: Colors.green,
+                    size: 20,
+                  )
+                : indexIcon,
       ),
     );
   }
