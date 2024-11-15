@@ -169,7 +169,9 @@ class ListTileBottomModal extends StatelessWidget {
 
               context.read<MusicState>().setCurrentMediaItem(mediaItem);
 
-              playlistPlayController.onPlaylistMusicPlay();
+              playlistPlayController.onPlaylistMusicPlay(
+                audioState: audioState,
+              );
 
               player.play();
               Get.back();

@@ -176,7 +176,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                         .read<MusicState>()
                         .setCurrentMediaItem(sequence[index].tag as MediaItem);
 
-                    playlistPlayController.onPlaylistMusicPlay();
+                    playlistPlayController.onPlaylistMusicPlay(
+                      audioState: audioState,
+                    );
 
                     audioState.player.play();
                   }
@@ -384,7 +386,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
     playingStateController.play();
 
-    playlistPlayController.onPlaylistMusicPlay();
+    playlistPlayController.onPlaylistMusicPlay(
+      audioState: audioState,
+    );
 
     audioState.player.play();
   }

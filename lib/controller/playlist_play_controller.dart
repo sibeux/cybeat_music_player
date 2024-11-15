@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:cybeat_music_player/controller/progress_music_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -18,7 +20,7 @@ class PlaylistPlayController extends GetxController {
     playlistEditable.value = playlist.editable;
   }
 
-  Future<void> onPlaylistMusicPlay() async {
+  Future<void> onPlaylistMusicPlay({required AudioState audioState}) async {
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?play_playlist=${playlistUid.value}';
         
@@ -28,6 +30,8 @@ class PlaylistPlayController extends GetxController {
       await http.post(
         Uri.parse(url),
       );
+
+      Get.put(ProgressMusicController(player: audioState.player));
     } catch (e) {
       if (kDebugMode) {
         print('Error onPlaylistMusicPlay: $e');
