@@ -5,8 +5,11 @@ import 'package:cybeat_music_player/screens/crud_playlist_screen/edit_playlist_s
 import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/modal_delete_playlist/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:marquee/marquee.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
@@ -51,15 +54,46 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        child: Text(
+                        height: 25,
+                        child: AutoSizeText(
                           playlist.title,
+                          maxLines: 1,
+                          minFontSize: 16,
+                          maxFontSize: 16,
                           style: const TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            fontSize: 16,
                             fontWeight: FontWeight.bold,
+                          ),
+                          overflowReplacement: Marquee(
+                            text: playlist.title,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            scrollAxis: Axis.horizontal,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            // spacing end of text
+                            blankSpace: 30,
+                            // second needed before slide again
+                            pauseAfterRound: const Duration(seconds: 0),
+                            // text gonna slide first time after this second
+                            startAfter: const Duration(seconds: 2),
+                            decelerationCurve: Curves.easeOut,
+                            // speed of slide text
+                            velocity: 35,
+                            accelerationCurve: Curves.linear,
                           ),
                         ),
                       ),
+                      // SizedBox(
+                      //   child: Text(
+                      //     playlist.title,
+                      //     style: const TextStyle(
+                      //       overflow: TextOverflow.ellipsis,
+                      //       fontSize: 16,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
                       const SizedBox(
                         height: 3,
                       ),

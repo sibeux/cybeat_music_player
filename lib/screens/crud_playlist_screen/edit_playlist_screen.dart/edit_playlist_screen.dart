@@ -16,9 +16,12 @@ class EditPlaylistScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    textController.text = playlistName;
     var tapIndex = 0;
-    searchAlbumController.textValue.value = textController.text;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      textController.text = playlistName;
+      tapIndex = 0;
+      searchAlbumController.textValue.value = textController.text;
+    });
 
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
@@ -29,7 +32,8 @@ class EditPlaylistScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            if (searchAlbumController.textValue.value.toLowerCase() != playlistName.toLowerCase()) {
+            if (searchAlbumController.textValue.value.toLowerCase() !=
+                playlistName.toLowerCase()) {
               showModalDiscardDialog(context);
             } else {
               Get.back();
@@ -47,7 +51,8 @@ class EditPlaylistScreen extends StatelessWidget {
         actions: [
           Obx(
             () => searchAlbumController.isTypingValue &&
-                    searchAlbumController.textValue.value.toLowerCase() != playlistName.toLowerCase()
+                    searchAlbumController.textValue.value.toLowerCase() !=
+                        playlistName.toLowerCase()
                 ? saveButton(
                     color: Colors.black,
                     onTap: () {
@@ -112,7 +117,6 @@ class EditPlaylistScreen extends StatelessWidget {
                   ),
                 ),
                 child: TextField(
-                  
                   onTap: () {
                     if (tapIndex == 0) {
                       textController.selection = TextSelection(
@@ -142,8 +146,8 @@ class EditPlaylistScreen extends StatelessWidget {
                               .withOpacity(0.7)), // Color when focused
                     ),
                     hintText: 'Playlist Name',
-                    hintStyle:
-                        TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 40),
+                    hintStyle: TextStyle(
+                        color: Colors.black.withOpacity(0.4), fontSize: 40),
                   ),
                 ),
               ),

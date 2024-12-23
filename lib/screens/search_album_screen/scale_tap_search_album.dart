@@ -5,7 +5,9 @@ import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
+import 'package:cybeat_music_player/screens/home_screen/list_album/show_album_modal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
@@ -69,6 +71,10 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
   Widget build(BuildContext context) {
     final audioState = widget.audioState;
     return GestureDetector(
+      onLongPress: () {
+        HapticFeedback.vibrate();
+        showAlbumModalBottom(context, widget.playlist);
+      },
       onPanDown: (details) {
         _shrinkButtonSize();
       },
