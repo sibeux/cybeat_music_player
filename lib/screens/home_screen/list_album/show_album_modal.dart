@@ -5,7 +5,6 @@ import 'package:cybeat_music_player/screens/crud_playlist_screen/edit_playlist_s
 import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/modal_delete_playlist/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:hexcolor/hexcolor.dart';
