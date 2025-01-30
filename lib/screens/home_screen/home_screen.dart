@@ -101,7 +101,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     GestureDetector(
                       onTap: () {
                         Get.to(
-                            () => RecentsScreen(audioState: widget.audioState));
+                          () => RecentsScreen(audioState: widget.audioState),
+                          transition: Transition.native,
+                          popGesture: false,
+                          fullscreenDialog: true,
+                        );
                       },
                       child: const Icon(
                         Icons.history,
@@ -118,9 +122,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           () => SearchAlbumScreen(
                             audioState: widget.audioState,
                           ),
+                          transition: Transition.cupertino,
                           popGesture: false,
                           fullscreenDialog: true,
-                          transition: Transition.cupertino,
                         );
                       },
                       child: const Icon(

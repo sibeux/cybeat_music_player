@@ -135,9 +135,13 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                 onTap: playlist.editable == 'true'
                     ? () {
                         Get.back();
-                        Get.to(() => EditPlaylistScreen(
-                              playlistName: playlist.title,
-                            ));
+                        Get.to(
+                          () => EditPlaylistScreen(
+                            playlistName: playlist.title,
+                          ),
+                          popGesture: false,
+                          fullscreenDialog: true,
+                        );
                       }
                     : () {
                         showRemoveAlbumToast(

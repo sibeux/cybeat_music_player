@@ -54,6 +54,8 @@ class MusicDownloadController extends GetxController {
       ),
       transition: Transition.leftToRightWithFade,
       duration: const Duration(milliseconds: 300),
+      popGesture: false,
+      fullscreenDialog: true,
     );
   }
 

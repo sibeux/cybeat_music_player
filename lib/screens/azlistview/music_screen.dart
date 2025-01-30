@@ -160,6 +160,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                     ),
                     transition: Transition.downToUp,
                     duration: const Duration(milliseconds: 300),
+                    popGesture: false,
+                    fullscreenDialog: true,
                   );
 
                   if (context.read<MusicState>().currentMediaItem?.id == "" ||
@@ -378,6 +380,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
         mediaItem: sequence[index].tag as MediaItem,
       ),
       transition: Transition.downToUp,
+      popGesture: false,
+      fullscreenDialog: true,
     );
 
     audioState.player.seek(Duration.zero, index: index);
