@@ -115,10 +115,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     GestureDetector(
                       onTap: () {
                         Get.to(
-                            () => SearchAlbumScreen(
-                                  audioState: widget.audioState,
-                                ),
-                            transition: Transition.cupertino);
+                          () => SearchAlbumScreen(
+                            audioState: widget.audioState,
+                          ),
+                          popGesture: false,
+                          fullscreenDialog: true,
+                          transition: Transition.cupertino,
+                        );
                       },
                       child: const Icon(
                         Icons.search_outlined,
