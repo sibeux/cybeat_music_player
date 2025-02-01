@@ -191,10 +191,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 timeToFade: const Duration(milliseconds: 500),
                 padding: const EdgeInsets.only(top: 55),
                 thickness: 5,
-                thumbColor: HexColor('#ac8bc9').withOpacity(0.5),
+                thumbColor: HexColor('#ac8bc9').withOpacity(0.7),
                 trackVisibility: false,
                 child: SmartRefresher(
                   controller: _homeAlbumGridController.refreshController,
+                  scrollController: _scrollController,
                   onRefresh: _homeAlbumGridController.onRefresh,
                   onLoading: _homeAlbumGridController.onLoading,
                   enablePullDown: true,
@@ -240,7 +241,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   child: SingleChildScrollView(
-                    controller: _scrollController,
                     child: Row(
                       children: [
                         Expanded(
