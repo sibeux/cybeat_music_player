@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cybeat_music_player/controller/crud_playlist.dart';
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/edit_playlist_screen.dart/show_discard_dialog.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,10 @@ final FocusNode _focusNode = FocusNode();
 final textController = searchAlbumController.controller;
 
 class EditPlaylistScreen extends StatelessWidget {
-  const EditPlaylistScreen({super.key, required this.playlistName});
+  const EditPlaylistScreen(
+      {super.key, required this.playlistName, required this.uid});
 
-  final String playlistName;
+  final String playlistName, uid;
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +56,13 @@ class EditPlaylistScreen extends StatelessWidget {
                     searchAlbumController.textValue.value.toLowerCase() !=
                         playlistName.toLowerCase()
                 ? saveButton(
-                    color: Colors.black,
+                    color: HexColor('#8238be'),
                     onTap: () {
                       Get.back();
+                      updatePlaylist(
+                        uid,
+                        searchAlbumController.textValue.value,
+                      );
                     },
                   )
                 : saveButton(

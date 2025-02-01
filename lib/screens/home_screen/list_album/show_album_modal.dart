@@ -137,6 +137,7 @@ Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
                         Get.back();
                         Get.to(
                           () => EditPlaylistScreen(
+                            uid: playlist.uid,
                             playlistName: playlist.title,
                           ),
                           popGesture: false,
