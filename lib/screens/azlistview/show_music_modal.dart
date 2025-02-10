@@ -7,6 +7,7 @@ import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/delete_music_dialog.dart';
 import 'package:cybeat_music_player/screens/azlistview/effect_tap_music_modal.dart';
+import 'package:cybeat_music_player/screens/music_playlist_screen/music_playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -178,7 +179,14 @@ class ListTileBottomModal extends StatelessWidget {
             }
           case 'add to playlist':
             // add music to playlist
-            showRemoveAlbumToast('Music has been added to the playlist');
+            // showRemoveAlbumToast('Music has been added to the playlist');
+            Get.back();
+            Get.to(
+              () => const MusicPlaylistScreen(),
+              transition: Transition.downToUp,
+              fullscreenDialog: true,
+              popGesture: false,
+            );
           case 'download':
             // download music
             showRemoveAlbumToast('Downloading music');
