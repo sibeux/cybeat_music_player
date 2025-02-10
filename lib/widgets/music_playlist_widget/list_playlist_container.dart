@@ -8,66 +8,69 @@ class ListPlaylistContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(
-            color: HexColor('#f1f1f1'),
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.add,
-              color: Colors.black,
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Row(
+        children: [
+          Container(
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+              color: HexColor('#f1f1f1'),
+              borderRadius: BorderRadius.circular(5),
             ),
-          ),
-        ),
-        const SizedBox(
-          width: 10,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'IndoPride',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.black.withOpacity(0.8),
-                fontWeight: FontWeight.bold,
+            child: const Center(
+              child: Icon(
+                Icons.add,
+                color: Colors.black,
               ),
             ),
-            const SizedBox(
-              height: 8,
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.push_pin,
-                  size: 16,
-                  color: HexColor('#8238be'),
-                ),
-                Text(
-                  '1089 songs',
-                  style: TextStyle(
-                    color: HexColor('#313031'),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-        const Spacer(),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.check_circle,
-            color: HexColor('#8238be'),
           ),
-        ),
-      ],
+          const SizedBox(
+            width: 10,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'IndoPride',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black.withOpacity(0.8),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.push_pin,
+                    size: 16,
+                    color: HexColor('#8238be'),
+                  ),
+                  Text(
+                    '1089 songs',
+                    style: TextStyle(
+                      color: HexColor('#313031'),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+          const Spacer(),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.check_circle,
+              color: HexColor('#8238be'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
