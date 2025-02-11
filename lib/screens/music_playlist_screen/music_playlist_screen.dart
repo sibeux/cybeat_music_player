@@ -1,3 +1,4 @@
+import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_playlist_container.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/search_bar.dart';
@@ -10,8 +11,8 @@ class MusicPlaylistScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MusicPlaylistController musicPlaylistController =
-        Get.put(MusicPlaylistController());
+    final musicPlaylistController = Get.put(MusicPlaylistController());
+    final homeAlbumGridController = Get.find<HomeAlbumGridController>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: HexColor('#fefffe'),
@@ -25,7 +26,6 @@ class MusicPlaylistScreen extends StatelessWidget {
           onPressed: () async {
             if (musicPlaylistController.searchBarTapped.value) {
               FocusManager.instance.primaryFocus?.unfocus();
-
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 musicPlaylistController.tapSearchBar(false);
               });
@@ -154,7 +154,9 @@ class MusicPlaylistScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            const ListPlaylistContainer(),
+                            const ListPlaylistContainer(
+                              index: 0,
+                            ),
                             const SizedBox(
                               height: 10,
                             ),
@@ -177,9 +179,12 @@ class MusicPlaylistScreen extends StatelessWidget {
                             ListView.builder(
                               shrinkWrap: true, // Agar ListView tidak error
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: 5,
+                              itemCount: homeAlbumGridController
+                                  .playlistCreatedList.length,
                               itemBuilder: (context, index) {
-                                return const ListPlaylistContainer();
+                                return ListPlaylistContainer(
+                                  index: index,
+                                );
                               },
                             ),
                           ],

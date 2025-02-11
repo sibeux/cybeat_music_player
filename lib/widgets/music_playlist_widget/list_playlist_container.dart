@@ -1,13 +1,20 @@
+import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class ListPlaylistContainer extends StatelessWidget {
   const ListPlaylistContainer({
     super.key,
+    required this.index,
   });
+
+  final int index;
 
   @override
   Widget build(BuildContext context) {
+    final homeAlbumGridController = Get.find<HomeAlbumGridController>();
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: Row(
@@ -19,10 +26,11 @@ class ListPlaylistContainer extends StatelessWidget {
               color: HexColor('#f1f1f1'),
               borderRadius: BorderRadius.circular(5),
             ),
-            child: const Center(
-              child: Icon(
-                Icons.add,
-                color: Colors.black,
+            child: Center(
+              child: FourCoverAlbum(
+                size: 100,
+                type: 'playlist',
+                playlist: homeAlbumGridController.playlistCreatedList[index],
               ),
             ),
           ),
@@ -33,7 +41,7 @@ class ListPlaylistContainer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'IndoPride',
+                homeAlbumGridController.playlistCreatedList[index].title,
                 maxLines: 1,
                 style: TextStyle(
                   fontSize: 14,
@@ -47,13 +55,16 @@ class ListPlaylistContainer extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Icon(
-                    Icons.push_pin,
-                    size: 16,
-                    color: HexColor('#8238be'),
-                  ),
+                  homeAlbumGridController.playlistCreatedList[index].pin ==
+                          'true'
+                      ? Icon(
+                          Icons.push_pin,
+                          size: 16,
+                          color: HexColor('#8238be'),
+                        )
+                      : Container(),
                   Text(
-                    '1089 songs',
+                    homeAlbumGridController.playlistCreatedList[index].author,
                     maxLines: 1,
                     style: TextStyle(
                       color: HexColor('#313031'),

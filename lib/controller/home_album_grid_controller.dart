@@ -16,7 +16,7 @@ final filterAlbumController = Get.put(FilterAlbumController());
 class HomeAlbumGridController extends GetxController {
   var children = RxList([]);
   var selectedAlbum = RxList<Playlist?>([]);
-  
+
   var jumlahPin = 0.obs;
   var jumlahDitampilkan = 15.obs;
 
@@ -26,6 +26,10 @@ class HomeAlbumGridController extends GetxController {
   var alphabeticalList = RxList<Playlist>([]);
   var recentsList = RxList<Playlist>([]);
   var initiateAlbum = RxList<Playlist>([]); // diakses oleh home_screen.dart
+
+  var playlistCreatedList =
+      RxList<Playlist>([]); // diakses oleh music_playlist_screen.dart
+
   var fourCoverCategory = RxList<dynamic>([]);
   var fourCoverPlaylist = RxList<dynamic>([]);
 
@@ -248,7 +252,9 @@ class HomeAlbumGridController extends GetxController {
 
       // ini mesti harus ada
       updateChildren(list);
-
+      playlistCreatedList.value = list
+          .where((playlist) => playlist.type.toLowerCase() == 'playlist')
+          .toList();
       initiateAlbum.value = list;
     } catch (e) {
       if (kDebugMode) {
