@@ -1,5 +1,6 @@
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_playlist_container.dart';
+import 'package:cybeat_music_player/widgets/music_playlist_widget/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -17,14 +18,28 @@ class MusicPlaylistScreen extends StatelessWidget {
         backgroundColor: HexColor('#fefffe'),
         surfaceTintColor: Colors.transparent,
         titleSpacing: 0,
+        actions: const [SizedBox(width: 20)],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Get.back();
+            if (musicPlaylistController.searchBarTapped.value) {
+              musicPlaylistController.tapSearchBar(false);
+            } else {
+              Get.back();
+            }
           },
         ),
         centerTitle: true,
-        title: const Text('Add to playlist'),
+        title: Obx(
+          () => AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: musicPlaylistController.searchBarTapped.value
+                ? searchBar(musicPlaylistController, needIcon: false)
+                : const Text(
+                    'Add to playlist',
+                  ),
+          ),
+        ),
         titleTextStyle: const TextStyle(
           color: Colors.black,
           fontSize: 16,
@@ -40,144 +55,122 @@ class MusicPlaylistScreen extends StatelessWidget {
               SingleChildScrollView(
                 child: Column(
                   children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Center(
-                      child: Container(
-                        width: 150,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(
-                            color: Colors.black.withOpacity(0.8),
-                            width: 1,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "New Playlist",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                    Obx(
+                      () => AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: musicPlaylistController.searchBarTapped.value
+                            ? 0.0
+                            : 1.0,
+                        child: Center(
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 40, top: 20),
+                            width: 150,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(50),
+                              border: Border.all(
+                                color: Colors.black.withOpacity(0.8),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                "New Playlist",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 40,
+                    Obx(
+                      () => AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: musicPlaylistController.searchBarTapped.value
+                            ? 0.0
+                            : 1.0,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (!musicPlaylistController
+                                .searchBarTapped.value) {
+                              musicPlaylistController.tapSearchBar(true);
+                            }
+                          },
+                          child: AbsorbPointer(
+                            absorbing: true,
+                            child: searchBar(musicPlaylistController, needIcon: true),
+                          ),
+                        ),
+                      ),
                     ),
-                    TextFormField(
-                      controller: musicPlaylistController.textController,
-                      cursorColor: HexColor('#575757'),
-                      textAlignVertical: TextAlignVertical.center,
-                      onChanged: (value) {
-                        musicPlaylistController.onChanged(value);
-                      },
-                      onTap: () {
-                        musicPlaylistController.isKeybordFocus.value = true;
-                      },
-                      style:
-                          TextStyle(color: HexColor('#575757'), fontSize: 12),
-                      onTapOutside: (event) =>
-                          FocusManager.instance.primaryFocus?.unfocus(),
-                      decoration: InputDecoration(
-                        filled: true,
-                        isDense: true,
-                        fillColor: HexColor('#f1f1f1'),
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 7, horizontal: 7),
-                        hintText: 'Find playlist',
-                        hintStyle: TextStyle(
-                          color: Colors.black.withOpacity(0.8),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        // * agar textfield tidak terlalu lebar/tinggi, maka dibuat constraints
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 30,
-                          minHeight: 35,
-                        ),
-                        suffixIconConstraints: const BoxConstraints(
-                          minWidth: 30,
-                          minHeight: 35,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: Colors.black.withOpacity(1),
-                        ),
-                        suffixIcon:
-                            Obx(() => musicPlaylistController.isTypingValue
-                                ? GestureDetector(
-                                    onTap: () {
-                                      musicPlaylistController.textController
-                                          .clear();
-                                      musicPlaylistController.onChanged('');
-                                    },
-                                    child: Icon(
-                                      Icons.close,
-                                      color: HexColor('#575757'),
+                    Obx(
+                      () => AnimatedSlide(
+                        duration: const Duration(milliseconds: 200),
+                        offset: musicPlaylistController.searchBarTapped.value
+                            ? const Offset(0, -0.35)
+                            : const Offset(0, 0),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  'Saved in',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Spacer(),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'Clear all',
+                                    style: TextStyle(
+                                      color: HexColor('#8238be'),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  )
-                                : const SizedBox.shrink()),
-                        enabledBorder: outlineInputBorder(),
-                        focusedBorder: outlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        const Text(
-                          'Saved in',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Clear all',
-                            style: TextStyle(
-                              color: HexColor('#8238be'),
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                            const ListPlaylistContainer(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const ListTile(
+                              contentPadding: EdgeInsets
+                                  .zero, // menghilangkan padding kiri kanan
+                              leading: Icon(
+                                Icons.list,
+                                color: Colors.black,
+                              ),
+                              title: Text(
+                                'Recently added',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const ListPlaylistContainer(),
+                            const ListPlaylistContainer(),
+                            const ListPlaylistContainer(),
+                            const ListPlaylistContainer(),
+                          ],
                         ),
-                      ],
-                    ),
-                    const ListPlaylistContainer(),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const ListTile(
-                      contentPadding:
-                          EdgeInsets.zero, // menghilangkan padding kiri kanan
-                      leading: Icon(
-                        Icons.list,
-                        color: Colors.black,
                       ),
-                      title: Text(
-                        'Recently added',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const ListPlaylistContainer(),
-                    const ListPlaylistContainer(),
-                    const ListPlaylistContainer(),
-                    const ListPlaylistContainer(),
+                    )
                   ],
                 ),
               ),
@@ -214,13 +207,6 @@ class MusicPlaylistScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  OutlineInputBorder outlineInputBorder() {
-    return OutlineInputBorder(
-      borderSide: const BorderSide(color: Colors.transparent),
-      borderRadius: BorderRadius.circular(5),
     );
   }
 }
