@@ -1,4 +1,5 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
 import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ class ListPlaylistContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeAlbumGridController = Get.find<HomeAlbumGridController>();
+    final musicPlaylistController = Get.find<MusicPlaylistController>();
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: Row(
@@ -77,11 +79,32 @@ class ListPlaylistContainer extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.check_circle,
-              color: HexColor('#8238be'),
+          Obx(
+            () => IconButton(
+              onPressed: () {
+                if (musicPlaylistController.newAddedMusic.contains(
+                  homeAlbumGridController.playlistCreatedList[index].uid,
+                )) {
+                  musicPlaylistController.tapRemoveMusicFromPlaylist(
+                    homeAlbumGridController.playlistCreatedList[index].uid,
+                  );
+                } else {
+                  musicPlaylistController.tapAddMusicToPlaylist(
+                    homeAlbumGridController.playlistCreatedList[index].uid,
+                  );
+                }
+              },
+              icon: musicPlaylistController.newAddedMusic.contains(
+                homeAlbumGridController.playlistCreatedList[index].uid,
+              )
+                  ? Icon(
+                      Icons.check_circle,
+                      color: HexColor('#8238be'),
+                    )
+                  : Icon(
+                      Icons.circle_outlined,
+                      color: Colors.black.withOpacity(0.8),
+                    ),
             ),
           ),
         ],

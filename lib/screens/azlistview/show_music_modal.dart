@@ -179,10 +179,11 @@ class ListTileBottomModal extends StatelessWidget {
             }
           case 'add to playlist':
             // add music to playlist
-            // showRemoveAlbumToast('Music has been added to the playlist');
             Get.back();
             Get.to(
-              () => const MusicPlaylistScreen(),
+              () => MusicPlaylistScreen(
+                idMusic: mediaItem.extras?['music_id'],
+              ),
               transition: Transition.downToUp,
               fullscreenDialog: true,
               popGesture: false,

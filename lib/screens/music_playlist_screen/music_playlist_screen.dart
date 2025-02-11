@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class MusicPlaylistScreen extends StatelessWidget {
-  const MusicPlaylistScreen({super.key});
+  const MusicPlaylistScreen({super.key, required this.idMusic});
+
+  final String idMusic;
 
   @override
   Widget build(BuildContext context) {
@@ -130,32 +132,42 @@ class MusicPlaylistScreen extends StatelessWidget {
                             const SizedBox(
                               height: 10,
                             ),
-                            Row(
-                              children: [
-                                const Text(
-                                  'Saved in',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Spacer(),
-                                TextButton(
-                                  onPressed: () {},
-                                  child: Text(
-                                    'Clear all',
+                            if (musicPlaylistController
+                                .listMusicOnPlaylist.isNotEmpty)
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Saved in',
                                     style: TextStyle(
-                                      color: HexColor('#8238be'),
+                                      color: Colors.black,
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const ListPlaylistContainer(
-                              index: 0,
+                                  const Spacer(),
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      'Clear all',
+                                      style: TextStyle(
+                                        color: HexColor('#8238be'),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ListView.builder(
+                              shrinkWrap: true, // Agar ListView tidak error
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: musicPlaylistController
+                                  .listMusicOnPlaylist.length,
+                              itemBuilder: (context, index) {
+                                return ListPlaylistContainer(
+                                  index: index,
+                                );
+                              },
                             ),
                             const SizedBox(
                               height: 10,
@@ -210,13 +222,20 @@ class MusicPlaylistScreen extends StatelessWidget {
                         width: 1,
                       ),
                     ),
-                    child: const Center(
-                      child: Text(
-                        "Done",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          musicPlaylistController.updateMusicOnPlaylist(
+                            idMusic: idMusic,
+                          );
+                        },
+                        child: const Text(
+                          "Done",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
