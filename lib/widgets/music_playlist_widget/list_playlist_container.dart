@@ -34,9 +34,11 @@ class ListPlaylistContainer extends StatelessWidget {
             children: [
               Text(
                 'IndoPride',
+                maxLines: 1,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.black.withOpacity(0.8),
+                  overflow: TextOverflow.ellipsis,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -52,8 +54,10 @@ class ListPlaylistContainer extends StatelessWidget {
                   ),
                   Text(
                     '1089 songs',
+                    maxLines: 1,
                     style: TextStyle(
                       color: HexColor('#313031'),
+                      overflow: TextOverflow.ellipsis,
                       fontSize: 12,
                     ),
                   ),

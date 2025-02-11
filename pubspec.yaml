@@ -69,6 +69,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   dio: ^5.7.0
   percent_indicator: ^4.2.3
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:

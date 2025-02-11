@@ -87,8 +87,8 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
                         contentPadding: const EdgeInsets.only(bottom: 0),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: Colors.black
-                                  .withOpacity(0.7)), // Color when focused
+                            color: Colors.black.withOpacity(0.7),
+                          ), // Color when focused
                         ),
                       ),
                     ),
@@ -101,16 +101,18 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ScaleTapButtonNewPlaylist(
-                        child: TextButton(
-                      title: 'Cancel',
-                      textController: textController,
-                    )),
+                      child: TextButton(
+                        title: 'Cancel',
+                        textController: textController,
+                      ),
+                    ),
                     const SizedBox(width: 20),
                     ScaleTapButtonNewPlaylist(
-                        child: TextButton(
-                      title: 'Create',
-                      textController: textController,
-                    )),
+                      child: TextButton(
+                        title: 'Create',
+                        textController: textController,
+                      ),
+                    ),
                   ],
                 ),
               )
@@ -134,7 +136,6 @@ class TextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();

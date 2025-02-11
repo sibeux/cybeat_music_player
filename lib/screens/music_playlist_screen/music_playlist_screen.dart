@@ -13,6 +13,7 @@ class MusicPlaylistScreen extends StatelessWidget {
     final MusicPlaylistController musicPlaylistController =
         Get.put(MusicPlaylistController());
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: HexColor('#fefffe'),
       appBar: AppBar(
         backgroundColor: HexColor('#fefffe'),
@@ -21,9 +22,13 @@ class MusicPlaylistScreen extends StatelessWidget {
         actions: const [SizedBox(width: 20)],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
+          onPressed: () async {
             if (musicPlaylistController.searchBarTapped.value) {
-              musicPlaylistController.tapSearchBar(false);
+              FocusManager.instance.primaryFocus?.unfocus();
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                musicPlaylistController.tapSearchBar(false);
+              });
             } else {
               Get.back();
             }
@@ -34,7 +39,7 @@ class MusicPlaylistScreen extends StatelessWidget {
           () => AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: musicPlaylistController.searchBarTapped.value
-                ? searchBar(musicPlaylistController, needIcon: false)
+                ? searchBar(musicPlaylistController, needHint: false)
                 : const Text(
                     'Add to playlist',
                   ),
@@ -103,7 +108,10 @@ class MusicPlaylistScreen extends StatelessWidget {
                           },
                           child: AbsorbPointer(
                             absorbing: true,
-                            child: searchBar(musicPlaylistController, needIcon: true),
+                            child: searchBar(
+                              musicPlaylistController,
+                              needHint: true,
+                            ),
                           ),
                         ),
                       ),
@@ -112,7 +120,10 @@ class MusicPlaylistScreen extends StatelessWidget {
                       () => AnimatedSlide(
                         duration: const Duration(milliseconds: 200),
                         offset: musicPlaylistController.searchBarTapped.value
-                            ? const Offset(0, -0.35)
+                            ? const Offset(
+                                0,
+                                -0.2,
+                              )
                             : const Offset(0, 0),
                         child: Column(
                           children: [
@@ -163,14 +174,18 @@ class MusicPlaylistScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const ListPlaylistContainer(),
-                            const ListPlaylistContainer(),
-                            const ListPlaylistContainer(),
-                            const ListPlaylistContainer(),
+                            ListView.builder(
+                              shrinkWrap: true, // Agar ListView tidak error
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: 5,
+                              itemBuilder: (context, index) {
+                                return const ListPlaylistContainer();
+                              },
+                            ),
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

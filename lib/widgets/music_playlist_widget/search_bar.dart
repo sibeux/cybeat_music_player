@@ -4,11 +4,11 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 TextFormField searchBar(MusicPlaylistController musicPlaylistController,
-    {required bool needIcon}) {
+    {required bool needHint}) {
   return TextFormField(
     controller: musicPlaylistController.textController,
     cursorColor: HexColor('#575757'),
-    autofocus: !needIcon,
+    autofocus: !needHint,
     textAlignVertical: TextAlignVertical.center,
     onChanged: (value) {
       musicPlaylistController.onChanged(value);
@@ -23,7 +23,7 @@ TextFormField searchBar(MusicPlaylistController musicPlaylistController,
       isDense: true,
       fillColor: HexColor('#f1f1f1'),
       contentPadding: const EdgeInsets.symmetric(vertical: 7, horizontal: 7),
-      hintText: 'Find playlist',
+      hintText: needHint ? 'Find playlist' : '',
       hintStyle: TextStyle(
         color: Colors.black.withOpacity(0.8),
         fontSize: 12,
@@ -38,12 +38,10 @@ TextFormField searchBar(MusicPlaylistController musicPlaylistController,
         minWidth: 30,
         minHeight: 35,
       ),
-      prefixIcon: needIcon
-          ? Icon(
-              Icons.search,
-              color: Colors.black.withOpacity(1),
-            )
-          : null,
+      prefixIcon: Icon(
+        Icons.search,
+        color: Colors.black.withOpacity(1),
+      ),
       suffixIcon: Obx(() => musicPlaylistController.isTypingValue
           ? GestureDetector(
               onTap: () {

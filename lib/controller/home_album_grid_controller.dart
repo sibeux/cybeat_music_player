@@ -16,10 +16,13 @@ final filterAlbumController = Get.put(FilterAlbumController());
 class HomeAlbumGridController extends GetxController {
   var children = RxList([]);
   var selectedAlbum = RxList<Playlist?>([]);
-  var isTapped = false.obs;
+  
   var jumlahPin = 0.obs;
   var jumlahDitampilkan = 15.obs;
+
   var isLoading = true.obs;
+  var isTapped = false.obs;
+
   var alphabeticalList = RxList<Playlist>([]);
   var recentsList = RxList<Playlist>([]);
   var initiateAlbum = RxList<Playlist>([]); // diakses oleh home_screen.dart

@@ -63,24 +63,25 @@ class ScaleTapButtonNewPlaylistState extends State<ScaleTapButtonNewPlaylist>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onPanDown: (details) {
-          _shrinkButtonSize();
-        },
-        onPanCancel: () {
-          // ini masih ada gunanya
-          _restoreButtonSize();
-        },
-        onPanEnd: (_) {
-          // ini masih ada gunanya
-          _restoreButtonSize();
-        },
-        onTapCancel: _restoreButtonSize, // ini kemungkinan ada sih
-        child: Transform.scale(
-          scale: _scaleTransformValue,
-          child: Opacity(
-            opacity: colorOnTap,
-            child: widget.child,
-          ),
-        ));
+      onPanDown: (details) {
+        _shrinkButtonSize();
+      },
+      onPanCancel: () {
+        // ini masih ada gunanya
+        _restoreButtonSize();
+      },
+      onPanEnd: (_) {
+        // ini masih ada gunanya
+        _restoreButtonSize();
+      },
+      onTapCancel: _restoreButtonSize, // ini kemungkinan ada sih
+      child: Transform.scale(
+        scale: _scaleTransformValue,
+        child: Opacity(
+          opacity: colorOnTap,
+          child: widget.child,
+        ),
+      ),
+    );
   }
 }
