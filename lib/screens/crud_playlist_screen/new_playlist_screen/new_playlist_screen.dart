@@ -1,18 +1,19 @@
-import 'package:cybeat_music_player/controller/crud_playlist.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/scale_tap_button_new.dart';
+// Di-as karena ada duplikasi function.
+import 'package:cybeat_music_player/widgets/new_playlist_widget/text_button.dart'
+    as text_button;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hexcolor/hexcolor.dart';
 
-class AddPlaylistScreen extends StatefulWidget {
-  const AddPlaylistScreen({super.key});
+class NewPlaylistScreen extends StatefulWidget {
+  const NewPlaylistScreen({super.key});
 
   @override
-  State<AddPlaylistScreen> createState() => _AddPlaylistScreenState();
+  State<NewPlaylistScreen> createState() => _NewPlaylistScreenState();
 }
 
-class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
+class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
   final FocusNode _focusNode = FocusNode();
   final textController = TextEditingController();
 
@@ -104,14 +105,14 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ScaleTapButtonNewPlaylist(
-                      child: TextButton(
+                      child: text_button.TextButton(
                         title: 'Cancel',
                         textController: textController,
                       ),
                     ),
                     const SizedBox(width: 20),
                     ScaleTapButtonNewPlaylist(
-                      child: TextButton(
+                      child: text_button.TextButton(
                         title: 'Create',
                         textController: textController,
                       ),
@@ -120,61 +121,6 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
                 ),
               )
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class TextButton extends StatelessWidget {
-  const TextButton({
-    super.key,
-    required this.title,
-    required this.textController,
-  });
-
-  final String title;
-  final TextEditingController textController;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-        if (title == 'Cancel') {
-          Get.back();
-        } else {
-          // create playlist
-          addNewPlaylist(textController.text);
-          Get.back();
-        }
-      },
-      child: Container(
-        width: 120,
-        height: 50,
-        decoration: BoxDecoration(
-          color: title == 'Cancel'
-              ? Colors.black.withOpacity(0)
-              : HexColor('#ac8bc9'),
-          borderRadius: BorderRadius.circular(50),
-          border: Border.all(
-            color: title == 'Cancel'
-                ? Colors.black.withOpacity(0.6)
-                : HexColor('#ac8bc9'),
-            width: 1,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            title,
-            style: TextStyle(
-              color: title == 'Cancel'
-                  ? Colors.black.withOpacity(0.6)
-                  : Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
           ),
         ),
       ),

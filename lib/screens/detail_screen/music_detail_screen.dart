@@ -1,15 +1,15 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/screens/detail_screen/appbar_title.dart';
-import 'package:cybeat_music_player/screens/detail_screen/cover_detail_music.dart';
-import 'package:cybeat_music_player/screens/detail_screen/favorite_button.dart';
-import 'package:cybeat_music_player/screens/detail_screen/control_buttons.dart';
-import 'package:cybeat_music_player/screens/detail_screen/title_artist_detail_music.dart';
+import 'package:cybeat_music_player/widgets/detail_music_widget/appbar_title.dart';
+import 'package:cybeat_music_player/widgets/detail_music_widget/cover_detail_music.dart';
+import 'package:cybeat_music_player/widgets/detail_music_widget/favorite_button.dart';
+import 'package:cybeat_music_player/widgets/detail_music_widget/control_buttons.dart';
+import 'package:cybeat_music_player/widgets/detail_music_widget/title_artist_detail_music.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
-import 'cover_blur.dart';
-import 'progress_bar_music.dart';
+import '../../widgets/detail_music_widget/cover_blur.dart';
+import '../../widgets/detail_music_widget/progress_bar_music.dart';
 
 class MusicDetailScreen extends StatefulWidget {
   const MusicDetailScreen({

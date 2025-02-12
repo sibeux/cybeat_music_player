@@ -1,8 +1,6 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
-// Di-hide karena ada duplikasi nama Function.
-import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/add_playlist_screen.dart'
-    hide TextButton;
+import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/new_playlist_screen.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/button_done.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_recently_added.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_saved_in.dart';
@@ -83,7 +81,7 @@ class MusicPlaylistScreen extends StatelessWidget {
                               child: ScaleTap(
                                 onTap: () {
                                   Get.to(
-                                    () => const AddPlaylistScreen(),
+                                    () => const NewPlaylistScreen(),
                                     transition: Transition.rightToLeft,
                                     fullscreenDialog: true,
                                     popGesture: false,
