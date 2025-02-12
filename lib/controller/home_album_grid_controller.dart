@@ -22,6 +22,9 @@ class HomeAlbumGridController extends GetxController {
 
   var isLoading = true.obs;
   var isTapped = false.obs;
+  // Ini seharusnya ada di controller crud_playlist, tapi karena-
+  // crud_playlist bukan controller, maka isLoading dipindahkan ke sini. (Malas ubah) :v
+  var isLoadingAddPlaylist = false.obs;
 
   var alphabeticalList = RxList<Playlist>([]);
   var recentsList = RxList<Playlist>([]);

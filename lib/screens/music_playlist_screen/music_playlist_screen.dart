@@ -1,8 +1,12 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
+// Di-hide karena ada duplikasi nama Function.
+import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/add_playlist_screen.dart'
+    hide TextButton;
 import 'package:cybeat_music_player/widgets/music_playlist_widget/button_done.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_recently_added.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_saved_in.dart';
+import 'package:cybeat_music_player/widgets/music_playlist_widget/scale_tap.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -76,26 +80,36 @@ class MusicPlaylistScreen extends StatelessWidget {
                                     ? 0.0
                                     : 1.0,
                             child: Center(
-                              child: Container(
-                                margin:
-                                    const EdgeInsets.only(bottom: 40, top: 20),
-                                width: 150,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.8),
-                                  borderRadius: BorderRadius.circular(50),
-                                  border: Border.all(
+                              child: ScaleTap(
+                                onTap: () {
+                                  Get.to(
+                                    () => const AddPlaylistScreen(),
+                                    transition: Transition.rightToLeft,
+                                    fullscreenDialog: true,
+                                    popGesture: false,
+                                  );
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      bottom: 40, top: 20),
+                                  width: 150,
+                                  height: 50,
+                                  decoration: BoxDecoration(
                                     color: Colors.black.withOpacity(0.8),
-                                    width: 1,
+                                    borderRadius: BorderRadius.circular(50),
+                                    border: Border.all(
+                                      color: Colors.black.withOpacity(0.8),
+                                      width: 1,
+                                    ),
                                   ),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "New Playlist",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                  child: const Center(
+                                    child: Text(
+                                      "New Playlist",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -223,7 +237,8 @@ class MusicPlaylistScreen extends StatelessWidget {
           ),
         ),
         Obx(
-          () => musicPlaylistController.isLoadingGetMusicOnPlaylist.value
+          () => musicPlaylistController.isLoadingGetMusicOnPlaylist.value ||
+                  homeAlbumGridController.isLoadingAddPlaylist.value
               ? const Opacity(
                   opacity: 1,
                   child: ModalBarrier(dismissible: false, color: Colors.white),
@@ -231,7 +246,8 @@ class MusicPlaylistScreen extends StatelessWidget {
               : const SizedBox(),
         ),
         Obx(
-          () => musicPlaylistController.isLoadingGetMusicOnPlaylist.value
+          () => musicPlaylistController.isLoadingGetMusicOnPlaylist.value ||
+                  homeAlbumGridController.isLoadingAddPlaylist.value
               ? Center(
                   child: CircularProgressIndicator(
                     color: HexColor('#8238be'),
