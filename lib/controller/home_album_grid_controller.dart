@@ -355,10 +355,15 @@ class HomeAlbumGridController extends GetxController {
   }
 
   void removePlaylist(String uid) {
+    // Cari index dari playlist yang akan dihapus di dalam seluruh album/playlist.
     final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+    // Cari index dari playlist yang akan dihapus di dalam list playlist.
+    final indexPlaylist =
+        playlistCreatedList.indexWhere((playlist) => playlist.uid == uid);
 
     children.removeAt(index);
     selectedAlbum.removeAt(index);
+    playlistCreatedList.removeAt(indexPlaylist);
 
     isTapped.value = !isTapped.value;
   }
