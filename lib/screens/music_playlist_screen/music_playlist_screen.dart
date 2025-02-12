@@ -1,6 +1,8 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
-import 'package:cybeat_music_player/widgets/music_playlist_widget/list_playlist_container.dart';
+import 'package:cybeat_music_player/widgets/music_playlist_widget/button_done.dart';
+import 'package:cybeat_music_player/widgets/music_playlist_widget/list_recently_added.dart';
+import 'package:cybeat_music_player/widgets/music_playlist_widget/list_saved_in.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -167,29 +169,11 @@ class MusicPlaylistScreen extends StatelessWidget {
                                     ],
                                   ),
                                 // List playlist yang disimpan.
-                                ListView.builder(
-                                  shrinkWrap: true, // Agar ListView tidak error
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: homeAlbumGridController
-                                      .playlistCreatedList
-                                      .where((element) =>
-                                          musicPlaylistController
-                                              .savedInMusicList
-                                              .contains(element.uid))
-                                      .toList()
-                                      .length, // Playlist yang sudah disimpan.
-                                  itemBuilder: (context, index) {
-                                    return ListPlaylistContainer(
-                                      index: index,
-                                      listPlaylist: homeAlbumGridController
-                                          .playlistCreatedList
-                                          .where((element) =>
-                                              musicPlaylistController
-                                                  .savedInMusicList
-                                                  .contains(element.uid))
-                                          .toList(), // Playlist yang sudah disimpan.
-                                    );
-                                  },
+                                ListSavedIn(
+                                  homeAlbumGridController:
+                                      homeAlbumGridController,
+                                  musicPlaylistController:
+                                      musicPlaylistController,
                                 ),
                                 const SizedBox(
                                   height: 10,
@@ -216,29 +200,11 @@ class MusicPlaylistScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                ListView.builder(
-                                  shrinkWrap: true, // Agar ListView tidak error
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: homeAlbumGridController
-                                      .playlistCreatedList
-                                      .where((element) =>
-                                          !musicPlaylistController
-                                              .savedInMusicList
-                                              .contains(element.uid))
-                                      .toList()
-                                      .length, // Playlist yang belum disimpan.
-                                  itemBuilder: (context, index) {
-                                    return ListPlaylistContainer(
-                                      index: index,
-                                      listPlaylist: homeAlbumGridController
-                                          .playlistCreatedList
-                                          .where((element) =>
-                                              !musicPlaylistController
-                                                  .savedInMusicList
-                                                  .contains(element.uid))
-                                          .toList(), // Playlist yang belum disimpan.
-                                    );
-                                  },
+                                ListRecentlyAdded(
+                                  homeAlbumGridController:
+                                      homeAlbumGridController,
+                                  musicPlaylistController:
+                                      musicPlaylistController,
                                 ),
                               ],
                             ),
@@ -247,54 +213,9 @@ class MusicPlaylistScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Positioned(
-                    bottom: 20,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          musicPlaylistController.updateMusicOnPlaylist(
-                            idMusic: idMusic,
-                          );
-                        },
-                        child: Container(
-                          width: 100,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: HexColor('#8238be'),
-                            borderRadius: BorderRadius.circular(50),
-                            border: Border.all(
-                              color: HexColor('#8238be'),
-                              width: 1,
-                            ),
-                          ),
-                          child: Obx(
-                            () => Center(
-                              child: musicPlaylistController
-                                      .isLoadingUpdateMusicOnPlaylist.value
-                                  ? const SizedBox(
-                                      width: 30,
-                                      height: 30,
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.white),
-                                      ),
-                                    )
-                                  : const Text(
-                                      "Done",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  ButtonDone(
+                    musicPlaylistController: musicPlaylistController,
+                    idMusic: idMusic,
                   ),
                 ],
               ),
