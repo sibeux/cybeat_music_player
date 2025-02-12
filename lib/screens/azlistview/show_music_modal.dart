@@ -195,12 +195,17 @@ class ListTileBottomModal extends StatelessWidget {
             Get.back();
           case 'delete':
             // delete music
-            deleteMusicDialog(
-              context: context,
-              playlistPlayController: playlistPlayController,
-              mediaItem: mediaItem,
-              audioState: audioState,
-            );
+            if (playlistPlayController.playlistEditable.value == 'true') {
+              deleteMusicDialog(
+                context: context,
+                playlistPlayController: playlistPlayController,
+                mediaItem: mediaItem,
+                audioState: audioState,
+              );
+            } else {
+              showRemoveAlbumToast(
+                  'You have no permission to delete this music');
+            }
         }
       },
     );

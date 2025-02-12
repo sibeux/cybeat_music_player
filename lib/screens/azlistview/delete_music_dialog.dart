@@ -118,19 +118,17 @@ void deleteMusic(
   MediaItem mediaItem,
   AudioState audioState,
 ) async {
-  if (editable == 'true') {
-    if (type.toLowerCase() == 'offline') {
-      // delete music from offline
-      final musicDownloadController = Get.find<MusicDownloadController>();
-      await musicDownloadController.deleteSpecificFile(
-        mediaItem.extras?['url'],
-        mediaItem,
-        audioState,
-      );
-    }
-    showRemoveAlbumToast('Music has been deleted from the album');
-    Get.back();
-  } else {
-    showRemoveAlbumToast('You have no permission to delete this music');
+  if (type.toLowerCase() == 'offline') {
+    // delete music from offline
+    final musicDownloadController = Get.find<MusicDownloadController>();
+    await musicDownloadController.deleteSpecificFile(
+      mediaItem.extras?['url'],
+      mediaItem,
+      audioState,
+    );
+  } else if (type.toLowerCase() == 'playlist') {
+    // delete music from playlist
   }
+  showRemoveAlbumToast('Music has been deleted from the album');
+  Get.back();
 }

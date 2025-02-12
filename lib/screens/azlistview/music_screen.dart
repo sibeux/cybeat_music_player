@@ -68,16 +68,14 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       final musicDownloadController = Get.find<MusicDownloadController>();
       ever(musicDownloadController.rebuildDelete, (callback) {
         if (!context.mounted) return;
-        setState(() {
-
-        });
+        setState(() {});
       });
     }
     Widget content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // Menampilkan shimmer saat data sedang dimuat
+          // Menampilkan shimmer saat data sedang dimuat.
           return const ShimmerMusicList();
         }
         if (snapshot.hasData) {
@@ -126,7 +124,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
               ),
             ),
             itemBuilder: (context, index) {
-              // akan diprint terus saat scroll
+              // Akan di-print terus saat scroll.
               // print(index);
               return InkWell(
                 child: MusicList(
@@ -208,7 +206,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     }
 
     return PopScope(
-      // logic saat back button bawaan hp ditekan
+      // Logic saat back button bawaan hp ditekan.
       onPopInvoked: (didPop) {
         if (didPop) {
           if (playlistPlayController.playlistType.value.toLowerCase() ==
@@ -226,8 +224,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
             icon: const Icon(Icons.arrow_back_ios_rounded),
             tooltip: 'Menu',
             onPressed: () {
-              // on pressed ini berlaku saat icon  back button di-klik,
-              // tidak berlaku saat nav back button di-klik
+              // On pressed ini berlaku saat icon back button diklik.
+              // Tidak berlaku saat nav back button diklik.
               Get.back();
               if (playlistPlayController.playlistType.value.toLowerCase() ==
                   'offline') {
@@ -275,8 +273,11 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                                     onTap: () {
                                       if (snapshot.hasData &&
                                           sequence.isNotEmpty) {
-                                        _shuffleMusic(audioState, sequence,
-                                            playingStateController);
+                                        _shuffleMusic(
+                                          audioState,
+                                          sequence,
+                                          playingStateController,
+                                        );
                                       }
                                     },
                                     child: Container(
@@ -353,7 +354,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                           final currentItem = snapshot.data?.currentSource;
                           context.read<MusicState>().setCurrentMediaItem(
                               currentItem!.tag as MediaItem);
-
                           return FloatingPlayingMusic(
                             audioState: audioState,
                             currentItem: currentItem,
@@ -370,10 +370,16 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     );
   }
 
-  void _shuffleMusic(AudioState audioState, List<IndexedAudioSource> sequence,
-      PlayingStateController playingStateController) {
-    final index = random(0, audioState.playlist.length - 1);
-
+// logic untuk shuffle music.
+  void _shuffleMusic(
+    AudioState audioState,
+    List<IndexedAudioSource> sequence,
+    PlayingStateController playingStateController,
+  ) {
+    final index = audioState.playlist.length < 2
+        ? 0
+        : random(0, audioState.playlist.length - 1);
+    // Langsung buka detail screen.
     Get.to(
       () => MusicDetailScreen(
         player: audioState.player,
@@ -383,17 +389,18 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       popGesture: false,
       fullscreenDialog: true,
     );
-
-    audioState.player.seek(Duration.zero, index: index);
-
-    audioState.player.setAudioSource(audioState.playlist, initialIndex: index);
-
+    audioState.player.seek(
+      Duration.zero,
+      index: index,
+    );
+    audioState.player.setAudioSource(
+      audioState.playlist,
+      initialIndex: index,
+    );
     playingStateController.play();
-
     playlistPlayController.onPlaylistMusicPlay(
       audioState: audioState,
     );
-
     audioState.player.play();
   }
 

@@ -156,7 +156,12 @@ class MusicList extends StatelessWidget {
                 ),
                 onPressed: () {
                   showMusicModalBottom(
-                      context, mediaItem, audioPlayer, index, audioState);
+                    context,
+                    mediaItem,
+                    audioPlayer,
+                    index,
+                    audioState,
+                  );
                 },
               ),
               const SizedBox(

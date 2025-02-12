@@ -171,6 +171,15 @@ class AudioState extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteMusicFromPlaylist() async{
+    try {
+      
+    } catch (e) {
+      debugPrint('Error delete music from playlist: $e');
+    } finally{}
+  }
+
+
   Future<void> setSourceAudio(ConcatenatingAudioSource playlist) async {
     player.playbackEventStream.listen(
       (event) {},
