@@ -208,29 +208,23 @@ class MusicDownloadController extends GetxController {
           };
         }).toList();
 
+        // Ini berfungsi untuk memperbarui daftar musik offline.
+        // Karena di audiostate, daftar musik offline diambil dari {musicOfflineList.value}.
+        // Jadi, kita perlu memperbarui nilai {musicOfflineList.value} agar UI terupdate.
         musicOfflineList.value = list.map((e) => e).toList();
 
-        Playlist playlist = Playlist(
-          uid: 'offline',
-          title: 'Offline Music',
-          author: 'Nasrul Wahabi',
-          date: 'no date',
-          datePin: 'no date',
-          editable: 'true',
-          image: 'no image',
-          pin: 'false',
-          type: 'offline',
-        );
-
+        // Jika musik yang dihapus sedang diputar, hentikan pemutaran
         audioState.clear();
         playingStateController.pause();
-        audioState.init(playlist);
-        playlistPlayController.onPlaylist(playlist);
+        audioState.init(playlistPlayController.currentPlaylistPlay[0]);
+        playlistPlayController
+            .onPlaylist(playlistPlayController.currentPlaylistPlay[0]);
 
+        // Untuk memberitahu bahwa musik sudah tidak ada di offline,
+        // (Ikon centang downloaded hilang).
         mediaItem.extras!['is_downloaded'] = false;
 
         logger.d('File deleted: $filePath');
-        
         showRemoveAlbumToast('Music has been deleted from offline');
         Get.back();
       } else {
@@ -239,6 +233,7 @@ class MusicDownloadController extends GetxController {
     } catch (e) {
       logger.e('Error deleting file: $e');
     } finally {
+      // Ini dipakai agar musik di azlistview di-rebuild.
       rebuildDelete.value = !rebuildDelete.value;
     }
   }

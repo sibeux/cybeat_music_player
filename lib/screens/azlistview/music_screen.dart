@@ -63,14 +63,16 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Untuk menampilkan ulang list musik saat ada yang dihapus.
     if (playlistPlayController.playlistTitle.value.toLowerCase() ==
-        "offline music") {
+        "offline music" || playlistPlayController.playlistType.value.toLowerCase() == "playlist") {
       final musicDownloadController = Get.find<MusicDownloadController>();
       ever(musicDownloadController.rebuildDelete, (callback) {
         if (!context.mounted) return;
         setState(() {});
       });
     }
+
     Widget content = StreamBuilder<SequenceState?>(
       stream: audioState.player.sequenceStateStream,
       builder: (context, snapshot) {

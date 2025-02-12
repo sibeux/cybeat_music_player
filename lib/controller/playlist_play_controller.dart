@@ -13,11 +13,21 @@ class PlaylistPlayController extends GetxController {
   var playlistEditable = ''.obs;
   var needRebuild = false.obs;
 
+  var currentPlaylistPlay= RxList<Playlist>([]);
+
   void onPlaylist(Playlist playlist) {
     playlistTitle.value = playlist.title;
     playlistType.value = playlist.type.toUpperCase();
     playlistUid.value = playlist.uid;
     playlistEditable.value = playlist.editable;
+
+    // Setiap album/playlist yang di-play akan disimpan di currentPlaylistPlay.
+    // Isinya hanya 1, yaitu album/playlist yang sedang di-play.
+    if (currentPlaylistPlay.isNotEmpty) {
+      currentPlaylistPlay[0] = playlist;
+    } else {
+      currentPlaylistPlay.add(playlist);
+    }
   }
 
   Future<void> onPlaylistMusicPlay({required AudioState audioState}) async {

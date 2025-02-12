@@ -5,6 +5,7 @@ import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/controller/recents_music.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:flutter/foundation.dart';
@@ -202,7 +203,21 @@ class AudioState extends ChangeNotifier {
 
       if (responseBody['status'] == 'success') {
         debugPrint('Music has been deleted from the playlist: $responseBody');
-        
+        final playingStateController = Get.find<PlayingStateController>();
+        final playlistPlayController = Get.find<PlaylistPlayController>();
+
+        // * By default, daftar dari playlist tidak perlu update list lagi.
+        // * Karena saat musik dihapus, dia akan otomatis rebuild dan kembali fetch ke API.
+        // * Baiknya sebenarnya bisa pakai controller dan disimpan di dalam variable,
+        // * sehingga tidak perlu fetch lagi ke API.
+
+        // Hentikan musik dan bersihkan queue.
+        clear();
+        playingStateController.pause();
+        init(playlistPlayController.currentPlaylistPlay[0]);
+        playlistPlayController.onPlaylist(playlistPlayController.currentPlaylistPlay[0]);
+
+        // Tampilkan toast.
         showRemoveAlbumToast('Music has been deleted from the playlist');
         Get.back();
       } else {
@@ -210,6 +225,11 @@ class AudioState extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error delete music from playlist: $e');
+    } finally {
+      // Ini dipakai agar musik di azlistview di-rebuild.
+      final musicDownloadController = Get.find<MusicDownloadController>();
+      musicDownloadController.rebuildDelete.value =
+          !musicDownloadController.rebuildDelete.value;
     }
   }
 

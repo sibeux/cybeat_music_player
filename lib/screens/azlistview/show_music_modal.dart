@@ -16,7 +16,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 Future<dynamic> showMusicModalBottom(BuildContext context, MediaItem mediaItem,
-    AudioPlayer audioPlayer, int index, AudioState audioState) {
+    AudioPlayer audioPlayer, int index, AudioState audioState,) {
   final musicDownloadController = Get.find<MusicDownloadController>();
   return showMaterialModalBottomSheet(
     context: context,
