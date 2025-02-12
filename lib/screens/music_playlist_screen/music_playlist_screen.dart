@@ -238,7 +238,9 @@ class MusicPlaylistScreen extends StatelessWidget {
         ),
         Obx(
           () => musicPlaylistController.isLoadingGetMusicOnPlaylist.value ||
-                  homeAlbumGridController.isLoadingAddPlaylist.value
+                  homeAlbumGridController.isLoadingAddPlaylist.value ||
+                  homeAlbumGridController
+                      .isLoading.value // Ini loading pas di home screen.
               ? const Opacity(
                   opacity: 1,
                   child: ModalBarrier(dismissible: false, color: Colors.white),
@@ -247,7 +249,9 @@ class MusicPlaylistScreen extends StatelessWidget {
         ),
         Obx(
           () => musicPlaylistController.isLoadingGetMusicOnPlaylist.value ||
-                  homeAlbumGridController.isLoadingAddPlaylist.value
+                  homeAlbumGridController.isLoadingAddPlaylist.value ||
+                  homeAlbumGridController
+                      .isLoading.value // Ini loading pas di home screen.
               ? Center(
                   child: CircularProgressIndicator(
                     color: HexColor('#8238be'),

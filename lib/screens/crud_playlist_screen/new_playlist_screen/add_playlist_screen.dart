@@ -1,4 +1,5 @@
 import 'package:cybeat_music_player/controller/crud_playlist.dart';
+import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/scale_tap_button_new.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,7 +19,9 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
   @override
   void initState() {
     super.initState();
-    textController.text = 'New Playlist';
+    final homeAlbumGridController = Get.find<HomeAlbumGridController>();
+    textController.text =
+        'New Playlist #${homeAlbumGridController.playlistCreatedList.length + 1}';
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         textController.selection = TextSelection(
