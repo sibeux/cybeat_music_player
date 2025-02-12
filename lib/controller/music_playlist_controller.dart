@@ -108,7 +108,6 @@ class MusicPlaylistController extends GetxController {
       final responseBody = jsonDecode(response.body);
 
       if (responseBody['status'] == 'success') {
-        Get.back();
         showRemoveAlbumToast('Music has been added to the playlist');
       } else {
         debugPrint('Error updateMusicOnPlaylist: $responseBody');
@@ -117,6 +116,7 @@ class MusicPlaylistController extends GetxController {
       debugPrint('Error updateMusicOnPlaylist: $e');
     } finally {
       isLoadingUpdateMusicOnPlaylist.value = false;
+      Get.back();
     }
   }
 
