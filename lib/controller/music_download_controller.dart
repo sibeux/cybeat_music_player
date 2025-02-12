@@ -230,6 +230,9 @@ class MusicDownloadController extends GetxController {
         mediaItem.extras!['is_downloaded'] = false;
 
         logger.d('File deleted: $filePath');
+        
+        showRemoveAlbumToast('Music has been deleted from offline');
+        Get.back();
       } else {
         logger.e('File does not exist: $filePath');
       }

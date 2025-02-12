@@ -1,5 +1,4 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
@@ -128,7 +127,8 @@ void deleteMusic(
     );
   } else if (type.toLowerCase() == 'playlist') {
     // delete music from playlist
+    audioState.deleteMusicFromPlaylist(
+      idPlaylistMusic: mediaItem.extras?['id_playlist_music'],
+    );
   }
-  showRemoveAlbumToast('Music has been deleted from the album');
-  Get.back();
 }

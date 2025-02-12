@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/recents_music.dart';
@@ -144,13 +145,15 @@ class AudioState extends ChangeNotifier {
                     extras: {
                       'favorite': item['favorite'],
                       'music_id': item['id_music'],
+                      'id_playlist_music': item['id_playlist_music'] ?? '',
                       'url': filteredUrl(
                         item['link_gdrive'],
                         apiData[0]['gdrive_api'],
                       ),
-                      'is_downloaded': uidDownloadedSongs.contains(item['id_music'])
-                          ? true
-                          : false,
+                      'is_downloaded':
+                          uidDownloadedSongs.contains(item['id_music'])
+                              ? true
+                              : false,
                     },
                   ),
                 );
@@ -171,14 +174,44 @@ class AudioState extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteMusicFromPlaylist() async{
+  Future<void> deleteMusicFromPlaylist({
+    required String idPlaylistMusic,
+  }) async {
+    const url =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist';
+
     try {
-      
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json"
+        }, // Harus pakai JSON karena di file PHP,
+        // kita menggunakan json_decode().
+        body: jsonEncode({
+          'method': 'delete_music_on_playlist',
+          'id_playlist_music': idPlaylistMusic,
+        }),
+      );
+
+      if (response.body.isEmpty) {
+        debugPrint('Error: Response body is empty');
+        return;
+      }
+
+      final responseBody = jsonDecode(response.body);
+
+      if (responseBody['status'] == 'success') {
+        debugPrint('Music has been deleted from the playlist: $responseBody');
+        
+        showRemoveAlbumToast('Music has been deleted from the playlist');
+        Get.back();
+      } else {
+        debugPrint('Error deleteMusicFromPlaylist: $responseBody');
+      }
     } catch (e) {
       debugPrint('Error delete music from playlist: $e');
-    } finally{}
+    }
   }
-
 
   Future<void> setSourceAudio(ConcatenatingAudioSource playlist) async {
     player.playbackEventStream.listen(
