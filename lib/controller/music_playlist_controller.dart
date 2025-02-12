@@ -87,6 +87,16 @@ class MusicPlaylistController extends GetxController {
         setSaved.difference(setAdded).toList(); // Lagu yang harus dihapus
     List<int> toAdd =
         setAdded.difference(setSaved).toList(); // Lagu yang harus ditambahkan
+
+    // Cek apakah toRemove dan toAdd kosong.
+    // Jika kosong, maka tidak perlu melakukan request ke server.
+    // Karena tidak ada perubahan yang terjadi.
+    if (toRemove.isEmpty && toAdd.isEmpty) {
+      isLoadingUpdateMusicOnPlaylist.value = false;
+      Get.back();
+      return;
+    }
+
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -108,7 +118,13 @@ class MusicPlaylistController extends GetxController {
       final responseBody = jsonDecode(response.body);
 
       if (responseBody['status'] == 'success') {
-        showRemoveAlbumToast('Music has been added to the playlist');
+        if (toAdd.isNotEmpty && toRemove.isNotEmpty) {
+          showRemoveAlbumToast('Music has been updated on the playlist');
+        } else if (toAdd.isNotEmpty) {
+          showRemoveAlbumToast('Music has been added to the playlist');
+        } else if (toRemove.isNotEmpty) {
+          showRemoveAlbumToast('Music has been removed from the playlist');
+        }
       } else {
         debugPrint('Error updateMusicOnPlaylist: $responseBody');
       }

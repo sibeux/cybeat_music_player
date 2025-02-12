@@ -9,13 +9,15 @@ class ListPlaylistContainer extends StatelessWidget {
   const ListPlaylistContainer({
     super.key,
     required this.index,
+    required this.listPlaylist,
   });
 
   final int index;
+  final List listPlaylist;
 
   @override
   Widget build(BuildContext context) {
-    final homeAlbumGridController = Get.find<HomeAlbumGridController>();
+    Get.find<HomeAlbumGridController>();
     final musicPlaylistController = Get.find<MusicPlaylistController>();
     return Padding(
       padding: const EdgeInsets.only(top: 10),
@@ -32,7 +34,7 @@ class ListPlaylistContainer extends StatelessWidget {
               child: FourCoverAlbum(
                 size: 100,
                 type: 'playlist',
-                playlist: homeAlbumGridController.playlistCreatedList[index],
+                playlist: listPlaylist[index],
               ),
             ),
           ),
@@ -43,7 +45,7 @@ class ListPlaylistContainer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                homeAlbumGridController.playlistCreatedList[index].title,
+                listPlaylist[index].title,
                 maxLines: 1,
                 style: TextStyle(
                   fontSize: 14,
@@ -57,7 +59,7 @@ class ListPlaylistContainer extends StatelessWidget {
               ),
               Row(
                 children: [
-                  homeAlbumGridController.playlistCreatedList[index].pin ==
+                  listPlaylist[index].pin ==
                           'true'
                       ? Icon(
                           Icons.push_pin,
@@ -66,7 +68,7 @@ class ListPlaylistContainer extends StatelessWidget {
                         )
                       : Container(),
                   Text(
-                    homeAlbumGridController.playlistCreatedList[index].author,
+                    listPlaylist[index].author,
                     maxLines: 1,
                     style: TextStyle(
                       color: HexColor('#313031'),
@@ -83,19 +85,19 @@ class ListPlaylistContainer extends StatelessWidget {
             () => IconButton(
               onPressed: () {
                 if (musicPlaylistController.newAddedMusic.contains(
-                  homeAlbumGridController.playlistCreatedList[index].uid,
+                  listPlaylist[index].uid,
                 )) {
                   musicPlaylistController.tapRemoveMusicFromPlaylist(
-                    homeAlbumGridController.playlistCreatedList[index].uid,
+                    listPlaylist[index].uid,
                   );
                 } else {
                   musicPlaylistController.tapAddMusicToPlaylist(
-                    homeAlbumGridController.playlistCreatedList[index].uid,
+                    listPlaylist[index].uid,
                   );
                 }
               },
               icon: musicPlaylistController.newAddedMusic.contains(
-                homeAlbumGridController.playlistCreatedList[index].uid,
+                listPlaylist[index].uid,
               )
                   ? Icon(
                       Icons.check_circle,
