@@ -15,60 +15,60 @@ class SearchAlbumScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SearchAlbumController searchAlbumController =
-        Get.put(SearchAlbumController());
-    PlayingStateController playingStateController = Get.find();
+    final searchAlbumController = Get.put(SearchAlbumController());
+    final playingStateController = Get.find<PlayingStateController>();
 
     return Scaffold(
+      backgroundColor: HexColor('#fefffe'),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
         backgroundColor: HexColor('#fefffe'),
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: HexColor('#fefffe'),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: HexColor('#575757'),
-            ),
-            tooltip: 'Back',
-            onPressed: () {
-              // untuk menghilangkan keyboard
-              FocusManager.instance.primaryFocus?.unfocus();
-              searchAlbumController.isKeybordFocus.value
-                  ? Future.delayed(const Duration(milliseconds: 200), () {
-                      Get.back(
-                        closeOverlays: true,
-                      );
-                    })
-                  : Get.back(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: HexColor('#575757'),
+          ),
+          tooltip: 'Back',
+          onPressed: () {
+            // untuk menghilangkan keyboard
+            FocusManager.instance.primaryFocus?.unfocus();
+            searchAlbumController.isKeybordFocus.value
+                ? Future.delayed(const Duration(milliseconds: 200), () {
+                    Get.back(
                       closeOverlays: true,
                     );
-            },
-          ),
-          titleSpacing: 0,
-          title: TextFormField(
-            controller: searchAlbumController.controller,
-            cursorColor: HexColor('#575757'),
-            textAlignVertical: TextAlignVertical.center,
-            onChanged: (value) {
-              searchAlbumController.onChanged(value);
-            },
-            onTap: () {
-              searchAlbumController.isKeybordFocus.value = true;
-            },
-            style: TextStyle(color: HexColor('#575757'), fontSize: 12),
-            decoration: InputDecoration(
-              filled: true,
-              isDense: true,
-              fillColor: HexColor('#f1f1f1'),
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 7, horizontal: 7),
-              hintText: 'Search Your Library',
-              hintStyle: TextStyle(color: HexColor('#909191'), fontSize: 12),
-              suffixIconConstraints: const BoxConstraints(
-                minWidth: 30,
-                minHeight: 20,
-              ),
-              suffixIcon: Obx(() => searchAlbumController.isTypingValue
+                  })
+                : Get.back(
+                    closeOverlays: true,
+                  );
+          },
+        ),
+        titleSpacing: 0,
+        title: TextFormField(
+          controller: searchAlbumController.controller,
+          cursorColor: HexColor('#575757'),
+          textAlignVertical: TextAlignVertical.center,
+          onChanged: (value) {
+            searchAlbumController.onChanged(value);
+          },
+          onTap: () {
+            searchAlbumController.isKeybordFocus.value = true;
+          },
+          style: TextStyle(color: HexColor('#575757'), fontSize: 12),
+          decoration: InputDecoration(
+            filled: true,
+            isDense: true,
+            fillColor: HexColor('#f1f1f1'),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 7, horizontal: 7),
+            hintText: 'Search Your Library',
+            hintStyle: TextStyle(color: HexColor('#909191'), fontSize: 12),
+            suffixIconConstraints: const BoxConstraints(
+              minWidth: 30,
+              minHeight: 20,
+            ),
+            suffixIcon: Obx(
+              () => searchAlbumController.isTypingValue
                   ? GestureDetector(
                       onTap: () {
                         searchAlbumController.controller.clear();
@@ -79,82 +79,84 @@ class SearchAlbumScreen extends StatelessWidget {
                         color: HexColor('#575757'),
                       ),
                     )
-                  : const SizedBox.shrink()),
-              enabledBorder: outlineInputBorder(),
-              focusedBorder: outlineInputBorder(),
+                  : const SizedBox.shrink(),
+            ),
+            enabledBorder: outlineInputBorder(),
+            focusedBorder: outlineInputBorder(),
+          ),
+        ),
+        actions: const [
+          SizedBox(
+            width: 20,
+          )
+        ],
+        toolbarHeight: 100,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                Obx(
+                  () => searchAlbumController.isTypingValue
+                      ? searchAlbumController.textValue.value.trim().isEmpty
+                          ? albumEmpty(searchAlbumController.textValue.value)
+                          : searchAlbumController.isSearch.value
+                              ? searchAlbumController.filteredAlbum.isEmpty
+                                  ? albumEmpty(
+                                      searchAlbumController.textValue.value)
+                                  : SearchAlbumList(audioState: audioState)
+                              : searchAlbumController.filteredAlbum.isEmpty
+                                  ? albumEmpty(
+                                      searchAlbumController.textValue.value)
+                                  : SearchAlbumList(audioState: audioState)
+                      : initialChild(),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 1),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 2,
+                        blurRadius: 2,
+                        offset:
+                            const Offset(0, 1), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Divider(
+                    color: Colors.grey.withOpacity(0.3),
+                    thickness: 2,
+                    height: 0,
+                  ),
+                ),
+              ],
             ),
           ),
-          actions: const [
-            SizedBox(
-              width: 20,
-            )
-          ],
-          toolbarHeight: 100,
-          scrolledUnderElevation: 0,
-          elevation: 0,
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  Obx(
-                    () => searchAlbumController.isTypingValue
-                        ? searchAlbumController.textValue.value.trim().isEmpty
-                            ? albumEmpty(searchAlbumController.textValue.value)
-                            : searchAlbumController.isSearch.value
-                                ? searchAlbumController.filteredAlbum.isEmpty
-                                    ? albumEmpty(
-                                        searchAlbumController.textValue.value)
-                                    : SearchAlbumList(audioState: audioState)
-                                : searchAlbumController.filteredAlbum.isEmpty
-                                    ? albumEmpty(
-                                        searchAlbumController.textValue.value)
-                                    : SearchAlbumList(audioState: audioState)
-                        : initialChild(),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 1),
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 2,
-                          offset:
-                              const Offset(0, 1), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: Divider(
-                      color: Colors.grey.withOpacity(0.3),
-                      thickness: 2,
-                      height: 0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Obx(
-              () => playingStateController.isPlaying.value
-                  ? StreamBuilder<SequenceState?>(
-                      stream: audioState.player.sequenceStateStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          final currentItem = snapshot.data?.currentSource;
+          Obx(
+            () => playingStateController.isPlaying.value
+                ? StreamBuilder<SequenceState?>(
+                    stream: audioState.player.sequenceStateStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final currentItem = snapshot.data?.currentSource;
 
-                          return FloatingPlayingMusic(
-                            audioState: audioState,
-                            currentItem: currentItem,
-                          );
-                        }
-                        return const SizedBox();
-                      },
-                    )
-                  : const SizedBox(),
-            ),
-          ],
-        ));
+                        return FloatingPlayingMusic(
+                          audioState: audioState,
+                          currentItem: currentItem,
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  )
+                : const SizedBox(),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget albumEmpty(String value) {
