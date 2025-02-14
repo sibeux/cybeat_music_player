@@ -82,7 +82,7 @@ class MusicPlaylistScreen extends StatelessWidget {
                                 onTap: () {
                                   Get.to(
                                     () => const NewPlaylistScreen(),
-                                    transition: Transition.rightToLeft,
+                                    transition: Transition.downToUp,
                                     fullscreenDialog: true,
                                     popGesture: false,
                                   );

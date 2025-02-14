@@ -250,6 +250,8 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
           ),
           transition: Transition.downToUp,
           duration: const Duration(milliseconds: 300),
+          popGesture: false,
+          fullscreenDialog: true,
         );
       },
     );
