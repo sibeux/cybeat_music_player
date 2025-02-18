@@ -20,7 +20,6 @@ class SplashHomeScreen extends StatefulWidget {
 class _SplashHomeScreenState extends State<SplashHomeScreen> {
   final sortPreferencesController = Get.put(SortPreferencesController());
   final homeAlbumGridController = Get.put(HomeAlbumGridController());
-  
 
   @override
   void initState() {
@@ -29,16 +28,14 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
   }
 
   Future<void> initialization() async {
-    // This is where you can initialize the resources needed by your app while
-    // the splash screen is displayed.  Remove the following example because
-    // delaying the user experience is a bad design practice!
-    // ignore_for_file: avoid_print
-
+    // Menghilangkan splash screen
+    FlutterNativeSplash.remove();
+    // Ambil data filter sort dari Shared Preferences
     await sortPreferencesController.getSortBy();
+    // Ambil data album dari database
     await homeAlbumGridController.initializeAlbum();
     Get.put(MusicDownloadController());
 
-    FlutterNativeSplash.remove();
     // print('ready in 3...');
     // await Future.delayed(const Duration(seconds: 1));
     // print('ready in 2...');
