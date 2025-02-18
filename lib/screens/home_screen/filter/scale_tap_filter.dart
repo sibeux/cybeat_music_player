@@ -75,6 +75,8 @@ class ScaleTapFilterState extends State<ScaleTapFilter>
         } else if (widget.filter ==
                 filterAlbumCOntroller.selectedFilter.value ||
             widget.filter == 'cancel') {
+          // Reset filter jika filter yang dipilih sama dengan filter yang dipilih sebelumnya,
+          // atau filter yang dipilih adalah cancel.
           filterAlbumCOntroller.onResetFilter();
         }
         _restoreButtonSize();

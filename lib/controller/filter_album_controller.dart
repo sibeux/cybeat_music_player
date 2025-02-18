@@ -48,7 +48,7 @@ class FilterAlbumController extends GetxController {
   var children = RxList([0, 1, 2]);
   var selectedFilter = ''.obs;
   var isTapped = false.obs;
-  final homeAlbumGridController = Get.put(HomeAlbumGridController());
+  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
 
   Future<void> onTapFilter({required String filter}) async {
     var index =
@@ -66,6 +66,29 @@ class FilterAlbumController extends GetxController {
 
     isTapped.value = !isTapped.value;
     selectedFilter.value = filter;
+
+    // * Ini sebagai alternatif filter tipe album, agar tidak fetch data ulang
+    // switch (filter) {
+    //   case 'playlist':
+    //     homeAlbumGridController.initiateAlbum.value =
+    //         homeAlbumGridController.playlistCreatedList;
+    //     homeAlbumGridController.selectedAlbum.value =
+    //         homeAlbumGridController.playlistCreatedList;
+    //     break;
+    //   case 'album':
+    //     homeAlbumGridController.initiateAlbum.value =
+    //         homeAlbumGridController.onlyAlbumList;
+    //     homeAlbumGridController.selectedAlbum.value =
+    //         homeAlbumGridController.onlyAlbumList;
+    //     break;
+    //   case 'category':
+    //     homeAlbumGridController.initiateAlbum.value =
+    //         homeAlbumGridController.onlyCategoryList;
+    //     homeAlbumGridController.selectedAlbum.value =
+    //         homeAlbumGridController.onlyCategoryList;
+    //     break;
+    // }
+
     homeAlbumGridController.initializeAlbum();
   }
 
@@ -88,6 +111,13 @@ class FilterAlbumController extends GetxController {
 
     isTapped.value = !isTapped.value;
     selectedFilter.value = '';
+
+    // * Ini sebagai alternatif filter tipe album, agar tidak fetch data ulang
+    // homeAlbumGridController.initiateAlbum.value =
+    //     homeAlbumGridController.allAlbumList;
+    // homeAlbumGridController.selectedAlbum.value =
+    //     homeAlbumGridController.allAlbumList;
+
     homeAlbumGridController.initializeAlbum();
   }
 

@@ -29,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _gridViewKey = GlobalKey();
-  final _homeAlbumGridController = Get.put(HomeAlbumGridController());
+  final _homeAlbumGridController = Get.find<HomeAlbumGridController>();
   final _scrollController = ScrollController();
 
   @override
@@ -152,8 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 10,
                 ),
                 Obx(
-                  // dalam kasus ini, harus pakai 2 karena perlu rebuild widget
-                  // bisa harusnya satu widget aja, tapi benahi kode dulu
+                  // Dalam kasus ini, harus pakai 2 karena perlu rebuild widget,
+                  // bisa harusnya satu widget aja, tapi benahi kode dulu.
                   () => filterAlbumController.isTapped.value
                       ? const GridFilter()
                       : const GridFilter(),
@@ -299,7 +299,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         final currentItem = snapshot.data?.currentSource;
-
                         return FloatingPlayingMusic(
                           audioState: widget.audioState,
                           currentItem: currentItem,
@@ -341,23 +340,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _getGeneratedChildren() {
-    final initiateAlbum = _homeAlbumGridController.selectedAlbum;
     return List<Widget>.generate(
-      initiateAlbum.length >= 15
+      _homeAlbumGridController.selectedAlbum.length >= 15
           ? _homeAlbumGridController.jumlahDitampilkan.value
-          : initiateAlbum.length,
+          : _homeAlbumGridController.selectedAlbum.length,
       (index) => _getChild(index: index),
     );
   }
 
   Widget _getChild({required int index}) {
-    final children = _homeAlbumGridController.children;
-    final initiateAlbum = _homeAlbumGridController.initiateAlbum;
     return CustomDraggable(
-      key: Key(children[index].toString()),
+      key: Key(_homeAlbumGridController.children[index].toString()),
       data: index,
       child: ScaleTapPlaylist(
-        playlist: initiateAlbum[(children[index])],
+        playlist: _homeAlbumGridController
+            .initiateAlbum[(_homeAlbumGridController.children[index])],
         audioState: widget.audioState,
       ),
     );

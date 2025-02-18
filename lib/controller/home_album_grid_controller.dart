@@ -26,12 +26,17 @@ class HomeAlbumGridController extends GetxController {
   // crud_playlist bukan controller, maka isLoading dipindahkan ke sini. (Malas ubah) :v
   var isLoadingAddPlaylist = false.obs;
 
-  var alphabeticalList = RxList<Playlist>([]);
-  var recentsList = RxList<Playlist>([]);
-  var initiateAlbum = RxList<Playlist>([]); // diakses oleh home_screen.dart
-
+  var alphabeticalList = RxList<Playlist>([]); // Semua album diurutkan berdasarkan judul
+  var recentsList = RxList<Playlist>([]); // Semua album diurutkan berdasarkan terbaru
+  var allAlbumList = RxList<Playlist>([]); // Semua album yang ada
+  var onlyCategoryList = RxList<Playlist>([]); // Hanya album yang bertipe category
+  var onlyAlbumList = RxList<Playlist>([]); // Hanya album yang bertipe album
+  // Ini adalah daftar playlist yang dibuat oleh user.
   var playlistCreatedList =
       RxList<Playlist>([]); // diakses oleh music_playlist_screen.dart
+
+  // Ini adalah daftar list yang akan ditampilkan di home screen.
+  var initiateAlbum = RxList<Playlist>([]); // diakses oleh home_screen.dart
 
   var fourCoverCategory = RxList<dynamic>([]);
   var fourCoverPlaylist = RxList<dynamic>([]);
@@ -255,10 +260,19 @@ class HomeAlbumGridController extends GetxController {
 
       // ini mesti harus ada
       updateChildren(list);
+      onlyAlbumList.value = list
+          .where((playlist) => playlist.type.toLowerCase() == 'album')
+          .toList();
+      onlyCategoryList.value = list
+          .where((playlist) => playlist.type.toLowerCase() == 'category')
+          .toList();
       playlistCreatedList.value = list
           .where((playlist) => playlist.type.toLowerCase() == 'playlist')
           .toList();
+          
+      // Semua album yang ada dimasukkan ke dalam sini.
       initiateAlbum.value = list;
+      allAlbumList.value = list;
     } catch (e) {
       if (kDebugMode) {
         print('Error: $e');
