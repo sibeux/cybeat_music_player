@@ -6,7 +6,8 @@ String capitalizeEachWord(String input) {
   var unescape = HtmlUnescape();
   input = (unescape.convert(input));
 
-  // * Ini untuk mengubah setiap kata menjadi kapital di awal kata
+  // * Ini untuk mengubah setiap kata menjadi kapital di awal kata.
+  // * Pakai method capitalize() yang sudah dibuat di bawah.
   // * Contoh: "hello world" -> "Hello World"
   // return input
   //     .split(' ')
