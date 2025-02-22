@@ -26,10 +26,13 @@ class HomeAlbumGridController extends GetxController {
   // crud_playlist bukan controller, maka isLoading dipindahkan ke sini. (Malas ubah) :v
   var isLoadingAddPlaylist = false.obs;
 
-  var alphabeticalList = RxList<Playlist>([]); // Semua album diurutkan berdasarkan judul
-  var recentsList = RxList<Playlist>([]); // Semua album diurutkan berdasarkan terbaru
+  var alphabeticalList =
+      RxList<Playlist>([]); // Semua album diurutkan berdasarkan judul
+  var recentsList =
+      RxList<Playlist>([]); // Semua album diurutkan berdasarkan terbaru
   var allAlbumList = RxList<Playlist>([]); // Semua album yang ada
-  var onlyCategoryList = RxList<Playlist>([]); // Hanya album yang bertipe category
+  var onlyCategoryList =
+      RxList<Playlist>([]); // Hanya album yang bertipe category
   var onlyAlbumList = RxList<Playlist>([]); // Hanya album yang bertipe album
   // Ini adalah daftar playlist yang dibuat oleh user.
   var playlistCreatedList =
@@ -241,7 +244,7 @@ class HomeAlbumGridController extends GetxController {
           image: item['image'] == null
               ? ''
               : regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
-          type: capitalizeEachWord(item['type']),
+          type: (item['type']).toString().capitalizeFirst!,
           author: item['type'] == 'album'
               ? capitalizeEachWord(item['author'])
               : item['type'] == 'favorite'
@@ -269,7 +272,7 @@ class HomeAlbumGridController extends GetxController {
       playlistCreatedList.value = list
           .where((playlist) => playlist.type.toLowerCase() == 'playlist')
           .toList();
-          
+
       // Semua album yang ada dimasukkan ke dalam sini.
       initiateAlbum.value = list;
       allAlbumList.value = list;

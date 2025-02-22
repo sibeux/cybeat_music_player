@@ -6,11 +6,15 @@ String capitalizeEachWord(String input) {
   var unescape = HtmlUnescape();
   input = (unescape.convert(input));
 
-  return input
-      .split(' ')
-      .where((word) => word.isNotEmpty)
-      .map((word) => word.capitalize())
-      .join(' ');
+  // * Ini untuk mengubah setiap kata menjadi kapital di awal kata
+  // * Contoh: "hello world" -> "Hello World"
+  // return input
+  //     .split(' ')
+  //     .where((word) => word.isNotEmpty)
+  //     .map((word) => word.capitalize())
+  //     .join(' ');
+
+  return input;
 }
 
 extension StringExtension on String {
