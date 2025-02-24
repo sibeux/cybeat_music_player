@@ -6,7 +6,9 @@ import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/screens/azlistview/show_music_modal.dart';
 import 'package:cybeat_music_player/widgets/spectrum_animation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
@@ -66,26 +68,46 @@ class MusicList extends StatelessWidget {
               ),
               // cover image
               Container(
-                width: 40,
-                height: 40,
+                width: 45,
+                height: 45,
                 margin: const EdgeInsets.only(right: 5),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  child: CachedNetworkImage(
-                    imageUrl: mediaItem.artUri.toString(),
-                    fit: BoxFit.cover,
-                    maxHeightDiskCache: 150,
-                    maxWidthDiskCache: 150,
-                    filterQuality: FilterQuality.low,
-                    placeholder: (context, url) => Image.asset(
-                      'assets/images/placeholder_cover_music.png',
-                      fit: BoxFit.cover,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(5)),
+                        child: CachedNetworkImage(
+                          imageUrl: mediaItem.artUri.toString(),
+                          fit: BoxFit.cover,
+                          maxHeightDiskCache: 150,
+                          maxWidthDiskCache: 150,
+                          filterQuality: FilterQuality.low,
+                          placeholder: (context, url) => Image.asset(
+                            'assets/images/placeholder_cover_music.png',
+                            fit: BoxFit.cover,
+                          ),
+                          errorWidget: (context, url, error) => Image.asset(
+                            'assets/images/placeholder_cover_music.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
-                    errorWidget: (context, url, error) => Image.asset(
-                      'assets/images/placeholder_cover_music.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Image.asset(
+                        'assets/images/badge-en-lossless.png',
+                        fit: BoxFit.cover,
+                        width: 30,
+                        height: 30,
+                      ),
+                    )
+                  ],
                 ),
               ),
               const SizedBox(
