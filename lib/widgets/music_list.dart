@@ -6,14 +6,13 @@ import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
 import 'package:cybeat_music_player/screens/azlistview/show_music_modal.dart';
 import 'package:cybeat_music_player/widgets/spectrum_animation.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:path/path.dart' as path;
 
 class MusicList extends StatelessWidget {
   const MusicList({
@@ -97,16 +96,21 @@ class MusicList extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Image.asset(
-                        'assets/images/badge-en-lossless.png',
-                        fit: BoxFit.cover,
-                        width: 30,
-                        height: 30,
-                      ),
-                    )
+                    if (path
+                            .extension(mediaItem.extras!['url'].toString())
+                            .replaceFirst('.', '')
+                            .toLowerCase() !=
+                        'mp3')
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Image.asset(
+                          'assets/images/badge-en-lossless.png',
+                          fit: BoxFit.cover,
+                          width: 30,
+                          height: 30,
+                        ),
+                      )
                   ],
                 ),
               ),
