@@ -50,6 +50,8 @@ class MusicList extends StatelessWidget {
       indexIcon = const SpectrumAnimation();
     }
 
+    const lossyFormats = ['mp3', 'aac', 'ogg', 'opus', 'wma'];
+
     return SizedBox(
       height: 70,
       width: double.infinity,
@@ -96,11 +98,10 @@ class MusicList extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (path
-                            .extension(mediaItem.extras!['url'].toString())
-                            .replaceFirst('.', '')
-                            .toLowerCase() !=
-                        'mp3')
+                    if (!lossyFormats.contains(path
+                        .extension(mediaItem.extras!['url'].toString())
+                        .replaceFirst('.', '')
+                        .toLowerCase()))
                       Positioned(
                         right: 0,
                         top: 0,
@@ -118,59 +119,49 @@ class MusicList extends StatelessWidget {
                 width: 2,
               ),
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 230,
-                      height: 30,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
+                child: SizedBox(
+                  height: 45,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
                         capitalizeEachWord(mediaItem.title),
                         style: TextStyle(
-                            fontSize: 16,
-                            color: HexColor(colorTitle),
-                            overflow: TextOverflow.ellipsis,
-                            fontWeight: FontWeight.w500),
+                          fontSize: 14,
+                          color: HexColor(colorTitle),
+                          overflow: TextOverflow.ellipsis,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 230,
-                      height: 20,
-                      child: Row(
+                      Row(
                         children: [
                           Container(
                             alignment: Alignment.centerLeft,
-                            width: 10,
-                            height: 30,
                             child: Icon(
                               Icons.audiotrack_outlined,
                               color: HexColor('#b4b5b4'),
                               size: 15,
                             ),
                           ),
-                          const SizedBox(
-                            width: 7,
-                          ),
                           Expanded(
-                              child: Container(
-                            width: 30,
-                            height: 30,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: HexColor('#b4b5b4'),
-                                overflow: TextOverflow.ellipsis,
-                                fontWeight: FontWeight.values[4],
+                            child: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: HexColor('#b4b5b4'),
+                                  overflow: TextOverflow.ellipsis,
+                                  fontWeight: FontWeight.values[4],
+                                ),
+                                '${capitalizeEachWord(mediaItem.artist!)} | ${capitalizeEachWord(mediaItem.album!)}',
                               ),
-                              '${capitalizeEachWord(mediaItem.artist!)} | ${capitalizeEachWord(mediaItem.album!)}',
                             ),
-                          )),
+                          ),
                         ],
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ),
               IconButton(
