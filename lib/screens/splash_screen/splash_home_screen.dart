@@ -1,5 +1,6 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
+import 'package:cybeat_music_player/controller/read_codec_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/home_screen.dart';
@@ -35,6 +36,7 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
     // Ambil data album dari database
     await homeAlbumGridController.initializeAlbum();
     Get.put(MusicDownloadController());
+    Get.put(ReadCodecController());
 
     // print('ready in 3...');
     // await Future.delayed(const Duration(seconds: 1));

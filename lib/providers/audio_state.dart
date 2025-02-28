@@ -6,6 +6,7 @@ import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
+import 'package:cybeat_music_player/controller/read_codec_controller.dart';
 import 'package:cybeat_music_player/controller/recents_music.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:flutter/foundation.dart';
@@ -57,6 +58,10 @@ class AudioState extends ChangeNotifier {
           if (item.extras?['music_id'] != uid) {
             uid = item.extras!['music_id'];
             setRecentsMusic(item.extras!['music_id']);
+
+            // Untuk read codec file.
+            final readCodecController = Get.find<ReadCodecController>();
+            readCodecController.onReadCodec(item.extras!['url']);
           }
         }
       },

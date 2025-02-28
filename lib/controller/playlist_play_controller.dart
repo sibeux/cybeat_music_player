@@ -13,7 +13,7 @@ class PlaylistPlayController extends GetxController {
   var playlistEditable = ''.obs;
   var needRebuild = false.obs;
 
-  var currentPlaylistPlay= RxList<Playlist>([]);
+  var currentPlaylistPlay = RxList<Playlist>([]);
 
   void onPlaylist(Playlist playlist) {
     playlistTitle.value = playlist.title;
@@ -30,10 +30,12 @@ class PlaylistPlayController extends GetxController {
     }
   }
 
-  Future<void> onPlaylistMusicPlay({required AudioState audioState}) async {
+  Future<void> onPlaylistMusicPlay({
+    required AudioState audioState,
+  }) async {
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?play_playlist=${playlistUid.value}';
-        
+
     needRebuild.value = true;
 
     try {
