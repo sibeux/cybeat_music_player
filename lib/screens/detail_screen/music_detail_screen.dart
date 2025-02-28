@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/appbar_title.dart';
+import 'package:cybeat_music_player/widgets/detail_music_widget/codec_info.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/cover_detail_music.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/favorite_button.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/control_buttons.dart';
@@ -136,7 +137,14 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 40,
+                  height: 20,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: CodecInfo(),
+                ),
+                const SizedBox(
+                  height: 20,
                 ),
                 // to create one straight line
                 // child: Divider(
