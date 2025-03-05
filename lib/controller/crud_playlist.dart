@@ -6,6 +6,14 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
+class CrudPlaylistController extends GetxController{
+  var namePlaylist = ''.obs;
+
+  void onChange(String value) {
+    namePlaylist.value = value;
+  }
+}
+
 void addNewPlaylist(String name) async {
   final homeAlbumGridController = Get.find<HomeAlbumGridController>();
   homeAlbumGridController.isLoadingAddPlaylist.value = true;

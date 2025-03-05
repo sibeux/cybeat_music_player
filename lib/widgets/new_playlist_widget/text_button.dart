@@ -8,10 +8,12 @@ class TextButton extends StatelessWidget {
     super.key,
     required this.title,
     required this.textController,
+    this.isDisable = false,
   });
 
   final String title;
   final TextEditingController textController;
+  final bool isDisable;
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +34,16 @@ class TextButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: title == 'Cancel'
               ? Colors.black.withOpacity(0)
-              : HexColor('#ac8bc9'),
+              : isDisable
+                  ? Colors.grey
+                  : HexColor('#ac8bc9'),
           borderRadius: BorderRadius.circular(50),
           border: Border.all(
             color: title == 'Cancel'
                 ? Colors.black.withOpacity(0.6)
-                : HexColor('#ac8bc9'),
+                : isDisable
+                    ? Colors.grey
+                    : HexColor('#ac8bc9'),
             width: 1,
           ),
         ),

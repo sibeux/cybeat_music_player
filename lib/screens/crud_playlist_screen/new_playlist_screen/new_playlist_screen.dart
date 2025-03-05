@@ -1,3 +1,4 @@
+import 'package:cybeat_music_player/controller/crud_playlist.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/scale_tap_button_new.dart';
 // Di-as karena ada duplikasi function.
@@ -17,12 +18,17 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
   final FocusNode _focusNode = FocusNode();
   final textController = TextEditingController();
 
+  final crudPlaylistController = Get.put(CrudPlaylistController());
+
   @override
   void initState() {
     super.initState();
     final homeAlbumGridController = Get.find<HomeAlbumGridController>();
     textController.text =
         'New Playlist #${homeAlbumGridController.playlistCreatedList.length + 1}';
+    // Set nama playlist ke controller.
+    crudPlaylistController.onChange(textController.text);
+    // Biar auto select text.
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         textController.selection = TextSelection(
@@ -81,6 +87,9 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                       controller: textController,
                       autofocus: true,
                       focusNode: _focusNode,
+                      onChanged: (value) {
+                        crudPlaylistController.onChange(value);
+                      },
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 30,
@@ -111,11 +120,23 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                       ),
                     ),
                     const SizedBox(width: 20),
-                    ScaleTapButtonNewPlaylist(
-                      child: text_button.TextButton(
-                        title: 'Create',
-                        textController: textController,
-                      ),
+                    Obx(
+                      () => crudPlaylistController.namePlaylist.value.isEmpty
+                          ? AbsorbPointer(
+                              child: ScaleTapButtonNewPlaylist(
+                                child: text_button.TextButton(
+                                  title: 'Create',
+                                  isDisable: true,
+                                  textController: textController,
+                                ),
+                              ),
+                            )
+                          : ScaleTapButtonNewPlaylist(
+                              child: text_button.TextButton(
+                                title: 'Create',
+                                textController: textController,
+                              ),
+                            ),
                     ),
                   ],
                 ),
