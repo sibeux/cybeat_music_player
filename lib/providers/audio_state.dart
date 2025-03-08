@@ -217,6 +217,8 @@ class AudioState extends ChangeNotifier {
         // * sehingga tidak perlu fetch lagi ke API.
 
         // Hentikan musik dan bersihkan queue.
+        // Harus ada ini agar azlistview di-rebuild.
+        // Bagian ini berfungsi untuk fetch ulang data list musik dari API.
         clear();
         playingStateController.pause();
         init(playlistPlayController.currentPlaylistPlay[0]);
@@ -231,7 +233,7 @@ class AudioState extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error delete music from playlist: $e');
     } finally {
-      // Ini dipakai agar musik di azlistview di-rebuild.
+      // Baru setelah di-fetch, azlist di-rebuild pakai ini.
       final musicDownloadController = Get.find<MusicDownloadController>();
       musicDownloadController.rebuildDelete.value =
           !musicDownloadController.rebuildDelete.value;

@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/components/toast.dart';
+import 'package:cybeat_music_player/controller/music_download_controller.dart';
+import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/models/music_playlist.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -70,23 +74,29 @@ class MusicPlaylistController extends GetxController {
     }
   }
 
-  Future<void> updateMusicOnPlaylist({required String idMusic}) async {
+  Future<void> updateMusicOnPlaylist({
+    required String idMusic,
+    required AudioState audioState,
+  }) async {
     isLoadingUpdateMusicOnPlaylist.value = true;
 
     const url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist';
 
-    // Menghitung perbedaan
+    // Ini adalah ID playlist, bukan ID music.
+    // Menghitung perbedaan.
     Set<String> setStrSaved = savedInMusicList.toSet();
     Set<String> setStrAdded = newAddedMusic.toSet();
 
     Set<int> setSaved = setStrSaved.map((e) => int.parse(e)).toSet();
     Set<int> setAdded = setStrAdded.map((e) => int.parse(e)).toSet();
 
-    List<int> toRemove =
-        setSaved.difference(setAdded).toList(); // Lagu yang harus dihapus
-    List<int> toAdd =
-        setAdded.difference(setSaved).toList(); // Lagu yang harus ditambahkan
+    List<int> toRemove = setSaved
+        .difference(setAdded)
+        .toList(); // Lagu yang harus dihapus dari playlist
+    List<int> toAdd = setAdded
+        .difference(setSaved)
+        .toList(); // Lagu yang harus ditambahkan ke playlist
 
     // Cek apakah toRemove dan toAdd kosong.
     // Jika kosong, maka tidak perlu melakukan request ke server.
@@ -116,6 +126,7 @@ class MusicPlaylistController extends GetxController {
       }
 
       final responseBody = jsonDecode(response.body);
+      debugPrint('Response updateMusicOnPlaylist: $responseBody');
 
       if (responseBody['status'] == 'success') {
         if (toAdd.isNotEmpty && toRemove.isNotEmpty) {
@@ -132,6 +143,26 @@ class MusicPlaylistController extends GetxController {
       debugPrint('Error updateMusicOnPlaylist: $e');
     } finally {
       isLoadingUpdateMusicOnPlaylist.value = false;
+      // Jika musik dihapus dari playlist, maka kita perlu menghapus
+      // musik tersebut dari AZListView.
+      final playingStateController = Get.find<PlayingStateController>();
+      final playlistPlayController = Get.find<PlaylistPlayController>();
+      if (toRemove
+          .contains(int.parse(playlistPlayController.playlistUidValue))) {
+        // Hentikan musik dan bersihkan queue.
+        // Harus ada ini agar azlistview di-rebuild.
+        // Bagian ini berfungsi untuk fetch ulang data list musik dari API.
+        audioState.clear();
+        playingStateController.pause();
+        audioState.init(playlistPlayController.currentPlaylistPlay[0]);
+        playlistPlayController
+            .onPlaylist(playlistPlayController.currentPlaylistPlay[0]);
+
+        // Baru setelah di-fetch, azlist di-rebuild pakai ini.
+        final musicDownloadController = Get.find<MusicDownloadController>();
+        musicDownloadController.rebuildDelete.value =
+            !musicDownloadController.rebuildDelete.value;
+      }
       Get.back();
     }
   }

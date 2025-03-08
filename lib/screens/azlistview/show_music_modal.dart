@@ -183,6 +183,7 @@ class ListTileBottomModal extends StatelessWidget {
             Get.to(
               () => MusicPlaylistScreen(
                 idMusic: mediaItem.extras?['music_id'],
+                audioState: audioState,
               ),
               transition: Transition.downToUp,
               fullscreenDialog: true,

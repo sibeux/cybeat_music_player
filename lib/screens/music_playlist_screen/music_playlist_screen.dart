@@ -1,5 +1,6 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/new_playlist_screen.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/button_done.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_recently_added.dart';
@@ -11,9 +12,14 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class MusicPlaylistScreen extends StatelessWidget {
-  const MusicPlaylistScreen({super.key, required this.idMusic});
+  const MusicPlaylistScreen({
+    super.key,
+    required this.idMusic,
+    required this.audioState,
+  });
 
   final String idMusic;
+  final AudioState audioState;
 
   @override
   Widget build(BuildContext context) {
@@ -71,72 +77,71 @@ class MusicPlaylistScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Obx(
-                          () => AnimatedOpacity(
+                          () => AnimatedSwitcher(
                             duration: const Duration(milliseconds: 200),
-                            opacity:
-                                musicPlaylistController.searchBarTapped.value
-                                    ? 0.0
-                                    : 1.0,
-                            child: Center(
-                              child: ScaleTap(
-                                onTap: () {
-                                  Get.to(
-                                    () => const NewPlaylistScreen(),
-                                    transition: Transition.downToUp,
-                                    fullscreenDialog: true,
-                                    popGesture: false,
-                                  );
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                      bottom: 40, top: 20),
-                                  width: 150,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.8),
-                                    borderRadius: BorderRadius.circular(50),
-                                    border: Border.all(
-                                      color: Colors.black.withOpacity(0.8),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      "New Playlist",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                            child: musicPlaylistController.searchBarTapped.value
+                                ? const SizedBox()
+                                : Center(
+                                    child: ScaleTap(
+                                      onTap: () {
+                                        Get.to(
+                                          () => const NewPlaylistScreen(),
+                                          transition: Transition.downToUp,
+                                          fullscreenDialog: true,
+                                          popGesture: false,
+                                        );
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                            bottom: 40, top: 20),
+                                        width: 150,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.8),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          border: Border.all(
+                                            color:
+                                                Colors.black.withOpacity(0.8),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            "New Playlist",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
                           ),
                         ),
                         Obx(
-                          () => AnimatedOpacity(
+                          () => AnimatedSwitcher(
                             duration: const Duration(milliseconds: 200),
-                            opacity:
-                                musicPlaylistController.searchBarTapped.value
-                                    ? 0.0
-                                    : 1.0,
-                            child: GestureDetector(
-                              onTap: () {
-                                if (!musicPlaylistController
-                                    .searchBarTapped.value) {
-                                  musicPlaylistController.tapSearchBar(true);
-                                }
-                              },
-                              child: AbsorbPointer(
-                                absorbing: true,
-                                child: searchBar(
-                                  musicPlaylistController,
-                                  needHint: true,
-                                ),
-                              ),
-                            ),
+                            child: musicPlaylistController.searchBarTapped.value
+                                ? const SizedBox()
+                                : GestureDetector(
+                                    onTap: () {
+                                      if (!musicPlaylistController
+                                          .searchBarTapped.value) {
+                                        musicPlaylistController
+                                            .tapSearchBar(true);
+                                      }
+                                    },
+                                    child: AbsorbPointer(
+                                      absorbing: true,
+                                      child: searchBar(
+                                        musicPlaylistController,
+                                        needHint: true,
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
                         Obx(
@@ -146,7 +151,7 @@ class MusicPlaylistScreen extends StatelessWidget {
                                 musicPlaylistController.searchBarTapped.value
                                     ? const Offset(
                                         0,
-                                        -0.2,
+                                        0,
                                       )
                                     : const Offset(0, 0),
                             child: Column(
@@ -228,6 +233,7 @@ class MusicPlaylistScreen extends StatelessWidget {
                   ButtonDone(
                     musicPlaylistController: musicPlaylistController,
                     idMusic: idMusic,
+                    audioState: audioState,
                   ),
                 ],
               ),
