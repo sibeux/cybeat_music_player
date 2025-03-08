@@ -39,13 +39,21 @@ Future<void> main() async {
   await SentryFlutter.init(
     (options) {
       options.dsn = dsn; // Ganti dengan DSN dari Sentry
-      options.tracesSampleRate = 1.0; // Mengaktifkan tracing penuh
+      options.tracesSampleRate = 1.0; // Mengaktifkan tracing penuh otomatis
+      options.debug = true; // Mengaktifkan debug mode
+      options.diagnosticLevel = SentryLevel.warning; // Hanya menangkap warning & error
     },
-    appRunner: () =>
-        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-            .then((fn) {
-      runApp(const MyApp());
-    }), // Menjalankan aplikasi setelah inisialisasi
+    appRunner: () {
+      // Tangkap semua error global di Flutter
+      FlutterError.onError = (FlutterErrorDetails details) {
+        Sentry.captureException(details.exception, stackTrace: details.stack);
+      };
+
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+          .then((fn) {
+        runApp(const MyApp());
+      });
+    }, // Menjalankan aplikasi setelah inisialisasi
   );
 }
 
