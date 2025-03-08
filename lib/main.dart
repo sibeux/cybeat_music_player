@@ -10,8 +10,11 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+const String dsn =
+    'https://cd0c927a9fa1fcf194410c445b4f9e83@o4508939227889664.ingest.us.sentry.io/4508939841044480';
 
 Future<void> main() async {
   await JustAudioBackground.init(
@@ -32,10 +35,18 @@ Future<void> main() async {
   // WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((fn) {
-    runApp(const MyApp());
-  });
+
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = dsn; // Ganti dengan DSN dari Sentry
+      options.tracesSampleRate = 1.0; // Mengaktifkan tracing penuh
+    },
+    appRunner: () =>
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+            .then((fn) {
+      runApp(const MyApp());
+    }), // Menjalankan aplikasi setelah inisialisasi
+  );
 }
 
 class MyApp extends StatelessWidget {

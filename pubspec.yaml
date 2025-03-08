@@ -70,6 +70,7 @@ dependencies:
   dio: ^5.7.0
   percent_indicator: ^4.2.3
   flutter_staggered_animations: ^1.1.1
+  sentry_flutter: ^8.13.2
 
 dev_dependencies:
   flutter_test:
