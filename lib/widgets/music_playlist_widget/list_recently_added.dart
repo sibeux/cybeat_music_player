@@ -27,14 +27,17 @@ class ListRecentlyAdded extends StatelessWidget {
                   return !musicPlaylistController.savedInMusicList
                           .contains(element.uid) &&
                       element.title.toLowerCase().contains(
-                          musicPlaylistController.textValue.value
-                              .toLowerCase());
+                            musicPlaylistController.textValue.value
+                                .toLowerCase(),
+                          );
                 })
                 .toList()
                 .length // Playlist yang belum disimpan.
             : homeAlbumGridController.playlistCreatedList
-                .where((element) => !musicPlaylistController.savedInMusicList
-                    .contains(element.uid))
+                .where(
+                  (element) => !musicPlaylistController.savedInMusicList
+                      .contains(element.uid),
+                )
                 .toList()
                 .length, // Playlist yang belum disimpan.
         itemBuilder: (context, index) {
@@ -46,9 +49,10 @@ class ListRecentlyAdded extends StatelessWidget {
                     return !musicPlaylistController.savedInMusicList
                             .contains(element.uid) &&
                         element.title.toLowerCase().contains(
-                            musicPlaylistController.textValue.value
-                                .trim()
-                                .toLowerCase());
+                              musicPlaylistController.textValue.value
+                                  .trim()
+                                  .toLowerCase(),
+                            );
                   }).toList()
                 : homeAlbumGridController.playlistCreatedList
                     .where(

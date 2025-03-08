@@ -27,14 +27,17 @@ class ListSavedIn extends StatelessWidget {
                   return musicPlaylistController.savedInMusicList
                           .contains(element.uid) &&
                       element.title.toLowerCase().contains(
-                          musicPlaylistController.textValue.value
-                              .toLowerCase());
+                            musicPlaylistController.textValue.value
+                                .toLowerCase(),
+                          );
                 })
                 .toList()
                 .length
             : homeAlbumGridController.playlistCreatedList
-                .where((element) => musicPlaylistController.savedInMusicList
-                    .contains(element.uid))
+                .where(
+                  (element) => musicPlaylistController.savedInMusicList
+                      .contains(element.uid),
+                )
                 .toList()
                 .length, // Playlist yang sudah disimpan.
         itemBuilder: (context, index) {
@@ -46,12 +49,15 @@ class ListSavedIn extends StatelessWidget {
                     return musicPlaylistController.savedInMusicList
                             .contains(element.uid) &&
                         element.title.toLowerCase().contains(
-                            musicPlaylistController.textValue.value
-                                .toLowerCase());
+                              musicPlaylistController.textValue.value
+                                  .toLowerCase(),
+                            );
                   }).toList()
                 : homeAlbumGridController.playlistCreatedList
-                    .where((element) => musicPlaylistController.savedInMusicList
-                        .contains(element.uid))
+                    .where(
+                      (element) => musicPlaylistController.savedInMusicList
+                          .contains(element.uid),
+                    )
                     .toList(), // Playlist yang sudah disimpan.
           );
         },
