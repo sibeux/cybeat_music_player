@@ -95,6 +95,9 @@ class MusicPlaylistController extends GetxController {
     Set<int> setSaved = setStrSaved.map((e) => int.parse(e)).toSet();
     Set<int> setAdded = setStrAdded.map((e) => int.parse(e)).toSet();
 
+    // NewAdded dan Savedin itu awalnya sama, sehingga kita bisa mencari-
+    // perbedaan antara keduanya. Tinggal cari mana yang beda.
+
     // Cek => Yang ada di saved, tapi tidak ada di added.
     List<int> toRemove = setSaved
         .difference(setAdded)
