@@ -45,6 +45,8 @@ class MusicPlaylistScreen extends StatelessWidget {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     musicPlaylistController.tapSearchBar(false);
                   });
+                  musicPlaylistController.textController.clear();
+                  musicPlaylistController.isTyping.value = false;
                 } else {
                   Get.back();
                 }
@@ -159,8 +161,26 @@ class MusicPlaylistScreen extends StatelessWidget {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                if (musicPlaylistController
-                                    .listMusicOnPlaylist.isNotEmpty)
+                                if (musicPlaylistController.isTypingValue &&
+                                        musicPlaylistController
+                                            .textValue.value.isNotEmpty
+                                    ? homeAlbumGridController
+                                        .playlistCreatedList
+                                        .where((element) {
+                                          return musicPlaylistController
+                                                  .savedInMusicList
+                                                  .contains(element.uid) &&
+                                              element.title
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      musicPlaylistController
+                                                          .textValue.value
+                                                          .toLowerCase());
+                                        })
+                                        .toList()
+                                        .isNotEmpty
+                                    : musicPlaylistController
+                                        .listMusicOnPlaylist.isNotEmpty)
                                   Row(
                                     children: [
                                       const Text(
@@ -197,12 +217,33 @@ class MusicPlaylistScreen extends StatelessWidget {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                if (homeAlbumGridController.playlistCreatedList
-                                    .where((element) => !musicPlaylistController
-                                        .savedInMusicList
-                                        .contains(element.uid))
-                                    .toList()
-                                    .isNotEmpty) // Playlist yang belum disimpan.
+                                if (musicPlaylistController.isTypingValue &&
+                                        musicPlaylistController
+                                            .textValue.value.isNotEmpty
+                                    ? homeAlbumGridController
+                                        .playlistCreatedList
+                                        .where((element) {
+                                          return !musicPlaylistController
+                                                  .savedInMusicList
+                                                  .contains(element.uid) &&
+                                              element.title
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      musicPlaylistController
+                                                          .textValue.value
+                                                          .toLowerCase());
+                                        })
+                                        .toList()
+                                        .isNotEmpty
+                                    : homeAlbumGridController
+                                        .playlistCreatedList
+                                        .where(
+                                          (element) => !musicPlaylistController
+                                              .savedInMusicList
+                                              .contains(element.uid),
+                                        )
+                                        .toList()
+                                        .isNotEmpty) // Playlist yang belum disimpan.
                                   const ListTile(
                                     contentPadding: EdgeInsets
                                         .zero, // menghilangkan padding kiri kanan
@@ -225,6 +266,45 @@ class MusicPlaylistScreen extends StatelessWidget {
                                   musicPlaylistController:
                                       musicPlaylistController,
                                 ),
+                                if (musicPlaylistController.isTypingValue &&
+                                    musicPlaylistController
+                                        .textValue.value.isNotEmpty &&
+                                    homeAlbumGridController.playlistCreatedList
+                                        .where((element) {
+                                          return !musicPlaylistController
+                                                  .savedInMusicList
+                                                  .contains(element.uid) &&
+                                              element.title
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      musicPlaylistController
+                                                          .textValue.value
+                                                          .toLowerCase());
+                                        })
+                                        .toList()
+                                        .isEmpty &&
+                                    homeAlbumGridController.playlistCreatedList
+                                        .where((element) {
+                                          return musicPlaylistController
+                                                  .savedInMusicList
+                                                  .contains(element.uid) &&
+                                              element.title
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      musicPlaylistController
+                                                          .textValue.value
+                                                          .toLowerCase());
+                                        })
+                                        .toList()
+                                        .isEmpty)
+                                  const Text(
+                                    'No playlist found',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
                               ],
                             ),
                           ),
