@@ -173,7 +173,9 @@ class MusicPlaylistScreen extends StatelessWidget {
                                       ),
                                       const Spacer(),
                                       TextButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          musicPlaylistController.clearAll();
+                                        },
                                         child: Text(
                                           'Clear all',
                                           style: TextStyle(

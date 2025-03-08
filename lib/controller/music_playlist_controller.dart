@@ -43,6 +43,10 @@ class MusicPlaylistController extends GetxController {
     newAddedMusic.remove(idPlaylist);
   }
 
+  void clearAll(){
+    newAddedMusic.clear();
+  }
+
   Future<void> getMusicOnPlaylist({required String idMusic}) async {
     isLoadingGetMusicOnPlaylist.value = true;
 
@@ -91,9 +95,11 @@ class MusicPlaylistController extends GetxController {
     Set<int> setSaved = setStrSaved.map((e) => int.parse(e)).toSet();
     Set<int> setAdded = setStrAdded.map((e) => int.parse(e)).toSet();
 
+    // Cek => Yang ada di saved, tapi tidak ada di added.
     List<int> toRemove = setSaved
         .difference(setAdded)
         .toList(); // Lagu yang harus dihapus dari playlist
+    // Cek => Yang ada di added, tapi tidak ada di saved.
     List<int> toAdd = setAdded
         .difference(setSaved)
         .toList(); // Lagu yang harus ditambahkan ke playlist
