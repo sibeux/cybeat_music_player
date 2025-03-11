@@ -20,8 +20,8 @@ class SplashHomeScreen extends StatefulWidget {
 }
 
 class _SplashHomeScreenState extends State<SplashHomeScreen> {
-  final sortPreferencesController = Get.put(SortPreferencesController());
   final homeAlbumGridController = Get.put(HomeAlbumGridController());
+  final sortPreferencesController = Get.put(SortPreferencesController());
 
   @override
   void initState() {

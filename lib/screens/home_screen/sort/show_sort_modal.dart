@@ -6,7 +6,6 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 Future<dynamic> showSortModalBottom(BuildContext context) {
-  Get.put(HomeAlbumGridController());
 
   return showMaterialModalBottomSheet(
     context: context,

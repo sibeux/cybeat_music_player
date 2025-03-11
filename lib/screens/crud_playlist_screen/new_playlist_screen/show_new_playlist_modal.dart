@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 Future<dynamic> showNewPlaylistModal(BuildContext context) {
-  Get.put(HomeAlbumGridController());
 
   return showMaterialModalBottomSheet(
     context: context,

@@ -12,7 +12,7 @@ import 'package:marquee/marquee.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 Future<dynamic> showAlbumModalBottom(BuildContext context, Playlist playlist) {
-  final homeAlbumGridController = Get.put(HomeAlbumGridController());
+  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
 
   return showMaterialModalBottomSheet(
     context: context,

@@ -40,7 +40,7 @@ Future<void> main() async {
     (options) {
       options.dsn = dsn; // Ganti dengan DSN dari Sentry
       options.tracesSampleRate = 1.0; // Mengaktifkan tracing penuh otomatis
-      options.debug = true; // Mengaktifkan debug mode
+      options.debug = false; // Menonaktifkan debug mode
       options.diagnosticLevel = SentryLevel.warning; // Hanya menangkap warning & error
     },
     appRunner: () {

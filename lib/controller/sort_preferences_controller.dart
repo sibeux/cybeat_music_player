@@ -6,7 +6,7 @@ class SortPreferencesController extends GetxController {
   final sort = ''.obs;
   final isTapSort = false.obs;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  final homeAlbumGridController = Get.put(HomeAlbumGridController());
+  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
 
   @override
   void onInit() {

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class SearchAlbumController extends GetxController {
   final controller = TextEditingController();
-  final HomeAlbumGridController homeAlbumGridController = Get.find();
+  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
   var isTyping = false.obs;
   var textValue = ''.obs;
   var isKeybordFocus = false.obs;

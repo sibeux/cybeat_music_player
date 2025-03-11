@@ -75,7 +75,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               height: double.infinity,
               child: ClipRRect(
                 // ClipRRect is used to clip the image to a rounded rectangle
-                // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar
+                // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar.
                 child: CoverBlur(
                 ),
               ),
