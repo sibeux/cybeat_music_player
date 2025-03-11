@@ -3,19 +3,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
 
 class CoverBlur extends StatelessWidget {
   const CoverBlur({
     super.key,
-    required this.player,
   });
-
-  final AudioPlayer? player;
 
   @override
   Widget build(BuildContext context) {
-    final musicController = Get.put(MusicStateController(player: player!));
+    final musicController = Get.find<MusicStateController>();
 
     return Obx(
       () => ImageFiltered(

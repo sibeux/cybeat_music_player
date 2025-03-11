@@ -23,7 +23,7 @@ class GridPlaylistAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final playlistPlayController = Get.put(PlaylistPlayController());
+    final playlistPlayController = Get.find<PlaylistPlayController>();
     final playingStateController = Get.put(PlayingStateController());
 
     return GestureDetector(

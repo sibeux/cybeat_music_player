@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/playing_state_controller.dart';
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/models/music.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -110,8 +108,6 @@ class _RecentsScreenState extends State<RecentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(PlaylistPlayController());
-    Get.put(HomeAlbumGridController());
 
     Widget content = const Center(
       child: Text('No music in recents!'),

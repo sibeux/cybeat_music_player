@@ -37,7 +37,7 @@ class MusicDownloadController extends GetxController {
       type: 'offline',
     );
 
-    final playlistPlayController = Get.put(PlaylistPlayController());
+    final playlistPlayController = Get.find<PlaylistPlayController>();
 
     if (playlistPlayController.playlistTitleValue != playlist.title ||
         playlistPlayController.playlistTitleValue == "") {

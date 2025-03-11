@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/appbar_title.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/codec_info.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/cover_detail_music.dart';
@@ -34,6 +35,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
   @override
   void initState() {
     super.initState();
+    Get.put(MusicStateController(player: audioPlayer));
   }
 
   @override
@@ -68,14 +70,13 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               height: double.infinity,
               color: Colors.black,
             ),
-            SizedBox(
+            const SizedBox(
               width: double.infinity,
               height: double.infinity,
               child: ClipRRect(
                 // ClipRRect is used to clip the image to a rounded rectangle
                 // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar
                 child: CoverBlur(
-                  player: audioPlayer,
                 ),
               ),
             )
@@ -97,8 +98,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 Get.back();
               },
             ),
-            title: AppbarTitle(
-              player: audioPlayer,
+            title: const AppbarTitle(
             ),
             actions: [
               IconButton(
@@ -116,8 +116,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
             child: Column(
               children: [
                 // cover kecil
-                CoverDetailMusic(
-                  player: audioPlayer,
+                const CoverDetailMusic(
                 ),
                 const SizedBox(
                   height: 35,
@@ -126,7 +125,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Row(
                     children: [
-                      TitleArtistDetailMusic(player: audioPlayer),
+                      const TitleArtistDetailMusic(),
                       const SizedBox(
                         width: 15,
                       ),

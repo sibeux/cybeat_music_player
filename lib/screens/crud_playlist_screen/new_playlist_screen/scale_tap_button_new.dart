@@ -22,8 +22,8 @@ class ScaleTapButtonNewPlaylistState extends State<ScaleTapButtonNewPlaylist>
   double _scaleTransformValue = 1;
   double colorOnTap = 1;
 
-  PlaylistPlayController playlistPlayController = Get.find();
-  PlayingStateController playingStateController = Get.find();
+  PlaylistPlayController playlistPlayController = Get.find<PlaylistPlayController>();
+  PlayingStateController playingStateController = Get.find<PlayingStateController>();
 
   // needed for the "click" tap effect
   late final AnimationController animationController;

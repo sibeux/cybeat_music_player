@@ -46,7 +46,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   List<AzListMusic> musicItems = [];
   get audioState => widget.audioState;
 
-  final playlistPlayController = Get.put(PlaylistPlayController());
+  final playlistPlayController = Get.find<PlaylistPlayController>();
   final homeAlbumGridController = Get.put(HomeAlbumGridController());
   final playingStateController = Get.put(PlayingStateController());
 

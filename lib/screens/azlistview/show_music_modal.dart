@@ -140,7 +140,7 @@ class ListTileBottomModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final playingStateController = Get.put(PlayingStateController());
-    final playlistPlayController = Get.put(PlaylistPlayController());
+    final playlistPlayController = Get.find<PlaylistPlayController>();
     final musicDownloadController = Get.put(MusicDownloadController());
 
     return ListTile(

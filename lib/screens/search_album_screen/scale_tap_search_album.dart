@@ -31,7 +31,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
   static const clickAnimationDurationMillis = 100;
   double _scaleTransformValue = 1;
 
-  PlaylistPlayController playlistPlayController = Get.find();
+  PlaylistPlayController playlistPlayController = Get.find<PlaylistPlayController>();
   PlayingStateController playingStateController = Get.find();
 
   // needed for the "click" tap effect
