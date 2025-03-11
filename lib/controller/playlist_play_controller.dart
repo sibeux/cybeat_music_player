@@ -11,7 +11,9 @@ class PlaylistPlayController extends GetxController {
   var playlistType = ''.obs;
   var playlistUid = ''.obs;
   var playlistEditable = ''.obs;
+
   var needRebuild = false.obs;
+  var isAzlistviewScreenActive = false.obs;
 
   var currentPlaylistPlay = RxList<Playlist>([]);
 

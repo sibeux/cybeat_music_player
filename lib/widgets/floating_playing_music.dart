@@ -247,6 +247,7 @@ class _FloatingPlayingMusicState extends State<FloatingPlayingMusic> {
           () => MusicDetailScreen(
             player: widget.audioState.player,
             mediaItem: context.read<MusicState>().currentMediaItem!,
+            audioState: widget.audioState,
           ),
           transition: Transition.downToUp,
           duration: const Duration(milliseconds: 300),

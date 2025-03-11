@@ -53,6 +53,13 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   @override
   void initState() {
     super.initState();
+    playlistPlayController.isAzlistviewScreenActive.value = true;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    playlistPlayController.isAzlistviewScreenActive.value = false;
   }
 
   void setColor(Color color) {
@@ -70,7 +77,10 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       final musicDownloadController = Get.find<MusicDownloadController>();
       ever(musicDownloadController.rebuildDelete, (callback) {
         if (!context.mounted) return;
-        setState(() {});
+        setState(() {
+          // setState di sini agar list musik di rebuild saat ada-
+          // musik yang dihapus.
+        });
       });
     }
 
@@ -158,6 +168,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                     () => MusicDetailScreen(
                       player: audioState.player,
                       mediaItem: sequence[index].tag as MediaItem,
+                      audioState: audioState,
                     ),
                     transition: Transition.downToUp,
                     duration: const Duration(milliseconds: 300),
@@ -373,7 +384,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     );
   }
 
-// logic untuk shuffle music.
+  // logic untuk shuffle music.
   void _shuffleMusic(
     AudioState audioState,
     List<IndexedAudioSource> sequence,
@@ -387,6 +398,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       () => MusicDetailScreen(
         player: audioState.player,
         mediaItem: sequence[index].tag as MediaItem,
+        audioState: audioState,
       ),
       transition: Transition.downToUp,
       popGesture: false,

@@ -1,10 +1,12 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/appbar_title.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/codec_info.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/cover_detail_music.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/favorite_button.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/control_buttons.dart';
+import 'package:cybeat_music_player/widgets/detail_music_widget/modal/detail_music_modal.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/title_artist_detail_music.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,10 +20,12 @@ class MusicDetailScreen extends StatefulWidget {
     super.key,
     required this.player,
     required this.mediaItem,
+    required this.audioState,
   });
 
   final AudioPlayer player;
   final MediaItem mediaItem;
+  final AudioState audioState;
 
   @override
   State<MusicDetailScreen> createState() => _MusicDetailScreenState();
@@ -29,8 +33,8 @@ class MusicDetailScreen extends StatefulWidget {
 
 class _MusicDetailScreenState extends State<MusicDetailScreen> {
   AudioPlayer get audioPlayer => widget.player;
-
   MediaItem get mediaItem => widget.mediaItem;
+  AudioState get audioState => widget.audioState;
 
   @override
   void initState() {
@@ -76,8 +80,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               child: ClipRRect(
                 // ClipRRect is used to clip the image to a rounded rectangle
                 // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar.
-                child: CoverBlur(
-                ),
+                child: CoverBlur(),
               ),
             )
           ],
@@ -98,8 +101,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 Get.back();
               },
             ),
-            title: const AppbarTitle(
-            ),
+            title: const AppbarTitle(),
             actions: [
               IconButton(
                 icon: const Icon(
@@ -107,7 +109,12 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                   size: 35,
                   color: Colors.white,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  detailMusicModal(
+                    context,
+                    audioState
+                  );
+                },
               ),
             ],
           ),
@@ -116,8 +123,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
             child: Column(
               children: [
                 // cover kecil
-                const CoverDetailMusic(
-                ),
+                const CoverDetailMusic(),
                 const SizedBox(
                   height: 35,
                 ),
