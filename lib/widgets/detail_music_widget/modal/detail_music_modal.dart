@@ -132,11 +132,10 @@ Future<dynamic> detailMusicModal(
                 icon: Icons.mode_standby_outlined,
                 changeColor: false,
                 onTap: () {
+                  Get.back();
                   if (playlistPlayController.isAzlistviewScreenActive.value) {
                     Get.back();
-                    Get.back();
                   } else {
-                    Get.back();
                     Get.off(
                       () => AzListMusicScreen(
                         audioState: audioState,
