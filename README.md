@@ -72,7 +72,7 @@ We welcome contributions from the community! To contribute to Cybeat, follow the
     - Go to the original repository and click on the "New pull request" button.
     - Select your fork and branch, then submit the pull request.
 
-Please ensure your code adheres to our [Code of Conduct](https://chatgpt.com/c/CODE_OF_CONDUCT.md) and [Contributing Guidelines](https://chatgpt.com/c/CONTRIBUTING.md).
+<!-- Please ensure your code adheres to our [Code of Conduct](https://chatgpt.com/c/CODE_OF_CONDUCT.md) and [Contributing Guidelines](https://chatgpt.com/c/CONTRIBUTING.md). -->
 
 ## Contact
 
