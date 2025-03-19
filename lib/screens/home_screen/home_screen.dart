@@ -1,8 +1,10 @@
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/show_new_playlist_modal.dart';
 import 'package:cybeat_music_player/screens/recents_screen/recents_screen.dart';
@@ -15,7 +17,7 @@ import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -39,10 +41,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final PlayingStateController playingStateController =
-        Get.put(PlayingStateController());
-    final FilterAlbumController filterAlbumController =
-        Get.put(FilterAlbumController());
+    final playingStateController = Get.put(PlayingStateController());
+    final filterAlbumController = Get.put(FilterAlbumController());
+    final musicStateController = Get.find<MusicStateController>();
+
+    ever(
+      musicStateController.musicChanged,
+      (callback) => context
+          .read<MusicState>()
+          .setCurrentMediaItem(musicStateController.musicChanged[0]),
+    );
 
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
@@ -294,16 +302,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Obx(
             () => playingStateController.isPlaying.value
-                ? StreamBuilder<SequenceState?>(
-                    stream: widget.audioState.player.sequenceStateStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return FloatingPlayingMusic(
-                          audioState: widget.audioState,
-                        );
-                      }
-                      return const SizedBox();
-                    },
+                ? FloatingPlayingMusic(
+                    audioState: widget.audioState,
                   )
                 : const SizedBox(),
           ),

@@ -6,7 +6,6 @@ import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:just_audio/just_audio.dart';
 
 class SearchAlbumScreen extends StatelessWidget {
   const SearchAlbumScreen({super.key, required this.audioState});
@@ -138,17 +137,8 @@ class SearchAlbumScreen extends StatelessWidget {
           ),
           Obx(
             () => playingStateController.isPlaying.value
-                ? StreamBuilder<SequenceState?>(
-                    stream: audioState.player.sequenceStateStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-
-                        return FloatingPlayingMusic(
-                          audioState: audioState,
-                        );
-                      }
-                      return const SizedBox();
-                    },
+                ? FloatingPlayingMusic(
+                    audioState: audioState,
                   )
                 : const SizedBox(),
           ),

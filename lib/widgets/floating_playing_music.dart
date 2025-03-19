@@ -59,7 +59,6 @@ class FloatingPlayingMusic extends StatelessWidget {
                         width: double.infinity,
                         height: 45,
                         decoration: BoxDecoration(
-                          // color: colorContainer,
                           color: floatingPlayingMusicController.listColor[0],
                           borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(100),
@@ -189,31 +188,27 @@ class FloatingPlayingMusic extends StatelessWidget {
                                 const SizedBox(width: 5),
                               ],
                             ),
-                            Obx(
-                              () {
-                                return Container(
-                                  padding: const EdgeInsets.only(right: 20),
-                                  height: 3.5,
-                                  child: LinearProgressIndicator(
-                                    value: (progressMusicController.position
-                                                    .value.inMilliseconds >
-                                                0 &&
-                                            progressMusicController.position
-                                                    .value.inMilliseconds <
-                                                progressMusicController.duration
-                                                    .value.inMilliseconds)
-                                        ? progressMusicController
-                                                .position.value.inMilliseconds /
+                            Container(
+                              padding: const EdgeInsets.only(right: 20),
+                              height: 3.5,
+                              child: LinearProgressIndicator(
+                                value: (progressMusicController
+                                                .position.value.inMilliseconds >
+                                            0 &&
+                                        progressMusicController
+                                                .position.value.inMilliseconds <
                                             progressMusicController
-                                                .duration.value.inMilliseconds
-                                        : 0.0,
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: floatingPlayingMusicController
-                                        .listColor[1],
-                                    backgroundColor: Colors.grey,
-                                  ),
-                                );
-                              },
+                                                .duration.value.inMilliseconds)
+                                    ? progressMusicController
+                                            .position.value.inMilliseconds /
+                                        progressMusicController
+                                            .duration.value.inMilliseconds
+                                    : 0.0,
+                                borderRadius: BorderRadius.circular(50),
+                                color:
+                                    floatingPlayingMusicController.listColor[1],
+                                backgroundColor: Colors.grey,
+                              ),
                             ),
                           ],
                         ),

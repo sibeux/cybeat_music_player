@@ -1,17 +1,13 @@
 import 'dart:convert';
 
-import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/models/music.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/recents_screen/recents_music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import './/./widgets/floating_playing_music.dart';
@@ -185,21 +181,8 @@ class _RecentsScreenState extends State<RecentsScreen> {
           ),
           Obx(
             () => playingStateController.isPlaying.value
-                ? StreamBuilder<SequenceState?>(
-                    stream: widget.audioState.player.sequenceStateStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final currentItem = snapshot.data?.currentSource;
-                        context
-                            .read<MusicState>()
-                            .setCurrentMediaItem(currentItem!.tag as MediaItem);
-
-                        return FloatingPlayingMusic(
-                          audioState: widget.audioState,
-                        );
-                      }
-                      return const SizedBox();
-                    },
+                ? FloatingPlayingMusic(
+                    audioState: widget.audioState,
                   )
                 : const SizedBox(),
           ),

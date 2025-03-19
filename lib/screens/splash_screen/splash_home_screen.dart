@@ -31,17 +31,20 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
   }
 
   Future<void> initialization() async {
+    // Harus dipanggil sebelum splash hilang karena di home screen dipakai.
+    Get.put(MusicStateController());
+
     // Menghilangkan splash screen
     FlutterNativeSplash.remove();
     // Ambil data filter sort dari Shared Preferences
     await sortPreferencesController.getSortBy();
     // Ambil data album dari database
     await homeAlbumGridController.initializeAlbum();
+    
     // Inisiasi controller
     Get.put(PlaylistPlayController());
     Get.put(MusicDownloadController());
     Get.put(ReadCodecController());
-    Get.put(MusicStateController());
 
     // print('ready in 3...');
     // await Future.delayed(const Duration(seconds: 1));

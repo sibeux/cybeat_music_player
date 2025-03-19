@@ -350,19 +350,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
             ),
             Obx(
               () => playingStateController.isPlaying.value
-                  ? StreamBuilder<SequenceState?>(
-                      stream: audioState.player.sequenceStateStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          final currentItem = snapshot.data?.currentSource;
-                          context.read<MusicState>().setCurrentMediaItem(
-                              currentItem!.tag as MediaItem);
-                          return FloatingPlayingMusic(
-                            audioState: audioState,
-                          );
-                        }
-                        return const SizedBox();
-                      },
+                  ? FloatingPlayingMusic(
+                      audioState: audioState,
                     )
                   : const SizedBox(),
             ),

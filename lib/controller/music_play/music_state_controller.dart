@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/controller/floating_playing_music/floating_playing_music_controller.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -11,7 +12,12 @@ class MusicStateController extends GetxController {
   var album = ''.obs;
   var cover = ''.obs;
 
+  var musicChanged = RxList<MediaItem>([]);
+
   StreamSubscription<SequenceState?>? playerSubscription;
+  // Terpaksa di-Get.put karena rawan terjadi error controller tidak ditemukan.
+  final floatingPlayingMusicController =
+      Get.put(FloatingPlayingMusicController());
 
   // Constructor untuk menginisialisasi player.
   // MusicStateController({required this.player});
@@ -51,10 +57,14 @@ class MusicStateController extends GetxController {
   }
 
   void updateState(SequenceState? sequenceState) {
+    musicChanged.value = [sequenceState?.currentSource?.tag as MediaItem];
+
     title.value = sequenceState?.currentSource?.tag.title ?? '';
     artist.value = sequenceState?.currentSource?.tag.artist ?? '';
     album.value = sequenceState?.currentSource?.tag.album ?? '';
     cover.value = sequenceState?.currentSource?.tag.artUri.toString() ??
         'https://raw.githubusercontent.com/sibeux/license-sibeux/MyProgram/placeholder_cover_music.png';
+
+    floatingPlayingMusicController.getDominantColor(cover.value);
   }
 }
