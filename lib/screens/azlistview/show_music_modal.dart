@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/music_play_method.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -15,8 +15,13 @@ import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
-Future<dynamic> showMusicModalBottom(BuildContext context, MediaItem mediaItem,
-    AudioPlayer audioPlayer, int index, AudioState audioState,) {
+Future<dynamic> showMusicModalBottom(
+  BuildContext context,
+  MediaItem mediaItem,
+  AudioPlayer audioPlayer,
+  int index,
+  AudioState audioState,
+) {
   final musicDownloadController = Get.find<MusicDownloadController>();
   return showMaterialModalBottomSheet(
     context: context,
@@ -139,7 +144,6 @@ class ListTileBottomModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final playingStateController = Get.put(PlayingStateController());
     final playlistPlayController = Get.find<PlaylistPlayController>();
     final musicDownloadController = Get.put(MusicDownloadController());
 
@@ -162,19 +166,12 @@ class ListTileBottomModal extends StatelessWidget {
             if (context.read<MusicState>().currentMediaItem?.id == "" ||
                 context.read<MusicState>().currentMediaItem?.id !=
                     mediaItem.id) {
-              player.seek(Duration.zero, index: index);
-
-              player.setAudioSource(audioState.playlist, initialIndex: index);
-
-              playingStateController.play();
-
-              context.read<MusicState>().setCurrentMediaItem(mediaItem);
-
-              playlistPlayController.onPlaylistMusicPlay(
-                audioState: audioState,
+              musicPlayMethod(
+                state: audioState,
+                index: index,
+                context: context,
+                mediaItem: mediaItem,
               );
-
-              player.play();
               Get.back();
             }
           case 'add to playlist':

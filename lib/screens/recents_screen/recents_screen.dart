@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/models/music.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -196,7 +196,6 @@ class _RecentsScreenState extends State<RecentsScreen> {
 
                         return FloatingPlayingMusic(
                           audioState: widget.audioState,
-                          currentItem: currentItem,
                         );
                       }
                       return const SizedBox();

@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_builder.dart';
@@ -142,11 +142,9 @@ class SearchAlbumScreen extends StatelessWidget {
                     stream: audioState.player.sequenceStateStream,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        final currentItem = snapshot.data?.currentSource;
 
                         return FloatingPlayingMusic(
                           audioState: audioState,
-                          currentItem: currentItem,
                         );
                       }
                       return const SizedBox();

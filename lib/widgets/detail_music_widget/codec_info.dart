@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/controller/read_codec_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

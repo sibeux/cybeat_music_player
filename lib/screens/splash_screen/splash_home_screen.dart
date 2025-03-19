@@ -1,8 +1,8 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/controller/read_codec_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/home_screen.dart';

@@ -1,7 +1,7 @@
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/show_new_playlist_modal.dart';
@@ -298,10 +298,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     stream: widget.audioState.player.sequenceStateStream,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        final currentItem = snapshot.data?.currentSource;
                         return FloatingPlayingMusic(
                           audioState: widget.audioState,
-                          currentItem: currentItem,
                         );
                       }
                       return const SizedBox();

@@ -30,10 +30,6 @@ class MusicStateController extends GetxController {
   void onClose() {
     // Batalkan subscription saat controller dihapus.
     playerSubscription?.cancel();
-    title.value = '';
-    artist.value = '';
-    album.value = '';
-    cover.value = '';
     super.onClose();
   }
 

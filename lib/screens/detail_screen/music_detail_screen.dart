@@ -1,4 +1,3 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/appbar_title.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/codec_info.dart';
@@ -18,12 +17,10 @@ class MusicDetailScreen extends StatefulWidget {
   const MusicDetailScreen({
     super.key,
     required this.player,
-    required this.mediaItem,
     required this.audioState,
   });
 
   final AudioPlayer player;
-  final MediaItem mediaItem;
   final AudioState audioState;
 
   @override
@@ -32,7 +29,6 @@ class MusicDetailScreen extends StatefulWidget {
 
 class _MusicDetailScreenState extends State<MusicDetailScreen> {
   AudioPlayer get audioPlayer => widget.player;
-  MediaItem get mediaItem => widget.mediaItem;
   AudioState get audioState => widget.audioState;
 
   @override

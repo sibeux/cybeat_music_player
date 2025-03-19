@@ -1,15 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cybeat_music_player/controller/floating_playing_music/floating_playing_music_controller.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
-import 'package:cybeat_music_player/controller/progress_music_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/progress_music_controller.dart';
 import 'package:cybeat_music_player/widgets/animated_rotate_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
-import 'package:provider/provider.dart';
 import '../providers/audio_state.dart';
-import '../providers/music_state.dart';
 import '../screens/detail_screen/music_detail_screen.dart';
 
 final floatingPlayingMusicController =
@@ -19,11 +17,9 @@ class FloatingPlayingMusic extends StatelessWidget {
   const FloatingPlayingMusic({
     super.key,
     required this.audioState,
-    required this.currentItem,
   });
 
   final AudioState audioState;
-  final IndexedAudioSource? currentItem;
 
   @override
   Widget build(BuildContext context) {
@@ -66,8 +62,9 @@ class FloatingPlayingMusic extends StatelessWidget {
                           // color: colorContainer,
                           color: floatingPlayingMusicController.listColor[0],
                           borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(100),
-                              bottomRight: Radius.circular(100)),
+                            topRight: Radius.circular(100),
+                            bottomRight: Radius.circular(100),
+                          ),
                         ),
                         child: Stack(
                           alignment: AlignmentDirectional.bottomEnd,
@@ -198,11 +195,17 @@ class FloatingPlayingMusic extends StatelessWidget {
                                   padding: const EdgeInsets.only(right: 20),
                                   height: 3.5,
                                   child: LinearProgressIndicator(
-                                    value: (progressMusicController.position.value.inMilliseconds > 0 &&
-                                            progressMusicController.position.value.inMilliseconds <
-                                                progressMusicController.duration.value.inMilliseconds)
-                                        ? progressMusicController.position.value.inMilliseconds /
-                                            progressMusicController.duration.value.inMilliseconds
+                                    value: (progressMusicController.position
+                                                    .value.inMilliseconds >
+                                                0 &&
+                                            progressMusicController.position
+                                                    .value.inMilliseconds <
+                                                progressMusicController.duration
+                                                    .value.inMilliseconds)
+                                        ? progressMusicController
+                                                .position.value.inMilliseconds /
+                                            progressMusicController
+                                                .duration.value.inMilliseconds
                                         : 0.0,
                                     borderRadius: BorderRadius.circular(50),
                                     color: floatingPlayingMusicController
@@ -232,7 +235,6 @@ class FloatingPlayingMusic extends StatelessWidget {
         Get.to(
           () => MusicDetailScreen(
             player: audioState.player,
-            mediaItem: context.read<MusicState>().currentMediaItem!,
             audioState: audioState,
           ),
           transition: Transition.downToUp,
