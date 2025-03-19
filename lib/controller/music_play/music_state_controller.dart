@@ -12,7 +12,7 @@ class MusicStateController extends GetxController {
   var album = ''.obs;
   var cover = ''.obs;
 
-  var musicChanged = RxList<MediaItem>([]);
+  var currentMusicPlay = RxList<MediaItem>([]);
 
   StreamSubscription<SequenceState?>? playerSubscription;
   // Terpaksa di-Get.put karena rawan terjadi error controller tidak ditemukan.
@@ -57,7 +57,7 @@ class MusicStateController extends GetxController {
   }
 
   void updateState(SequenceState? sequenceState) {
-    musicChanged.value = [sequenceState?.currentSource?.tag as MediaItem];
+    currentMusicPlay.value = [sequenceState?.currentSource?.tag as MediaItem];
 
     title.value = sequenceState?.currentSource?.tag.title ?? '';
     artist.value = sequenceState?.currentSource?.tag.artist ?? '';

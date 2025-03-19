@@ -45,11 +45,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final filterAlbumController = Get.put(FilterAlbumController());
     final musicStateController = Get.find<MusicStateController>();
 
+    /*
+    Setiap lagu berganti, maka akan memanggil fungsi setCurrentMediaItem-
+    untuk mengubah data lagu yang sedang diputar. Agar nomor dan nama lagu- 
+    yang sedang diputar berubah jadi ungu.
+    */
     ever(
-      musicStateController.musicChanged,
+      musicStateController.currentMusicPlay,
       (callback) => context
           .read<MusicState>()
-          .setCurrentMediaItem(musicStateController.musicChanged[0]),
+          .setCurrentMediaItem(musicStateController.currentMusicPlay[0]),
     );
 
     return Scaffold(
