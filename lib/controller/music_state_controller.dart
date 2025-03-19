@@ -10,26 +10,38 @@ class MusicStateController extends GetxController {
   var album = ''.obs;
   var cover = ''.obs;
 
+  var isAlreadyStream = false;
+
   StreamSubscription<SequenceState?>? playerSubscription;
 
-  MusicStateController({required this.player});
+  // Constructor untuk menginisialisasi player.
+  // MusicStateController({required this.player});
 
-  final AudioPlayer player;
+  // final AudioPlayer player;
 
-  @override
-  void onInit() {
-    super.onInit();
-    // Subscribe ke stream dan perbarui state.
-    playerSubscription = player.sequenceStateStream.listen((sequenceState) {
-      updateState(sequenceState);
-    });
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   // Subscribe ke stream dan perbarui state.
+  //   playerSubscription = player.sequenceStateStream.listen((sequenceState) {
+  //     updateState(sequenceState);
+  //   });
+  // }
 
   @override
   void onClose() {
     // Batalkan subscription saat controller dihapus.
     playerSubscription?.cancel();
     super.onClose();
+  }
+
+  void streamAudioPlayer(AudioPlayer player) {
+    // Subscribe ke stream dan perbarui state.
+    playerSubscription = player.sequenceStateStream.listen((sequenceState) {
+      updateState(sequenceState);
+    });
+
+    isAlreadyStream = true;
   }
 
   void updateState(SequenceState? sequenceState) {

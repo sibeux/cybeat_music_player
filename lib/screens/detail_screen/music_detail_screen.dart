@@ -1,5 +1,4 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/appbar_title.dart';
 import 'package:cybeat_music_player/widgets/detail_music_widget/codec_info.dart';
@@ -35,12 +34,6 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
   AudioPlayer get audioPlayer => widget.player;
   MediaItem get mediaItem => widget.mediaItem;
   AudioState get audioState => widget.audioState;
-
-  @override
-  void initState() {
-    super.initState();
-    Get.put(MusicStateController(player: audioPlayer));
-  }
 
   @override
   void setState(VoidCallback fn) {
