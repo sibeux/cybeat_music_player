@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cybeat_music_player/controller/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
@@ -25,6 +26,7 @@ class GridPlaylistAlbum extends StatelessWidget {
   Widget build(BuildContext context) {
     final playlistPlayController = Get.find<PlaylistPlayController>();
     final playingStateController = Get.put(PlayingStateController());
+    final musicStateController = Get.find<MusicStateController>();
 
     return GestureDetector(
       onTap: () {
@@ -32,6 +34,7 @@ class GridPlaylistAlbum extends StatelessWidget {
             playlistPlayController.playlistTitleValue == "") {
           audioState.clear();
           playingStateController.pause();
+          musicStateController.onClose();
           context.read<MusicState>().clear();
           audioState.init(playlist);
           playlistPlayController.onPlaylist(playlist);

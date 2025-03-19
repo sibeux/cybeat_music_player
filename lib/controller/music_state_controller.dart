@@ -10,8 +10,6 @@ class MusicStateController extends GetxController {
   var album = ''.obs;
   var cover = ''.obs;
 
-  var isAlreadyStream = false;
-
   StreamSubscription<SequenceState?>? playerSubscription;
 
   // Constructor untuk menginisialisasi player.
@@ -32,6 +30,10 @@ class MusicStateController extends GetxController {
   void onClose() {
     // Batalkan subscription saat controller dihapus.
     playerSubscription?.cancel();
+    title.value = '';
+    artist.value = '';
+    album.value = '';
+    cover.value = '';
     super.onClose();
   }
 
@@ -40,8 +42,6 @@ class MusicStateController extends GetxController {
     playerSubscription = player.sequenceStateStream.listen((sequenceState) {
       updateState(sequenceState);
     });
-
-    isAlreadyStream = true;
   }
 
   void updateState(SequenceState? sequenceState) {

@@ -37,8 +37,10 @@ class CoverBlur extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color.fromARGB(255, 126, 248, 60),
-                    Color.fromARGB(255, 253, 123, 123),
+                    // Color.fromARGB(255, 126, 248, 60),
+                    // Color.fromARGB(255, 253, 123, 123),
+                    Colors.black,
+                    Colors.black,
                   ],
                 ),
               ),

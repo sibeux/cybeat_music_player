@@ -48,9 +48,7 @@ class PlaylistPlayController extends GetxController {
 
       Get.put(ProgressMusicController(player: audioState.player));
       final musicStateController = Get.find<MusicStateController>();
-      if (!musicStateController.isAlreadyStream) {
-        musicStateController.streamAudioPlayer(audioState.player);
-      }
+      musicStateController.streamAudioPlayer(audioState.player);
     } catch (e) {
       if (kDebugMode) {
         print('Error onPlaylistMusicPlay: $e');
