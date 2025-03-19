@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/progress_music_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
@@ -47,8 +46,6 @@ class PlaylistPlayController extends GetxController {
       );
 
       Get.put(ProgressMusicController(player: audioState.player));
-      final musicStateController = Get.find<MusicStateController>();
-      musicStateController.streamAudioPlayer(audioState.player);
     } catch (e) {
       if (kDebugMode) {
         print('Error onPlaylistMusicPlay: $e');

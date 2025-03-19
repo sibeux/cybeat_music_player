@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -33,11 +34,20 @@ class MusicStateController extends GetxController {
     super.onClose();
   }
 
-  void streamAudioPlayer(AudioPlayer player) {
+  void streamAudioPlayer(
+    AudioPlayer player,
+    MediaItem mediaItem,
+  ) {
     // Subscribe ke stream dan perbarui state.
     playerSubscription = player.sequenceStateStream.listen((sequenceState) {
       updateState(sequenceState);
     });
+
+    // Masukkan data musik ke variable observable.
+    title.value = mediaItem.title;
+    artist.value = mediaItem.artist ?? '';
+    album.value = mediaItem.album ?? '';
+    cover.value = mediaItem.artUri.toString();
   }
 
   void updateState(SequenceState? sequenceState) {

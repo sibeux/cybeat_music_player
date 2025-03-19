@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
@@ -16,12 +17,18 @@ void musicPlayMethod({
 }) {
   final playlistPlayController = Get.find<PlaylistPlayController>();
   final playingStateController = Get.find<PlayingStateController>();
+  final musicStateController = Get.find<MusicStateController>();
 
   state.player.seek(Duration.zero, index: index);
 
   state.player.setAudioSource(state.playlist, initialIndex: index);
 
   playingStateController.play();
+
+  musicStateController.streamAudioPlayer(
+    state.player,
+    mediaItem,
+  );
 
   context.read<MusicState>().setCurrentMediaItem(mediaItem);
 
