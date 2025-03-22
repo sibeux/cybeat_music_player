@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:cybeat_music_player/controller/progress_music_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/progress_music_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:flutter/foundation.dart';

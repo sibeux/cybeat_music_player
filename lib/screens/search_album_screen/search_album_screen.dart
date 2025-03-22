@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_builder.dart';
@@ -6,7 +6,6 @@ import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:just_audio/just_audio.dart';
 
 class SearchAlbumScreen extends StatelessWidget {
   const SearchAlbumScreen({super.key, required this.audioState});
@@ -138,19 +137,8 @@ class SearchAlbumScreen extends StatelessWidget {
           ),
           Obx(
             () => playingStateController.isPlaying.value
-                ? StreamBuilder<SequenceState?>(
-                    stream: audioState.player.sequenceStateStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final currentItem = snapshot.data?.currentSource;
-
-                        return FloatingPlayingMusic(
-                          audioState: audioState,
-                          currentItem: currentItem,
-                        );
-                      }
-                      return const SizedBox();
-                    },
+                ? FloatingPlayingMusic(
+                    audioState: audioState,
                   )
                 : const SizedBox(),
           ),

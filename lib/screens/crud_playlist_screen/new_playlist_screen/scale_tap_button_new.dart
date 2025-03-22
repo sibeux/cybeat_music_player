@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

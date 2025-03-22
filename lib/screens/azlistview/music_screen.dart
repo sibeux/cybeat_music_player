@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/playing_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/music_play_method.dart';
+import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -167,7 +168,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                   Get.to(
                     () => MusicDetailScreen(
                       player: audioState.player,
-                      mediaItem: sequence[index].tag as MediaItem,
                       audioState: audioState,
                     ),
                     transition: Transition.downToUp,
@@ -179,22 +179,12 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                   if (context.read<MusicState>().currentMediaItem?.id == "" ||
                       context.read<MusicState>().currentMediaItem?.id !=
                           sequence[index].tag.id) {
-                    audioState.player.seek(Duration.zero, index: index);
-
-                    audioState.player.setAudioSource(audioState.playlist,
-                        initialIndex: index);
-
-                    playingStateController.play();
-
-                    context
-                        .read<MusicState>()
-                        .setCurrentMediaItem(sequence[index].tag as MediaItem);
-
-                    playlistPlayController.onPlaylistMusicPlay(
-                      audioState: audioState,
+                    musicPlayMethod(
+                      state: audioState,
+                      index: index,
+                      context: context,
+                      mediaItem: sequence[index].tag as MediaItem,
                     );
-
-                    audioState.player.play();
                   }
                 },
               );
@@ -290,7 +280,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                                         _shuffleMusic(
                                           audioState,
                                           sequence,
-                                          playingStateController,
                                         );
                                       }
                                     },
@@ -361,20 +350,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
             ),
             Obx(
               () => playingStateController.isPlaying.value
-                  ? StreamBuilder<SequenceState?>(
-                      stream: audioState.player.sequenceStateStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          final currentItem = snapshot.data?.currentSource;
-                          context.read<MusicState>().setCurrentMediaItem(
-                              currentItem!.tag as MediaItem);
-                          return FloatingPlayingMusic(
-                            audioState: audioState,
-                            currentItem: currentItem,
-                          );
-                        }
-                        return const SizedBox();
-                      },
+                  ? FloatingPlayingMusic(
+                      audioState: audioState,
                     )
                   : const SizedBox(),
             ),
@@ -388,7 +365,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   void _shuffleMusic(
     AudioState audioState,
     List<IndexedAudioSource> sequence,
-    PlayingStateController playingStateController,
   ) {
     final index = audioState.playlist.length < 2
         ? 0
@@ -397,26 +373,18 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     Get.to(
       () => MusicDetailScreen(
         player: audioState.player,
-        mediaItem: sequence[index].tag as MediaItem,
         audioState: audioState,
       ),
       transition: Transition.downToUp,
       popGesture: false,
       fullscreenDialog: true,
     );
-    audioState.player.seek(
-      Duration.zero,
+    musicPlayMethod(
+      state: audioState,
       index: index,
+      context: context,
+      mediaItem: sequence[index].tag as MediaItem,
     );
-    audioState.player.setAudioSource(
-      audioState.playlist,
-      initialIndex: index,
-    );
-    playingStateController.play();
-    playlistPlayController.onPlaylistMusicPlay(
-      audioState: audioState,
-    );
-    audioState.player.play();
   }
 
   int random(int min, int max) {

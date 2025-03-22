@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/controller/music_state_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -37,8 +37,10 @@ class CoverBlur extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color.fromARGB(255, 126, 248, 60),
-                    Color.fromARGB(255, 253, 123, 123),
+                    // Color.fromARGB(255, 126, 248, 60),
+                    // Color.fromARGB(255, 253, 123, 123),
+                    Colors.black,
+                    Colors.black,
                   ],
                 ),
               ),
