@@ -33,14 +33,14 @@ class TextButton extends StatelessWidget {
         height: 50,
         decoration: BoxDecoration(
           color: title == 'Cancel'
-              ? Colors.black.withOpacity(0)
+              ? Colors.black.withValues(alpha: 0)
               : isDisable
                   ? Colors.grey
                   : HexColor('#ac8bc9'),
           borderRadius: BorderRadius.circular(50),
           border: Border.all(
             color: title == 'Cancel'
-                ? Colors.black.withOpacity(0.6)
+                ? Colors.black.withValues(alpha: 0.6)
                 : isDisable
                     ? Colors.grey
                     : HexColor('#ac8bc9'),
@@ -52,7 +52,7 @@ class TextButton extends StatelessWidget {
             title,
             style: TextStyle(
               color: title == 'Cancel'
-                  ? Colors.black.withOpacity(0.6)
+                  ? Colors.black.withValues(alpha: 0.6)
                   : Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.bold,

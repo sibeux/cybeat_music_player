@@ -6,14 +6,14 @@ void showModalDiscardDialog(BuildContext context) {
   showDialog<void>(
     barrierDismissible: true,
     context: context,
-    barrierColor: Colors.black.withOpacity(0.5),
+    barrierColor: Colors.black.withValues(alpha:  0.5),
     builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: HexColor('#fefffe'),
         title: TextButton(
           onPressed: null,
           style: ButtonStyle(
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
           ),
           child: const Text(
             'Discard changes?',
@@ -29,7 +29,7 @@ void showModalDiscardDialog(BuildContext context) {
           'If you go back now, yo`ll lose your changes.',
           style: TextStyle(
             fontSize: 13,
-            color: Colors.black.withOpacity(0.6),
+            color: Colors.black.withValues(alpha:  0.6),
           ),
         ),
         actions: <Widget>[
@@ -42,7 +42,7 @@ void showModalDiscardDialog(BuildContext context) {
                     Navigator.of(context).pop();
                   },
                   style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
                   ),
                   child: Container(
                     height: 40,
@@ -70,7 +70,7 @@ void showModalDiscardDialog(BuildContext context) {
                     Get.back();
                   },
                   style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
                   ),
                   child: const Text(
                     'Discard',

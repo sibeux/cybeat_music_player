@@ -23,7 +23,7 @@ class CoverBlur extends StatelessWidget {
           imageUrl: musicController.cover.value,
           fit: BoxFit.cover,
           filterQuality: FilterQuality.low,
-          color: Colors.black.withOpacity(0.5),
+          color: Colors.black.withValues(alpha: 0.5),
           memCacheHeight: 20,
           memCacheWidth: 20,
           colorBlendMode: BlendMode.darken,

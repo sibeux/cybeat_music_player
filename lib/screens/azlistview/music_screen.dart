@@ -101,7 +101,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
               child: Text(
                 'No songs available in this ${playlistPlayController.playlistType.value.toLowerCase()}',
                 style: TextStyle(
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black.withValues(alpha: 0.7),
                   fontSize: 16,
                 ),
               ),
@@ -124,7 +124,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
             indexBarAlignment: Alignment.topRight,
             indexBarOptions: IndexBarOptions(
               indexHintDecoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.7),
+                color: Colors.grey.withValues(alpha: 0.7),
                 shape: BoxShape.circle,
               ),
               selectItemDecoration: BoxDecoration(
@@ -211,7 +211,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
     return PopScope(
       // Logic saat back button bawaan hp ditekan.
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult:(didPop, result) {
         if (didPop) {
           if (playlistPlayController.playlistType.value.toLowerCase() ==
               'offline') {
@@ -320,7 +320,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                                 child: SizedBox(),
                               ),
                               IconButton(
-                                highlightColor: Colors.black.withOpacity(0.02),
+                                highlightColor:
+                                    Colors.black.withValues(alpha: 0.02),
                                 icon: Icon(
                                   Icons.list_rounded,
                                   size: 30,

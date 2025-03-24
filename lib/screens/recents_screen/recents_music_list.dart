@@ -135,7 +135,7 @@ class RecentMusicList extends StatelessWidget {
             margin: const EdgeInsets.only(left: 18, right: 10),
             width: double.infinity,
             height: 1,
-            color: HexColor('#e0e0e0').withOpacity(0.7),
+            color: HexColor('#e0e0e0').withValues(alpha: 0.7),
           ),
         ],
       ),
