@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_link_music_screen.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_home_screen.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
@@ -33,9 +37,15 @@ Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+  await Firebase.initializeApp();
+
+  // Menangkap error tidak tertangani
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
+  // Aplikasi hanya bisa berjalan dalam orientasi portrait.
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
     (fn) {
-      runApp(const MyApp());
+        runApp(const MyApp());
     }, // Menjalankan aplikasi setelah inisialisasi
   );
 }
