@@ -211,7 +211,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
     return PopScope(
       // Logic saat back button bawaan hp ditekan.
-      onPopInvokedWithResult:(didPop, result) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
           if (playlistPlayController.playlistType.value.toLowerCase() ==
               'offline') {

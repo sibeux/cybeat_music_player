@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -8,7 +9,13 @@ class FloatingPlayingMusicController extends GetxController {
   Future<void> getDominantColor(String url) async {
     final PaletteGenerator paletteGenerator =
         await PaletteGenerator.fromImageProvider(
-      NetworkImage(url),
+          // Penyesuaian ukuran gambar agar lebih cepat.
+      CachedNetworkImageProvider(
+        url,
+        maxHeight: 8,
+        maxWidth: 8,
+        scale: 0.1,
+      ),
       size: const Size(256.0, 170.0),
       region: const Rect.fromLTRB(41.8, 4.4, 217.8, 170.0),
       maximumColorCount: 20,
@@ -35,7 +42,7 @@ class FloatingPlayingMusicController extends GetxController {
         fixColor = value;
       }
     }
-    final list =  [paletteGenerator.dominantColor!.color, fixColor];
+    final list = [paletteGenerator.dominantColor!.color, fixColor];
     listColor.value = list;
   }
 
