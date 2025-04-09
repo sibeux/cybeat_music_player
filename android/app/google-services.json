@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "830285112633",
+    "project_id": "cybeat-flutter",
+    "storage_bucket": "cybeat-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:830285112633:android:cf761faec48e925d9534e8",
+        "android_client_info": {
+          "package_name": "com.example.cybeat_music_player"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIiEF8PmcxZmiOtoTCyq3Ym0LFVr1OSF4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

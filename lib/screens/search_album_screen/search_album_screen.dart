@@ -118,7 +118,7 @@ class SearchAlbumScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
+                        color: Colors.grey.withValues(alpha: 0.3),
                         spreadRadius: 2,
                         blurRadius: 2,
                         offset:
@@ -127,7 +127,7 @@ class SearchAlbumScreen extends StatelessWidget {
                     ],
                   ),
                   child: Divider(
-                    color: Colors.grey.withOpacity(0.3),
+                    color: Colors.grey.withValues(alpha: 0.3),
                     thickness: 2,
                     height: 0,
                   ),
@@ -157,7 +157,7 @@ class SearchAlbumScreen extends StatelessWidget {
             Text(
               'Couldn\'t find',
               style: TextStyle(
-                color: Colors.black.withOpacity(0.9),
+                color: Colors.black.withValues(alpha: 0.9),
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -167,7 +167,7 @@ class SearchAlbumScreen extends StatelessWidget {
               "\"$value\"",
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.black.withOpacity(0.9),
+                color: Colors.black.withValues(alpha: 0.9),
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -176,7 +176,7 @@ class SearchAlbumScreen extends StatelessWidget {
             Text(
               'Try searching again using a different spelling or keyword.',
               style: TextStyle(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w500,
                 fontSize: 12,
               ),
@@ -196,7 +196,7 @@ class SearchAlbumScreen extends StatelessWidget {
           Text(
             'Search your album',
             style: TextStyle(
-              color: Colors.black.withOpacity(0.9),
+              color: Colors.black.withValues(alpha: 0.9),
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
@@ -205,7 +205,7 @@ class SearchAlbumScreen extends StatelessWidget {
           Text(
             'Find everything you\'ve saved, followed, or created',
             style: TextStyle(
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withValues(alpha: 0.7),
               fontWeight: FontWeight.w500,
               fontSize: 14,
             ),

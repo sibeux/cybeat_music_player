@@ -25,7 +25,7 @@ TextFormField searchBar(MusicPlaylistController musicPlaylistController,
       contentPadding: const EdgeInsets.symmetric(vertical: 7, horizontal: 7),
       hintText: needHint ? 'Find playlist' : '',
       hintStyle: TextStyle(
-        color: Colors.black.withOpacity(0.8),
+        color: Colors.black.withValues(alpha: 0.8),
         fontSize: 12,
         fontWeight: FontWeight.bold,
       ),
@@ -40,7 +40,7 @@ TextFormField searchBar(MusicPlaylistController musicPlaylistController,
       ),
       prefixIcon: Icon(
         Icons.search,
-        color: Colors.black.withOpacity(1),
+        color: Colors.black.withValues(alpha: 01),
       ),
       suffixIcon: Obx(() => musicPlaylistController.isTypingValue
           ? GestureDetector(

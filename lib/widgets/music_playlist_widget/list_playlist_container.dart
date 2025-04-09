@@ -49,7 +49,7 @@ class ListPlaylistContainer extends StatelessWidget {
                 maxLines: 1,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.black.withOpacity(0.8),
+                  color: Colors.black.withValues(alpha: 0.8),
                   overflow: TextOverflow.ellipsis,
                   fontWeight: FontWeight.bold,
                 ),
@@ -59,8 +59,7 @@ class ListPlaylistContainer extends StatelessWidget {
               ),
               Row(
                 children: [
-                  listPlaylist[index].pin ==
-                          'true'
+                  listPlaylist[index].pin == 'true'
                       ? Icon(
                           Icons.push_pin,
                           size: 16,
@@ -105,7 +104,7 @@ class ListPlaylistContainer extends StatelessWidget {
                     )
                   : Icon(
                       Icons.circle_outlined,
-                      color: Colors.black.withOpacity(0.8),
+                      color: Colors.black.withValues(alpha: 0.8),
                     ),
             ),
           ),

@@ -54,7 +54,7 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Colors.grey.withOpacity(0.8)],
+            colors: [Colors.white, Colors.grey.withValues(alpha:  0.8)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -68,7 +68,7 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black.withOpacity(0.8),
+                  color: Colors.black.withValues(alpha:  0.8),
                 ),
               ),
               const SizedBox(height: 25),
@@ -79,8 +79,8 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                     data: ThemeData(
                       textSelectionTheme: TextSelectionThemeData(
                         cursorColor: Colors.blue, // Cursor color
-                        selectionColor: Colors.yellow.withOpacity(0.4),
-                        selectionHandleColor: Colors.blue.withOpacity(0.5),
+                        selectionColor: Colors.yellow.withValues(alpha:  0.4),
+                        selectionHandleColor: Colors.blue.withValues(alpha:  0.5),
                       ),
                     ),
                     child: TextField(
@@ -94,13 +94,13 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black.withOpacity(0.7),
+                        color: Colors.black.withValues(alpha:  0.7),
                       ),
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.only(bottom: 0),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.black.withOpacity(0.7),
+                            color: Colors.black.withValues(alpha:  0.7),
                           ), // Color when focused
                         ),
                       ),

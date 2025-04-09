@@ -90,7 +90,7 @@ class EffectTapMusicModalState extends State<EffectTapMusicModal>
       onTapCancel: _restoreButtonSize, // ini kemungkinan ada sih
       child: AnimatedContainer(
         width: double.infinity,
-        color: Colors.grey.withOpacity(colorOnTap),
+        color: Colors.grey.withValues(alpha:  colorOnTap),
         duration: const Duration(milliseconds: 150),
         curve: Curves.fastOutSlowIn,
         child: widget.child,

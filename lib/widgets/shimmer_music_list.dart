@@ -144,7 +144,7 @@ class ShimmerLoading extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      highlightColor: Colors.black.withOpacity(0.02),
+                      highlightColor: Colors.black.withValues(alpha: 0.02),
                       icon: Icon(
                         Icons.more_vert_sharp,
                         size: 30,
@@ -164,7 +164,7 @@ class ShimmerLoading extends StatelessWidget {
                   margin: const EdgeInsets.only(left: 18, right: 10),
                   width: double.infinity,
                   height: 1,
-                  color: HexColor('#e0e0e0').withOpacity(0.7),
+                  color: HexColor('#e0e0e0').withValues(alpha: 0.7),
                 ),
               ],
             ),
