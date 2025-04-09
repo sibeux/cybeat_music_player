@@ -99,12 +99,13 @@ class MusicPlaylistScreen extends StatelessWidget {
                                         width: 150,
                                         height: 50,
                                         decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.8),
+                                          color: Colors.black
+                                              .withValues(alpha: 0.8),
                                           borderRadius:
                                               BorderRadius.circular(50),
                                           border: Border.all(
-                                            color:
-                                                Colors.black.withOpacity(0.8),
+                                            color: Colors.black
+                                                .withValues(alpha: 0.8),
                                             width: 1,
                                           ),
                                         ),

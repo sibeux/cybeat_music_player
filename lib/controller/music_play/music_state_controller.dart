@@ -65,6 +65,8 @@ class MusicStateController extends GetxController {
     cover.value = sequenceState?.currentSource?.tag.artUri.toString() ??
         'https://raw.githubusercontent.com/sibeux/license-sibeux/MyProgram/placeholder_cover_music.png';
 
+    
+    // Ini penyebab ada junk lama saat ganti lagu.
     floatingPlayingMusicController.getDominantColor(cover.value);
   }
 }

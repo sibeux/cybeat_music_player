@@ -230,7 +230,8 @@ class _TestingMusicScreenState extends State<TestingMusicScreen> {
                               child: SizedBox(),
                             ),
                             IconButton(
-                              highlightColor: Colors.black.withOpacity(0.02),
+                              highlightColor:
+                                  Colors.black.withValues(alpha: 0.02),
                               icon: Icon(
                                 Icons.list_rounded,
                                 size: 30,

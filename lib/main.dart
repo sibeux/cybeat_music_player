@@ -1,62 +1,63 @@
+import 'dart:async';
+
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_link_music_screen.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_home_screen.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-const String dsn =
-    'https://cd0c927a9fa1fcf194410c445b4f9e83@o4508939227889664.ingest.us.sentry.io/4508939841044480';
 
 Future<void> main() async {
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-    androidNotificationIcon: 'mipmap/ic_launcher',
-    androidShowNotificationBadge: true,
-  );
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.white,
-    statusBarBrightness: Brightness.dark,
-    systemNavigationBarColor: Colors.white,
-    systemNavigationBarIconBrightness: Brightness.dark,
-  ));
+    // Tampilkan splash screen sampai app siap
+    WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // WidgetsFlutterBinding.ensureInitialized();
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+    // Inisialisasi Just Audio Background
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+      androidNotificationChannelName: 'Audio playback',
+      androidNotificationOngoing: true,
+      androidNotificationIcon: 'mipmap/ic_launcher',
+      androidShowNotificationBadge: true,
+    );
 
-  await SentryFlutter.init(
-    (options) {
-      options.dsn = dsn; // Ganti dengan DSN dari Sentry
-      options.tracesSampleRate = 1.0; // Mengaktifkan tracing penuh otomatis
-      options.debug = true; // Mengaktifkan debug mode
-      options.diagnosticLevel = SentryLevel.warning; // Hanya menangkap warning & error 
-      options.enablePrintBreadcrumbs = true; // Menampilkan log print()
-      options.attachStacktrace = true; // Menampilkan stacktrace lengkap
-    },
-    appRunner: () {
-      // Tangkap semua error global di Flutter
-      FlutterError.onError = (FlutterErrorDetails details) {
-        Sentry.captureException(details.exception, stackTrace: details.stack);
-      };
+    // Konfigurasi Status Bar dan Navigation Bar
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
 
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-          .then((fn) {
-        runApp(const MyApp());
-      });
-    }, // Menjalankan aplikasi setelah inisialisasi
-  );
+    // Aplikasi hanya berjalan dalam mode portrait
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    // Inisialisasi Firebase
+    await Firebase.initializeApp();
+
+    // Menangkap error Flutter
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
+    runApp(MyApp());
+  }, (error, stackTrace) {
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+  });
 }
 
 class MyApp extends StatelessWidget {

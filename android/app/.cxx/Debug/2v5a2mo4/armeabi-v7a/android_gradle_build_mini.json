@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "C:\\Users\\Nasrul Wahabi\\Documents\\00--programming\\mobile-developer\\flutter\\packages\\flutter_tools\\gradle\\src\\main\\groovy\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\Nasrul Wahabi\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\Nasrul Wahabi\\Documents\\00--programming\\mobile-developer\\Flutter Applications\\cybeat_music_player\\android\\app\\.cxx\\Debug\\2v5a2mo4\\armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\Nasrul Wahabi\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\Nasrul Wahabi\\Documents\\00--programming\\mobile-developer\\Flutter Applications\\cybeat_music_player\\android\\app\\.cxx\\Debug\\2v5a2mo4\\armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

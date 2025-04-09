@@ -181,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: Colors.grey.withValues(alpha: 0.3),
                   spreadRadius: 2,
                   blurRadius: 2,
                   offset: const Offset(0, 1), // changes position of shadow
@@ -189,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             child: Divider(
-              color: Colors.grey.withOpacity(0.3),
+              color: Colors.grey.withValues(alpha: 0.3),
               thickness: 2,
               height: 0,
             ),
@@ -204,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 timeToFade: const Duration(milliseconds: 500),
                 padding: const EdgeInsets.only(top: 55),
                 thickness: 5,
-                thumbColor: HexColor('#ac8bc9').withOpacity(0.7),
+                thumbColor: HexColor('#ac8bc9').withValues(alpha: 0.7),
                 trackVisibility: false,
                 child: SmartRefresher(
                   controller: _homeAlbumGridController.refreshController,
