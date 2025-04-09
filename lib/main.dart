@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_link_music_screen.dart';
@@ -10,7 +11,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
+import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
+import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -50,6 +54,12 @@ Future<void> main() async {
 
     // Inisialisasi Firebase
     await Firebase.initializeApp();
+    // Inisiasi controller
+    // Harus dipanggil sebelum splash hilang karena di home screen dipakai.
+    Get.put(MusicStateController());
+    Get.put(PlaylistPlayController());
+    Get.put(MusicDownloadController());
+    Get.put(ReadCodecController());
 
     // Menangkap error Flutter
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
