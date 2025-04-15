@@ -12,7 +12,6 @@ class MusicState extends ChangeNotifier {
   }
 
   void clear() {
-    print("Clearing current media item: ${_currentMediaItem?.title}");
     _currentMediaItem = null;
   }
 }

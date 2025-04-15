@@ -42,6 +42,10 @@ class FloatingPlayingMusicController extends GetxController {
         fixColor = value;
       }
     }
+
+    if (fixColor == paletteGenerator.dominantColor!.color) {
+      fixColor = Colors.white;
+    }
     final list = [paletteGenerator.dominantColor!.color, fixColor];
     listColor.value = list;
   }
