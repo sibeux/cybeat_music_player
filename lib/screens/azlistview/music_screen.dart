@@ -18,7 +18,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 
-
 var isPlaying = false;
 
 class AzListMusic extends ISuspensionBean {
