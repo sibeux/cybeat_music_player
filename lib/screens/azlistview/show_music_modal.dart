@@ -25,6 +25,9 @@ Future<dynamic> showMusicModalBottom(
   final musicDownloadController = Get.find<MusicDownloadController>();
   return showMaterialModalBottomSheet(
     context: context,
+    // Pakai {useRootNavigator: true} agar modal bottom sheet tidak terhalangi-
+    // oleh FloatingPlayingMusic dari root_page.dart
+    useRootNavigator: true,
     backgroundColor: Colors.transparent,
     clipBehavior: Clip.antiAliasWithSaveLayer,
     builder: (context) => Container(

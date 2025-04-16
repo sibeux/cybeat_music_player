@@ -1,7 +1,7 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/screens/home_screen/home_screen.dart';
+import 'package:cybeat_music_player/screens/splash_screen/root/root_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
@@ -57,9 +57,9 @@ class _SplashHomeScreenState extends State<SplashHomeScreen> {
 
     switch (widget.path) {
       case '/':
-        return HomeScreen(audioState: audioState);
+        return RootPage(audioState: audioState);
       default:
-        return HomeScreen(audioState: audioState);
+        return RootPage(audioState: audioState);
     }
   }
 }

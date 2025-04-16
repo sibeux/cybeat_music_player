@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
-import 'package:cybeat_music_player/screens/home_screen/list_album/four_cover_album.dart';
+import 'package:cybeat_music_player/widgets/home_widget/list_album/four_cover_album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
