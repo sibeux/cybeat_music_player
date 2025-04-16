@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
-import 'package:cybeat_music_player/screens/home_screen/sort/show_sort_modal.dart';
+import 'package:cybeat_music_player/widgets/home_widget/sort/show_sort_modal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 // import 'dart:developer' as developer;

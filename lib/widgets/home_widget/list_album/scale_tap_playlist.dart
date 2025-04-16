@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:cybeat_music_player/models/playlist.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/screens/home_screen/list_album/grid_playlist_album.dart';
-import 'package:cybeat_music_player/screens/home_screen/list_album/show_album_modal.dart';
+import 'package:cybeat_music_player/widgets/home_widget/list_album/grid_playlist_album.dart';
+import 'package:cybeat_music_player/widgets/home_widget/list_album/show_album_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'dart:developer' as developer;

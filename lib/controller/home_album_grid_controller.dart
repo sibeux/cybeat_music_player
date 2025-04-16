@@ -19,6 +19,7 @@ class HomeAlbumGridController extends GetxController {
 
   var jumlahPin = 0.obs;
   var jumlahDitampilkan = 15.obs;
+  var countGrid = 3.obs;
 
   var isLoading = true.obs;
   var isTapped = false.obs;
@@ -386,6 +387,14 @@ class HomeAlbumGridController extends GetxController {
     playlistCreatedList.removeAt(indexPlaylist);
 
     isTapped.value = !isTapped.value;
+  }
+
+  void changeLayoutGrid() {
+    if (countGrid.value == 3) {
+      countGrid.value = 1;
+    } else {
+      countGrid.value = 3;
+    }
   }
 
   String regexGdriveLink(String url, String key) {

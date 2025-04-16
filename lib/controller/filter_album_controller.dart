@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
-import 'package:cybeat_music_player/screens/home_screen/filter/grid_filter.dart';
-import 'package:cybeat_music_player/screens/home_screen/filter/scale_tap_filter.dart';
+import 'package:cybeat_music_player/widgets/home_widget/filter/grid_filter.dart';
+import 'package:cybeat_music_player/widgets/home_widget/filter/scale_tap_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
