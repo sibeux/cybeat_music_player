@@ -44,7 +44,9 @@ class MusicList extends StatelessWidget {
       ),
     );
 
-    if (musikDimainkan?.id == mediaItem.id) {
+    // Perbaikan di bug warna ungu yang tidak hilang saat pindah album, 
+    // adalah dengan mengganti logika cek lagu yang semula index, menjadi music_id.
+    if (musikDimainkan?.extras!['music_id'] == mediaItem.extras!['music_id']) {
       colorTitle = '#8238be';
       marginList = 12;
       indexIcon = const SpectrumAnimation();
