@@ -8,6 +8,9 @@ Future<dynamic> showSortModalBottom(BuildContext context) {
 
   return showMaterialModalBottomSheet(
     context: context,
+    // Pakai {useRootNavigator: true} agar modal bottom sheet tidak terhalangi-
+    // oleh FloatingPlayingMusic dari root_page.dart
+    useRootNavigator: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(20),

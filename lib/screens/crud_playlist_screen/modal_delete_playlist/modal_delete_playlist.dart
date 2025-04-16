@@ -4,7 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 void showModalDeletePlaylist(
-    BuildContext context, String title, String uid, String type) {
+  BuildContext context,
+  String title,
+  String uid,
+  String type,
+) {
   showCupertinoDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -30,7 +34,8 @@ void showModalDeletePlaylist(
             Get.back();
             deletePlaylist(uid);
             showRemoveAlbumToast(
-                '${type.capitalizeFirst!} removed from your library');
+              '${type.capitalizeFirst!} removed from your library',
+            );
           },
           child: const Text('Yes'),
         ),

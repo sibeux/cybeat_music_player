@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart' as http;
 
-import './/./widgets/floating_playing_music.dart';
 
 var isPlaying = false;
 
@@ -104,7 +103,6 @@ class _RecentsScreenState extends State<RecentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     Widget content = const Center(
       child: Text('No music in recents!'),
     );
@@ -113,7 +111,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
       content = const ShimmerMusicList();
     }
 
-    final playingStateController = Get.put(PlayingStateController());
+    Get.put(PlayingStateController());
 
     if (_musicItems.isNotEmpty) {
       content = ListView.builder(
@@ -143,7 +141,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           tooltip: 'Menu',
           onPressed: () {
-            Get.back();
+            Get.back(id: 1);
           },
         ),
         centerTitle: true,
@@ -178,13 +176,6 @@ class _RecentsScreenState extends State<RecentsScreen> {
                 ),
               ],
             ),
-          ),
-          Obx(
-            () => playingStateController.isPlaying.value
-                ? FloatingPlayingMusic(
-                    audioState: widget.audioState,
-                  )
-                : const SizedBox(),
           ),
         ],
       ),

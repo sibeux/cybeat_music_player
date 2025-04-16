@@ -9,7 +9,6 @@ import 'package:cybeat_music_player/widgets/home_widget/filter/grid_filter.dart'
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/show_new_playlist_modal.dart';
 import 'package:cybeat_music_player/screens/recents_screen/recents_screen.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_screen.dart';
-import 'package:cybeat_music_player/widgets/floating_playing_music.dart';
 import 'package:cybeat_music_player/widgets/home_widget/list_album/scale_tap_playlist.dart';
 import 'package:cybeat_music_player/widgets/home_widget/sort/scale_tap_sort.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final playingStateController = Get.put(PlayingStateController());
     final filterAlbumController = Get.put(FilterAlbumController());
+    final playingStateController = Get.find<PlayingStateController>();
     final musicStateController = Get.find<MusicStateController>();
 
     /*
@@ -118,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           transition: Transition.native,
                           popGesture: false,
                           fullscreenDialog: true,
+                          id: 1,
                         );
                       },
                       child: const Icon(
@@ -138,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           transition: Transition.cupertino,
                           popGesture: false,
                           fullscreenDialog: true,
+                          id: 1,
                         );
                       },
                       child: const Icon(
@@ -316,13 +317,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          ),
-          Obx(
-            () => playingStateController.isPlaying.value
-                ? FloatingPlayingMusic(
-                    audioState: widget.audioState,
-                  )
-                : const SizedBox(),
           ),
         ],
       ),

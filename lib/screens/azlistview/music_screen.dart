@@ -18,7 +18,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 
-import './/./widgets/floating_playing_music.dart';
 
 var isPlaying = false;
 
@@ -230,7 +229,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
             onPressed: () {
               // On pressed ini berlaku saat icon back button diklik.
               // Tidak berlaku saat nav back button diklik.
-              Get.back();
+              Get.back(
+                id: 1,
+              );
               if (playlistPlayController.playlistType.value.toLowerCase() ==
                   'offline') {
                 return;
@@ -348,13 +349,6 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                   ),
                 ],
               ),
-            ),
-            Obx(
-              () => playingStateController.isPlaying.value
-                  ? FloatingPlayingMusic(
-                      audioState: audioState,
-                    )
-                  : const SizedBox(),
             ),
           ],
         ),

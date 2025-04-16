@@ -49,6 +49,7 @@ class GridPlaylistAlbum extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           popGesture: false,
           fullscreenDialog: true,
+          id: 1,
         );
       },
       child: Container(
