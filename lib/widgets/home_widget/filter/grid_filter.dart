@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 final _filterKey = GlobalKey();
-final _filterAlbumController = Get.put(FilterAlbumController());
+final _filterAlbumController = Get.find<FilterAlbumController>();
 
 class GridFilter extends StatelessWidget {
   const GridFilter({super.key});

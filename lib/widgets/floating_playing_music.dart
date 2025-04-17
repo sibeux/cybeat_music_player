@@ -5,6 +5,7 @@ import 'package:cybeat_music_player/controller/music_play/progress_music_control
 import 'package:cybeat_music_player/widgets/animated_rotate_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
 import '../providers/audio_state.dart';
@@ -28,9 +29,10 @@ class FloatingPlayingMusic extends StatelessWidget {
     final musicStateController = Get.find<MusicStateController>();
 
     return GestureDetector(
-      child: SizedBox(
+      child: Container(
         width: double.infinity,
         height: 50,
+        color: HexColor('#fefffe'),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Stack(
