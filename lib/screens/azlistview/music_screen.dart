@@ -349,6 +349,11 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                 ],
               ),
             ),
+            Obx(
+              () => SizedBox(
+                height: playingStateController.isPlaying.value ? 50 : 0,
+              ),
+            ),
           ],
         ),
       ),
