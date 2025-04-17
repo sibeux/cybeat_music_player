@@ -61,7 +61,7 @@ class ScaleTapFilterState extends State<ScaleTapFilter>
 
   @override
   Widget build(BuildContext context) {
-    final filterAlbumCOntroller = Get.put(FilterAlbumController());
+    final filterAlbumCOntroller = Get.find<FilterAlbumController>();
 
     return GestureDetector(
       onTapDown: (details) {

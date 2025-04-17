@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filterAlbumController = Get.put(FilterAlbumController());
+    final filterAlbumController = Get.find<FilterAlbumController>();
     final playingStateController = Get.find<PlayingStateController>();
     final musicStateController = Get.find<MusicStateController>();
 

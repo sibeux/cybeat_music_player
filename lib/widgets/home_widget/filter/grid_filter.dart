@@ -5,24 +5,21 @@ import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-final _filterKey = GlobalKey();
-final _filterAlbumController = Get.find<FilterAlbumController>();
-
 class GridFilter extends StatelessWidget {
   const GridFilter({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey filterKey = GlobalKey(); // ⬅️ Dideklarasikan di sini
     final generatedFilter = _getGeneratedFilter();
     return ReorderableBuilder(
       onReorder: (p0) {},
-      enableDraggable: false,
       children: generatedFilter,
       builder: (context) {
         return Align(
           alignment: Alignment.centerLeft,
           child: Wrap(
-            key: _filterKey,
+            key: filterKey,
             direction: Axis.horizontal,
             spacing: 10,
             runSpacing: 10,
@@ -34,20 +31,19 @@ class GridFilter extends StatelessWidget {
   }
 
   List<Widget> _getGeneratedFilter() {
+    final filterAlbumController = Get.find<FilterAlbumController>();
     return List<Widget>.generate(
-      _filterAlbumController.generateFilter.length,
+      filterAlbumController.generateFilter.length,
       (index) => _getFilter(index: index),
     );
   }
 
   Widget _getFilter({required int index}) {
-    final children = _filterAlbumController.children;
-    final generatedFilter = _filterAlbumController.generateFilter;
-
+    final filterAlbumController = Get.find<FilterAlbumController>();
     return CustomDraggable(
-      key: Key(children[index].toString()),
+      key: Key(filterAlbumController.children[index].toString()),
       data: index,
-      child: generatedFilter[index],
+      child: filterAlbumController.generateFilter[index],
     );
   }
 }
@@ -62,16 +58,17 @@ class FilterPlaylistAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final filterAlbumController = Get.find<FilterAlbumController>();
     return Obx(
       () => Container(
         alignment: Alignment.center,
         width: 80,
         height: 35,
         decoration: BoxDecoration(
-          color: _filterAlbumController.getSelectedFilter.toString() ==
+          color: filterAlbumController.getSelectedFilter.toString() ==
                   text.toLowerCase()
               ? HexColor('#ac8bc9')
-              : _filterAlbumController.getSelectedFilter.toString() == ''
+              : filterAlbumController.getSelectedFilter.toString() == ''
                   ? Colors.grey
                   : Colors.transparent,
           borderRadius: BorderRadius.circular(50),
@@ -80,10 +77,10 @@ class FilterPlaylistAlbum extends StatelessWidget {
           text,
           style: TextStyle(
             fontSize: 14,
-            color: _filterAlbumController.getSelectedFilter.toString() ==
+            color: filterAlbumController.getSelectedFilter.toString() ==
                     text.toLowerCase()
                 ? HexColor('#fefffe')
-                : _filterAlbumController.getSelectedFilter.toString() == ''
+                : filterAlbumController.getSelectedFilter.toString() == ''
                     ? HexColor('#fefffe')
                     : Colors.transparent,
             fontWeight: FontWeight.bold,

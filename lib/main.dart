@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cybeat_music_player/controller/filter_album_controller.dart';
+import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
@@ -56,10 +58,12 @@ Future<void> main() async {
     await Firebase.initializeApp();
     // Inisiasi controller
     // Harus dipanggil sebelum splash hilang karena di home screen dipakai.
+    Get.put(HomeAlbumGridController());
     Get.put(MusicStateController());
     Get.put(PlaylistPlayController());
     Get.put(MusicDownloadController());
     Get.put(ReadCodecController());
+    Get.put(FilterAlbumController());
 
     // Menangkap error Flutter
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
