@@ -1,9 +1,10 @@
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
+import 'package:cybeat_music_player/widgets/home_widget/filter/filter_playlist_album.dart';
+import 'package:cybeat_music_player/widgets/home_widget/filter/scale_tap_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:get/get.dart';
-import 'package:hexcolor/hexcolor.dart';
 
 class GridFilter extends StatelessWidget {
   const GridFilter({super.key});
@@ -14,6 +15,7 @@ class GridFilter extends StatelessWidget {
     final generatedFilter = _getGeneratedFilter();
     return ReorderableBuilder(
       onReorder: (p0) {},
+      enableDraggable: false,
       children: generatedFilter,
       builder: (context) {
         return Align(
@@ -43,48 +45,11 @@ class GridFilter extends StatelessWidget {
     return CustomDraggable(
       key: Key(filterAlbumController.children[index].toString()),
       data: index,
-      child: filterAlbumController.generateFilter[index],
-    );
-  }
-}
-
-class FilterPlaylistAlbum extends StatelessWidget {
-  const FilterPlaylistAlbum({
-    super.key,
-    required this.text,
-  });
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final filterAlbumController = Get.find<FilterAlbumController>();
-    return Obx(
-      () => Container(
-        alignment: Alignment.center,
-        width: 80,
-        height: 35,
-        decoration: BoxDecoration(
-          color: filterAlbumController.getSelectedFilter.toString() ==
-                  text.toLowerCase()
-              ? HexColor('#ac8bc9')
-              : filterAlbumController.getSelectedFilter.toString() == ''
-                  ? Colors.grey
-                  : Colors.transparent,
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 14,
-            color: filterAlbumController.getSelectedFilter.toString() ==
-                    text.toLowerCase()
-                ? HexColor('#fefffe')
-                : filterAlbumController.getSelectedFilter.toString() == ''
-                    ? HexColor('#fefffe')
-                    : Colors.transparent,
-            fontWeight: FontWeight.bold,
-          ),
+      // child: filterAlbumController.generateFilter[index],
+      child: ScaleTapFilter(
+        filter: filterAlbumController.generateFilter[index].filter,
+        child: FilterPlaylistAlbum(
+          text: filterAlbumController.generateFilter[index].text,
         ),
       ),
     );

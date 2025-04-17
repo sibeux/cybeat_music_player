@@ -166,11 +166,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 10,
                 ),
                 Obx(
-                  // Dalam kasus ini, harus pakai 2 karena perlu rebuild widget,
-                  // bisa harusnya satu widget aja, tapi benahi kode dulu.
-                  () => filterAlbumController.isTapped.value
-                      ? const GridFilter()
-                      : const GridFilter(),
+                  // Awalnya, GridFilter ada const, tetapi di release mode,
+                  // dia tidak bergeser, sehingga const dihapus.
+                  () => filterAlbumController.isTapped.value ||
+                          !filterAlbumController.isTapped.value
+                      ? GridFilter()
+                      : SizedBox(),
                 ),
               ],
             ),
