@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/components/url_formatter.dart';
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
@@ -394,20 +395,6 @@ class HomeAlbumGridController extends GetxController {
       countGrid.value = 1;
     } else {
       countGrid.value = 3;
-    }
-  }
-
-  String regexGdriveLink(String url, String key) {
-    if (url.contains('drive.google.com')) {
-      final regExp = RegExp(r'/d/([a-zA-Z0-9_-]+)');
-      final match = regExp.firstMatch(url);
-      return 'https://www.googleapis.com/drive/v3/files/${match!.group(1)}?alt=media&key=$key';
-    } else if (url.contains('www.googleapis.com')) {
-      final regExp = RegExp(r'files\/([a-zA-Z0-9_-]+)\?');
-      final match = regExp.firstMatch(url);
-      return "https://www.googleapis.com/drive/v3/files/${match!.group(1)}?alt=media&key=$key";
-    } else {
-      return url;
     }
   }
 }
