@@ -138,7 +138,10 @@ class AudioState extends ChangeNotifier {
                 return AudioSource.uri(
                   // Uri.parse(item['link_gdrive']),
                   Uri.parse(
-                    regexGdriveLink(item['link_gdrive'], apiData[0]['gdrive_api']),
+                    regexGdriveLink(
+                      url: item['link_gdrive'],
+                      listApiKey: apiData,
+                    ),
                   ),
                   tag: MediaItem(
                     id: '${_nextMediaId++}',
@@ -147,15 +150,18 @@ class AudioState extends ChangeNotifier {
                     album: capitalizeEachWord(item['album']),
                     // artUri: Uri.parse(item['cover']),
                     artUri: Uri.parse(
-                      regexGdriveLink(item['cover'], apiData[0]['gdrive_api']),
+                      regexGdriveLink(
+                        url: item['cover'],
+                        listApiKey: apiData,
+                      ),
                     ),
                     extras: {
                       'favorite': item['favorite'],
                       'music_id': item['id_music'],
                       'id_playlist_music': item['id_playlist_music'] ?? '',
                       'url': regexGdriveLink(
-                        item['link_gdrive'],
-                        apiData[0]['gdrive_api'],
+                        url: item['link_gdrive'],
+                        listApiKey: apiData,
                       ),
                       'is_downloaded':
                           uidDownloadedSongs.contains(item['id_music'])
@@ -223,7 +229,8 @@ class AudioState extends ChangeNotifier {
         clear();
         playingStateController.pause();
         init(playlistPlayController.currentPlaylistPlay[0]);
-        playlistPlayController.onPlaylist(playlistPlayController.currentPlaylistPlay[0]);
+        playlistPlayController
+            .onPlaylist(playlistPlayController.currentPlaylistPlay[0]);
 
         // Tampilkan toast.
         showRemoveAlbumToast('Music has been deleted from the playlist');

@@ -1,4 +1,10 @@
-String regexGdriveLink(String url, String key) {
+import 'dart:math';
+
+String regexGdriveLink(
+    {required String url, required List<dynamic> listApiKey}) {
+  int randomIndex =
+      Random().nextInt(listApiKey.length); // dari 0 sampai items.length - 1
+  String key = listApiKey[randomIndex]['gdrive_api'];
   if (url.contains('drive.google.com')) {
     final regExp = RegExp(r'/d/([a-zA-Z0-9_-]+)');
     final match = regExp.firstMatch(url);
