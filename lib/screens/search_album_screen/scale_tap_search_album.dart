@@ -31,7 +31,8 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
   static const clickAnimationDurationMillis = 100;
   double _scaleTransformValue = 1;
 
-  PlaylistPlayController playlistPlayController = Get.find<PlaylistPlayController>();
+  PlaylistPlayController playlistPlayController =
+      Get.find<PlaylistPlayController>();
   PlayingStateController playingStateController = Get.find();
 
   // needed for the "click" tap effect
@@ -118,6 +119,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                   duration: const Duration(milliseconds: 300),
                   popGesture: false,
                   fullscreenDialog: true,
+                  id: 1,
                 );
               },
               child: SizedBox(
@@ -136,11 +138,11 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                           child: ClipRRect(
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(3)),
-                            child:
-                                FourCoverAlbum(
-                                    size: 60,
-                                    type: widget.playlist.type, playlist: widget.playlist,
-                                  ),
+                            child: FourCoverAlbum(
+                              size: 60,
+                              type: widget.playlist.type,
+                              playlist: widget.playlist,
+                            ),
                           ),
                         ),
                         const SizedBox(
