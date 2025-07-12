@@ -134,9 +134,11 @@ Future<dynamic> detailMusicModal(
                 onTap: () {
                   Get.back();
                   if (playlistPlayController.isAzlistviewScreenActive.value) {
-                    Get.back();
+                    Get.back(
+                    );
                   } else {
-                    Get.off(
+                    Get.back();
+                    Get.to(
                       () => AzListMusicScreen(
                         audioState: audioState,
                       ),
@@ -144,6 +146,7 @@ Future<dynamic> detailMusicModal(
                       duration: const Duration(milliseconds: 300),
                       popGesture: false,
                       fullscreenDialog: true,
+                      id: 1,
                     );
                   }
                 },

@@ -245,7 +245,10 @@ class HomeAlbumGridController extends GetxController {
           title: capitalizeEachWord(item['name']),
           image: item['image'] == null
               ? ''
-              : regexGdriveLink(item['image'], apiData[0]['gdrive_api']),
+              : regexGdriveLink(
+                  url: item['image'],
+                  listApiKey: apiData,
+                ),
           type: (item['type']).toString().capitalizeFirst!,
           author: item['type'] == 'album'
               ? capitalizeEachWord(item['author'])
