@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/components/colorize_terminal.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/components/url_formatter.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
@@ -67,7 +68,8 @@ class AudioState extends ChangeNotifier {
         }
       },
       onError: (Object e, StackTrace stackTrace) {
-        logger.e('A stream error occurred: $e');
+        // logger.e('A stream error occurred: $e');
+        logError('A stream error occurred: $e');
       },
     );
     // notifyListeners();
@@ -183,7 +185,8 @@ class AudioState extends ChangeNotifier {
 
       await player.setAudioSource(playlist);
     } catch (e) {
-      logger.e('Error loading audio source: $e');
+      // logger.e('Error loading audio source: $e');
+      logError('Error loading audio source: $e');
     }
   }
 
@@ -207,14 +210,14 @@ class AudioState extends ChangeNotifier {
       );
 
       if (response.body.isEmpty) {
-        debugPrint('Error: Response body is empty');
+        logError('Error in deleteMusicFromPlaylist: Response body is empty');
         return;
       }
 
       final responseBody = jsonDecode(response.body);
 
       if (responseBody['status'] == 'success') {
-        debugPrint('Music has been deleted from the playlist: $responseBody');
+        logSuccess('Music has been deleted from the playlist: $responseBody');
         final playingStateController = Get.find<PlayingStateController>();
         final playlistPlayController = Get.find<PlaylistPlayController>();
 
@@ -236,10 +239,10 @@ class AudioState extends ChangeNotifier {
         showRemoveAlbumToast('Music has been deleted from the playlist');
         Get.back();
       } else {
-        debugPrint('Error deleteMusicFromPlaylist: $responseBody');
+        logError('Error deleteMusicFromPlaylist: $responseBody');
       }
     } catch (e) {
-      debugPrint('Error delete music from playlist: $e');
+      logError('Error delete music from playlist: $e');
     } finally {
       // Baru setelah di-fetch, azlist di-rebuild pakai ini.
       final musicDownloadController = Get.find<MusicDownloadController>();
@@ -252,7 +255,8 @@ class AudioState extends ChangeNotifier {
     player.playbackEventStream.listen(
       (event) {},
       onError: (Object e, StackTrace stackTrace) {
-        logger.e('A stream error occurred: $e');
+        logError('{setSourceAudio} A stream error occurred: $e');
+        logError('{setSourceAudio} stackTrace: $stackTrace');
       },
     );
 
