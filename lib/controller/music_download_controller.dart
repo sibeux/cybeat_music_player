@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/components/colorize_terminal.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
@@ -61,23 +62,29 @@ class MusicDownloadController extends GetxController {
   }
 
   Future<void> checkListTempDir() async {
-    final directory = await getTemporaryDirectory();
-    final tempDirPath = directory.path;
+    // getTemporaryDirectory(); ini buat cache file.
+    // final directory = await getTemporaryDirectory();
+    // Kita pakai getApplicationDocumentsDirectory(); biar disimpan di direktori aplikasi.
+    final directory = await getApplicationDocumentsDirectory();
+    final appDirPath = directory.path;
 
     // Mendapatkan daftar file yang ada di direktori sementara
-    final tempDir = Directory(tempDirPath);
-    final files = tempDir.listSync();
+    final appDir = Directory(appDirPath);
+    final files = appDir.listSync();
 
     // Mencetak nama file yang ada di dalamnya
     for (var file in files) {
-      logger.d('File found: ${file.path}');
+      // logger.d('File found: ${file.path}');
+      logInfo('File found: ${file.path}');
     }
   }
 
-  Future<void> downloadAndCacheMusic(MediaItem mediaItem) async {
+  Future<void> downloadOfflineMusic(MediaItem mediaItem) async {
     try {
-      // Dapatkan direktori cache
-      final directory = await getTemporaryDirectory();
+      // getTemporaryDirectory(); ini buat cache file.
+      // final directory = await getTemporaryDirectory();
+      // Kita pakai getApplicationDocumentsDirectory(); biar disimpan di direktori aplikasi.
+      final directory = await getApplicationDocumentsDirectory();
       final filePath =
           '${directory.path}/${mediaItem.extras!['music_id']}_${mediaItem.title}';
 
@@ -169,13 +176,16 @@ class MusicDownloadController extends GetxController {
       final playlistPlayController = Get.find<PlaylistPlayController>();
 
       // Mendapatkan direktori sementara
-      final directory = await getTemporaryDirectory();
-      final tempDirPath = directory.path;
+      // getTemporaryDirectory(); ini buat cache file.
+      // final directory = await getTemporaryDirectory();
+      // Kita pakai getApplicationDocumentsDirectory(); biar disimpan di direktori aplikasi.
+      final directory = await getApplicationDocumentsDirectory();
+      final appDirPath = directory.path;
 
       final namefile = filePath.split('/').last;
 
       // Mendapatkan file dengan path yang diberikan
-      final file = File('$tempDirPath/$namefile');
+      final file = File('$appDirPath/$namefile');
 
       if (await file.exists()) {
         // Menghapus file jika ada

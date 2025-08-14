@@ -3,8 +3,10 @@ import 'package:cybeat_music_player/controller/music_play/music_state_controller
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
+import 'package:cybeat_music_player/widgets/detail_music_widget/modal/music_credits_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:marquee/marquee.dart';
@@ -18,35 +20,34 @@ Future<dynamic> detailMusicModal(
   final musicStateController = Get.find<MusicStateController>();
   return showMaterialModalBottomSheet(
     context: context,
-    shape: const RoundedRectangleBorder(
+    shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
+        top: Radius.circular(20.r),
       ),
     ),
     clipBehavior: Clip.antiAliasWithSaveLayer,
     builder: (context) => Container(
       color: Colors.white,
       child: Column(
-        // mainAxisSize: MainAxisSize.min - mencegah layar full
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min, // mencegah layar full
         children: [
           Container(
-            margin: const EdgeInsets.only(top: 10, bottom: 20),
-            height: 5,
-            width: 40,
+            margin: EdgeInsets.only(top: 10.h, bottom: 20.h),
+            height: 5.h,
+            width: 40.w,
             decoration: BoxDecoration(
               color: Colors.grey,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Row(
               children: [
                 CachedNetworkImage(
                   imageUrl: musicStateController.cover.value,
-                  height: 50,
-                  width: 50,
+                  height: 50.h,
+                  width: 50.w,
                   maxHeightDiskCache: 200,
                   maxWidthDiskCache: 200,
                   filterQuality: FilterQuality.low,
@@ -63,17 +64,18 @@ Future<dynamic> detailMusicModal(
                     );
                   },
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10.w),
                 Flexible(
                   fit: FlexFit.tight,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: 25,
+                        height: 25.h,
                         child: AutoSizeText(
                           musicStateController.title.value,
                           maxLines: 1,
+                          // Error saat diberi .sp
                           minFontSize: 16,
                           maxFontSize: 16,
                           style: const TextStyle(
@@ -81,14 +83,14 @@ Future<dynamic> detailMusicModal(
                           ),
                           overflowReplacement: Marquee(
                             text: musicStateController.title.value,
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
                             ),
                             scrollAxis: Axis.horizontal,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             // spacing end of text
-                            blankSpace: 30,
+                            blankSpace: 30.w,
                             // second needed before slide again
                             pauseAfterRound: const Duration(seconds: 0),
                             // text gonna slide first time after this second
@@ -100,14 +102,14 @@ Future<dynamic> detailMusicModal(
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 3,
+                      SizedBox(
+                        height: 3.h,
                       ),
                       Text(
                         "${musicStateController.artist.value} • ${musicStateController.album.value}",
-                        style: const TextStyle(
+                        style: TextStyle(
                           overflow: TextOverflow.ellipsis,
-                          fontSize: 13,
+                          fontSize: 13.sp,
                           color: Colors.grey,
                         ),
                       ),
@@ -117,10 +119,10 @@ Future<dynamic> detailMusicModal(
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          const Divider(
-            height: 1,
-            thickness: 1,
+          SizedBox(height: 20.h),
+          Divider(
+            height: 1.h,
+            thickness: 1.h,
           ),
           // const SizedBox(height: 20),
           // by default, ListTile has a padding of 16
@@ -134,8 +136,7 @@ Future<dynamic> detailMusicModal(
                 onTap: () {
                   Get.back();
                   if (playlistPlayController.isAzlistviewScreenActive.value) {
-                    Get.back(
-                    );
+                    Get.back();
                   } else {
                     Get.back();
                     Get.to(
@@ -151,6 +152,17 @@ Future<dynamic> detailMusicModal(
                   }
                 },
               ),
+              ListTileBottomModal(
+                  icon: Icons.my_library_music_outlined,
+                  title: "View Credits",
+                  changeColor: false,
+                  onTap: () {
+                    Get.back();
+                    musicCreditsDialog(
+                      context: context,
+                      musicStateController: musicStateController,
+                    );
+                  }),
             ],
           ),
         ],
@@ -176,17 +188,17 @@ class ListTileBottomModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-      minVerticalPadding: 5,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
+      minVerticalPadding: 5.h,
       leading: Icon(
         icon,
         color: changeColor ? HexColor('#ac8bc9') : Colors.black,
       ),
       title: Text(title),
       // trailing: const Icon(Icons.arrow_forward_ios),
-      titleTextStyle: const TextStyle(
+      titleTextStyle: TextStyle(
         color: Colors.black,
-        fontSize: 14,
+        fontSize: 14.sp,
         fontWeight: FontWeight.bold,
       ),
       onTap: onTap,

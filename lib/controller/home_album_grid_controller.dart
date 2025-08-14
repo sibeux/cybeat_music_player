@@ -245,7 +245,7 @@ class HomeAlbumGridController extends GetxController {
           title: capitalizeEachWord(item['name']),
           image: item['image'] == null
               ? ''
-              : regexGdriveLink(
+              : regexGdriveHostUrl(
                   url: item['image'],
                   listApiKey: apiData,
                 ),

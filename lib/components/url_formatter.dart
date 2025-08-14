@@ -1,6 +1,6 @@
 import 'dart:math';
 
-String regexGdriveLink(
+String regexGdriveHostUrl(
     {required String url, required List<dynamic> listApiKey}) {
   // Filter hanya yang email-nya mengandung @gmail.com
   final gmailOnly = listApiKey.where((item) {

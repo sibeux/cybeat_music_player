@@ -192,7 +192,7 @@ class ListTileBottomModal extends StatelessWidget {
           case 'download':
             // download music
             showRemoveAlbumToast('Downloading music');
-            musicDownloadController.downloadAndCacheMusic(mediaItem);
+            musicDownloadController.downloadOfflineMusic(mediaItem);
             Get.back();
           case 'delete':
             // delete music
