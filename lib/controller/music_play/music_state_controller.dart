@@ -8,6 +8,7 @@ import 'package:just_audio/just_audio.dart';
 
 // Buat sebuah controller untuk mengelola state.
 class MusicStateController extends GetxController {
+  var musicId = ''.obs;
   var musicUri = ''.obs;
   var title = ''.obs;
   var artist = ''.obs;
@@ -52,6 +53,7 @@ class MusicStateController extends GetxController {
     });
 
     // Masukkan data musik ke variable observable.
+    musicId.value = mediaItem.extras!['music_id'] ?? '';
     musicUri.value = mediaItem.extras!['url'];
     title.value = mediaItem.title;
     artist.value = mediaItem.artist ?? '';
@@ -62,6 +64,7 @@ class MusicStateController extends GetxController {
   void updateState(SequenceState? sequenceState) {
     currentMusicPlay.value = [sequenceState?.currentSource?.tag as MediaItem];
 
+    musicId.value = sequenceState?.currentSource?.tag.extras?['music_id'] ?? '';
     musicUri.value = sequenceState?.currentSource?.tag.extras?['url'] ?? '';
     title.value = sequenceState?.currentSource?.tag.title ?? '';
     artist.value = sequenceState?.currentSource?.tag.artist ?? '';

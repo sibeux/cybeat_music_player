@@ -53,18 +53,10 @@ void musicCreditsDialog({
           SizedBox(
             height: 10.h,
           ),
-          // Agar divider menembus padding.
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 0.5,
-            child: OverflowBox(
-              maxWidth: MediaQuery.of(context).size.width,
-              child: Divider(
-                height: 0.4.h,
-                thickness: 0.4.h,
-                color: Colors.black.withValues(alpha: 0.4),
-              ),
-            ),
+          Divider(
+            height: 0.4.h,
+            thickness: 0.4.h,
+            color: Colors.black.withValues(alpha: 0.4),
           ),
           SizedBox(
             height: 15.h,
@@ -125,7 +117,7 @@ void musicCreditsDialog({
             height: 15.h,
           ),
           Text(
-            "Source",
+            "Original Source",
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.bold,
@@ -144,7 +136,34 @@ void musicCreditsDialog({
                   fontWeight: FontWeight.w400,
                   color: Colors.black.withValues(alpha: 0.6),
                 ),
-              ))
+              )),
+          SizedBox(
+            height: 15.h,
+          ),
+          Text(
+            "Already Hosted",
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          Text(
+            "YES",
+            maxLines: 1,
+            style: TextStyle(
+              overflow: TextOverflow.ellipsis,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+              color: Colors.black.withValues(alpha: 0.6),
+            ),
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
         ],
       ),
     ),

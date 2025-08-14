@@ -65,6 +65,7 @@ Future<void> main() async {
     Get.put(MusicDownloadController());
     Get.put(ReadCodecController());
     Get.put(FilterAlbumController());
+    
 
     // Menangkap error Flutter
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;

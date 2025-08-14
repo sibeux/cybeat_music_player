@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cybeat_music_player/components/colorize_terminal.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +27,7 @@ class ReadCodecController extends GetxController {
       );
 
       if (response.body.isEmpty) {
-        debugPrint('Error: Response body is empty');
+        logError('Error onReadCodec: Response body is empty');
         return;
       }
 
@@ -40,7 +41,7 @@ class ReadCodecController extends GetxController {
       bitRate.value = fileBitRate != '--' ? (int.parse(fileBitRate) / 1000).toStringAsFixed(0) : '--';
     } catch (e) {
       if (kDebugMode) {
-        print('Error onReadCodec: $e');
+        logError('Error onReadCodec: $e');
       }
     }
   }

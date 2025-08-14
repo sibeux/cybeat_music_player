@@ -61,6 +61,14 @@ class AudioState extends ChangeNotifier {
             uid = item.extras!['music_id'];
             setRecentsMusic(item.extras!['music_id']);
 
+            // Fungsi untuk save lagu di cloud storage selain gdrive.
+            // if (item.extras?['already_hosted'] == false) {
+            //   uploadHostMusic(
+            //     musicId: item.extras!['music_id'],
+            //     musicUri: item.extras!['url'],
+            //   );
+            // }
+
             // Untuk read codec file.
             final readCodecController = Get.find<ReadCodecController>();
             readCodecController.onReadCodec(item.extras!['url']);
@@ -140,7 +148,7 @@ class AudioState extends ChangeNotifier {
                 return AudioSource.uri(
                   // Uri.parse(item['link_gdrive']),
                   Uri.parse(
-                    regexGdriveLink(
+                    regexGdriveHostUrl(
                       url: item['link_gdrive'],
                       listApiKey: apiData,
                     ),
@@ -152,7 +160,7 @@ class AudioState extends ChangeNotifier {
                     album: capitalizeEachWord(item['album']),
                     // artUri: Uri.parse(item['cover']),
                     artUri: Uri.parse(
-                      regexGdriveLink(
+                      regexGdriveHostUrl(
                         url: item['cover'],
                         listApiKey: apiData,
                       ),
@@ -161,10 +169,11 @@ class AudioState extends ChangeNotifier {
                       'favorite': item['favorite'],
                       'music_id': item['id_music'],
                       'id_playlist_music': item['id_playlist_music'] ?? '',
-                      'url': regexGdriveLink(
+                      'url': regexGdriveHostUrl(
                         url: item['link_gdrive'],
                         listApiKey: apiData,
                       ),
+                      'already_hosted': false,
                       'is_downloaded':
                           uidDownloadedSongs.contains(item['id_music'])
                               ? true
