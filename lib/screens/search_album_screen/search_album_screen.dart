@@ -2,8 +2,11 @@ import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+
+import '../../controller/music_play/playing_state_controller.dart';
 
 class SearchAlbumScreen extends StatelessWidget {
   const SearchAlbumScreen({super.key, required this.audioState});
@@ -13,6 +16,7 @@ class SearchAlbumScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final searchAlbumController = Get.put(SearchAlbumController());
+    final playingStateController = Get.put(PlayingStateController());
 
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
@@ -134,7 +138,11 @@ class SearchAlbumScreen extends StatelessWidget {
               ],
             ),
           ),
-          
+          Obx(
+            () => SizedBox(
+              height: playingStateController.isPlaying.value ? 50.h : 0,
+            ),
+          ),
         ],
       ),
     );

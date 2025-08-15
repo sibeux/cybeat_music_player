@@ -12,6 +12,7 @@ import 'package:cybeat_music_player/screens/detail_screen/music_detail_screen.da
 import 'package:cybeat_music_player/widgets/music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
@@ -351,7 +352,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
             ),
             Obx(
               () => SizedBox(
-                height: playingStateController.isPlaying.value ? 50 : 0,
+                height: playingStateController.isPlaying.value ? 50.h : 0,
               ),
             ),
           ],

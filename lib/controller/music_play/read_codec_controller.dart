@@ -40,8 +40,6 @@ class ReadCodecController extends GetxController {
         bitRate.value = fileBitRate != '--'
             ? (int.parse(fileBitRate) / 1000).toStringAsFixed(0)
             : '--';
-
-        logSuccess(audioStream.getAllProperties().toString());
       }
 
       // final response = await http.post(
