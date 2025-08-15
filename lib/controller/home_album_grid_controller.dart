@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/components/colorize_terminal.dart';
 import 'package:cybeat_music_player/components/url_formatter.dart';
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
@@ -282,9 +283,7 @@ class HomeAlbumGridController extends GetxController {
       initiateAlbum.value = list;
       allAlbumList.value = list;
     } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
+      logError('Error initializeAlbum home album grid controller: $e');
     } finally {
       // ini tetap dieksekusi baik berhasil atau gagal
       isLoading.value = false;
@@ -301,9 +300,7 @@ class HomeAlbumGridController extends GetxController {
       final response = await http.post(Uri.parse(url));
       listData = json.decode(response.body);
     } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
+      logError('Error getSumFavoriteSong: $e');
     }
 
     return listData[0]['count_favorite'];
@@ -319,9 +316,7 @@ class HomeAlbumGridController extends GetxController {
       final response = await http.post(Uri.parse(url));
       listData = json.decode(response.body);
     } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
+      logError('Error getSumCategorySong: $e');
     }
 
     return listData;
@@ -338,9 +333,7 @@ class HomeAlbumGridController extends GetxController {
       final response = await http.post(Uri.parse(url));
       fourCover = json.decode(response.body);
     } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
+      logError('Error getFourCoverAlbum: $e');
     }
 
     if (type == 'category') {

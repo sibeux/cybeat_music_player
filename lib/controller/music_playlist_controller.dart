@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cybeat_music_player/components/colorize_terminal.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
@@ -72,7 +73,7 @@ class MusicPlaylistController extends GetxController {
         listMusicOnPlaylist.value = [];
       }
     } catch (e) {
-      debugPrint('Error getMusicOnPlaylist: $e');
+      logError('Error getMusicOnPlaylist: $e');
     } finally {
       isLoadingGetMusicOnPlaylist.value = false;
     }
@@ -130,12 +131,12 @@ class MusicPlaylistController extends GetxController {
       );
 
       if (response.body.isEmpty) {
-        debugPrint('Error: Response body is empty');
+        logError('Error: Response body is empty');
         return;
       }
 
       final responseBody = jsonDecode(response.body);
-      debugPrint('Response updateMusicOnPlaylist: $responseBody');
+      logInfo('Response updateMusicOnPlaylist: $responseBody');
 
       if (responseBody['status'] == 'success') {
         if (toAdd.isNotEmpty && toRemove.isNotEmpty) {
@@ -146,10 +147,10 @@ class MusicPlaylistController extends GetxController {
           showRemoveAlbumToast('Music has been removed from the playlist');
         }
       } else {
-        debugPrint('Error updateMusicOnPlaylist: $responseBody');
+        logError('Error updateMusicOnPlaylist: $responseBody');
       }
     } catch (e) {
-      debugPrint('Error updateMusicOnPlaylist: $e');
+      logError('Error updateMusicOnPlaylist: $e');
     } finally {
       isLoadingUpdateMusicOnPlaylist.value = false;
       // Jika musik dihapus dari playlist, maka kita perlu menghapus

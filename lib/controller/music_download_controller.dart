@@ -110,7 +110,7 @@ class MusicDownloadController extends GetxController {
       // Setelah file diunduh, simpan metadata di SharedPreferences atau SQLite
       await saveDownloadedSong(mediaItem, filePath);
     } catch (e) {
-      logger.e("Error downloading song: $e");
+      logError("Error downloading song: $e");
     }
   }
 
@@ -140,7 +140,7 @@ class MusicDownloadController extends GetxController {
     showRemoveAlbumToast('Song downloaded successfully');
 
     dataProgressDownload.remove(mediaItem.extras!['music_id']);
-    logger.d("Song successfully downloaded and saved in $filePath");
+    logSuccess("Song successfully downloaded and saved in $filePath");
   }
 
   Future<void> getDownloadedSongs() async {
@@ -235,14 +235,14 @@ class MusicDownloadController extends GetxController {
         // (Ikon centang downloaded hilang).
         mediaItem.extras!['is_downloaded'] = false;
 
-        logger.d('File deleted: $filePath');
+        logError('File deleted: $filePath');
         showRemoveAlbumToast('Music has been deleted from offline');
         Get.back();
       } else {
-        logger.e('File does not exist: $filePath');
+        logError('File does not exist: $filePath');
       }
     } catch (e) {
-      logger.e('Error deleting file: $e');
+      logError('Error deleting file: $e');
     } finally {
       // Ini dipakai agar musik di azlistview di-rebuild.
       rebuildDelete.value = !rebuildDelete.value;
