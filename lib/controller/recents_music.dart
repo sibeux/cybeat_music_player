@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:cybeat_music_player/components/colorize_terminal.dart';
 import 'package:http/http.dart' as http;
 
 void setRecentsMusic(String? id) async {
@@ -10,8 +10,6 @@ void setRecentsMusic(String? id) async {
       Uri.parse(url),
     );
   } catch (e) {
-    if (kDebugMode) {
-      print('Error set recents music: $e');
-    }
+      logError('Error set recents music: $e');
   }
 }

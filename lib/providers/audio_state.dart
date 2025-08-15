@@ -11,6 +11,7 @@ import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
 import 'package:cybeat_music_player/controller/recents_music.dart';
 import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -98,6 +99,9 @@ class AudioState extends ChangeNotifier {
     const api =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
+    FirebaseCrashlytics.instance
+        .log("Fetch music started for uid=${list.uid}&type=$type");
+
     try {
       if (type == 'offline') {
         final musicDownloadController = Get.find<MusicDownloadController>();
@@ -117,6 +121,7 @@ class AudioState extends ChangeNotifier {
                     extras: {
                       'favorite': item['favorite'],
                       'music_id': item['id_music'],
+                      'original_source': item['filePath'],
                       'url': item['filePath'],
                       'is_downloaded': item['is_downloaded'],
                     },
@@ -169,11 +174,11 @@ class AudioState extends ChangeNotifier {
                       'favorite': item['favorite'],
                       'music_id': item['id_music'],
                       'id_playlist_music': item['id_playlist_music'] ?? '',
+                      'original_source': item['link_gdrive'],
                       'url': regexGdriveHostUrl(
                         url: item['link_gdrive'],
                         listApiKey: apiData,
                       ),
-                      'already_hosted': false,
                       'is_downloaded':
                           uidDownloadedSongs.contains(item['id_music'])
                               ? true
@@ -193,9 +198,10 @@ class AudioState extends ChangeNotifier {
       queue = playlist.sequence.map((e) => e.tag as MediaItem).toList();
 
       await player.setAudioSource(playlist);
-    } catch (e) {
+    } catch (e, st) {
       // logger.e('Error loading audio source: $e');
       logError('Error loading audio source: $e');
+      FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
     }
   }
 
@@ -219,14 +225,20 @@ class AudioState extends ChangeNotifier {
       );
 
       if (response.body.isEmpty) {
-        logError('Error in deleteMusicFromPlaylist: Response body is empty');
+        // LAPORKAN sebagai error non-fatal agar mudah dilacak
+        final reason =
+            'Error in deleteMusicFromPlaylist: Response body is empty: ${response.statusCode}';
+        logError(reason);
         return;
       }
 
       final responseBody = jsonDecode(response.body);
 
       if (responseBody['status'] == 'success') {
-        logSuccess('Music has been deleted from the playlist: $responseBody');
+        final reason =
+            'Music has been deleted from the playlist: $responseBody';
+        logSuccess(reason);
+        FirebaseCrashlytics.instance.log(reason);
         final playingStateController = Get.find<PlayingStateController>();
         final playlistPlayController = Get.find<PlaylistPlayController>();
 
@@ -248,10 +260,14 @@ class AudioState extends ChangeNotifier {
         showRemoveAlbumToast('Music has been deleted from the playlist');
         Get.back();
       } else {
-        logError('Error deleteMusicFromPlaylist: $responseBody');
+        final e = 'Error in deleteMusicFromPlaylist: $responseBody';
+        logError(e);
       }
-    } catch (e) {
-      logError('Error delete music from playlist: $e');
+    } catch (err, st) {
+      final e = 'Error delete music from playlist: $err';
+      logError(e);
+      FirebaseCrashlytics.instance
+          .recordError(err, st, reason: e, fatal: false);
     } finally {
       // Baru setelah di-fetch, azlist di-rebuild pakai ini.
       final musicDownloadController = Get.find<MusicDownloadController>();
@@ -264,8 +280,8 @@ class AudioState extends ChangeNotifier {
     player.playbackEventStream.listen(
       (event) {},
       onError: (Object e, StackTrace stackTrace) {
-        logError('{setSourceAudio} A stream error occurred: $e');
-        logError('{setSourceAudio} stackTrace: $stackTrace');
+        logError(
+            '{setSourceAudio} A stream error occurred: $e, stackTrace: $stackTrace');
       },
     );
 

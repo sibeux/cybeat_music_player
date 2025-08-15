@@ -1,12 +1,12 @@
 import 'dart:convert';
 
+import 'package:cybeat_music_player/components/colorize_terminal.dart';
 import 'package:cybeat_music_player/components/toast.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class CrudPlaylistController extends GetxController{
+class CrudPlaylistController extends GetxController {
   var namePlaylist = ''.obs;
 
   void onChange(String value) {
@@ -31,9 +31,7 @@ void addNewPlaylist(String name) async {
 
     showRemoveAlbumToast('Playlist added to your library');
   } catch (e) {
-    if (kDebugMode) {
-      print('Error add new playlist: $e');
-    }
+    logError('Error add new playlist: $e');
   } finally {
     homeAlbumGridController.isLoadingAddPlaylist.value = false;
     homeAlbumGridController.initializeAlbum();
@@ -56,17 +54,15 @@ Future<void> updatePlaylist(String id, String name) async {
     );
 
     if (response.body.isEmpty) {
-      debugPrint('Error: Response body is empty');
+      logError('Error: Response body is empty');
       return;
     }
 
     final responseBody = jsonDecode(response.body);
 
-    debugPrint('Response: $responseBody');
+    logInfo('Response: $responseBody');
   } catch (e) {
-    if (kDebugMode) {
-      print('Error update playlist: $e');
-    }
+    logError('Error update playlist: $e');
   } finally {
     homeAlbumGridController.initializeAlbum();
   }
@@ -88,8 +84,6 @@ void deletePlaylist(String id) async {
       },
     );
   } catch (e) {
-    if (kDebugMode) {
-      print('Error delete playlist: $e');
-    }
+    logError('Error delete playlist: $e');
   }
 }

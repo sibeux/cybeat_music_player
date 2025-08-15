@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
+import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/providers/audio_state.dart';
 import 'package:cybeat_music_player/providers/music_state.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_link_music_screen.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_home_screen.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -25,55 +28,69 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  // 1. Pastikan semua binding framework siap
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-    // Tampilkan splash screen sampai app siap
-    WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  // 2. Inisialisasi Firebase
+  await Firebase.initializeApp(
+    // Untuk mendapatkan firebase options, jalankan perintah:
+    // flutterfire configure
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-    // Inisialisasi Just Audio Background
-    await JustAudioBackground.init(
-      androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-      androidNotificationChannelName: 'Audio playback',
-      androidNotificationOngoing: true,
-      androidNotificationIcon: 'mipmap/ic_launcher',
-      androidShowNotificationBadge: true,
-    );
+  // 3. Atur handler error
+  // Menangkap error dari Flutter framework (error saat build widget, dll.)
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
+  };
 
-    // Konfigurasi Status Bar dan Navigation Bar
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.white,
-      statusBarBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
+  // Menangkap error yang tidak ditangani oleh Flutter (error async, di luar build method)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true; // Menandakan bahwa error sudah ditangani
+  };
 
-    // Aplikasi hanya berjalan dalam mode portrait
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+  // TAMBAHKAN INI untuk memaksa pengiriman data di mode debug
+  if (kDebugMode) {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  }
 
-    // Inisialisasi Firebase
-    await Firebase.initializeApp();
-    // Inisiasi controller
-    // Harus dipanggil sebelum splash hilang karena di home screen dipakai.
-    Get.put(HomeAlbumGridController());
-    Get.put(MusicStateController());
-    Get.put(PlaylistPlayController());
-    Get.put(MusicDownloadController());
-    Get.put(ReadCodecController());
-    Get.put(FilterAlbumController());
-    
+  // Tampilkan splash screen sampai app siap
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-    // Menangkap error Flutter
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  // Inisialisasi Just Audio Background
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'Audio playback',
+    androidNotificationOngoing: true,
+    androidNotificationIcon: 'mipmap/ic_launcher',
+    androidShowNotificationBadge: true,
+  );
 
-    runApp(MyApp());
-  }, (error, stackTrace) {
-    FirebaseCrashlytics.instance.recordError(error, stackTrace);
-  });
+  // Konfigurasi Status Bar dan Navigation Bar
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.white,
+    statusBarBrightness: Brightness.dark,
+    systemNavigationBarColor: Colors.white,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
+
+  // Aplikasi hanya berjalan dalam mode portrait
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  // Inisiasi controller
+  // Harus dipanggil sebelum splash hilang karena di home screen dipakai.
+  Get.put(HomeAlbumGridController());
+  Get.put(MusicStateController());
+  Get.put(PlaylistPlayController());
+  Get.put(MusicDownloadController());
+  Get.put(ReadCodecController());
+  Get.put(FilterAlbumController());
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

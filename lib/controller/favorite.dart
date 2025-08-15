@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:cybeat_music_player/components/colorize_terminal.dart';
 import 'package:http/http.dart' as http;
 
 void setfavorite(String? id, String? isFavorite) async {
@@ -9,9 +9,7 @@ void setfavorite(String? id, String? isFavorite) async {
     await http.post(
       Uri.parse(url),
     );
-  } catch (e) {
-    if (kDebugMode) {
-      print('Error set favorite: $e');
-    }
+  } catch (e, st) {
+    logError('Error set favorite: $e, stack: $st');
   }
 }
