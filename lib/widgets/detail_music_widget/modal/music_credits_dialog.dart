@@ -128,7 +128,7 @@ void musicCreditsDialog({
             height: 3.h,
           ),
           Obx(() => Text(
-                musicStateController.musicUri.value,
+                musicStateController.originalSource.value,
                 maxLines: 1,
                 style: TextStyle(
                   overflow: TextOverflow.ellipsis,

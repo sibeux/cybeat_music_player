@@ -121,6 +121,7 @@ class AudioState extends ChangeNotifier {
                     extras: {
                       'favorite': item['favorite'],
                       'music_id': item['id_music'],
+                      'original_source': item['filePath'],
                       'url': item['filePath'],
                       'is_downloaded': item['is_downloaded'],
                     },
@@ -173,6 +174,7 @@ class AudioState extends ChangeNotifier {
                       'favorite': item['favorite'],
                       'music_id': item['id_music'],
                       'id_playlist_music': item['id_playlist_music'] ?? '',
+                      'original_source': item['link_gdrive'],
                       'url': regexGdriveHostUrl(
                         url: item['link_gdrive'],
                         listApiKey: apiData,
