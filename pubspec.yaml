@@ -74,6 +74,7 @@ dependencies:
   firebase_crashlytics: ^4.3.4
   get_storage: ^2.1.1
   flutter_screenutil: ^5.9.3
+  ffmpeg_kit_flutter_new: ^3.2.0
 
 dev_dependencies:
   flutter_test:
