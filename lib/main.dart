@@ -1,19 +1,23 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_filter_album_controller.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
 import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/bindings/add_music_to_playlist_binding.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_music_to_playlist_screen.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/new_playlist_screen.dart';
 import 'package:cybeat_music_player/features/root_page/controllers/root_page_controller.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
 import 'package:cybeat_music_player/features/home/screens/home_screen.dart';
 import 'package:cybeat_music_player/features/root_page/screens/root_page_screen.dart';
-import 'package:cybeat_music_player/screens/recents_screen/recents_screen.dart';
+import 'package:cybeat_music_player/features/recent_music/screens/recents_music_screen.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_home_screen.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -154,18 +158,36 @@ class MyApp extends StatelessWidget {
               GetPage(
                 name: '/home',
                 page: () => HomeScreen(),
+                binding: HomeBinding(),
+                fullscreenDialog: true,
+                popGesture: false,
               ),
               GetPage(
                 name: '/detail',
-                page: () {
-                  return DetailMusicScreen(
-                      player: player, audioState: audioState);
-                },
+                page: () => DetailMusicScreen(),
                 binding: DetailMusicBinding(),
+                fullscreenDialog: true,
+                popGesture: false,
               ),
               GetPage(
                 name: '/recents',
-                page: () => RecentsScreen(audioState: audioState),
+                page: () => RecentsMusicScreen(),
+                transition: Transition.native,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/add_music_to_playlist',
+                page: () => AddMusicToPlaylistScreen(),
+                binding: AddMusicToPlaylistBinding(),
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/new_playlist',
+                page: () => NewPlaylistScreen(),
+                fullscreenDialog: true,
+                popGesture: false,
               ),
               // GetPage(
               //   name: '/cybeat/category/:id',

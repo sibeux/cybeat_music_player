@@ -7,7 +7,7 @@ import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart
 import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
 import 'package:cybeat_music_player/screens/azlistview/delete_music_dialog.dart';
 import 'package:cybeat_music_player/screens/azlistview/effect_tap_music_modal.dart';
-import 'package:cybeat_music_player/screens/music_playlist_screen/music_playlist_screen.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_music_to_playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -181,9 +181,9 @@ class ListTileBottomModal extends StatelessWidget {
             // add music to playlist
             Get.back();
             Get.to(
-              () => MusicPlaylistScreen(
+              () => AddMusicToPlaylistScreen(
                 idMusic: mediaItem.extras?['music_id'],
-                audioState: audioState,
+                audioStateController: audioState,
               ),
               transition: Transition.downToUp,
               fullscreenDialog: true,

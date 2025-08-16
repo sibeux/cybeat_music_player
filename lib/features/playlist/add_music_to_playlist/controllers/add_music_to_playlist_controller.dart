@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music_playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class MusicPlaylistController extends GetxController {
+class AddMusicToPlaylistController extends GetxController {
   var textController = TextEditingController();
   var textValue = ''.obs;
 
@@ -51,8 +50,9 @@ class MusicPlaylistController extends GetxController {
   Future<void> getMusicOnPlaylist({required String idMusic}) async {
     isLoadingGetMusicOnPlaylist.value = true;
 
-    String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist.php?id_music=$idMusic&method=get_music_on_playlist';
+    const String endpoint =
+        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist";
+    String url = '$endpoint?id_music=$idMusic&method=get_music_on_playlist';
     try {
       final response = await http.get(Uri.parse(url));
       final List<dynamic> listData = json.decode(response.body);
@@ -87,7 +87,6 @@ class MusicPlaylistController extends GetxController {
 
     const url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist';
-
     // Ini adalah ID playlist, bukan ID music.
     // Menghitung perbedaan.
     Set<String> setStrSaved = savedInMusicList.toSet();
@@ -156,17 +155,16 @@ class MusicPlaylistController extends GetxController {
       // Jika musik dihapus dari playlist, maka kita perlu menghapus
       // musik tersebut dari AZListView.
       final musicPlayerController = Get.find<MusicPlayerController>();
-      final playlistPlayController = Get.find<PlaylistPlayController>();
-      if (toRemove
-          .contains(int.parse(playlistPlayController.playlistUidValue))) {
+      if (toRemove.contains(
+          int.parse(musicPlayerController.currentActivePlaylist.value!.uid))) {
         // Hentikan musik dan bersihkan queue.
         // Harus ada ini agar azlistview di-rebuild.
         // Bagian ini berfungsi untuk fetch ulang data list musik dari API.
         audioState.clear();
         musicPlayerController.pauseMusic();
-        audioState.init(playlistPlayController.currentActivePlaylist[0]);
-        playlistPlayController
-            .setActivePlaylist(playlistPlayController.currentActivePlaylist[0]);
+        audioState.init(musicPlayerController.currentActivePlaylist.value!);
+        musicPlayerController.setActivePlaylist(
+            musicPlayerController.currentActivePlaylist.value!);
 
         // Baru setelah di-fetch, azlist di-rebuild pakai ini.
         final musicDownloadController = Get.find<MusicDownloadController>();

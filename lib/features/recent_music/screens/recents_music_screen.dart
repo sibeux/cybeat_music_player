@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/core/models/music.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/screens/recents_screen/recents_music_list.dart';
+import 'package:cybeat_music_player/features/recent_music/widgets/recents_music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,13 +10,11 @@ import 'package:http/http.dart' as http;
 
 var isPlaying = false;
 
-class RecentsScreen extends StatefulWidget {
-  const RecentsScreen({super.key, required this.audioState});
-
-  final AudioStateController audioState;
+class RecentsMusicScreen extends StatefulWidget {
+  const RecentsMusicScreen({super.key});
 
   @override
-  State<RecentsScreen> createState() => _RecentsScreenState();
+  State<RecentsMusicScreen> createState() => _RecentsMusicScreenState();
 }
 
 String filteredUrl(String url, String key) {
@@ -30,7 +27,7 @@ String filteredUrl(String url, String key) {
   }
 }
 
-class _RecentsScreenState extends State<RecentsScreen> {
+class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
   String? _error;
   var isLoading = true;
   List<Music> _musicItems = [];

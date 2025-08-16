@@ -6,8 +6,7 @@ import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_filter/home_filter_grid.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_scale_tap.dart';
-import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/show_new_playlist_modal.dart';
-import 'package:cybeat_music_player/screens/recents_screen/recents_screen.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/show_new_playlist_modal.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_screen.dart';
 import 'package:cybeat_music_player/features/home/widgets/sort/scale_tap_sort.dart';
 import 'package:flutter/material.dart';
@@ -108,13 +107,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Get.to(
-                          () => RecentsScreen(audioState: audioStateController),
-                          transition: Transition.native,
-                          popGesture: false,
-                          fullscreenDialog: true,
+                        Get.toNamed(
+                          '/recents',
                           id: 1,
-                        );
+                          );
                       },
                       child: const Icon(
                         Icons.history,

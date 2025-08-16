@@ -8,28 +8,20 @@ import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_m
 import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_title_artist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
 
 import '../widgets/detail_music_background_blur.dart';
 import '../widgets/detail_music_progress_bar.dart';
 
 class DetailMusicScreen extends StatefulWidget {
-  const DetailMusicScreen({
-    super.key,
-    required this.player,
-    required this.audioState,
+  const DetailMusicScreen({super.key, 
   });
-
-  final AudioPlayer player;
-  final AudioStateController audioState;
 
   @override
   State<DetailMusicScreen> createState() => _DetailMusicScreenState();
 }
 
 class _DetailMusicScreenState extends State<DetailMusicScreen> {
-  AudioPlayer get audioPlayer => widget.player;
-  AudioStateController get audioState => widget.audioState;
+  final audioStateController = Get.find<AudioStateController>();
 
   @override
   void setState(VoidCallback fn) {
@@ -99,7 +91,7 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  detailMusicModal(context, audioState);
+                  detailMusicModal(context, audioStateController);
                 },
               ),
             ],
@@ -122,7 +114,7 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
                         width: 15,
                       ),
                       DetailMusicFavoriteButton(
-                        player: audioPlayer,
+                        player: audioStateController.player.value!,
                       )
                     ],
                   ),
@@ -141,13 +133,13 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
                 // child: Divider(
                 //   color: Colors.white,
                 //   thickness: 1,
-                DetailMusicProgressBarMusic(audioPlayer: audioPlayer),
+                DetailMusicProgressBarMusic(audioPlayer: audioStateController.player.value!),
                 const SizedBox(
                   height: 15,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(0.0),
-                  child: DetailMusicControlButtons(audioPlayer: audioPlayer),
+                  child: DetailMusicControlButtons(audioPlayer: audioStateController.player.value!),
                 ),
                 const SizedBox(
                   // buat ngatur jarak antara control buttons

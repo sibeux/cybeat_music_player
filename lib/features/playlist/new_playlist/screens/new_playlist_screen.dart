@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/controller/crud_playlist.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/scale_tap_button_new.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/widgets/scale_tap_button_new.dart';
 // Di-as karena ada duplikasi function.
 import 'package:cybeat_music_player/widgets/new_playlist_widget/text_button.dart'
     as text_button;

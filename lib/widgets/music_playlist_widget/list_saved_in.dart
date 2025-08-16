@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_playlist_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +12,7 @@ class ListSavedIn extends StatelessWidget {
   });
 
   final HomeController homeAlbumGridController;
-  final MusicPlaylistController musicPlaylistController;
+  final AddMusicToPlaylistController musicPlaylistController;
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,9 @@
-import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/new_playlist_screen.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 Future<dynamic> showNewPlaylistModal(BuildContext context) {
-
   return showMaterialModalBottomSheet(
     context: context,
     // Pakai {useRootNavigator: true} agar modal bottom sheet tidak terhalangi-

@@ -3,8 +3,6 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_play/music_play_method.dart';
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
@@ -44,20 +42,19 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   List<AzListMusic> musicItems = [];
   get audioState => widget.audioState;
 
-  final playlistPlayController = Get.find<PlaylistPlayController>();
   final homeAlbumGridController = Get.find<HomeController>();
   final musicPlayerController = Get.find<MusicPlayerController>();
 
   @override
   void initState() {
     super.initState();
-    playlistPlayController.isAzlistviewScreenActive.value = true;
+    musicPlayerController.isAzlistviewScreenActive.value = true;
   }
 
   @override
   void dispose() {
     super.dispose();
-    playlistPlayController.isAzlistviewScreenActive.value = false;
+    musicPlayerController.isAzlistviewScreenActive.value = false;
   }
 
   void setColor(Color color) {
@@ -69,9 +66,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   @override
   Widget build(BuildContext context) {
     // Untuk menampilkan ulang list musik saat ada yang dihapus.
-    if (playlistPlayController.playlistTitle.value.toLowerCase() ==
+    if (musicPlayerController.currentActivePlaylist.value?.title.toLowerCase() ==
             "offline music" ||
-        playlistPlayController.playlistType.value.toLowerCase() == "playlist") {
+        musicPlayerController.currentActivePlaylist.value?.type.toLowerCase() == "playlist") {
       final musicDownloadController = Get.find<MusicDownloadController>();
       ever(musicDownloadController.rebuildDelete, (callback) {
         if (!context.mounted) return;
@@ -96,7 +93,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
           if (sequence.isEmpty) {
             return Center(
               child: Text(
-                'No songs available in this ${playlistPlayController.playlistType.value.toLowerCase()}',
+                'No songs available in this ${musicPlayerController.playlistType.value.toLowerCase()}',
                 style: TextStyle(
                   color: Colors.black.withValues(alpha: 0.7),
                   fontSize: 16,
@@ -176,11 +173,9 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                   if (musicPlayerController.currentMediaItem?.id == "" ||
                       musicPlayerController.currentMediaItem?.id !=
                           sequence[index].tag.id) {
-                    playMusicNow(
+                    musicPlayerController.playMusicNow(
                       audioStateController: audioState,
                       index: index,
-                      context: context,
-                      mediaItem: sequence[index].tag as MediaItem,
                     );
                   }
                 },
@@ -199,10 +194,10 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     }
 
     void rebuildPlaylist() {
-      if (playlistPlayController.isNeedRebuildLastPlaylist.value) {
-        playlistPlayController.isNeedRebuildLastPlaylist.value = false;
+      if (musicPlayerController.isNeedRebuildLastPlaylist.value) {
+        musicPlayerController.isNeedRebuildLastPlaylist.value = false;
         homeAlbumGridController
-            .recentPlaylistUpdate(playlistPlayController.playlistUid.value);
+            .recentPlaylistUpdate(musicPlayerController.playlistUid.value);
       }
     }
 
@@ -210,7 +205,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       // Logic saat back button bawaan hp ditekan.
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
-          if (playlistPlayController.playlistType.value.toLowerCase() ==
+          if (musicPlayerController.playlistType.value.toLowerCase() ==
               'offline') {
             return;
           }
@@ -230,7 +225,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
               Get.back(
                 id: 1,
               );
-              if (playlistPlayController.playlistType.value.toLowerCase() ==
+              if (musicPlayerController.playlistType.value.toLowerCase() ==
                   'offline') {
                 return;
               }
@@ -241,7 +236,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
           toolbarHeight: 60,
           title: Obx(
             () => Text(
-              playlistPlayController.playlistTitle.value,
+              musicPlayerController.playlistTitle.value,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: HexColor('#1e0b2b'),
@@ -361,27 +356,25 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   // logic untuk shuffle music.
   void _shuffleMusic(
-    AudioStateController audioState,
+    AudioStateController audioStateController,
     List<IndexedAudioSource> sequence,
   ) {
-    final index = audioState.playlist.length < 2
+    final index = audioStateController.playlist.value!.length < 2
         ? 0
-        : random(0, audioState.playlist.length - 1);
+        : random(0, audioStateController.playlist.value!.length - 1);
     // Langsung buka detail screen.
     Get.to(
       () => DetailMusicScreen(
-        player: audioState.player,
-        audioState: audioState,
+        player: audioStateController.player.value!,
+        audioState: audioStateController,
       ),
       transition: Transition.downToUp,
       popGesture: false,
       fullscreenDialog: true,
     );
-    playMusicNow(
-      audioStateController: audioState,
+    musicPlayerController.playMusicNow(
+      audioStateController: audioStateController,
       index: index,
-      context: context,
-      mediaItem: sequence[index].tag as MediaItem,
     );
   }
 

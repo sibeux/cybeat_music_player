@@ -1,7 +1,6 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/new_playlist_screen.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/button_done.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_recently_added.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_saved_in.dart';
@@ -11,22 +10,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-class MusicPlaylistScreen extends StatelessWidget {
-  const MusicPlaylistScreen({
+class AddMusicToPlaylistScreen extends StatelessWidget {
+  const AddMusicToPlaylistScreen({
     super.key,
     required this.idMusic,
-    required this.audioState,
   });
 
   final String idMusic;
-  final AudioStateController audioState;
 
   @override
   Widget build(BuildContext context) {
-    final musicPlaylistController = Get.put(MusicPlaylistController());
+    final addMusicToPlaylistController =
+        Get.find<AddMusicToPlaylistController>();
     final homeAlbumGridController = Get.find<HomeController>();
     // Ambil data playlist yang sudah ada.
-    musicPlaylistController.getMusicOnPlaylist(idMusic: idMusic);
+    addMusicToPlaylistController.getMusicOnPlaylist(idMusic: idMusic);
     return Stack(
       children: [
         Scaffold(
@@ -40,13 +38,13 @@ class MusicPlaylistScreen extends StatelessWidget {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () async {
-                if (musicPlaylistController.searchBarTapped.value) {
+                if (addMusicToPlaylistController.searchBarTapped.value) {
                   FocusManager.instance.primaryFocus?.unfocus();
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    musicPlaylistController.tapSearchBar(false);
+                    addMusicToPlaylistController.tapSearchBar(false);
                   });
-                  musicPlaylistController.textController.clear();
-                  musicPlaylistController.isTyping.value = false;
+                  addMusicToPlaylistController.textController.clear();
+                  addMusicToPlaylistController.isTyping.value = false;
                 } else {
                   Get.back();
                 }
@@ -56,8 +54,8 @@ class MusicPlaylistScreen extends StatelessWidget {
             title: Obx(
               () => AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
-                child: musicPlaylistController.searchBarTapped.value
-                    ? searchBar(musicPlaylistController, needHint: false)
+                child: addMusicToPlaylistController.searchBarTapped.value
+                    ? searchBar(addMusicToPlaylistController, needHint: false)
                     : const Text(
                         'Add to playlist',
                       ),
@@ -81,7 +79,8 @@ class MusicPlaylistScreen extends StatelessWidget {
                         Obx(
                           () => AnimatedSwitcher(
                             duration: const Duration(milliseconds: 200),
-                            child: musicPlaylistController.searchBarTapped.value
+                            child: addMusicToPlaylistController
+                                    .searchBarTapped.value
                                 ? const SizedBox()
                                 : Center(
                                     child: ScaleTap(
@@ -127,20 +126,21 @@ class MusicPlaylistScreen extends StatelessWidget {
                         Obx(
                           () => AnimatedSwitcher(
                             duration: const Duration(milliseconds: 200),
-                            child: musicPlaylistController.searchBarTapped.value
+                            child: addMusicToPlaylistController
+                                    .searchBarTapped.value
                                 ? const SizedBox()
                                 : GestureDetector(
                                     onTap: () {
-                                      if (!musicPlaylistController
+                                      if (!addMusicToPlaylistController
                                           .searchBarTapped.value) {
-                                        musicPlaylistController
+                                        addMusicToPlaylistController
                                             .tapSearchBar(true);
                                       }
                                     },
                                     child: AbsorbPointer(
                                       absorbing: true,
                                       child: searchBar(
-                                        musicPlaylistController,
+                                        addMusicToPlaylistController,
                                         needHint: true,
                                       ),
                                     ),
@@ -150,37 +150,38 @@ class MusicPlaylistScreen extends StatelessWidget {
                         Obx(
                           () => AnimatedSlide(
                             duration: const Duration(milliseconds: 200),
-                            offset:
-                                musicPlaylistController.searchBarTapped.value
-                                    ? const Offset(
-                                        0,
-                                        0,
-                                      )
-                                    : const Offset(0, 0),
+                            offset: addMusicToPlaylistController
+                                    .searchBarTapped.value
+                                ? const Offset(
+                                    0,
+                                    0,
+                                  )
+                                : const Offset(0, 0),
                             child: Column(
                               children: [
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                if (musicPlaylistController.isTypingValue &&
-                                        musicPlaylistController
+                                if (addMusicToPlaylistController
+                                            .isTypingValue &&
+                                        addMusicToPlaylistController
                                             .textValue.value.isNotEmpty
                                     ? homeAlbumGridController
                                         .playlistCreatedList
                                         .where((element) {
-                                          return musicPlaylistController
+                                          return addMusicToPlaylistController
                                                   .savedInMusicList
                                                   .contains(element.uid) &&
                                               element.title
                                                   .toLowerCase()
                                                   .contains(
-                                                      musicPlaylistController
+                                                      addMusicToPlaylistController
                                                           .textValue.value
                                                           .toLowerCase());
                                         })
                                         .toList()
                                         .isNotEmpty
-                                    : musicPlaylistController
+                                    : addMusicToPlaylistController
                                         .listMusicOnPlaylist.isNotEmpty)
                                   Row(
                                     children: [
@@ -195,7 +196,8 @@ class MusicPlaylistScreen extends StatelessWidget {
                                       const Spacer(),
                                       TextButton(
                                         onPressed: () {
-                                          musicPlaylistController.clearAll();
+                                          addMusicToPlaylistController
+                                              .clearAll();
                                         },
                                         child: Text(
                                           'Clear all',
@@ -213,24 +215,25 @@ class MusicPlaylistScreen extends StatelessWidget {
                                   homeAlbumGridController:
                                       homeAlbumGridController,
                                   musicPlaylistController:
-                                      musicPlaylistController,
+                                      addMusicToPlaylistController,
                                 ),
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                if (musicPlaylistController.isTypingValue &&
-                                        musicPlaylistController
+                                if (addMusicToPlaylistController
+                                            .isTypingValue &&
+                                        addMusicToPlaylistController
                                             .textValue.value.isNotEmpty
                                     ? homeAlbumGridController
                                         .playlistCreatedList
                                         .where((element) {
-                                          return !musicPlaylistController
+                                          return !addMusicToPlaylistController
                                                   .savedInMusicList
                                                   .contains(element.uid) &&
                                               element.title
                                                   .toLowerCase()
                                                   .contains(
-                                                      musicPlaylistController
+                                                      addMusicToPlaylistController
                                                           .textValue.value
                                                           .toLowerCase());
                                         })
@@ -239,9 +242,10 @@ class MusicPlaylistScreen extends StatelessWidget {
                                     : homeAlbumGridController
                                         .playlistCreatedList
                                         .where(
-                                          (element) => !musicPlaylistController
-                                              .savedInMusicList
-                                              .contains(element.uid),
+                                          (element) =>
+                                              !addMusicToPlaylistController
+                                                  .savedInMusicList
+                                                  .contains(element.uid),
                                         )
                                         .toList()
                                         .isNotEmpty) // Playlist yang belum disimpan.
@@ -265,20 +269,21 @@ class MusicPlaylistScreen extends StatelessWidget {
                                   homeAlbumGridController:
                                       homeAlbumGridController,
                                   musicPlaylistController:
-                                      musicPlaylistController,
+                                      addMusicToPlaylistController,
                                 ),
-                                if (musicPlaylistController.isTypingValue &&
-                                    musicPlaylistController
+                                if (addMusicToPlaylistController
+                                        .isTypingValue &&
+                                    addMusicToPlaylistController
                                         .textValue.value.isNotEmpty &&
                                     homeAlbumGridController.playlistCreatedList
                                         .where((element) {
-                                          return !musicPlaylistController
+                                          return !addMusicToPlaylistController
                                                   .savedInMusicList
                                                   .contains(element.uid) &&
                                               element.title
                                                   .toLowerCase()
                                                   .contains(
-                                                      musicPlaylistController
+                                                      addMusicToPlaylistController
                                                           .textValue.value
                                                           .toLowerCase());
                                         })
@@ -286,13 +291,13 @@ class MusicPlaylistScreen extends StatelessWidget {
                                         .isEmpty &&
                                     homeAlbumGridController.playlistCreatedList
                                         .where((element) {
-                                          return musicPlaylistController
+                                          return addMusicToPlaylistController
                                                   .savedInMusicList
                                                   .contains(element.uid) &&
                                               element.title
                                                   .toLowerCase()
                                                   .contains(
-                                                      musicPlaylistController
+                                                      addMusicToPlaylistController
                                                           .textValue.value
                                                           .toLowerCase());
                                         })
@@ -314,9 +319,8 @@ class MusicPlaylistScreen extends StatelessWidget {
                     ),
                   ),
                   ButtonDone(
-                    musicPlaylistController: musicPlaylistController,
+                    musicPlaylistController: addMusicToPlaylistController,
                     idMusic: idMusic,
-                    audioState: audioState,
                   ),
                 ],
               ),
@@ -324,7 +328,8 @@ class MusicPlaylistScreen extends StatelessWidget {
           ),
         ),
         Obx(
-          () => musicPlaylistController.isLoadingGetMusicOnPlaylist.value ||
+          () => addMusicToPlaylistController
+                      .isLoadingGetMusicOnPlaylist.value ||
                   homeAlbumGridController.isLoadingAddPlaylist.value ||
                   homeAlbumGridController
                       .isLoading.value // Ini loading pas di home screen.
@@ -335,16 +340,17 @@ class MusicPlaylistScreen extends StatelessWidget {
               : const SizedBox(),
         ),
         Obx(
-          () => musicPlaylistController.isLoadingGetMusicOnPlaylist.value ||
-                  homeAlbumGridController.isLoadingAddPlaylist.value ||
-                  homeAlbumGridController
-                      .isLoading.value // Ini loading pas di home screen.
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: HexColor('#8238be'),
-                  ),
-                )
-              : const SizedBox(),
+          () =>
+              addMusicToPlaylistController.isLoadingGetMusicOnPlaylist.value ||
+                      homeAlbumGridController.isLoadingAddPlaylist.value ||
+                      homeAlbumGridController
+                          .isLoading.value // Ini loading pas di home screen.
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: HexColor('#8238be'),
+                      ),
+                    )
+                  : const SizedBox(),
         ),
       ],
     );

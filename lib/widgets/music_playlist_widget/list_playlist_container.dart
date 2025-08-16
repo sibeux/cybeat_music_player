@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/list_album/four_cover_album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,7 +18,7 @@ class ListPlaylistContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.find<HomeController>();
-    final musicPlaylistController = Get.find<MusicPlaylistController>();
+    final musicPlaylistController = Get.find<AddMusicToPlaylistController>();
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: Row(
