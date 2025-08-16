@@ -1,5 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cybeat_music_player/controller/floating_playing_music/floating_playing_music_controller.dart';
+import 'package:cybeat_music_player/features/floating_bar/controllers/floating_playing_music_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/widgets/animated_rotate_cover.dart';
@@ -9,8 +9,7 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
-import '../../core/controllers/audio_state_controller.dart';
-import '../../features/detail_music/screens/detail_music_screen.dart';
+import '../../../core/controllers/audio_state_controller.dart';
 
 final floatingPlayingMusicController =
     Get.put(FloatingPlayingMusicController());
@@ -237,16 +236,7 @@ class FloatingPlayingMusic extends StatelessWidget {
         ),
       ),
       onTap: () {
-        Get.to(
-          () => DetailMusicScreen(
-            player: audioStateController.player.value!,
-            audioState: audioStateController,
-          ),
-          transition: Transition.downToUp,
-          duration: const Duration(milliseconds: 300),
-          popGesture: false,
-          fullscreenDialog: true,
-        );
+        Get.toNamed('/detail');
       },
     );
   }

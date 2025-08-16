@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
+import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_four_cover.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
-import 'package:cybeat_music_player/features/home/widgets/list_album/four_cover_album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -31,7 +31,7 @@ class ListPlaylistContainer extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
             ),
             child: Center(
-              child: FourCoverAlbum(
+              child: HomeListFourCover(
                 size: 100,
                 type: 'playlist',
                 playlist: listPlaylist[index],

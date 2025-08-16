@@ -7,7 +7,6 @@ import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
-import 'package:cybeat_music_player/controller/set_recent_music.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -305,5 +304,18 @@ class AudioStateController extends GetxController {
     queue = playlist.sequence.map((e) => e.tag as MediaItem).toList();
 
     await player.value?.setAudioSource(playlist);
+  }
+
+  void setRecentsMusic(String? id) async {
+    String url =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/recents_music?_id=$id';
+
+    try {
+      await http.post(
+        Uri.parse(url),
+      );
+    } catch (e) {
+      logError('Error set recents music: $e');
+    }
   }
 }

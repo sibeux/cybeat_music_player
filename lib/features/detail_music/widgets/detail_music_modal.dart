@@ -3,7 +3,7 @@ import 'package:cybeat_music_player/controller/music_play/music_state_controller
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_credits_dialog.dart';
-import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
+import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -139,9 +139,9 @@ Future<dynamic> detailMusicModal(
                     Get.back();
                   } else {
                     Get.back();
+                    // Tidak pakai Get.toNamed karena beda transisi.
                     Get.to(
-                      () => AzListMusicScreen(
-                        audioState: audioState,
+                      () => AlbumMusicScreen(
                       ),
                       transition: Transition.downToUp,
                       duration: const Duration(milliseconds: 300),

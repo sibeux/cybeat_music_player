@@ -1,7 +1,7 @@
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
+import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
 import 'package:cybeat_music_player/features/home/widgets/list_album/four_cover_album.dart';
 import 'package:cybeat_music_player/features/home/widgets/list_album/show_album_modal.dart';
 import 'package:flutter/material.dart';
@@ -110,16 +110,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                   playlistPlayController.setActivePlaylist(widget.playlist);
                 }
 
-                Get.to(
-                  () => AzListMusicScreen(
-                    audioState: audioState,
-                  ),
-                  transition: Transition.leftToRightWithFade,
-                  duration: const Duration(milliseconds: 300),
-                  popGesture: false,
-                  fullscreenDialog: true,
-                  id: 1,
-                );
+                Get.toNamed('/album_music', id: 1);
               },
               child: SizedBox(
                 height: 60,

@@ -1,11 +1,10 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
-import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
-import 'package:cybeat_music_player/widgets/music_playlist_widget/button_done.dart';
-import 'package:cybeat_music_player/widgets/music_playlist_widget/list_recently_added.dart';
-import 'package:cybeat_music_player/widgets/music_playlist_widget/list_saved_in.dart';
-import 'package:cybeat_music_player/widgets/music_playlist_widget/scale_tap.dart';
-import 'package:cybeat_music_player/widgets/music_playlist_widget/search_bar.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/button_done.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/list_recently_added.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/list_saved_in.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/scale_tap.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -85,12 +84,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                 : Center(
                                     child: ScaleTap(
                                       onTap: () {
-                                        Get.to(
-                                          () => const NewPlaylistScreen(),
-                                          transition: Transition.downToUp,
-                                          fullscreenDialog: true,
-                                          popGesture: false,
-                                        );
+                                        Get.toNamed('/new_playlist');
                                       },
                                       child: Container(
                                         margin: const EdgeInsets.only(

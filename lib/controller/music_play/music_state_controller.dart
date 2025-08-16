@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/controller/floating_playing_music/floating_playing_music_controller.dart';
+import 'package:cybeat_music_player/features/floating_bar/controllers/floating_playing_music_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';

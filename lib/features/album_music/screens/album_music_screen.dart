@@ -5,7 +5,6 @@ import 'package:cybeat_music_player/features/home/controllers/home_controller.da
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
@@ -27,23 +26,21 @@ class AzListMusic extends ISuspensionBean {
   String getSuspensionTag() => tag;
 }
 
-class AzListMusicScreen extends StatefulWidget {
-  const AzListMusicScreen({super.key, required this.audioState});
-
-  final AudioStateController audioState;
+class AlbumMusicScreen extends StatefulWidget {
+  const AlbumMusicScreen({super.key});
 
   @override
-  State<AzListMusicScreen> createState() => _AzListMusicScreenState();
+  State<AlbumMusicScreen> createState() => _AlbumMusicScreenState();
 }
 
-class _AzListMusicScreenState extends State<AzListMusicScreen> {
+class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
   String? _error;
   Color dominantColor = Colors.black;
   List<AzListMusic> musicItems = [];
-  get audioState => widget.audioState;
 
   final homeAlbumGridController = Get.find<HomeController>();
   final musicPlayerController = Get.find<MusicPlayerController>();
+  final audioStateController = Get.find<AudioStateController>();
 
   @override
   void initState() {
@@ -66,9 +63,11 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   @override
   Widget build(BuildContext context) {
     // Untuk menampilkan ulang list musik saat ada yang dihapus.
-    if (musicPlayerController.currentActivePlaylist.value?.title.toLowerCase() ==
+    if (musicPlayerController.currentActivePlaylist.value?.title
+                .toLowerCase() ==
             "offline music" ||
-        musicPlayerController.currentActivePlaylist.value?.type.toLowerCase() == "playlist") {
+        musicPlayerController.currentActivePlaylist.value?.type.toLowerCase() ==
+            "playlist") {
       final musicDownloadController = Get.find<MusicDownloadController>();
       ever(musicDownloadController.rebuildDelete, (callback) {
         if (!context.mounted) return;
@@ -80,7 +79,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     }
 
     Widget content = StreamBuilder<SequenceState?>(
-      stream: audioState.player.sequenceStateStream,
+      stream: audioStateController.player.value?.sequenceStateStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Menampilkan shimmer saat data sedang dimuat.
@@ -93,7 +92,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
           if (sequence.isEmpty) {
             return Center(
               child: Text(
-                'No songs available in this ${musicPlayerController.playlistType.value.toLowerCase()}',
+                'No songs available in this ${musicPlayerController.currentActivePlaylist.value!.type.toLowerCase()}',
                 style: TextStyle(
                   color: Colors.black.withValues(alpha: 0.7),
                   fontSize: 16,
@@ -137,44 +136,17 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
               return InkWell(
                 child: AlbumMusicList(
                   mediaItem: sequence[index].tag as MediaItem,
-                  audioPlayer: audioState.player,
+                  audioPlayer: audioStateController.player.value!,
                   index: index,
-                  audioState: audioState,
+                  audioState: audioStateController,
                 ),
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   PageTransition(
-                  //     type: PageTransitionType.bottomToTop,
-                  //     duration: const Duration(milliseconds: 300),
-                  //     reverseDuration: const Duration(milliseconds: 300),
-                  //     child: MusicDetailScreen(
-                  //       player: audioState.player,
-                  //       mediaItem: sequence[index].tag as MediaItem,
-                  //     ),
-                  //     childCurrent: AzListMusicScreen(
-                  //       playlist: widget.playlist,
-                  //       audioState: audioState,
-                  //     ),
-                  //   ),
-                  // );
-
-                  Get.to(
-                    () => DetailMusicScreen(
-                      player: audioState.player,
-                      audioState: audioState,
-                    ),
-                    transition: Transition.downToUp,
-                    duration: const Duration(milliseconds: 300),
-                    popGesture: false,
-                    fullscreenDialog: true,
-                  );
-
+                  Get.toNamed('/detail');
                   if (musicPlayerController.currentMediaItem?.id == "" ||
                       musicPlayerController.currentMediaItem?.id !=
                           sequence[index].tag.id) {
                     musicPlayerController.playMusicNow(
-                      audioStateController: audioState,
+                      audioStateController: audioStateController,
                       index: index,
                     );
                   }
@@ -196,8 +168,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     void rebuildPlaylist() {
       if (musicPlayerController.isNeedRebuildLastPlaylist.value) {
         musicPlayerController.isNeedRebuildLastPlaylist.value = false;
-        homeAlbumGridController
-            .recentPlaylistUpdate(musicPlayerController.playlistUid.value);
+        homeAlbumGridController.recentPlaylistUpdate(
+            musicPlayerController.currentActivePlaylist.value!.uid);
       }
     }
 
@@ -205,7 +177,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       // Logic saat back button bawaan hp ditekan.
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
-          if (musicPlayerController.playlistType.value.toLowerCase() ==
+          if (musicPlayerController.currentActivePlaylist.value!.type
+                  .toLowerCase() ==
               'offline') {
             return;
           }
@@ -225,7 +198,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
               Get.back(
                 id: 1,
               );
-              if (musicPlayerController.playlistType.value.toLowerCase() ==
+              if (musicPlayerController.currentActivePlaylist.value!.type
+                      .toLowerCase() ==
                   'offline') {
                 return;
               }
@@ -236,7 +210,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
           toolbarHeight: 60,
           title: Obx(
             () => Text(
-              musicPlayerController.playlistTitle.value,
+              musicPlayerController.currentActivePlaylist.value?.title ?? '',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: HexColor('#1e0b2b'),
@@ -260,7 +234,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                           child: Row(
                             children: [
                               StreamBuilder<SequenceState?>(
-                                stream: audioState.player.sequenceStateStream,
+                                stream: audioStateController.player.value?.sequenceStateStream,
                                 builder: (context, snapshot) {
                                   List<IndexedAudioSource> sequence = [];
                                   if (snapshot.hasData) {
@@ -272,7 +246,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                                       if (snapshot.hasData &&
                                           sequence.isNotEmpty) {
                                         _shuffleMusic(
-                                          audioState,
+                                          audioStateController,
                                           sequence,
                                         );
                                       }
@@ -363,15 +337,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
         ? 0
         : random(0, audioStateController.playlist.value!.length - 1);
     // Langsung buka detail screen.
-    Get.to(
-      () => DetailMusicScreen(
-        player: audioStateController.player.value!,
-        audioState: audioStateController,
-      ),
-      transition: Transition.downToUp,
-      popGesture: false,
-      fullscreenDialog: true,
-    );
+    Get.toNamed('/detail');
     musicPlayerController.playMusicNow(
       audioStateController: audioStateController,
       index: index,

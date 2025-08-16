@@ -1,21 +1,16 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_play/music_play_method.dart';
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
-import 'package:cybeat_music_player/screens/azlistview/delete_music_dialog.dart';
-import 'package:cybeat_music_player/screens/azlistview/effect_tap_music_modal.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/delete_music_dialog.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_music_to_playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:provider/provider.dart';
 
-Future<dynamic> showMusicModalBottom(
+Future<dynamic> albumMusicModal(
   BuildContext context,
   MediaItem mediaItem,
   AudioPlayer audioPlayer,

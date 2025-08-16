@@ -1,9 +1,7 @@
-import 'package:cybeat_music_player/controller/crud_playlist.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/controllers/new_playlist_controller.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/widgets/new_playlist_text_button.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/widgets/scale_tap_button_new.dart';
-// Di-as karena ada duplikasi function.
-import 'package:cybeat_music_player/widgets/new_playlist_widget/text_button.dart'
-    as text_button;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,7 +16,7 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
   final FocusNode _focusNode = FocusNode();
   final textController = TextEditingController();
 
-  final crudPlaylistController = Get.put(CrudPlaylistController());
+  final newPlaylistController = Get.find<NewPlaylistController>();
 
   @override
   void initState() {
@@ -27,7 +25,7 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
     textController.text =
         'New Playlist #${homeAlbumGridController.playlistCreatedList.length + 1}';
     // Set nama playlist ke controller.
-    crudPlaylistController.onChange(textController.text);
+    newPlaylistController.onChange(textController.text);
     // Biar auto select text.
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
@@ -89,7 +87,7 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                       autofocus: true,
                       focusNode: _focusNode,
                       onChanged: (value) {
-                        crudPlaylistController.onChange(value);
+                        newPlaylistController.onChange(value);
                       },
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -115,28 +113,30 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ScaleTapButtonNewPlaylist(
-                      child: text_button.TextButton(
+                      child: NewPlaylistTextButton(
                         title: 'Cancel',
                         textController: textController,
+                        newPlaylistController: newPlaylistController,
                       ),
                     ),
                     const SizedBox(width: 20),
                     Obx(
-                      () => crudPlaylistController.namePlaylist.value.isEmpty
+                      () => newPlaylistController.namePlaylist.value.isEmpty
                           ? AbsorbPointer(
                               child: ScaleTapButtonNewPlaylist(
-                                child: text_button.TextButton(
-                                  title: 'Create',
-                                  isDisable: true,
-                                  textController: textController,
-                                ),
+                                child: NewPlaylistTextButton(
+                                    title: 'Create',
+                                    isDisable: true,
+                                    textController: textController,
+                                    newPlaylistController:
+                                        newPlaylistController),
                               ),
                             )
                           : ScaleTapButtonNewPlaylist(
-                              child: text_button.TextButton(
-                                title: 'Create',
-                                textController: textController,
-                              ),
+                              child: NewPlaylistTextButton(
+                                  title: 'Create',
+                                  textController: textController,
+                                  newPlaylistController: newPlaylistController),
                             ),
                     ),
                   ],

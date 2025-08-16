@@ -1,18 +1,20 @@
-import 'package:cybeat_music_player/controller/crud_playlist.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/controllers/new_playlist_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-class TextButton extends StatelessWidget {
-  const TextButton({
+class NewPlaylistTextButton extends StatelessWidget {
+  const NewPlaylistTextButton({
     super.key,
     required this.title,
     required this.textController,
+    required this.newPlaylistController,
     this.isDisable = false,
   });
 
   final String title;
   final TextEditingController textController;
+  final NewPlaylistController newPlaylistController;
   final bool isDisable;
 
   @override
@@ -24,7 +26,7 @@ class TextButton extends StatelessWidget {
           Get.back();
         } else {
           // create playlist
-          addNewPlaylist(textController.text);
+          newPlaylistController.addNewPlaylist(textController.text);
           Get.back();
         }
       },

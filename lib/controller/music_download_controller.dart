@@ -3,11 +3,9 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,9 +17,10 @@ class MusicDownloadController extends GetxController {
   var rebuildDelete = false.obs;
   var dataProgressDownload = <String, Map<String, dynamic>>{}.obs;
 
+  final musicPlayerController = Get.find<MusicPlayerController>();
+
   void goOfflineScreen({
     required AudioStateController audioState,
-    required MusicPlayerController musicPlayerController,
     required BuildContext context,
   }) {
     Playlist playlist = Playlist(
@@ -36,27 +35,17 @@ class MusicDownloadController extends GetxController {
       type: 'offline',
     );
 
-    final playlistPlayController = Get.find<PlaylistPlayController>();
-
-    if (playlistPlayController.playlistTitleValue != playlist.title ||
-        playlistPlayController.playlistTitleValue == "") {
+    if (musicPlayerController.currentActivePlaylist.value?.title !=
+            playlist.title ||
+        musicPlayerController.currentActivePlaylist.value?.title == "") {
       audioState.clear();
       musicPlayerController.pauseMusic();
       musicPlayerController.clearCurrentMediaItem();
       audioState.init(playlist);
-      playlistPlayController.setActivePlaylist(playlist);
+      musicPlayerController.setActivePlaylist(playlist);
     }
 
-    Get.to(
-      () => AzListMusicScreen(
-        audioState: audioState,
-      ),
-      transition: Transition.leftToRightWithFade,
-      duration: const Duration(milliseconds: 300),
-      popGesture: false,
-      fullscreenDialog: true,
-      id: 1,
-    );
+    Get.toNamed('/album_music', id: 1);
   }
 
   Future<void> checkListTempDir() async {
@@ -170,9 +159,6 @@ class MusicDownloadController extends GetxController {
     AudioStateController audioState,
   ) async {
     try {
-      final musicPlayerController = Get.find<MusicPlayerController>();
-      final playlistPlayController = Get.find<PlaylistPlayController>();
-
       // Mendapatkan direktori sementara
       // getTemporaryDirectory(); ini buat cache file.
       // final directory = await getTemporaryDirectory();
@@ -225,9 +211,9 @@ class MusicDownloadController extends GetxController {
         // Jika musik yang dihapus sedang diputar, hentikan pemutaran
         audioState.clear();
         musicPlayerController.pauseMusic();
-        audioState.init(playlistPlayController.currentActivePlaylist[0]);
-        playlistPlayController
-            .setActivePlaylist(playlistPlayController.currentActivePlaylist[0]);
+        audioState.init(musicPlayerController.currentActivePlaylist.value!);
+        musicPlayerController.setActivePlaylist(
+            musicPlayerController.currentActivePlaylist.value!);
 
         // Untuk memberitahu bahwa musik sudah tidak ada di offline,
         // (Ikon centang downloaded hilang).

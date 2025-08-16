@@ -1,11 +1,11 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
-import 'package:cybeat_music_player/widgets/music_playlist_widget/list_playlist_container.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/list_playlist_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ListRecentlyAdded extends StatelessWidget {
-  const ListRecentlyAdded({
+class ListSavedIn extends StatelessWidget {
+  const ListSavedIn({
     super.key,
     required this.homeAlbumGridController,
     required this.musicPlaylistController,
@@ -24,7 +24,7 @@ class ListRecentlyAdded extends StatelessWidget {
                 musicPlaylistController.textValue.value.isNotEmpty
             ? homeAlbumGridController.playlistCreatedList
                 .where((element) {
-                  return !musicPlaylistController.savedInMusicList
+                  return musicPlaylistController.savedInMusicList
                           .contains(element.uid) &&
                       element.title.toLowerCase().contains(
                             musicPlaylistController.textValue.value
@@ -32,34 +32,33 @@ class ListRecentlyAdded extends StatelessWidget {
                           );
                 })
                 .toList()
-                .length // Playlist yang belum disimpan.
+                .length
             : homeAlbumGridController.playlistCreatedList
                 .where(
-                  (element) => !musicPlaylistController.savedInMusicList
+                  (element) => musicPlaylistController.savedInMusicList
                       .contains(element.uid),
                 )
                 .toList()
-                .length, // Playlist yang belum disimpan.
+                .length, // Playlist yang sudah disimpan.
         itemBuilder: (context, index) {
           return ListPlaylistContainer(
             index: index,
             listPlaylist: musicPlaylistController.isTypingValue &&
                     musicPlaylistController.textValue.value.isNotEmpty
                 ? homeAlbumGridController.playlistCreatedList.where((element) {
-                    return !musicPlaylistController.savedInMusicList
+                    return musicPlaylistController.savedInMusicList
                             .contains(element.uid) &&
                         element.title.toLowerCase().contains(
                               musicPlaylistController.textValue.value
-                                  .trim()
                                   .toLowerCase(),
                             );
                   }).toList()
                 : homeAlbumGridController.playlistCreatedList
                     .where(
-                      (element) => !musicPlaylistController.savedInMusicList
+                      (element) => musicPlaylistController.savedInMusicList
                           .contains(element.uid),
                     )
-                    .toList(), // Playlist yang belum disimpan.
+                    .toList(), // Playlist yang sudah disimpan.
           );
         },
       ),

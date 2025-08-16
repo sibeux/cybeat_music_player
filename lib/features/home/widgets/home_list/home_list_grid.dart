@@ -3,7 +3,6 @@ import 'package:cybeat_music_player/controller/music_play/music_state_controller
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_grid/home_one_grid_layout.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_grid/home_three_grid_layout.dart';
 import 'package:flutter/material.dart';
@@ -37,17 +36,6 @@ class HomeListGrid extends StatelessWidget {
           audioStateController.init(playlist);
           musicPlayerController.setActivePlaylist(playlist);
         }
-
-        Get.to(
-          () => AzListMusicScreen(
-            audioState: audioStateController,
-          ),
-          transition: Transition.leftToRightWithFade,
-          duration: const Duration(milliseconds: 300),
-          popGesture: false,
-          fullscreenDialog: true,
-          id: 1,
-        );
       },
       child: Container(
         alignment: Alignment.centerLeft,

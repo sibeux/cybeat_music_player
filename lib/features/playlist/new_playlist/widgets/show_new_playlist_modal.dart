@@ -1,4 +1,3 @@
-import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -76,11 +75,7 @@ class ListTileBottomModal extends StatelessWidget {
       ),
       onTap: () {
         Get.back();
-        Get.to(
-          () => const NewPlaylistScreen(),
-          popGesture: false,
-          fullscreenDialog: true,
-        );
+        Get.toNamed('/new_playlist');
       },
     );
   }

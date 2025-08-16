@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
 import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_filter_album_controller.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
@@ -10,7 +11,11 @@ import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_
 import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/bindings/add_music_to_playlist_binding.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_music_to_playlist_screen.dart';
+import 'package:cybeat_music_player/features/playlist/edit_playlist/bindings/edit_playlist_binding.dart';
+import 'package:cybeat_music_player/features/playlist/edit_playlist/screens/edit_playlist_screen.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/bindings/new_playlist_binding.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/new_playlist_screen.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
 import 'package:cybeat_music_player/features/root_page/controllers/root_page_controller.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
@@ -163,16 +168,27 @@ class MyApp extends StatelessWidget {
                 popGesture: false,
               ),
               GetPage(
+                name: '/album_music',
+                page: () => AlbumMusicScreen(),
+                transition: Transition.leftToRightWithFade,
+                transitionDuration: const Duration(milliseconds: 300),
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
                 name: '/detail',
                 page: () => DetailMusicScreen(),
                 binding: DetailMusicBinding(),
-                fullscreenDialog: true,
+                transition: Transition.downToUp,
+                transitionDuration: const Duration(milliseconds: 300),
                 popGesture: false,
+                fullscreenDialog: true,
               ),
               GetPage(
                 name: '/recents',
                 page: () => RecentsMusicScreen(),
                 transition: Transition.native,
+                transitionDuration: const Duration(milliseconds: 300),
                 fullscreenDialog: true,
                 popGesture: false,
               ),
@@ -186,6 +202,15 @@ class MyApp extends StatelessWidget {
               GetPage(
                 name: '/new_playlist',
                 page: () => NewPlaylistScreen(),
+                binding: NewPlaylistBinding(),
+                transition: Transition.downToUp,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/edit_playlist',
+                page: () => EditPlaylistScreen(),
+                binding: EditPlaylistBinding(),
                 fullscreenDialog: true,
                 popGesture: false,
               ),

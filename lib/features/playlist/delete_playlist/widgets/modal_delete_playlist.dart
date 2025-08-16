@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/common/utils/toast.dart';
-import 'package:cybeat_music_player/controller/crud_playlist.dart';
+import 'package:cybeat_music_player/features/playlist/delete_playlist/controllers/delete_playlist_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -32,7 +32,7 @@ void showModalDeletePlaylist(
           isDestructiveAction: true,
           onPressed: () {
             Get.back();
-            deletePlaylist(uid);
+            Get.put(DeletePlaylistController()).deletePlaylist(uid);
             showRemoveAlbumToast(
               '${type.capitalizeFirst!} removed from your library',
             );

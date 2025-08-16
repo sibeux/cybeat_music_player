@@ -4,7 +4,7 @@ import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/screens/azlistview/show_music_modal.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_modal.dart';
 import 'package:cybeat_music_player/widgets/spectrum_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -173,7 +173,7 @@ class AlbumMusicList extends StatelessWidget {
                   color: HexColor('#b5b5b4'),
                 ),
                 onPressed: () {
-                  showMusicModalBottom(
+                  albumMusicModal(
                     context,
                     mediaItem,
                     audioPlayer,

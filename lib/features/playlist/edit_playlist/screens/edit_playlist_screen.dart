@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/controller/crud_playlist.dart';
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
-import 'package:cybeat_music_player/screens/crud_playlist_screen/edit_playlist_screen.dart/show_discard_dialog.dart';
+import 'package:cybeat_music_player/features/playlist/edit_playlist/controllers/edit_playlist_controller.dart';
+import 'package:cybeat_music_player/features/playlist/edit_playlist/widgets/show_discard_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -18,6 +18,7 @@ class EditPlaylistScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final editPlaylistController = Get.find<EditPlaylistController>();
     var tapIndex = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       textController.text = playlistName;
@@ -59,7 +60,7 @@ class EditPlaylistScreen extends StatelessWidget {
                     color: HexColor('#8238be'),
                     onTap: () {
                       Get.back();
-                      updatePlaylist(
+                      editPlaylistController.editPlaylist(
                         uid,
                         searchAlbumController.textValue.value,
                       );

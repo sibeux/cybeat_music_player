@@ -6,7 +6,7 @@ import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_filter/home_filter_grid.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_scale_tap.dart';
-import 'package:cybeat_music_player/features/playlist/new_playlist/show_new_playlist_modal.dart';
+import 'package:cybeat_music_player/features/playlist/new_playlist/widgets/show_new_playlist_modal.dart';
 import 'package:cybeat_music_player/screens/search_album_screen/search_album_screen.dart';
 import 'package:cybeat_music_player/features/home/widgets/sort/scale_tap_sort.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _gridViewKey = GlobalKey();
-  final _homeAlbumGridController = Get.find<HomeController>();
+  final _homeController = Get.find<HomeController>();
   final _scrollController = ScrollController();
 
   @override
@@ -92,7 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             Get.find<MusicDownloadController>();
                         musicDownloadController.goOfflineScreen(
                           audioState: audioStateController,
-                          musicPlayerController: musicPlayerController,
                           context: context,
                         );
                       },
@@ -110,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Get.toNamed(
                           '/recents',
                           id: 1,
-                          );
+                        );
                       },
                       child: const Icon(
                         Icons.history,
@@ -201,10 +200,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 thumbColor: HexColor('#ac8bc9').withValues(alpha: 0.7),
                 trackVisibility: false,
                 child: SmartRefresher(
-                  controller: _homeAlbumGridController.refreshController,
+                  controller: _homeController.refreshController,
                   scrollController: _scrollController,
-                  onRefresh: _homeAlbumGridController.onRefresh,
-                  onLoading: _homeAlbumGridController.onLoading,
+                  onRefresh: _homeController.onRefresh,
+                  onLoading: _homeController.onLoading,
                   enablePullDown: true,
                   enablePullUp: true,
                   header: const ClassicHeader(
@@ -262,11 +261,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Spacer(),
                                   InkWell(
                                     onTap: () {
-                                      _homeAlbumGridController
+                                      _homeController
                                           .changeLayoutGrid();
                                     },
                                     child: Obx(
-                                      () => _homeAlbumGridController
+                                      () => _homeController
                                                   .countGrid.value ==
                                               1
                                           ? Icon(Icons.view_list_outlined)
@@ -279,9 +278,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 15,
                               ),
                               Obx(
-                                () => _homeAlbumGridController.isTapped.value ||
-                                        !_homeAlbumGridController.isTapped.value
-                                    ? _homeAlbumGridController.isLoading.value
+                                () => _homeController.isTapped.value ||
+                                        !_homeController.isTapped.value
+                                    ? _homeController.isLoading.value
                                         ? const SizedBox(
                                             height: 400,
                                             child: Center(
@@ -289,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   CircularProgressIndicator(),
                                             ),
                                           )
-                                        : _homeAlbumGridController
+                                        : _homeController
                                                 .initiateAlbum.isEmpty
                                             ? const Center(
                                                 child: Text('No album found'),
@@ -333,8 +332,8 @@ class _HomeScreenState extends State<HomeScreen> {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisSpacing: 15,
               mainAxisSpacing: 10,
-              crossAxisCount: _homeAlbumGridController.countGrid.value,
-              childAspectRatio: _homeAlbumGridController.countGrid.value == 1
+              crossAxisCount: _homeController.countGrid.value,
+              childAspectRatio: _homeController.countGrid.value == 1
                   ? 40 / 9
                   : 2 / 3.5,
             ),
@@ -347,9 +346,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> _getGeneratedChildren() {
     return List<Widget>.generate(
-      _homeAlbumGridController.selectedAlbum.length >= 15
-          ? _homeAlbumGridController.jumlahDitampilkan.value
-          : _homeAlbumGridController.selectedAlbum.length,
+      _homeController.selectedAlbum.length >= 15
+          ? _homeController.jumlahDitampilkan.value
+          : _homeController.selectedAlbum.length,
       (index) => _getChild(index: index),
     );
   }
@@ -357,11 +356,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _getChild({required int index}) {
     final audioStateController = Get.find<AudioStateController>();
     return CustomDraggable(
-      key: Key(_homeAlbumGridController.children[index].toString()),
+      key: Key(_homeController.children[index].toString()),
       data: index,
       child: HomeListScaleTap(
-        playlist: _homeAlbumGridController
-            .initiateAlbum[(_homeAlbumGridController.children[index])],
+        playlist: _homeController
+            .initiateAlbum[(_homeController.children[index])],
         audioState: audioStateController,
       ),
     );
