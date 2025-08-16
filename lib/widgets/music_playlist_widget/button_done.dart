@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -14,7 +14,7 @@ class ButtonDone extends StatelessWidget {
 
   final MusicPlaylistController musicPlaylistController;
   final String idMusic;
-  final AudioState audioState;
+  final AudioStateController audioState;
 
   @override
   Widget build(BuildContext context) {

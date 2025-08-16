@@ -1,22 +1,20 @@
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_play_method.dart';
-import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
-import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
-import 'package:cybeat_music_player/screens/detail_screen/music_detail_screen.dart';
-import 'package:cybeat_music_player/features/album_music/widgets/music_list.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
+import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:provider/provider.dart';
 import 'package:azlistview/azlistview.dart';
 
 var isPlaying = false;
@@ -34,7 +32,7 @@ class AzListMusic extends ISuspensionBean {
 class AzListMusicScreen extends StatefulWidget {
   const AzListMusicScreen({super.key, required this.audioState});
 
-  final AudioState audioState;
+  final AudioStateController audioState;
 
   @override
   State<AzListMusicScreen> createState() => _AzListMusicScreenState();
@@ -47,8 +45,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
   get audioState => widget.audioState;
 
   final playlistPlayController = Get.find<PlaylistPlayController>();
-  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
-  final playingStateController = Get.put(PlayingStateController());
+  final homeAlbumGridController = Get.find<HomeController>();
+  final musicPlayerController = Get.find<MusicPlayerController>();
 
   @override
   void initState() {
@@ -140,7 +138,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
               // Akan di-print terus saat scroll.
               // print(index);
               return InkWell(
-                child: MusicList(
+                child: AlbumMusicList(
                   mediaItem: sequence[index].tag as MediaItem,
                   audioPlayer: audioState.player,
                   index: index,
@@ -165,7 +163,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                   // );
 
                   Get.to(
-                    () => MusicDetailScreen(
+                    () => DetailMusicScreen(
                       player: audioState.player,
                       audioState: audioState,
                     ),
@@ -175,11 +173,11 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
                     fullscreenDialog: true,
                   );
 
-                  if (context.read<MusicState>().currentMediaItem?.id == "" ||
-                      context.read<MusicState>().currentMediaItem?.id !=
+                  if (musicPlayerController.currentMediaItem?.id == "" ||
+                      musicPlayerController.currentMediaItem?.id !=
                           sequence[index].tag.id) {
-                    musicPlayMethod(
-                      state: audioState,
+                    playMusicNow(
+                      audioStateController: audioState,
                       index: index,
                       context: context,
                       mediaItem: sequence[index].tag as MediaItem,
@@ -201,8 +199,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
     }
 
     void rebuildPlaylist() {
-      if (playlistPlayController.needRebuild.value) {
-        playlistPlayController.needRebuild.value = false;
+      if (playlistPlayController.isNeedRebuildLastPlaylist.value) {
+        playlistPlayController.isNeedRebuildLastPlaylist.value = false;
         homeAlbumGridController
             .recentPlaylistUpdate(playlistPlayController.playlistUid.value);
       }
@@ -352,7 +350,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
             ),
             Obx(
               () => SizedBox(
-                height: playingStateController.isPlaying.value ? 50.h : 0,
+                height: musicPlayerController.isPlayingNow.value ? 50.h : 0,
               ),
             ),
           ],
@@ -363,7 +361,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
 
   // logic untuk shuffle music.
   void _shuffleMusic(
-    AudioState audioState,
+    AudioStateController audioState,
     List<IndexedAudioSource> sequence,
   ) {
     final index = audioState.playlist.length < 2
@@ -371,7 +369,7 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
         : random(0, audioState.playlist.length - 1);
     // Langsung buka detail screen.
     Get.to(
-      () => MusicDetailScreen(
+      () => DetailMusicScreen(
         player: audioState.player,
         audioState: audioState,
       ),
@@ -379,8 +377,8 @@ class _AzListMusicScreenState extends State<AzListMusicScreen> {
       popGesture: false,
       fullscreenDialog: true,
     );
-    musicPlayMethod(
-      state: audioState,
+    playMusicNow(
+      audioStateController: audioState,
       index: index,
       context: context,
       mediaItem: sequence[index].tag as MediaItem,

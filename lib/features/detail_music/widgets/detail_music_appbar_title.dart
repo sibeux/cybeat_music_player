@@ -1,4 +1,5 @@
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
+
+import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,13 +10,13 @@ class DetailMusicAppbarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final playlistPlayController = Get.find<PlaylistPlayController>();
+    final musicPlayerController = Get.find<MusicPlayerController>();
 
     return Column(
       children: [
         Obx(
           () => Text(
-            'PLAYING FROM ${playlistPlayController.playlistType.value}',
+            'PLAYING FROM ${musicPlayerController.currentActivePlaylist.value?.type}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 11,
@@ -29,7 +30,7 @@ class DetailMusicAppbarTitle extends StatelessWidget {
         Obx(
           () => Text(
             // "日本の歌",
-            playlistPlayController.playlistTitle.value,
+            musicPlayerController.currentActivePlaylist.value?.title ?? '',
             style: const TextStyle(
               color: Colors.white,
               overflow: TextOverflow.ellipsis,

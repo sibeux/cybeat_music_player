@@ -1,11 +1,11 @@
-import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SearchAlbumController extends GetxController {
   final controller = TextEditingController();
-  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
+  final homeAlbumGridController = Get.find<HomeController>();
   var isTyping = false.obs;
   var textValue = ''.obs;
   var isKeybordFocus = false.obs;

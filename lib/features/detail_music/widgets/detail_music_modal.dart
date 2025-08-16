@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_credits_dialog.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +14,9 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 Future<dynamic> detailMusicModal(
   BuildContext context,
-  AudioState audioState,
+  AudioStateController audioState,
 ) {
-  final playlistPlayController = Get.find<PlaylistPlayController>();
+  final musicPlayerController = Get.find<MusicPlayerController>();
   final musicStateController = Get.find<MusicStateController>();
   return showMaterialModalBottomSheet(
     context: context,
@@ -130,12 +130,12 @@ Future<dynamic> detailMusicModal(
             children: [
               ListTileBottomModal(
                 title:
-                    'Go to ${playlistPlayController.playlistType.value.toLowerCase()}',
+                    'Go to ${musicPlayerController.currentActivePlaylist.value?.title.toLowerCase()}',
                 icon: Icons.mode_standby_outlined,
                 changeColor: false,
                 onTap: () {
                   Get.back();
-                  if (playlistPlayController.isAzlistviewScreenActive.value) {
+                  if (musicPlayerController.isAzlistviewScreenActive.value) {
                     Get.back();
                   } else {
                     Get.back();

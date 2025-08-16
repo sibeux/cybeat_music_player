@@ -1,6 +1,7 @@
 import 'package:cybeat_music_player/common/utils/toast.dart';
-import 'package:cybeat_music_player/controller/set_favorite.dart';
+import 'package:cybeat_music_player/features/detail_music/controllers/detail_music_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
 class DetailMusicFavoriteButton extends StatefulWidget {
@@ -17,6 +18,7 @@ class DetailMusicFavoriteButton extends StatefulWidget {
 }
 
 class _DetailMusicFavoriteButtonState extends State<DetailMusicFavoriteButton> {
+  final DetailMusicController detailMusicController = Get.find<DetailMusicController>();
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<SequenceState?>(
@@ -33,11 +35,11 @@ class _DetailMusicFavoriteButtonState extends State<DetailMusicFavoriteButton> {
           child: GestureDetector(
             onTap: () {
               if (currentItem?.tag.extras?['favorite'] == '1') {
-                setfavorite(currentItem?.tag.extras?['music_id'], '0');
+                detailMusicController.setfavorite(currentItem?.tag.extras?['music_id'], '0');
                 currentItem?.tag.extras?['favorite'] = '0';
                 showToast('Removed from favorite');
               } else {
-                setfavorite(currentItem?.tag.extras?['music_id'], '1');
+                detailMusicController.setfavorite(currentItem?.tag.extras?['music_id'], '1');
                 currentItem?.tag.extras?['favorite'] = '1';
                 showToast('Added to favorite');
               }

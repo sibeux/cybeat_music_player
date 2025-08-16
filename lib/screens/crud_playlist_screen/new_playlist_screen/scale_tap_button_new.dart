@@ -1,5 +1,5 @@
-import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,7 +23,7 @@ class ScaleTapButtonNewPlaylistState extends State<ScaleTapButtonNewPlaylist>
   double colorOnTap = 1;
 
   PlaylistPlayController playlistPlayController = Get.find<PlaylistPlayController>();
-  PlayingStateController playingStateController = Get.find<PlayingStateController>();
+  final musicPlayerController = Get.find<MusicPlayerController>();
 
   // needed for the "click" tap effect
   late final AnimationController animationController;

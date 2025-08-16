@@ -3,17 +3,15 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
-import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
-import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MusicDownloadController extends GetxController {
@@ -22,8 +20,8 @@ class MusicDownloadController extends GetxController {
   var dataProgressDownload = <String, Map<String, dynamic>>{}.obs;
 
   void goOfflineScreen({
-    required AudioState audioState,
-    required PlayingStateController playingStateController,
+    required AudioStateController audioState,
+    required MusicPlayerController musicPlayerController,
     required BuildContext context,
   }) {
     Playlist playlist = Playlist(
@@ -43,10 +41,10 @@ class MusicDownloadController extends GetxController {
     if (playlistPlayController.playlistTitleValue != playlist.title ||
         playlistPlayController.playlistTitleValue == "") {
       audioState.clear();
-      playingStateController.pause();
-      context.read<MusicState>().clear();
+      musicPlayerController.pauseMusic();
+      musicPlayerController.clearCurrentMediaItem();
       audioState.init(playlist);
-      playlistPlayController.onPlaylist(playlist);
+      playlistPlayController.setActivePlaylist(playlist);
     }
 
     Get.to(
@@ -169,10 +167,10 @@ class MusicDownloadController extends GetxController {
   Future<void> deleteSpecificFile(
     String filePath,
     MediaItem mediaItem,
-    AudioState audioState,
+    AudioStateController audioState,
   ) async {
     try {
-      final playingStateController = Get.find<PlayingStateController>();
+      final musicPlayerController = Get.find<MusicPlayerController>();
       final playlistPlayController = Get.find<PlaylistPlayController>();
 
       // Mendapatkan direktori sementara
@@ -226,10 +224,10 @@ class MusicDownloadController extends GetxController {
 
         // Jika musik yang dihapus sedang diputar, hentikan pemutaran
         audioState.clear();
-        playingStateController.pause();
-        audioState.init(playlistPlayController.currentPlaylistPlay[0]);
+        musicPlayerController.pauseMusic();
+        audioState.init(playlistPlayController.currentActivePlaylist[0]);
         playlistPlayController
-            .onPlaylist(playlistPlayController.currentPlaylistPlay[0]);
+            .setActivePlaylist(playlistPlayController.currentActivePlaylist[0]);
 
         // Untuk memberitahu bahwa musik sudah tidak ada di offline,
         // (Ikon centang downloaded hilang).

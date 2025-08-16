@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/controller/crud_playlist.dart';
-import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/scale_tap_button_new.dart';
 // Di-as karena ada duplikasi function.
 import 'package:cybeat_music_player/widgets/new_playlist_widget/text_button.dart'
@@ -23,7 +23,7 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
   @override
   void initState() {
     super.initState();
-    final homeAlbumGridController = Get.find<HomeAlbumGridController>();
+    final homeAlbumGridController = Get.find<HomeController>();
     textController.text =
         'New Playlist #${homeAlbumGridController.playlistCreatedList.length + 1}';
     // Set nama playlist ke controller.
@@ -54,7 +54,7 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Colors.grey.withValues(alpha:  0.8)],
+            colors: [Colors.white, Colors.grey.withValues(alpha: 0.8)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -68,7 +68,7 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black.withValues(alpha:  0.8),
+                  color: Colors.black.withValues(alpha: 0.8),
                 ),
               ),
               const SizedBox(height: 25),
@@ -79,8 +79,9 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                     data: ThemeData(
                       textSelectionTheme: TextSelectionThemeData(
                         cursorColor: Colors.blue, // Cursor color
-                        selectionColor: Colors.yellow.withValues(alpha:  0.4),
-                        selectionHandleColor: Colors.blue.withValues(alpha:  0.5),
+                        selectionColor: Colors.yellow.withValues(alpha: 0.4),
+                        selectionHandleColor:
+                            Colors.blue.withValues(alpha: 0.5),
                       ),
                     ),
                     child: TextField(
@@ -94,13 +95,13 @@ class _NewPlaylistScreenState extends State<NewPlaylistScreen> {
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black.withValues(alpha:  0.7),
+                        color: Colors.black.withValues(alpha: 0.7),
                       ),
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.only(bottom: 0),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.black.withValues(alpha:  0.7),
+                            color: Colors.black.withValues(alpha: 0.7),
                           ), // Color when focused
                         ),
                       ),

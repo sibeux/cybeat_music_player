@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
-import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,7 +15,7 @@ class CrudPlaylistController extends GetxController {
 }
 
 void addNewPlaylist(String name) async {
-  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
+  final homeAlbumGridController = Get.find<HomeController>();
   homeAlbumGridController.isLoadingAddPlaylist.value = true;
   const String url =
       'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/crud_new_playlist';
@@ -39,7 +39,7 @@ void addNewPlaylist(String name) async {
 }
 
 Future<void> updatePlaylist(String id, String name) async {
-  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
+  final homeAlbumGridController = Get.find<HomeController>();
   const String url =
       'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/crud_new_playlist';
 
@@ -69,7 +69,7 @@ Future<void> updatePlaylist(String id, String name) async {
 }
 
 void deletePlaylist(String id) async {
-  final homeAlbumGridController = Get.find<HomeAlbumGridController>();
+  final homeAlbumGridController = Get.find<HomeController>();
 
   homeAlbumGridController.removePlaylist(id);
   const String url =

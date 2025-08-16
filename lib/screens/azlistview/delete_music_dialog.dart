@@ -1,8 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
-import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -12,7 +11,7 @@ void deleteMusicDialog({
   required BuildContext context,
   required PlaylistPlayController playlistPlayController,
   required MediaItem mediaItem,
-  required AudioState audioState,
+  required AudioStateController audioState,
 }) {
   Get.dialog(
     name: 'Dialog Delete Music',
@@ -79,7 +78,9 @@ void deleteMusicDialog({
                     child: InkWell(
                       onTap: () {
                         Get.back();
-                        context.read<MusicState>().clear();
+                        context
+                            .read<MusicStateProvider>()
+                            .clearCurrentMediaItem();
                         deleteMusic(
                           playlistPlayController.playlistEditable.value,
                           playlistPlayController.playlistType.value,
@@ -115,7 +116,7 @@ void deleteMusic(
   String editable,
   String type,
   MediaItem mediaItem,
-  AudioState audioState,
+  AudioStateController audioState,
 ) async {
   if (type.toLowerCase() == 'offline') {
     // delete music from offline

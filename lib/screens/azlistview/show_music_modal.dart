@@ -3,7 +3,7 @@ import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_play_method.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
 import 'package:cybeat_music_player/screens/azlistview/delete_music_dialog.dart';
 import 'package:cybeat_music_player/screens/azlistview/effect_tap_music_modal.dart';
@@ -20,7 +20,7 @@ Future<dynamic> showMusicModalBottom(
   MediaItem mediaItem,
   AudioPlayer audioPlayer,
   int index,
-  AudioState audioState,
+  AudioStateController audioState,
 ) {
   final musicDownloadController = Get.find<MusicDownloadController>();
   return showMaterialModalBottomSheet(
@@ -143,7 +143,7 @@ class ListTileBottomModal extends StatelessWidget {
   final AudioPlayer player;
   final MediaItem mediaItem;
   final int index;
-  final AudioState audioState;
+  final AudioStateController audioState;
 
   @override
   Widget build(BuildContext context) {
@@ -166,11 +166,11 @@ class ListTileBottomModal extends StatelessWidget {
       onTap: () {
         switch (title.toLowerCase()) {
           case 'play now':
-            if (context.read<MusicState>().currentMediaItem?.id == "" ||
-                context.read<MusicState>().currentMediaItem?.id !=
+            if (context.read<MusicStateProvider>().currentMediaItem?.id == "" ||
+                context.read<MusicStateProvider>().currentMediaItem?.id !=
                     mediaItem.id) {
-              musicPlayMethod(
-                state: audioState,
+              playMusicNow(
+                audioStateController: audioState,
                 index: index,
                 context: context,
                 mediaItem: mediaItem,

@@ -1,16 +1,15 @@
-import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
-import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
-import 'package:cybeat_music_player/widgets/home_widget/list_album/four_cover_album.dart';
-import 'package:cybeat_music_player/widgets/home_widget/list_album/show_album_modal.dart';
+import 'package:cybeat_music_player/features/home/widgets/list_album/four_cover_album.dart';
+import 'package:cybeat_music_player/features/home/widgets/list_album/show_album_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:provider/provider.dart';
+
+import '../../core/controllers/music_player_controller.dart';
 
 class ScaleTapSearchAlbum extends StatefulWidget {
   const ScaleTapSearchAlbum({
@@ -20,7 +19,7 @@ class ScaleTapSearchAlbum extends StatefulWidget {
   });
 
   final Playlist playlist;
-  final AudioState audioState;
+  final AudioStateController audioState;
 
   @override
   ScaleTapSearchAlbumState createState() => ScaleTapSearchAlbumState();
@@ -33,7 +32,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
 
   PlaylistPlayController playlistPlayController =
       Get.find<PlaylistPlayController>();
-  PlayingStateController playingStateController = Get.find();
+  final musicPlayerController = Get.find<MusicPlayerController>();
 
   // needed for the "click" tap effect
   late final AnimationController animationController;
@@ -105,10 +104,10 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                         widget.playlist.uid ||
                     playlistPlayController.playlistUidValue == "") {
                   audioState.clear();
-                  playingStateController.pause();
-                  context.read<MusicState>().clear();
+                  musicPlayerController.pauseMusic();
+                  musicPlayerController.clearCurrentMediaItem();
                   audioState.init(widget.playlist);
-                  playlistPlayController.onPlaylist(widget.playlist);
+                  playlistPlayController.setActivePlaylist(widget.playlist);
                 }
 
                 Get.to(

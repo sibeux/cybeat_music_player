@@ -42,7 +42,6 @@ dependencies:
   logger: ^2.2.0
   audio_service: ^0.18.13
   http: ^1.2.1
-  provider: ^6.1.2
   riverpod: ^2.5.1
   flutter_riverpod: ^2.5.1
   palette_generator: ^0.3.3+3

@@ -22,20 +22,6 @@ class MusicStateController extends GetxController {
   final floatingPlayingMusicController =
       Get.put(FloatingPlayingMusicController());
 
-  // Constructor untuk menginisialisasi player.
-  // MusicStateController({required this.player});
-
-  // final AudioPlayer player;
-
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   // Subscribe ke stream dan perbarui state.
-  //   playerSubscription = player.sequenceStateStream.listen((sequenceState) {
-  //     updateState(sequenceState);
-  //   });
-  // }
-
   @override
   void onClose() {
     // Batalkan subscription saat controller dihapus.

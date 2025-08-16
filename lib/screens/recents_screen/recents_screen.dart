@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
-import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/screens/recents_screen/recents_music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +9,12 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart' as http;
 
-
 var isPlaying = false;
 
 class RecentsScreen extends StatefulWidget {
   const RecentsScreen({super.key, required this.audioState});
 
-  final AudioState audioState;
+  final AudioStateController audioState;
 
   @override
   State<RecentsScreen> createState() => _RecentsScreenState();
@@ -110,8 +108,6 @@ class _RecentsScreenState extends State<RecentsScreen> {
     if (isLoading) {
       content = const ShimmerMusicList();
     }
-
-    Get.put(PlayingStateController());
 
     if (_musicItems.isNotEmpty) {
       content = ListView.builder(
