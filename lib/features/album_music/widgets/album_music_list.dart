@@ -5,7 +5,7 @@ import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart
 import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_modal.dart';
-import 'package:cybeat_music_player/widgets/spectrum_animation.dart';
+import 'package:cybeat_music_player/common/widgets/spectrum_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

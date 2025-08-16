@@ -1,21 +1,20 @@
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/screens/search_album_screen/search_album_builder.dart';
+import 'package:cybeat_music_player/features/search_album/controllers/search_album_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class SearchAlbumScreen extends StatelessWidget {
-  const SearchAlbumScreen({super.key, required this.audioState});
-
-  final AudioStateController audioState;
+  const SearchAlbumScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final searchAlbumController = Get.put(SearchAlbumController());
     final musicPlayerController = Get.find<MusicPlayerController>();
+    final audioStateController = Get.find<AudioStateController>();
 
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
@@ -108,11 +107,13 @@ class SearchAlbumScreen extends StatelessWidget {
                               ? searchAlbumController.filteredAlbum.isEmpty
                                   ? albumEmpty(
                                       searchAlbumController.textValue.value)
-                                  : SearchAlbumList(audioState: audioState)
+                                  : SearchAlbumList(
+                                      audioState: audioStateController)
                               : searchAlbumController.filteredAlbum.isEmpty
                                   ? albumEmpty(
                                       searchAlbumController.textValue.value)
-                                  : SearchAlbumList(audioState: audioState)
+                                  : SearchAlbumList(
+                                      audioState: audioStateController)
                       : initialChild(),
                 ),
                 Container(

@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cybeat_music_player/features/floating_bar/controllers/floating_playing_music_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/widgets/animated_rotate_cover.dart';
+import 'package:cybeat_music_player/features/floating_bar/widgets/animated_rotate_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

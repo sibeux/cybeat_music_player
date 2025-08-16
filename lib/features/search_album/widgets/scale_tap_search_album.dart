@@ -1,15 +1,13 @@
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
-import 'package:cybeat_music_player/features/home/widgets/list_album/four_cover_album.dart';
-import 'package:cybeat_music_player/features/home/widgets/list_album/show_album_modal.dart';
+import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_four_cover.dart';
+import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_modal_bottom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-import '../../core/controllers/music_player_controller.dart';
+import '../../../core/controllers/music_player_controller.dart';
 
 class ScaleTapSearchAlbum extends StatefulWidget {
   const ScaleTapSearchAlbum({
@@ -29,9 +27,6 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
     with SingleTickerProviderStateMixin {
   static const clickAnimationDurationMillis = 100;
   double _scaleTransformValue = 1;
-
-  PlaylistPlayController playlistPlayController =
-      Get.find<PlaylistPlayController>();
   final musicPlayerController = Get.find<MusicPlayerController>();
 
   // needed for the "click" tap effect
@@ -73,7 +68,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
     return GestureDetector(
       onLongPress: () {
         HapticFeedback.vibrate();
-        showAlbumModalBottom(context, widget.playlist);
+        homeListModalBottom(context, widget.playlist);
       },
       onPanDown: (details) {
         _shrinkButtonSize();
@@ -100,14 +95,15 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                 // untuk menghilangkan keyboard
                 FocusManager.instance.primaryFocus?.unfocus();
 
-                if (playlistPlayController.playlistUidValue !=
+                if (musicPlayerController.currentActivePlaylist.value?.uid !=
                         widget.playlist.uid ||
-                    playlistPlayController.playlistUidValue == "") {
+                    musicPlayerController.currentActivePlaylist.value?.uid ==
+                        "") {
                   audioState.clear();
                   musicPlayerController.pauseMusic();
                   musicPlayerController.clearCurrentMediaItem();
                   audioState.init(widget.playlist);
-                  playlistPlayController.setActivePlaylist(widget.playlist);
+                  musicPlayerController.setActivePlaylist(widget.playlist);
                 }
 
                 Get.toNamed('/album_music', id: 1);
@@ -128,7 +124,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                           child: ClipRRect(
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(3)),
-                            child: FourCoverAlbum(
+                            child: HomeListFourCover(
                               size: 60,
                               type: widget.playlist.type,
                               playlist: widget.playlist,
@@ -150,8 +146,10 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                                       widget.playlist.title,
                                       style: TextStyle(
                                           fontSize: 14,
-                                          color: HexColor(playlistPlayController
-                                                      .playlistTitleValue ==
+                                          color: HexColor(musicPlayerController
+                                                      .currentActivePlaylist
+                                                      .value
+                                                      ?.title ==
                                                   widget.playlist.title
                                               ? '#8238be'
                                               : '#313031'),

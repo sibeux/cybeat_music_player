@@ -3,8 +3,6 @@ import 'dart:ui';
 
 import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
 import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
-import 'package:cybeat_music_player/features/home/controllers/home_filter_album_controller.dart';
-import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
@@ -14,16 +12,13 @@ import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/scre
 import 'package:cybeat_music_player/features/playlist/edit_playlist/bindings/edit_playlist_binding.dart';
 import 'package:cybeat_music_player/features/playlist/edit_playlist/screens/edit_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/bindings/new_playlist_binding.dart';
-import 'package:cybeat_music_player/features/playlist/new_playlist/new_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
-import 'package:cybeat_music_player/features/root_page/controllers/root_page_controller.dart';
+import 'package:cybeat_music_player/features/search_album/screens/search_album_screen.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
 import 'package:cybeat_music_player/features/home/screens/home_screen.dart';
 import 'package:cybeat_music_player/features/root_page/screens/root_page_screen.dart';
 import 'package:cybeat_music_player/features/recent_music/screens/recents_music_screen.dart';
-import 'package:cybeat_music_player/screens/splash_screen/splash_home_screen.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +29,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
-import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -99,7 +92,6 @@ Future<void> main() async {
   // Inisiasi controller
   // Harus dipanggil sebelum splash hilang karena di home screen dipakai.
   Get.put(MusicStateController());
-  Get.put(PlaylistPlayController());
   Get.put(MusicDownloadController());
   Get.put(ReadCodecController());
 
@@ -195,6 +187,7 @@ class MyApp extends StatelessWidget {
               GetPage(
                 name: '/add_music_to_playlist',
                 page: () => AddMusicToPlaylistScreen(),
+                transition: Transition.downToUp,
                 binding: AddMusicToPlaylistBinding(),
                 fullscreenDialog: true,
                 popGesture: false,
@@ -211,6 +204,14 @@ class MyApp extends StatelessWidget {
                 name: '/edit_playlist',
                 page: () => EditPlaylistScreen(),
                 binding: EditPlaylistBinding(),
+                transition: Transition.downToUp,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/search_album',
+                page: () => SearchAlbumScreen(),
+                transition: Transition.cupertino,
                 fullscreenDialog: true,
                 popGesture: false,
               ),

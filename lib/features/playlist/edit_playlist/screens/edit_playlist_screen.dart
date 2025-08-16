@@ -12,13 +12,13 @@ final textController = searchAlbumController.controller;
 
 class EditPlaylistScreen extends StatelessWidget {
   const EditPlaylistScreen(
-      {super.key, required this.playlistName, required this.uid});
-
-  final String playlistName, uid;
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
     final editPlaylistController = Get.find<EditPlaylistController>();
+    final String uid = Get.arguments['uid'] ?? '';
+    final String playlistName = Get.arguments['playlistName'] ?? '';
     var tapIndex = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       textController.text = playlistName;

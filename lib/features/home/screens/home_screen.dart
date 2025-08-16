@@ -7,8 +7,7 @@ import 'package:cybeat_music_player/core/controllers/music_player_controller.dar
 import 'package:cybeat_music_player/features/home/widgets/home_filter/home_filter_grid.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_scale_tap.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/widgets/show_new_playlist_modal.dart';
-import 'package:cybeat_music_player/screens/search_album_screen/search_album_screen.dart';
-import 'package:cybeat_music_player/features/home/widgets/sort/scale_tap_sort.dart';
+import 'package:cybeat_music_player/features/home/widgets/home_sort/scale_tap_sort.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
@@ -122,15 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Get.to(
-                          () => SearchAlbumScreen(
-                            audioState: audioStateController,
-                          ),
-                          transition: Transition.cupertino,
-                          popGesture: false,
-                          fullscreenDialog: true,
-                          id: 1,
-                        );
+                        Get.toNamed('/search_album', id: 1);
                       },
                       child: const Icon(
                         Icons.search_outlined,
@@ -261,13 +252,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Spacer(),
                                   InkWell(
                                     onTap: () {
-                                      _homeController
-                                          .changeLayoutGrid();
+                                      _homeController.changeLayoutGrid();
                                     },
                                     child: Obx(
-                                      () => _homeController
-                                                  .countGrid.value ==
-                                              1
+                                      () => _homeController.countGrid.value == 1
                                           ? Icon(Icons.view_list_outlined)
                                           : Icon(Icons.grid_view_outlined),
                                     ),
@@ -288,8 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   CircularProgressIndicator(),
                                             ),
                                           )
-                                        : _homeController
-                                                .initiateAlbum.isEmpty
+                                        : _homeController.initiateAlbum.isEmpty
                                             ? const Center(
                                                 child: Text('No album found'),
                                               )
@@ -333,9 +320,8 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisSpacing: 15,
               mainAxisSpacing: 10,
               crossAxisCount: _homeController.countGrid.value,
-              childAspectRatio: _homeController.countGrid.value == 1
-                  ? 40 / 9
-                  : 2 / 3.5,
+              childAspectRatio:
+                  _homeController.countGrid.value == 1 ? 40 / 9 : 2 / 3.5,
             ),
             children: context,
           ),
@@ -359,8 +345,8 @@ class _HomeScreenState extends State<HomeScreen> {
       key: Key(_homeController.children[index].toString()),
       data: index,
       child: HomeListScaleTap(
-        playlist: _homeController
-            .initiateAlbum[(_homeController.children[index])],
+        playlist:
+            _homeController.initiateAlbum[(_homeController.children[index])],
         audioState: audioStateController,
       ),
     );

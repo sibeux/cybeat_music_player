@@ -2,7 +2,6 @@ import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_four_cover.dart';
-import 'package:cybeat_music_player/features/playlist/edit_playlist/screens/edit_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/delete_playlist/widgets/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -138,13 +137,11 @@ Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
                 onTap: playlist.editable == 'true'
                     ? () {
                         Get.back();
-                        Get.to(
-                          () => EditPlaylistScreen(
-                            uid: playlist.uid,
-                            playlistName: playlist.title,
-                          ),
-                          popGesture: false,
-                          fullscreenDialog: true,
+                        Get.toNamed('/edit_playlist',
+                          arguments: {
+                            'uid': playlist.uid,
+                            'playlistName': playlist.title,
+                          },
                         );
                       }
                     : () {

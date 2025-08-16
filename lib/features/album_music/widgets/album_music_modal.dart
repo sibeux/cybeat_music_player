@@ -2,8 +2,9 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/delete_music_dialog.dart';
-import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_music_to_playlist_screen.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/effect_tap_music_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -142,8 +143,8 @@ class ListTileBottomModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final playlistPlayController = Get.find<PlaylistPlayController>();
     final musicDownloadController = Get.put(MusicDownloadController());
+    final musicPlayerController = Get.find<MusicPlayerController>();
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
@@ -161,28 +162,22 @@ class ListTileBottomModal extends StatelessWidget {
       onTap: () {
         switch (title.toLowerCase()) {
           case 'play now':
-            if (context.read<MusicStateProvider>().currentMediaItem?.id == "" ||
-                context.read<MusicStateProvider>().currentMediaItem?.id !=
-                    mediaItem.id) {
-              playMusicNow(
+            if (musicPlayerController.currentMediaItem?.id == "" ||
+                musicPlayerController.currentMediaItem?.id != mediaItem.id) {
+              musicPlayerController.playMusicNow(
                 audioStateController: audioState,
                 index: index,
-                context: context,
-                mediaItem: mediaItem,
               );
               Get.back();
             }
           case 'add to playlist':
             // add music to playlist
             Get.back();
-            Get.to(
-              () => AddMusicToPlaylistScreen(
-                idMusic: mediaItem.extras?['music_id'],
-                audioStateController: audioState,
-              ),
-              transition: Transition.downToUp,
-              fullscreenDialog: true,
-              popGesture: false,
+            Get.toNamed(
+              '/add_music_to_playlist',
+              arguments: {
+                'idMusic': mediaItem.extras?['music_id'],
+              },
             );
           case 'download':
             // download music
@@ -191,10 +186,11 @@ class ListTileBottomModal extends StatelessWidget {
             Get.back();
           case 'delete':
             // delete music
-            if (playlistPlayController.playlistEditable.value == 'true') {
+            if (musicPlayerController.currentActivePlaylist.value?.editable ==
+                'true') {
               deleteMusicDialog(
                 context: context,
-                playlistPlayController: playlistPlayController,
+                musicPlayerController: musicPlayerController,
                 mediaItem: mediaItem,
                 audioState: audioState,
               );

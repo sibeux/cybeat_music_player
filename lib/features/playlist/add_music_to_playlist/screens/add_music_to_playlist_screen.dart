@@ -12,13 +12,11 @@ import 'package:hexcolor/hexcolor.dart';
 class AddMusicToPlaylistScreen extends StatelessWidget {
   const AddMusicToPlaylistScreen({
     super.key,
-    required this.idMusic,
   });
-
-  final String idMusic;
 
   @override
   Widget build(BuildContext context) {
+    final idMusic = Get.arguments['idMusic'] ?? '';
     final addMusicToPlaylistController =
         Get.find<AddMusicToPlaylistController>();
     final homeAlbumGridController = Get.find<HomeController>();

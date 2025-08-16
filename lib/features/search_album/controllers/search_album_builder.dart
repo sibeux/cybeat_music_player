@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/screens/search_album_screen/scale_tap_search_album.dart';
+import 'package:cybeat_music_player/features/search_album/widgets/scale_tap_search_album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/features/recent_music/widgets/recents_music_list.dart';
-import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
+import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
