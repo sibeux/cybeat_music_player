@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/components/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/stream_information.dart';
 import 'package:get/get.dart';

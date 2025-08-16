@@ -4,8 +4,8 @@ import 'package:cybeat_music_player/controller/music_play/music_state_controller
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CoverBlur extends StatelessWidget {
-  const CoverBlur({
+class DetailMusicBackgroundBlur extends StatelessWidget {
+  const DetailMusicBackgroundBlur({
     super.key,
   });
 

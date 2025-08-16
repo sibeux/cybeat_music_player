@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_credits_dialog.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
-import 'package:cybeat_music_player/widgets/detail_music_widget/modal/music_credits_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -158,7 +158,7 @@ Future<dynamic> detailMusicModal(
                   changeColor: false,
                   onTap: () {
                     Get.back();
-                    musicCreditsDialog(
+                    detailMusicCreditsDialog(
                       context: context,
                       musicStateController: musicStateController,
                     );

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:cybeat_music_player/components/colorize_terminal.dart';
-import 'package:cybeat_music_player/components/toast.dart';
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;

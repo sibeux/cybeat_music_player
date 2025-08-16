@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-void musicCreditsDialog({
+void detailMusicCreditsDialog({
   required BuildContext context,
   required MusicStateController musicStateController,
 }) {

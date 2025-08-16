@@ -5,9 +5,8 @@ import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/providers/music_state.dart';
-import 'package:cybeat_music_player/screens/splash_screen/splash_link_music_screen.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
 import 'package:cybeat_music_player/screens/splash_screen/splash_home_screen.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -141,16 +140,17 @@ class MyApp extends StatelessWidget {
                       path: '/',
                     ),
                   ),
-                  GetPage(
-                    name: '/cybeat/category/:id',
-                    page: () => SplashLinkMusicScreen(
-                        path: 'category', uid: Get.parameters['id'] ?? ''),
-                  ),
-                  GetPage(
-                    name: '/cybeat/album/:id',
-                    page: () => SplashLinkMusicScreen(
-                        path: 'album', uid: Get.parameters['id'] ?? ''),
-                  ),
+                  
+                  // GetPage(
+                  //   name: '/cybeat/category/:id',
+                  //   page: () => SplashLinkMusicScreen(
+                  //       path: 'category', uid: Get.parameters['id'] ?? ''),
+                  // ),
+                  // GetPage(
+                  //   name: '/cybeat/album/:id',
+                  //   page: () => SplashLinkMusicScreen(
+                  //       path: 'album', uid: Get.parameters['id'] ?? ''),
+                  // ),
                 ],
               ),
             ),

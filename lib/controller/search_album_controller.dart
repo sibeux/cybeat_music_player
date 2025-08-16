@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
-import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

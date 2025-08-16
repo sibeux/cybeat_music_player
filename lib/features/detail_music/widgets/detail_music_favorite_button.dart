@@ -1,10 +1,10 @@
-import 'package:cybeat_music_player/components/toast.dart';
-import 'package:cybeat_music_player/controller/favorite.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/controller/set_favorite.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
-class FavoriteButton extends StatefulWidget {
-  const FavoriteButton({
+class DetailMusicFavoriteButton extends StatefulWidget {
+  const DetailMusicFavoriteButton({
     super.key,
     required this.player,
   });
@@ -12,10 +12,11 @@ class FavoriteButton extends StatefulWidget {
   final AudioPlayer player;
 
   @override
-  State<FavoriteButton> createState() => _FavoriteButtonState();
+  State<DetailMusicFavoriteButton> createState() =>
+      _DetailMusicFavoriteButtonState();
 }
 
-class _FavoriteButtonState extends State<FavoriteButton> {
+class _DetailMusicFavoriteButtonState extends State<DetailMusicFavoriteButton> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<SequenceState?>(
@@ -26,7 +27,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         if (snapshot.hasData) {
           currentItem = snapshot.data?.currentSource;
         }
-        
+
         return Transform.scale(
           scale: 1.5,
           child: GestureDetector(

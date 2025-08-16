@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/components/capitalize.dart';
-import 'package:cybeat_music_player/components/colorize_terminal.dart';
-import 'package:cybeat_music_player/components/toast.dart';
-import 'package:cybeat_music_player/components/url_formatter.dart';
+import 'package:cybeat_music_player/common/utils/capitalize.dart';
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
-import 'package:cybeat_music_player/controller/recents_music.dart';
-import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/controller/set_recent_music.dart';
+import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -205,6 +205,12 @@ class AudioState extends ChangeNotifier {
     }
   }
 
+  @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
   Future<void> deleteMusicFromPlaylist({
     required String idPlaylistMusic,
   }) async {
@@ -290,11 +296,5 @@ class AudioState extends ChangeNotifier {
     queue = playlist.sequence.map((e) => e.tag as MediaItem).toList();
 
     await player.setAudioSource(playlist);
-  }
-
-  @override
-  void dispose() {
-    player.dispose();
-    super.dispose();
   }
 }

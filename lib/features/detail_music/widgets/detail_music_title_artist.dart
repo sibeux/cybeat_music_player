@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
 
-class TitleArtistDetailMusic extends StatelessWidget {
-  const TitleArtistDetailMusic({super.key,});
+class DetailMusicTitleArtist extends StatelessWidget {
+  const DetailMusicTitleArtist({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

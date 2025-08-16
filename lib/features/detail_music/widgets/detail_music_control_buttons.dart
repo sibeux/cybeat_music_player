@@ -1,10 +1,10 @@
-import 'package:cybeat_music_player/components/toast.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 
-class ControlButtons extends StatelessWidget {
-  const ControlButtons({
+class DetailMusicControlButtons extends StatelessWidget {
+  const DetailMusicControlButtons({
     super.key,
     required this.audioPlayer,
   });
@@ -23,7 +23,7 @@ class ControlButtons extends StatelessWidget {
           },
         ),
         IconButton(
-          icon:  Icon(
+          icon: Icon(
             Icons.skip_previous,
             size: 30.sp,
             color: Colors.white,
@@ -41,7 +41,7 @@ class ControlButtons extends StatelessWidget {
           },
         ),
         IconButton(
-          icon:  Icon(
+          icon: Icon(
             Icons.skip_next,
             size: 30.sp,
             color: Colors.white,
@@ -69,7 +69,7 @@ class ControlButtons extends StatelessWidget {
               color: Colors.lightBlueAccent,
               size: 30.sp,
             )
-          :  Icon(
+          : Icon(
               Icons.shuffle,
               color: Colors.white,
               size: 30.sp,

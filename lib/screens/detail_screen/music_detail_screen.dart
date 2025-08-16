@@ -1,17 +1,17 @@
-import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/widgets/detail_music_widget/appbar_title.dart';
-import 'package:cybeat_music_player/widgets/detail_music_widget/codec_info.dart';
-import 'package:cybeat_music_player/widgets/detail_music_widget/cover_detail_music.dart';
-import 'package:cybeat_music_player/widgets/detail_music_widget/favorite_button.dart';
-import 'package:cybeat_music_player/widgets/detail_music_widget/control_buttons.dart';
-import 'package:cybeat_music_player/widgets/detail_music_widget/modal/detail_music_modal.dart';
-import 'package:cybeat_music_player/widgets/detail_music_widget/title_artist_detail_music.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_appbar_title.dart';
+import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_codec_info.dart';
+import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_cover_image.dart';
+import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_favorite_button.dart';
+import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_control_buttons.dart';
+import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_modal.dart';
+import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_title_artist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
-import '../../widgets/detail_music_widget/cover_blur.dart';
-import '../../widgets/detail_music_widget/progress_bar_music.dart';
+import '../../features/detail_music/widgets/detail_music_background_blur.dart';
+import '../../features/detail_music/widgets/detail_music_progress_bar.dart';
 
 class MusicDetailScreen extends StatefulWidget {
   const MusicDetailScreen({
@@ -69,7 +69,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
               child: ClipRRect(
                 // ClipRRect is used to clip the image to a rounded rectangle
                 // awikwok banget nih, kalo ga pake ClipRRect, gambarnya bakal melebar melebihi ukuran layar.
-                child: CoverBlur(),
+                child: DetailMusicBackgroundBlur(),
               ),
             )
           ],
@@ -90,7 +90,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 Get.back();
               },
             ),
-            title: const AppbarTitle(),
+            title: const DetailMusicAppbarTitle(),
             actions: [
               IconButton(
                 icon: const Icon(
@@ -99,10 +99,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  detailMusicModal(
-                    context,
-                    audioState
-                  );
+                  detailMusicModal(context, audioState);
                 },
               ),
             ],
@@ -112,7 +109,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
             child: Column(
               children: [
                 // cover kecil
-                const CoverDetailMusic(),
+                const DetailMusicCoverImage(),
                 const SizedBox(
                   height: 35,
                 ),
@@ -120,11 +117,11 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Row(
                     children: [
-                      const TitleArtistDetailMusic(),
+                      const DetailMusicTitleArtist(),
                       const SizedBox(
                         width: 15,
                       ),
-                      FavoriteButton(
+                      DetailMusicFavoriteButton(
                         player: audioPlayer,
                       )
                     ],
@@ -135,7 +132,7 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: CodecInfo(),
+                  child: DetailMusicCodecInfo(),
                 ),
                 const SizedBox(
                   height: 20,
@@ -144,13 +141,13 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
                 // child: Divider(
                 //   color: Colors.white,
                 //   thickness: 1,
-                ProgressBarMusic(audioPlayer: audioPlayer),
+                DetailMusicProgressBarMusic(audioPlayer: audioPlayer),
                 const SizedBox(
                   height: 15,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(0.0),
-                  child: ControlButtons(audioPlayer: audioPlayer),
+                  child: DetailMusicControlButtons(audioPlayer: audioPlayer),
                 ),
                 const SizedBox(
                   // buat ngatur jarak antara control buttons

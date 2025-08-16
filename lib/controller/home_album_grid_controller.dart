@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:cybeat_music_player/components/capitalize.dart';
-import 'package:cybeat_music_player/components/colorize_terminal.dart';
-import 'package:cybeat_music_player/components/url_formatter.dart';
+import 'package:cybeat_music_player/common/utils/capitalize.dart';
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/controller/filter_album_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
-import 'package:cybeat_music_player/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;

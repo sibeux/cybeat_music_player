@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/music_playlist_controller.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
 import 'package:cybeat_music_player/screens/crud_playlist_screen/new_playlist_screen/new_playlist_screen.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/button_done.dart';
 import 'package:cybeat_music_player/widgets/music_playlist_widget/list_recently_added.dart';

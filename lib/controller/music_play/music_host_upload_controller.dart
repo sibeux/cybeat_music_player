@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cybeat_music_player/components/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> uploadHostMusic(

@@ -3,8 +3,8 @@ import 'package:cybeat_music_player/controller/music_play/music_state_controller
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CoverDetailMusic extends StatelessWidget {
-  const CoverDetailMusic({
+class DetailMusicCoverImage extends StatelessWidget {
+  const DetailMusicCoverImage({
     super.key,
   });
 

@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
-import 'package:cybeat_music_player/models/filter_item.dart';
+import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:get/get.dart';
 
 class FilterAlbumController extends GetxController {

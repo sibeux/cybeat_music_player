@@ -4,19 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 
-class ProgressBarMusic extends StatefulWidget {
-  const ProgressBarMusic({
-    super.key, required this.audioPlayer,
+class DetailMusicProgressBarMusic extends StatefulWidget {
+  const DetailMusicProgressBarMusic({
+    super.key,
+    required this.audioPlayer,
   });
-  
+
   final AudioPlayer audioPlayer;
 
   @override
-  State<ProgressBarMusic> createState() => _ProgressBarMusicState();
+  State<DetailMusicProgressBarMusic> createState() =>
+      _DetailMusicProgressBarMusicState();
 }
 
-class _ProgressBarMusicState extends State<ProgressBarMusic> {
-
+class _DetailMusicProgressBarMusicState
+    extends State<DetailMusicProgressBarMusic> {
   Duration? duration;
   Duration? position;
   Duration? buffered;
@@ -69,7 +71,6 @@ class _ProgressBarMusicState extends State<ProgressBarMusic> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -77,27 +78,21 @@ class _ProgressBarMusicState extends State<ProgressBarMusic> {
         SliderTheme(
           data: const SliderThemeData(
             trackHeight: 1,
-            thumbShape:
-                RoundSliderThumbShape(enabledThumbRadius: 5),
-            overlayShape:
-                RoundSliderOverlayShape(overlayRadius: 10),
+            thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+            overlayShape: RoundSliderOverlayShape(overlayRadius: 10),
           ),
           child: Slider(
             value: (position != null &&
                     duration != null &&
                     position!.inMilliseconds > 0 &&
-                    position!.inMilliseconds <
-                        duration!.inMilliseconds)
-                ? position!.inMilliseconds /
-                    duration!.inMilliseconds
+                    position!.inMilliseconds < duration!.inMilliseconds)
+                ? position!.inMilliseconds / duration!.inMilliseconds
                 : 0.0,
             secondaryTrackValue: (buffered != null &&
                     duration != null &&
                     buffered!.inMilliseconds > 0 &&
-                    buffered!.inMilliseconds <
-                        duration!.inMilliseconds)
-                ? buffered!.inMilliseconds /
-                    duration!.inMilliseconds
+                    buffered!.inMilliseconds < duration!.inMilliseconds)
+                ? buffered!.inMilliseconds / duration!.inMilliseconds
                 : 0.0,
             activeColor: HexColor('#fefffe'),
             secondaryActiveColor: HexColor('#ac8bc9'),
@@ -108,8 +103,7 @@ class _ProgressBarMusicState extends State<ProgressBarMusic> {
                 return;
               }
               final position = value * durasi.inMilliseconds;
-              widget.audioPlayer
-                  .seek(Duration(milliseconds: position.round()));
+              widget.audioPlayer.seek(Duration(milliseconds: position.round()));
             },
           ),
         ),

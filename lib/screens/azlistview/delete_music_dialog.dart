@@ -1,8 +1,8 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/providers/music_state.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';

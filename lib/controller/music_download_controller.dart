@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/components/colorize_terminal.dart';
-import 'package:cybeat_music_player/components/toast.dart';
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/models/playlist.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/providers/music_state.dart';
+import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';

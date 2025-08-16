@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/models/music.dart';
-import 'package:cybeat_music_player/components/capitalize.dart';
+import 'package:cybeat_music_player/core/models/music.dart';
+import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 

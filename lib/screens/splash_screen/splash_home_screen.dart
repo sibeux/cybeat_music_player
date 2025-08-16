@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/controller/home_album_grid_controller.dart';
 import 'package:cybeat_music_player/controller/sort_preferences_controller.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
 import 'package:cybeat_music_player/screens/splash_screen/root/root_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';

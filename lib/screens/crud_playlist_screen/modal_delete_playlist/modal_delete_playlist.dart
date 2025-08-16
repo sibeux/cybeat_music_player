@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/components/toast.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/controller/crud_playlist.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';

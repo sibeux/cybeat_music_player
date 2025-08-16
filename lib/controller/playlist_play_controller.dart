@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:cybeat_music_player/components/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/controller/music_play/progress_music_controller.dart';
-import 'package:cybeat_music_player/models/playlist.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 

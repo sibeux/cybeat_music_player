@@ -2,8 +2,8 @@ import 'package:cybeat_music_player/controller/music_play/read_codec_controller.
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CodecInfo extends StatelessWidget {
-  const CodecInfo({
+class DetailMusicCodecInfo extends StatelessWidget {
+  const DetailMusicCodecInfo({
     super.key,
   });
 

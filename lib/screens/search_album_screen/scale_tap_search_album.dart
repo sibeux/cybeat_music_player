@@ -1,8 +1,8 @@
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
 import 'package:cybeat_music_player/controller/playlist_play_controller.dart';
-import 'package:cybeat_music_player/models/playlist.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
-import 'package:cybeat_music_player/providers/music_state.dart';
+import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
+import 'package:cybeat_music_player/core/controllers/music_state_provider.dart';
 import 'package:cybeat_music_player/screens/azlistview/music_screen.dart';
 import 'package:cybeat_music_player/widgets/home_widget/list_album/four_cover_album.dart';
 import 'package:cybeat_music_player/widgets/home_widget/list_album/show_album_modal.dart';

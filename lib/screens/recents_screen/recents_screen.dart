@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/controller/music_play/playing_state_controller.dart';
-import 'package:cybeat_music_player/models/music.dart';
-import 'package:cybeat_music_player/providers/audio_state.dart';
+import 'package:cybeat_music_player/core/models/music.dart';
+import 'package:cybeat_music_player/core/controllers/audio_state_provider.dart';
 import 'package:cybeat_music_player/screens/recents_screen/recents_music_list.dart';
 import 'package:cybeat_music_player/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';

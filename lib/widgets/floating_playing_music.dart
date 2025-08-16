@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
-import '../providers/audio_state.dart';
+import '../core/controllers/audio_state_provider.dart';
 import '../screens/detail_screen/music_detail_screen.dart';
 
 final floatingPlayingMusicController =
