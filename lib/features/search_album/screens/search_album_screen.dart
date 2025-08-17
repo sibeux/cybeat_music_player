@@ -107,12 +107,12 @@ class SearchAlbumScreen extends StatelessWidget {
                               ? searchAlbumController.filteredAlbum.isEmpty
                                   ? albumEmpty(
                                       searchAlbumController.textValue.value)
-                                  : SearchAlbumList(
+                                  : SearchAlbumBuilder(
                                       audioState: audioStateController)
                               : searchAlbumController.filteredAlbum.isEmpty
                                   ? albumEmpty(
                                       searchAlbumController.textValue.value)
-                                  : SearchAlbumList(
+                                  : SearchAlbumBuilder(
                                       audioState: audioStateController)
                       : initialChild(),
                 ),

@@ -14,11 +14,8 @@ import 'package:ffmpeg_kit_flutter_new/stream_information.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
-var logger = Logger();
 
 class AudioStateController extends GetxController {
   /// Kalau kamu mau pakai AudioPlayer (misalnya dari just_audio) bareng GetX, biasanya kita bikin dia reactive supaya gampang di-observe.
@@ -88,13 +85,10 @@ class AudioStateController extends GetxController {
     final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
-
     String url =
         "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist?uid=${list.uid}&type=$type";
-
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
-
     try {
       if (type == 'offline') {
         final musicDownloadController = Get.find<MusicDownloadController>();
@@ -130,14 +124,11 @@ class AudioStateController extends GetxController {
         }
       } else {
         final response = await http.get(Uri.parse(url));
-
         final List<dynamic> listData = json.decode(response.body);
-
         if (listData.isNotEmpty && type != 'offline') {
           final prefs = await SharedPreferences.getInstance();
           final uidDownloadedSongs =
               prefs.getStringList('uidDownloadedSongs') ?? [];
-
           playlist.value = ConcatenatingAudioSource(
             children: listData.map(
               (item) {
@@ -205,7 +196,6 @@ class AudioStateController extends GetxController {
   }) async {
     const url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist';
-
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -289,6 +279,10 @@ class AudioStateController extends GetxController {
   }
 
   Future<void> onReadCodec(String url) async {
+    // Ini berfungsi sebagai placeholder laoding saat fetch.
+    bitsPerRawSample.value = '--';
+    sampleRate.value = '--';
+    bitRate.value = '--';
     try {
       // 1. Jalankan FFprobe langsung dengan URL
       final session = await FFprobeKit.getMediaInformation(url);

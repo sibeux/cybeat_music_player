@@ -1,4 +1,5 @@
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
+import 'package:cybeat_music_player/features/album_music/bindings/album_music_binding.dart';
 import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
 import 'package:cybeat_music_player/common/widgets/floating_bar/floating_playing_music.dart';
 import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
@@ -86,6 +87,7 @@ Route<dynamic>? onGenerateNestedRoute(RouteSettings settings) {
       return GetPageRoute(
         settings: settings,
         page: () => AlbumMusicScreen(),
+        binding: AlbumMusicBinding(),
         transition: Transition.leftToRightWithFade,
         transitionDuration: const Duration(milliseconds: 300),
         fullscreenDialog: true,

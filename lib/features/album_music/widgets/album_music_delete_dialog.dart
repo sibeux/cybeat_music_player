@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-void deleteMusicDialog({
+void albumMusicdeleteDialog({
   required BuildContext context,
   required MusicPlayerController musicPlayerController,
   required MediaItem mediaItem,
@@ -77,11 +77,14 @@ void deleteMusicDialog({
                     child: InkWell(
                       onTap: () {
                         Get.back();
-                        musicPlayerController
-                            .clearCurrentMediaItem();
+                        musicPlayerController.clearCurrentMediaItem();
                         deleteMusic(
-                          musicPlayerController.currentActivePlaylist.value?.editable ?? '',
-                          musicPlayerController.currentActivePlaylist.value?.type ?? '',
+                          musicPlayerController
+                                  .currentActivePlaylist.value?.editable ??
+                              '',
+                          musicPlayerController
+                                  .currentActivePlaylist.value?.type ??
+                              '',
                           mediaItem,
                           audioState,
                         );

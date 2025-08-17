@@ -12,7 +12,7 @@ class DetailMusicCodecInfo extends StatelessWidget {
     final detailMusicController = Get.find<DetailMusicController>();
     return Obx(
       () => Text(
-        '${detailMusicController.sampleRate.value} kHz | ${detailMusicController.bitsPerRawSample.value} bits | ${detailMusicController.bitRate.value} kbps',
+        '${detailMusicController.sampleRate} kHz | ${detailMusicController.bitsPerRawSample} bits | ${detailMusicController.bitRate} kbps',
         style: const TextStyle(
           color: Colors.white,
           fontSize: 16,

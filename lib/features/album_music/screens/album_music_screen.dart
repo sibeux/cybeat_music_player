@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
+import 'package:cybeat_music_player/features/album_music/controllers/album_music_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
@@ -38,9 +38,9 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
   Color dominantColor = Colors.black;
   List<AzListMusic> musicItems = [];
 
-  final homeController = Get.find<HomeController>();
   final musicPlayerController = Get.find<MusicPlayerController>();
   final audioStateController = Get.find<AudioStateController>();
+  final AlbumMusicController albumMusicController = Get.find();
 
   @override
   void initState() {
@@ -170,7 +170,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
       if (musicPlayerController.isNeedRebuildLastPlaylist.value) {
         musicPlayerController.isNeedRebuildLastPlaylist.value = false;
         // Method untuk update playlsit terakhir yang diputar.
-        homeController.updateLastPlayedAlbum(
+        albumMusicController.updateLastPlayedAlbum(
             musicPlayerController.currentActivePlaylist.value!.uid);
       }
     }

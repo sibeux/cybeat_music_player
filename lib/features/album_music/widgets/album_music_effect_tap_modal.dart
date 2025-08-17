@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 double colorOnTap = 0;
 
-class EffectTapMusicModal extends StatefulWidget {
-  const EffectTapMusicModal({
+class AlbumMusicEffectTapModal extends StatefulWidget {
+  const AlbumMusicEffectTapModal({
     super.key,
     required this.child,
   });
@@ -11,10 +11,11 @@ class EffectTapMusicModal extends StatefulWidget {
   final Widget child;
 
   @override
-  EffectTapMusicModalState createState() => EffectTapMusicModalState();
+  AlbumMusicEffectTapModalState createState() =>
+      AlbumMusicEffectTapModalState();
 }
 
-class EffectTapMusicModalState extends State<EffectTapMusicModal>
+class AlbumMusicEffectTapModalState extends State<AlbumMusicEffectTapModal>
     with SingleTickerProviderStateMixin {
   static const clickAnimationDurationMillis = 100;
   // ignore: unused_field
@@ -90,7 +91,7 @@ class EffectTapMusicModalState extends State<EffectTapMusicModal>
       onTapCancel: _restoreButtonSize, // ini kemungkinan ada sih
       child: AnimatedContainer(
         width: double.infinity,
-        color: Colors.grey.withValues(alpha:  colorOnTap),
+        color: Colors.grey.withValues(alpha: colorOnTap),
         duration: const Duration(milliseconds: 150),
         curve: Curves.fastOutSlowIn,
         child: widget.child,

@@ -4,8 +4,8 @@ import 'package:cybeat_music_player/features/search_album/widgets/scale_tap_sear
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SearchAlbumList extends StatelessWidget {
-  const SearchAlbumList({super.key, required this.audioState});
+class SearchAlbumBuilder extends StatelessWidget {
+  const SearchAlbumBuilder({super.key, required this.audioState});
 
   final AudioStateController audioState;
 

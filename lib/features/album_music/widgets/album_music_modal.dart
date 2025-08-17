@@ -3,8 +3,8 @@ import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/features/album_music/widgets/delete_music_dialog.dart';
-import 'package:cybeat_music_player/features/album_music/widgets/effect_tap_music_modal.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_delete_dialog.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_effect_tap_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -56,7 +56,7 @@ Future<dynamic> albumMusicModal(
           // by default, ListTile has a padding of 16
           Column(
             children: [
-              EffectTapMusicModal(
+              AlbumMusicEffectTapModal(
                 child: ListTileBottomModal(
                   title: 'Play now',
                   player: audioPlayer,
@@ -65,7 +65,7 @@ Future<dynamic> albumMusicModal(
                   audioStateController: audioState,
                 ),
               ),
-              EffectTapMusicModal(
+              AlbumMusicEffectTapModal(
                 child: ListTileBottomModal(
                   title: 'Add to playlist',
                   player: audioPlayer,
@@ -83,7 +83,7 @@ Future<dynamic> albumMusicModal(
                           musicDownloadController.dataProgressDownload[
                                   mediaItem.extras?['music_id']]!['progress'] !=
                               0.0,
-                  child: EffectTapMusicModal(
+                  child: AlbumMusicEffectTapModal(
                     child: Obx(
                       () => ListTileBottomModal(
                         title: musicDownloadController.dataProgressDownload[
@@ -105,7 +105,7 @@ Future<dynamic> albumMusicModal(
                     ),
                   ),
                 ),
-              EffectTapMusicModal(
+              AlbumMusicEffectTapModal(
                 child: ListTileBottomModal(
                   title: 'Delete',
                   player: audioPlayer,
@@ -189,7 +189,7 @@ class ListTileBottomModal extends StatelessWidget {
             // delete music
             if (musicPlayerController.currentActivePlaylist.value?.editable ==
                 'true') {
-              deleteMusicDialog(
+              albumMusicdeleteDialog(
                 context: context,
                 musicPlayerController: musicPlayerController,
                 mediaItem: mediaItem,
