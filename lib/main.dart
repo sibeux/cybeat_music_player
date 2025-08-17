@@ -32,34 +32,28 @@ GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   // 1. Pastikan semua binding framework siap
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
   // 2. Inisialisasi Firebase
   await Firebase.initializeApp(
     // Untuk mendapatkan firebase options, jalankan perintah:
     // flutterfire configure
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   // 3. Atur handler error
   // Menangkap error dari Flutter framework (error saat build widget, dll.)
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
   };
-
   // Menangkap error yang tidak ditangani oleh Flutter (error async, di luar build method)
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true; // Menandakan bahwa error sudah ditangani
   };
-
   // TAMBAHKAN INI untuk memaksa pengiriman data di mode debug
   if (kDebugMode) {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
   }
-
   // Tampilkan splash screen sampai app siap
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
   // Inisialisasi Just Audio Background
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
@@ -68,7 +62,6 @@ Future<void> main() async {
     androidNotificationIcon: 'mipmap/ic_launcher',
     androidShowNotificationBadge: true,
   );
-
   // Konfigurasi Status Bar dan Navigation Bar
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.white,
@@ -76,7 +69,6 @@ Future<void> main() async {
     systemNavigationBarColor: Colors.white,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
-
   // Aplikasi hanya berjalan dalam mode portrait
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -88,17 +80,15 @@ Future<void> main() async {
 class InitialBinding extends Bindings {
   @override
   void dependencies() {
-    // Gunakan Get.put() untuk controller yang harus langsung ada
-    // dan hidup selamanya selama aplikasi berjalan.
     // Daftarkan service sebagai singleton
-    Get.put(AlbumService());
-
     /// Service seperti PlaylistService sering disebut sebagai 'singleton'.
     /// Artinya, hanya ada satu instance dari service tersebut yang hidup selama aplikasi berjalan.
     /// - Sumber Kebenaran Tunggal (Single Source of Truth)
     /// - Siklus Hidup (Lifecycle) yang Panjang
     /// - Efisiensi
-    ///
+    Get.put(AlbumService());
+    // Gunakan Get.put() untuk controller yang harus langsung ada
+    // dan hidup selamanya selama aplikasi berjalan.
     // Anda bisa mendaftarkan semua service/controller global di sini
     Get.put(MusicPlayerController());
     Get.put(AudioStateController());
@@ -108,7 +98,6 @@ class InitialBinding extends Bindings {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
