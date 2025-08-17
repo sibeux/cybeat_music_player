@@ -14,7 +14,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeController extends GetxController {
   // ============================== homeSortPreferencesController ==============================
-
   final homeSortPreferences = ''.obs;
   final isTapHomeSort = false.obs;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -49,9 +48,6 @@ class HomeController extends GetxController {
 
   var isLoading = true.obs;
   var isTapped = false.obs;
-  // Ini seharusnya ada di controller crud_playlist, tapi karena-
-  // crud_playlist bukan controller, maka isLoading dipindahkan ke sini. (Malas ubah) :v
-  var isLoadingAddPlaylist = false.obs;
 
   var alphabeticalList =
       RxList<Playlist>([]); // Semua album diurutkan berdasarkan judul
@@ -437,17 +433,17 @@ class HomeController extends GetxController {
     var index =
         generateFilter.indexWhere((element) => element.filter == filter);
 
-    final currentChild = children[index];
+    final currentChild = homeFilterChildren[index];
     final currentFilter = generateFilter[index];
-    children.removeAt(index);
+    homeFilterChildren.removeAt(index);
     generateFilter.removeAt(index);
-    children.insert(0, currentChild);
+    homeFilterChildren.insert(0, currentChild);
     generateFilter.insert(0, currentFilter);
 
-    children.insert(0, 4);
+    homeFilterChildren.insert(0, 4);
     generateFilter.insert(0, FilterItem(filter: 'cancel', text: 'Cancel'));
 
-    isTapped.value = !isTapped.value;
+    homeFilterIsTapped.value = !homeFilterIsTapped.value;
     homeSelectedFilter.value = filter;
 
     initializeAlbum();
@@ -459,18 +455,18 @@ class HomeController extends GetxController {
     var currentIndex = generateFilter
         .indexWhere((element) => element.filter == homeSelectedFilter.value);
 
-    final currentChild = children[currentIndex];
+    final currentChild = homeFilterChildren[currentIndex];
     final currentFilter = generateFilter[currentIndex];
-    children.removeAt(currentIndex);
+    homeFilterChildren.removeAt(currentIndex);
     generateFilter.removeAt(currentIndex);
 
-    children.removeAt(0);
+    homeFilterChildren.removeAt(0);
     generateFilter.removeAt(0);
 
-    children.insert(initialIndex, currentChild);
+    homeFilterChildren.insert(initialIndex, currentChild);
     generateFilter.insert(initialIndex, currentFilter);
 
-    isTapped.value = !isTapped.value;
+    homeFilterIsTapped.value = !homeFilterIsTapped.value;
     homeSelectedFilter.value = '';
 
     initializeAlbum();

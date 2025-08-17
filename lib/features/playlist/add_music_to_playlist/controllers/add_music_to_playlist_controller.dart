@@ -23,6 +23,7 @@ class AddMusicToPlaylistController extends GetxController {
   var searchBarTapped = false.obs;
   var isLoadingGetMusicOnPlaylist = false.obs;
   var isLoadingUpdateMusicOnPlaylist = false.obs;
+  var isLoadingAddPlaylist = false.obs;
 
   void onChanged(String value) {
     isTyping.value = value.isNotEmpty;

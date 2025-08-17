@@ -13,7 +13,7 @@ class NewPlaylistController extends GetxController{
   
   void addNewPlaylist(String name) async {
     final homeController = Get.find<HomeController>();
-    homeController.isLoadingAddPlaylist.value = true;
+    // homeController.isLoadingAddPlaylist.value = true;
     const String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/crud_new_playlist';
 
@@ -30,7 +30,7 @@ class NewPlaylistController extends GetxController{
     } catch (e) {
       logError('Error add new playlist: $e');
     } finally {
-      homeController.isLoadingAddPlaylist.value = false;
+      // homeController.isLoadingAddPlaylist.value = false;
       homeController.initializeAlbum();
     }
   }

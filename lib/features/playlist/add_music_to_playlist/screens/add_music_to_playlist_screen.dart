@@ -322,7 +322,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
         Obx(
           () => addMusicToPlaylistController
                       .isLoadingGetMusicOnPlaylist.value ||
-                  homeAlbumGridController.isLoadingAddPlaylist.value ||
+                  addMusicToPlaylistController.isLoadingAddPlaylist.value ||
                   homeAlbumGridController
                       .isLoading.value // Ini loading pas di home screen.
               ? const Opacity(
@@ -334,7 +334,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
         Obx(
           () =>
               addMusicToPlaylistController.isLoadingGetMusicOnPlaylist.value ||
-                      homeAlbumGridController.isLoadingAddPlaylist.value ||
+                      addMusicToPlaylistController.isLoadingAddPlaylist.value ||
                       homeAlbumGridController
                           .isLoading.value // Ini loading pas di home screen.
                   ? Center(

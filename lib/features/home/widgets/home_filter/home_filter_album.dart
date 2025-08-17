@@ -1,5 +1,6 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -22,10 +23,10 @@ class HomeFilterAlbum extends StatelessWidget {
               color: HexColor('#ac8bc9'),
               borderRadius: BorderRadius.circular(50),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.cancel,
               color: Colors.white,
-              size: 32,
+              size: 32.sp,
             ),
           )
         : Obx(
