@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/controller/music_download_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_filter/home_filter_grid.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_scale_tap.dart';

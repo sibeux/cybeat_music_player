@@ -22,9 +22,8 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:cybeat_music_player/controller/music_download_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -104,7 +103,6 @@ class InitialBinding extends Bindings {
     Get.put(MusicPlayerController());
     Get.put(AudioStateController());
     Get.put(MusicDownloadController());
-    Get.put(ReadCodecController());
   }
 }
 

@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/controller/music_download_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';

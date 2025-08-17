@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
+import 'package:cybeat_music_player/features/detail_music/controllers/detail_music_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,10 +9,10 @@ class DetailMusicCodecInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final readCodecController = Get.find<ReadCodecController>();
+    final detailMusicController = Get.find<DetailMusicController>();
     return Obx(
       () => Text(
-        '${readCodecController.sampleRate.value} kHz | ${readCodecController.bitsPerRawSample.value} bits | ${readCodecController.bitRate.value} kbps',
+        '${detailMusicController.sampleRate.value} kHz | ${detailMusicController.bitsPerRawSample.value} bits | ${detailMusicController.bitRate.value} kbps',
         style: const TextStyle(
           color: Colors.white,
           fontSize: 16,

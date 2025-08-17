@@ -5,11 +5,12 @@ import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
-import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
+import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
+import 'package:ffmpeg_kit_flutter_new/stream_information.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -29,7 +30,11 @@ class AudioStateController extends GetxController {
   static int _nextMediaId = 1;
   // qeueu untuk testing screen
   List<MediaItem> queue = [];
-  
+
+  var sampleRate = '--'.obs;
+  var bitsPerRawSample = '--'.obs;
+  var bitRate = '--'.obs;
+
   final musicPlayerController = Get.find<MusicPlayerController>();
 
   @override
@@ -68,8 +73,7 @@ class AudioStateController extends GetxController {
             // }
 
             // Untuk read codec file.
-            final readCodecController = Get.find<ReadCodecController>();
-            readCodecController.onReadCodec(item.extras!['url']);
+            onReadCodec(item.extras!['url']);
           }
         }
       },
@@ -281,6 +285,34 @@ class AudioStateController extends GetxController {
       );
     } catch (e) {
       logError('Error set recents music: $e');
+    }
+  }
+
+  Future<void> onReadCodec(String url) async {
+    try {
+      // 1. Jalankan FFprobe langsung dengan URL
+      final session = await FFprobeKit.getMediaInformation(url);
+      final information = session.getMediaInformation();
+      if (information != null) {
+        // 2. Proses ekstraksi data sama persis seperti file lokal
+        final audioStream = information.getStreams().firstWhere(
+              (s) => s.getType() == 'audio',
+              orElse: () => StreamInformation(information.getAllProperties()),
+            );
+        bitsPerRawSample.value =
+            audioStream.getProperty('bits_per_raw_sample') ?? '--';
+        final String fileSampleRate =
+            audioStream.getProperty('sample_rate') ?? '--';
+        final String fileBitRate = audioStream.getProperty('bit_rate') ?? '--';
+        sampleRate.value = fileSampleRate != '--'
+            ? (int.parse(fileSampleRate) / 1000).toString()
+            : '--';
+        bitRate.value = fileBitRate != '--'
+            ? (int.parse(fileBitRate) / 1000).toStringAsFixed(0)
+            : '--';
+      }
+    } catch (e) {
+      logError('Error onReadCodec: $e');
     }
   }
 }

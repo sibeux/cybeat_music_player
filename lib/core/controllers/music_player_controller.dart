@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -61,6 +60,7 @@ class MusicPlayerController extends GetxController {
         final mediaItem = sequenceState?.currentSource?.tag as MediaItem?;
         // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
         // buka album atau tidak.
+        // By default, audio player udah "siap" putar dari indeks pertama.
         if (mediaItem != null && getCurrentMediaItem != null) {
           updateCurrentMediaItem(mediaItem);
           getDominantColor(mediaItem.artUri.toString());
