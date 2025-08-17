@@ -56,26 +56,21 @@ class AudioStateController extends GetxController {
       (event) {
         if (musicPlayerController.isPlayingNow.value) {
           final MediaItem item = queue[activePlayer.value!.currentIndex!];
-
+          // setRecentsMusic ditaruh di luar agar saat lagu looping, dia-
+          // tetap kirim ke database.
+          setRecentsMusic(item.extras!['music_id']);
+          // Untuk cek apakah lagu terakhir diputar itu adalah lagu yang sama.
           if (item.extras?['music_id'] != uid) {
+            // Set uid terakhir lagu yang diputar.
             uid = item.extras!['music_id'];
-            setRecentsMusic(item.extras!['music_id']);
-
-            // Fungsi untuk save lagu di cloud storage selain gdrive.
-            // if (item.extras?['already_hosted'] == false) {
-            //   uploadHostMusic(
-            //     musicId: item.extras!['music_id'],
-            //     musicUri: item.extras!['url'],
-            //   );
-            // }
-
             // Untuk read codec file.
+            // Ditaruh di dalam karena kalau lagu sebelumnya sama,
+            // maka tidak perlu read codec lagi.
             onReadCodec(item.extras!['url']);
           }
         }
       },
       onError: (Object e, StackTrace stackTrace) {
-        // logger.e('A stream error occurred: $e');
         logError('A stream error occurred: $e');
       },
     );
