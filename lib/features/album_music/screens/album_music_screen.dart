@@ -79,7 +79,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
     }
 
     Widget content = StreamBuilder<SequenceState?>(
-      stream: audioStateController.player.value?.sequenceStateStream,
+      stream: audioStateController.activePlayer.value?.sequenceStateStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Menampilkan shimmer saat data sedang dimuat.
@@ -112,7 +112,6 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
 
           return AzListView(
             data: musicItems,
-            // itemCount: 50,
             itemCount: sequence.length,
             indexBarAlignment: Alignment.topRight,
             indexBarOptions: IndexBarOptions(
@@ -136,7 +135,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
               return InkWell(
                 child: AlbumMusicList(
                   mediaItem: sequence[index].tag as MediaItem,
-                  audioPlayer: audioStateController.player.value!,
+                  audioPlayer: audioStateController.activePlayer.value!,
                   index: index,
                   audioState: audioStateController,
                 ),
@@ -238,7 +237,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                             children: [
                               StreamBuilder<SequenceState?>(
                                 stream: audioStateController
-                                    .player.value?.sequenceStateStream,
+                                    .activePlayer.value?.sequenceStateStream,
                                 builder: (context, snapshot) {
                                   List<IndexedAudioSource> sequence = [];
                                   if (snapshot.hasData) {
@@ -299,7 +298,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                                   size: 30,
                                   color: HexColor('#8d8c8c'),
                                 ),
-                                onPressed: () {},
+                                onPressed: null,
                               ),
                               const SizedBox(
                                 width: 15,

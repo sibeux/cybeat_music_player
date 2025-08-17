@@ -20,7 +20,7 @@ class HomeListGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final musicPlayerController = Get.find<MusicPlayerController>();
-    final homeAlbumGridController = Get.find<HomeController>();
+    final homeController = Get.find<HomeController>();
 
     return GestureDetector(
       onTap: () {
@@ -38,7 +38,7 @@ class HomeListGrid extends StatelessWidget {
       child: Container(
         alignment: Alignment.centerLeft,
         child: Obx(
-          () => homeAlbumGridController.albumCountGrid.value == 1
+          () => homeController.albumCountGrid.value == 1
               ? OneGridLayout(
                   playlist: playlist,
                   musicPlayerController: musicPlayerController,

@@ -13,7 +13,8 @@ import '../widgets/detail_music_background_blur.dart';
 import '../widgets/detail_music_progress_bar.dart';
 
 class DetailMusicScreen extends StatefulWidget {
-  const DetailMusicScreen({super.key, 
+  const DetailMusicScreen({
+    super.key,
   });
 
   @override
@@ -114,7 +115,7 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
                         width: 15,
                       ),
                       DetailMusicFavoriteButton(
-                        player: audioStateController.player.value!,
+                        player: audioStateController.activePlayer.value!,
                       )
                     ],
                   ),
@@ -133,13 +134,15 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
                 // child: Divider(
                 //   color: Colors.white,
                 //   thickness: 1,
-                DetailMusicProgressBarMusic(audioPlayer: audioStateController.player.value!),
+                DetailMusicProgressBarMusic(
+                    audioPlayer: audioStateController.activePlayer.value!),
                 const SizedBox(
                   height: 15,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(0.0),
-                  child: DetailMusicControlButtons(audioPlayer: audioStateController.player.value!),
+                  child: DetailMusicControlButtons(
+                      audioPlayer: audioStateController.activePlayer.value!),
                 ),
                 const SizedBox(
                   // buat ngatur jarak antara control buttons

@@ -101,8 +101,8 @@ class InitialBinding extends Bindings {
     /// - Efisiensi
     ///
     // Anda bisa mendaftarkan semua service/controller global di sini
-    Get.put(AudioStateController());
     Get.put(MusicPlayerController());
+    Get.put(AudioStateController());
     Get.put(MusicDownloadController());
     Get.put(ReadCodecController());
   }

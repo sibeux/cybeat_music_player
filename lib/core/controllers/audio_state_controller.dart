@@ -24,36 +24,36 @@ class AudioStateController extends GetxController {
   /// Sekarang soal late → kamu perlu hati-hati:
   /// late dipakai kalau kamu mau deklarasi variabel tanpa langsung inisialisasi, tapi janji bakal diisi sebelum dipakai.
   /// obs atau Rx di GetX butuh nilai awal (meskipun null). Jadi kalau mau reaktif, biasanya nggak perlu late, cukup kasih default.
-  final player = Rx<AudioPlayer?>(null);
+  final activePlayer = Rx<AudioPlayer?>(null);
   final playlist = Rx<ConcatenatingAudioSource?>(null);
   static int _nextMediaId = 1;
   // qeueu untuk testing screen
   List<MediaItem> queue = [];
+  
+  final musicPlayerController = Get.find<MusicPlayerController>();
 
   @override
   void onInit() {
-    player.value = AudioPlayer();
+    activePlayer.value = AudioPlayer();
     super.onInit();
   }
 
   @override
   void onClose() {
-    player.value?.dispose();
+    activePlayer.value?.dispose();
     super.onClose();
   }
 
   Future<void> clear() async {
-    final musicPlayerController = Get.find<MusicPlayerController>();
-    await player.value?.stop();
-    await player.value?.dispose();
-    player.value = AudioPlayer();
+    activePlayer.value?.stop();
+    activePlayer.value?.dispose();
+    activePlayer.value = AudioPlayer();
     var uid = '';
 
-    player.value?.playbackEventStream.listen(
+    activePlayer.value?.playbackEventStream.listen(
       (event) {
-        logInfo(event.toString());
         if (musicPlayerController.isPlayingNow.value) {
-          final MediaItem item = queue[player.value!.currentIndex!];
+          final MediaItem item = queue[activePlayer.value!.currentIndex!];
 
           if (item.extras?['music_id'] != uid) {
             uid = item.extras!['music_id'];
@@ -78,12 +78,6 @@ class AudioStateController extends GetxController {
         logError('A stream error occurred: $e');
       },
     );
-  }
-
-  Future<void> recreate() async {
-    await player.value?.pause();
-    await player.value?.dispose();
-    player.value = AudioPlayer();
   }
 
   Future<void> init(Playlist list) async {
@@ -188,8 +182,7 @@ class AudioStateController extends GetxController {
         }
       }
       queue = playlist.value!.sequence.map((e) => e.tag as MediaItem).toList();
-
-      await player.value?.setAudioSource(playlist.value!);
+      await activePlayer.value?.setAudioSource(playlist.value!);
     } catch (e, st) {
       // logger.e('Error loading audio source: $e');
       logError('Error loading audio source: $e');
@@ -199,7 +192,7 @@ class AudioStateController extends GetxController {
 
   @override
   void dispose() {
-    player.value?.dispose();
+    activePlayer.value?.dispose();
     super.dispose();
   }
 
@@ -274,25 +267,14 @@ class AudioStateController extends GetxController {
   }
 
   Future<void> setSourceAudio(ConcatenatingAudioSource playlist) async {
-    player.value?.playbackEventStream.listen(
-      (event) {},
-      onError: (Object e, StackTrace stackTrace) {
-        logError(
-            '{setSourceAudio} A stream error occurred: $e, stackTrace: $stackTrace');
-      },
-    );
-
     this.playlist.value = playlist;
-
     queue = playlist.sequence.map((e) => e.tag as MediaItem).toList();
-
-    await player.value?.setAudioSource(playlist);
+    await activePlayer.value?.setAudioSource(playlist);
   }
 
   void setRecentsMusic(String? id) async {
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/recents_music?_id=$id';
-
     try {
       await http.post(
         Uri.parse(url),

@@ -167,7 +167,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                 ),
                                 StreamBuilder<PlayerState>(
                                   stream: audioStateController
-                                      .player.value?.playerStateStream,
+                                      .activePlayer.value?.playerStateStream,
                                   builder: (_, snapshot) {
                                     final playerState = snapshot.data;
                                     return _playPauseButton(playerState);
@@ -181,7 +181,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                     color: musicPlayerController.listColor[1],
                                   ),
                                   onPressed: () {
-                                    audioStateController.player.value
+                                    audioStateController.activePlayer.value
                                         ?.seekToNext();
                                   },
                                 ),
@@ -261,7 +261,7 @@ class FloatingPlayingMusic extends StatelessWidget {
         () => IconButton(
           icon: const Icon(Icons.play_circle_fill),
           color: musicPlayerController.listColor[1],
-          onPressed: audioStateController.player.value?.play,
+          onPressed: audioStateController.activePlayer.value?.play,
         ),
       );
     } else if (processingState != ProcessingState.completed) {
@@ -269,16 +269,17 @@ class FloatingPlayingMusic extends StatelessWidget {
         () => IconButton(
           icon: const Icon(Icons.pause_circle_filled),
           color: musicPlayerController.listColor[1],
-          onPressed: audioStateController.player.value?.pause,
+          onPressed: audioStateController.activePlayer.value?.pause,
         ),
       );
     } else {
       return Obx(
         () => IconButton(
           icon: const Icon(Icons.replay),
-          onPressed: () => audioStateController.player.value?.seek(
+          onPressed: () => audioStateController.activePlayer.value?.seek(
             Duration.zero,
-            index: audioStateController.player.value?.effectiveIndices!.first,
+            index: audioStateController
+                .activePlayer.value?.effectiveIndices!.first,
           ),
         ),
       );

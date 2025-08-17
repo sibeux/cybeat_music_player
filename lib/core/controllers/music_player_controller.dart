@@ -31,14 +31,13 @@ class MusicPlayerController extends GetxController {
 
   MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
 
-  final audioStateController = Get.find<AudioStateController>();
-
   @override
   void onReady() {
     super.onReady();
+    final audioStateController = Get.find<AudioStateController>();
     // 'ever' akan mendengarkan perubahan pada audioStateController.player
     // dan menjalankan _listenToPlayerStreams setiap kali nilainya berubah.
-    ever(audioStateController.player, _listenToPlayerStreams);
+    ever(audioStateController.activePlayer, _listenToPlayerStreams);
   }
 
   // Fungsi baru untuk menangani semua logika subscription
@@ -60,7 +59,9 @@ class MusicPlayerController extends GetxController {
           player.sequenceStateStream.listen((sequenceState) {
         // PERBAIKAN: Tambahkan null check untuk menghindari error
         final mediaItem = sequenceState?.currentSource?.tag as MediaItem?;
-        if (mediaItem != null) {
+        // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
+        // buka album atau tidak.
+        if (mediaItem != null && getCurrentMediaItem != null) {
           updateCurrentMediaItem(mediaItem);
           getDominantColor(mediaItem.artUri.toString());
         }
@@ -145,19 +146,17 @@ class MusicPlayerController extends GetxController {
   }) {
     updateCurrentMediaItem(mediaItem);
 
-    audioStateController.player.value?.seek(Duration.zero, index: index);
+    audioStateController.activePlayer.value?.seek(Duration.zero, index: index);
 
-    audioStateController.player.value?.setAudioSource(
+    audioStateController.activePlayer.value?.setAudioSource(
         audioStateController.playlist.value!,
         initialIndex: index);
 
     playMusic();
 
-    updateCurrentMediaItem(_currentMediaItem.value!);
-
     setLastPlayingPlaylist();
 
-    audioStateController.player.value?.play();
+    audioStateController.activePlayer.value?.play();
   }
 
   Future<void> getDominantColor(String url) async {
