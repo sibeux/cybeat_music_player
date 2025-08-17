@@ -1,8 +1,6 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_filter/home_filter_grid.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_scale_tap.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/widgets/show_new_playlist_modal.dart';
@@ -34,21 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final musicPlayerController = Get.find<MusicPlayerController>();
-    final musicStateController = Get.find<MusicStateController>();
     final audioStateController = Get.find<AudioStateController>();
-
-    /*
-    Setiap lagu berganti, maka akan memanggil fungsi setCurrentMediaItem-
-    untuk mengubah data lagu yang sedang diputar. Agar nomor dan nama lagu- 
-    yang sedang diputar berubah jadi ungu.
-    */
-    ever(
-      musicStateController.currentMusicPlay,
-      (callback) => musicPlayerController
-          .setCurrentMediaItem(musicStateController.currentMusicPlay[0]),
-    );
-
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
       appBar: AppBar(

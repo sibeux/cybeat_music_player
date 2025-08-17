@@ -1,10 +1,16 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:audio_service/audio_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:just_audio/just_audio.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 class MusicPlayerController extends GetxController {
   var currentActivePlaylist = Rx<Playlist?>(null);
@@ -14,26 +20,68 @@ class MusicPlayerController extends GetxController {
   var isNeedRebuildLastPlaylist = false.obs;
   var isAzlistviewScreenActive = false.obs;
 
+  var listColor = RxList<Color>([Colors.black, Colors.white]);
+
   var currentMusicDuration = Duration.zero.obs;
   var currentMusicPosition = Duration.zero.obs;
 
-  MediaItem? get currentMediaItem => _currentMediaItem.value;
+  StreamSubscription<Duration?>? durationStreamSubscription;
+  StreamSubscription<Duration?>? positionStreamSubscription;
+  StreamSubscription<SequenceState?>? sequenceStateStreamSubscription;
+
+  MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
+
+  final audioStateController = Get.find<AudioStateController>();
 
   @override
-  void onInit() {
-    super.onInit();
-    final audioStateController = Get.find<AudioStateController>();
-    // Subscribe ke stream dan perbarui durasi.
-    audioStateController.player.value?.durationStream.listen((event) {
-      updateCurrentMusicDuration(event);
-    });
-
-    // Subscribe ke stream dan perbarui posisi.
-    audioStateController.player.value?.positionStream.listen((event) {
-      updateCurrentMusicPosition(event);
-    });
+  void onReady() {
+    super.onReady();
+    // 'ever' akan mendengarkan perubahan pada audioStateController.player
+    // dan menjalankan _listenToPlayerStreams setiap kali nilainya berubah.
+    ever(audioStateController.player, _listenToPlayerStreams);
   }
 
+  // Fungsi baru untuk menangani semua logika subscription
+  void _listenToPlayerStreams(AudioPlayer? player) {
+    // 1. Selalu batalkan subscription lama untuk mencegah kebocoran memori
+    _cancelSubscriptions();
+
+    // 2. Jika player baru tidak null, buat subscription baru
+    if (player != null) {
+      durationStreamSubscription = player.durationStream.listen((duration) {
+        updateCurrentMusicDuration(duration);
+      });
+
+      positionStreamSubscription = player.positionStream.listen((position) {
+        updateCurrentMusicPosition(position);
+      });
+
+      sequenceStateStreamSubscription =
+          player.sequenceStateStream.listen((sequenceState) {
+        // PERBAIKAN: Tambahkan null check untuk menghindari error
+        final mediaItem = sequenceState?.currentSource?.tag as MediaItem?;
+        if (mediaItem != null) {
+          updateCurrentMediaItem(mediaItem);
+        }
+      });
+    }
+  }
+
+  // Fungsi helper untuk membatalkan semua subscription
+  void _cancelSubscriptions() {
+    durationStreamSubscription?.cancel();
+    positionStreamSubscription?.cancel();
+    sequenceStateStreamSubscription?.cancel();
+  }
+
+  @override
+  void onClose() {
+    // Panggil fungsi cancel di onClose untuk pembersihan akhir
+    _cancelSubscriptions();
+    super.onClose();
+  }
+
+  // ** INI UDAH GAK BERLAKU, KARENA CONTROLLER INI ABADI.
   /*
   untuk kasus stream durasi dan posisi, tidak perlu pakai onclose,
   karena akan selalu ada perubahan durasi dan posisi,
@@ -42,6 +90,7 @@ class MusicPlayerController extends GetxController {
   Akibatnya jika ada subscription dan di-close,
   maka progress bar tidak akan berjalan, karena stream sudah di-close.
   */
+  // ** ----------------------------------------------------
 
   void updateCurrentMusicDuration(Duration? duration) {
     // pakai this karena nama parameter sama dengan nama variabel
@@ -52,20 +101,20 @@ class MusicPlayerController extends GetxController {
     currentMusicPosition.value = position ?? Duration.zero;
   }
 
+  void updateCurrentMediaItem(MediaItem mediaItem) {
+    _currentMediaItem.value = mediaItem;
+  }
+
+  void clearCurrentMediaItem() {
+    _currentMediaItem.value = null;
+  }
+
   void playMusic() {
     isPlayingNow.value = true;
   }
 
   void pauseMusic() {
     isPlayingNow.value = false;
-  }
-
-  void setCurrentMediaItem(MediaItem mediaItem) {
-    _currentMediaItem.value = mediaItem;
-  }
-
-  void clearCurrentMediaItem() {
-    _currentMediaItem.value = null;
   }
 
   void setActivePlaylist(Playlist playlist) {
@@ -83,10 +132,21 @@ class MusicPlayerController extends GetxController {
         Uri.parse(api),
       );
       isNeedRebuildLastPlaylist.value = true;
-      // Get.put(ProgressMusicController(player: audioState.player));
     } catch (e) {
       logError('Error setLastPlayingPlaylist: $e');
     }
+  }
+
+  void updateState(SequenceState? sequenceState) {
+    // Ini penyebab ada junk lama saat ganti lagu.
+    // if (cover.value.contains('.webp')) {
+    //   floatingPlayingMusicController.listColor.value = [
+    //     Colors.black,
+    //     Colors.white
+    //   ];
+    // } else {
+    //   floatingPlayingMusicController.getDominantColor(cover.value);
+    // }
   }
 
   void playMusicNow({
@@ -94,8 +154,7 @@ class MusicPlayerController extends GetxController {
     required int index,
     required MediaItem mediaItem,
   }) {
-    setCurrentMediaItem(mediaItem);
-    final musicStateController = Get.find<MusicStateController>();
+    updateCurrentMediaItem(mediaItem);
 
     audioStateController.player.value?.seek(Duration.zero, index: index);
 
@@ -105,15 +164,63 @@ class MusicPlayerController extends GetxController {
 
     playMusic();
 
-    musicStateController.streamAudioPlayer(
-      audioStateController.player.value!,
-      _currentMediaItem.value!,
-    );
+    // musicStateController.streamAudioPlayer(
+    //   audioStateController.player.value!,
+    //   _currentMediaItem.value!,
+    // );
 
-    setCurrentMediaItem(_currentMediaItem.value!);
+    updateCurrentMediaItem(_currentMediaItem.value!);
 
     setLastPlayingPlaylist();
 
     audioStateController.player.value?.play();
+  }
+
+  Future<void> getDominantColor(String url) async {
+    final PaletteGenerator paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+      // Penyesuaian ukuran gambar agar lebih cepat.
+      CachedNetworkImageProvider(
+        url,
+        maxHeight: 8,
+        maxWidth: 8,
+        scale: 0.1,
+      ),
+      size: const Size(256.0, 170.0),
+      region: const Rect.fromLTRB(41.8, 4.4, 217.8, 170.0),
+      maximumColorCount: 20,
+    );
+
+    final Map<String, Color?> color = {
+      'lightMutedColor': paletteGenerator.lightMutedColor?.color,
+      'darkMutedColor': paletteGenerator.darkMutedColor?.color,
+      'lightVibrantColor': paletteGenerator.lightVibrantColor?.color,
+      'darkVibrantColor': paletteGenerator.darkVibrantColor?.color,
+      'mutedColor': paletteGenerator.mutedColor?.color,
+      'vibrantColor': paletteGenerator.vibrantColor?.color,
+    };
+
+    double numLuminance = 0;
+    Color fixColor = Colors.black;
+
+    for (final value in color.values) {
+      if (value != null &&
+          value.computeLuminance() +
+                  paletteGenerator.dominantColor!.color.computeLuminance() >
+              numLuminance) {
+        numLuminance = value.computeLuminance();
+        fixColor = value;
+      }
+    }
+
+    if (fixColor == paletteGenerator.dominantColor!.color) {
+      fixColor = Colors.white;
+    }
+    final list = [paletteGenerator.dominantColor!.color, fixColor];
+    listColor.value = list;
+  }
+
+  double isDark(Color background) {
+    return (background.computeLuminance());
   }
 }

@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
+import 'package:cybeat_music_player/features/detail_music/controllers/detail_music_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,7 +10,7 @@ class DetailMusicCoverImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final musicController = Get.find<MusicStateController>();
+    final DetailMusicController detailMusicController = Get.find();
 
     return Obx(
       () => Expanded(
@@ -21,7 +21,7 @@ class DetailMusicCoverImage extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: CachedNetworkImage(
-              imageUrl: musicController.cover.value,
+              imageUrl: detailMusicController.currentMediaItem!.artUri.toString(),
               fit: BoxFit.cover,
               filterQuality: FilterQuality.low,
               maxHeightDiskCache: 500,

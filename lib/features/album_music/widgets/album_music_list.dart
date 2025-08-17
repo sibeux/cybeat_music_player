@@ -30,7 +30,8 @@ class AlbumMusicList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final musikDimainkan = Get.find<MusicPlayerController>().currentMediaItem;
+    final musikDimainkan =
+        Get.find<MusicPlayerController>().getCurrentMediaItem;
     final musicDownloadController = Get.find<MusicDownloadController>();
     String colorTitle = "#313031";
     double marginList = 18;

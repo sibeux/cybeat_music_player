@@ -1,3 +1,5 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:get/get.dart';
@@ -5,6 +7,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeController extends GetxController {
   final AlbumService albumService = Get.find<AlbumService>();
+  final MusicPlayerController musicPlayerController = Get.find();
   final RefreshController refreshController =
       RefreshController(initialRefresh: false);
 
@@ -25,6 +28,8 @@ class HomeController extends GetxController {
   get sortValue => albumService.sortValue;
   get playlistCreatedList => albumService.playlistCreatedList;
   get isLoading => albumService.isHomeLoading.value;
+
+  get currentMediaItem => musicPlayerController.getCurrentMediaItem;
 
   @override
   void onInit() async {
@@ -101,5 +106,9 @@ class HomeController extends GetxController {
 
   void changeLayoutGrid() {
     albumService.changeLayoutGrid();
+  }
+
+  void setCurrentMediaItem(MediaItem mediaItem) {
+    musicPlayerController.updateCurrentMediaItem(mediaItem);
   }
 }

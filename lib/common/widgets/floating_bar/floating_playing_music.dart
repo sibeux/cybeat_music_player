@@ -1,8 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cybeat_music_player/features/floating_bar/controllers/floating_playing_music_controller.dart';
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/features/floating_bar/widgets/animated_rotate_cover.dart';
+import 'package:cybeat_music_player/common/widgets/floating_bar/animated_rotate_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,9 +8,6 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
 import '../../../core/controllers/audio_state_controller.dart';
-
-final floatingPlayingMusicController =
-    Get.put(FloatingPlayingMusicController());
 
 class FloatingPlayingMusic extends StatelessWidget {
   const FloatingPlayingMusic({
@@ -23,7 +18,6 @@ class FloatingPlayingMusic extends StatelessWidget {
   Widget build(BuildContext context) {
     final audioStateController = Get.find<AudioStateController>();
     final musicPlayerController = Get.find<MusicPlayerController>();
-    final musicStateController = Get.find<MusicStateController>();
 
     return GestureDetector(
       child: Container(
@@ -58,7 +52,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                         width: double.infinity,
                         height: 45.h,
                         decoration: BoxDecoration(
-                          color: floatingPlayingMusicController.listColor[0],
+                          color: musicPlayerController.listColor[0],
                           borderRadius: BorderRadius.only(
                             topRight: Radius.circular(100.r),
                             bottomRight: Radius.circular(100.r),
@@ -81,25 +75,28 @@ class FloatingPlayingMusic extends StatelessWidget {
                                         SizedBox(
                                           height: 20.h,
                                           child: AutoSizeText(
-                                            musicStateController.title.value,
+                                            musicPlayerController
+                                                    .getCurrentMediaItem
+                                                    ?.title ??
+                                                '',
                                             minFontSize: 14,
                                             maxFontSize: 14,
                                             maxLines: 1,
                                             style: TextStyle(
                                               // fontSize: 14,
-                                              color:
-                                                  floatingPlayingMusicController
-                                                      .listColor[1],
+                                              color: musicPlayerController
+                                                  .listColor[1],
                                               fontWeight: FontWeight.bold,
                                             ),
                                             overflowReplacement: Marquee(
-                                              text: musicStateController
-                                                  .title.value,
+                                              text: musicPlayerController
+                                                      .getCurrentMediaItem
+                                                      ?.title ??
+                                                  '',
                                               style: TextStyle(
                                                 fontSize: 14.sp,
-                                                color:
-                                                    floatingPlayingMusicController
-                                                        .listColor[1],
+                                                color: musicPlayerController
+                                                    .listColor[1],
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               scrollAxis: Axis.horizontal,
@@ -123,24 +120,27 @@ class FloatingPlayingMusic extends StatelessWidget {
                                         SizedBox(
                                           height: 20.h,
                                           child: AutoSizeText(
-                                            musicStateController.artist.value,
+                                            musicPlayerController
+                                                    .getCurrentMediaItem
+                                                    ?.artist ??
+                                                '',
                                             minFontSize: 12,
                                             maxFontSize: 12,
                                             maxLines: 1,
                                             style: TextStyle(
                                                 // fontSize: 12,
-                                                color:
-                                                    floatingPlayingMusicController
-                                                        .listColor[1],
+                                                color: musicPlayerController
+                                                    .listColor[1],
                                                 fontWeight: FontWeight.normal),
                                             overflowReplacement: Marquee(
-                                              text: musicStateController
-                                                  .artist.value,
+                                              text: musicPlayerController
+                                                      .getCurrentMediaItem
+                                                      ?.artist ??
+                                                  '',
                                               style: TextStyle(
                                                 fontSize: 12.sp,
-                                                color:
-                                                    floatingPlayingMusicController
-                                                        .listColor[1],
+                                                color: musicPlayerController
+                                                    .listColor[1],
                                                 fontWeight: FontWeight.normal,
                                               ),
                                               scrollAxis: Axis.horizontal,
@@ -178,8 +178,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                   highlightColor: Colors.transparent,
                                   icon: Icon(
                                     Icons.skip_next_rounded,
-                                    color: floatingPlayingMusicController
-                                        .listColor[1],
+                                    color: musicPlayerController.listColor[1],
                                   ),
                                   onPressed: () {
                                     audioStateController.player.value
@@ -214,8 +213,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                             .inMilliseconds
                                     : 0.0,
                                 borderRadius: BorderRadius.circular(50),
-                                color:
-                                    floatingPlayingMusicController.listColor[1],
+                                color: musicPlayerController.listColor[1],
                                 backgroundColor: Colors.grey,
                               ),
                             ),
@@ -228,7 +226,9 @@ class FloatingPlayingMusic extends StatelessWidget {
               ),
               Obx(
                 () => AnimatedRotateCover(
-                  imageUrl: musicStateController.cover.value,
+                  imageUrl: musicPlayerController.getCurrentMediaItem?.artUri
+                          .toString() ??
+                      '',
                 ),
               ),
             ],
@@ -244,6 +244,7 @@ class FloatingPlayingMusic extends StatelessWidget {
   Widget _playPauseButton(PlayerState? playerState) {
     final processingState = playerState?.processingState;
     final audioStateController = Get.find<AudioStateController>();
+    final MusicPlayerController musicPlayerController = Get.find();
     final playing = playerState?.playing;
     if (processingState == ProcessingState.loading ||
         processingState == ProcessingState.buffering) {
@@ -259,7 +260,7 @@ class FloatingPlayingMusic extends StatelessWidget {
       return Obx(
         () => IconButton(
           icon: const Icon(Icons.play_circle_fill),
-          color: floatingPlayingMusicController.listColor[1],
+          color: musicPlayerController.listColor[1],
           onPressed: audioStateController.player.value?.play,
         ),
       );
@@ -267,7 +268,7 @@ class FloatingPlayingMusic extends StatelessWidget {
       return Obx(
         () => IconButton(
           icon: const Icon(Icons.pause_circle_filled),
-          color: floatingPlayingMusicController.listColor[1],
+          color: musicPlayerController.listColor[1],
           onPressed: audioStateController.player.value?.pause,
         ),
       );

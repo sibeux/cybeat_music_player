@@ -62,7 +62,7 @@ Future<dynamic> albumMusicModal(
                   player: audioPlayer,
                   mediaItem: mediaItem,
                   index: index,
-                  audioState: audioState,
+                  audioStateController: audioState,
                 ),
               ),
               EffectTapMusicModal(
@@ -71,7 +71,7 @@ Future<dynamic> albumMusicModal(
                   player: audioPlayer,
                   mediaItem: mediaItem,
                   index: index,
-                  audioState: audioState,
+                  audioStateController: audioState,
                 ),
               ),
               if (mediaItem.extras?['url'].contains('http'))
@@ -100,7 +100,7 @@ Future<dynamic> albumMusicModal(
                         player: audioPlayer,
                         mediaItem: mediaItem,
                         index: index,
-                        audioState: audioState,
+                        audioStateController: audioState,
                       ),
                     ),
                   ),
@@ -111,7 +111,7 @@ Future<dynamic> albumMusicModal(
                   player: audioPlayer,
                   mediaItem: mediaItem,
                   index: index,
-                  audioState: audioState,
+                  audioStateController: audioState,
                 ),
               ),
             ],
@@ -132,14 +132,14 @@ class ListTileBottomModal extends StatelessWidget {
     required this.player,
     required this.mediaItem,
     required this.index,
-    required this.audioState,
+    required this.audioStateController,
   });
 
   final String title;
   final AudioPlayer player;
   final MediaItem mediaItem;
   final int index;
-  final AudioStateController audioState;
+  final AudioStateController audioStateController;
 
   @override
   Widget build(BuildContext context) {
@@ -162,10 +162,10 @@ class ListTileBottomModal extends StatelessWidget {
       onTap: () {
         switch (title.toLowerCase()) {
           case 'play now':
-            if (musicPlayerController.currentMediaItem?.id == "" ||
-                musicPlayerController.currentMediaItem?.id != mediaItem.id) {
+            if (musicPlayerController.getCurrentMediaItem?.id == "" ||
+                musicPlayerController.getCurrentMediaItem?.id != mediaItem.id) {
               musicPlayerController.playMusicNow(
-                audioStateController: audioState,
+                audioStateController: audioStateController,
                 index: index,
                 mediaItem: mediaItem,
               );
@@ -193,7 +193,7 @@ class ListTileBottomModal extends StatelessWidget {
                 context: context,
                 musicPlayerController: musicPlayerController,
                 mediaItem: mediaItem,
-                audioState: audioState,
+                audioState: audioStateController,
               );
             } else {
               showRemoveAlbumToast(

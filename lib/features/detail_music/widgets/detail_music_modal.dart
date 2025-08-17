@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
+import 'package:cybeat_music_player/features/detail_music/controllers/detail_music_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_credits_dialog.dart';
 import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +13,9 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 Future<dynamic> detailMusicModal(
   BuildContext context,
-  AudioStateController audioState,
+  AudioStateController audioStateController,
 ) {
-  final musicPlayerController = Get.find<MusicPlayerController>();
-  final musicStateController = Get.find<MusicStateController>();
+  final DetailMusicController detailMusicController = Get.find();
   return showMaterialModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -45,7 +43,7 @@ Future<dynamic> detailMusicModal(
             child: Row(
               children: [
                 CachedNetworkImage(
-                  imageUrl: musicStateController.cover.value,
+                  imageUrl: detailMusicController.currentMediaItem!.artUri.toString(),
                   height: 50.h,
                   width: 50.w,
                   maxHeightDiskCache: 200,
@@ -73,7 +71,7 @@ Future<dynamic> detailMusicModal(
                       SizedBox(
                         height: 25.h,
                         child: AutoSizeText(
-                          musicStateController.title.value,
+                          detailMusicController.currentMediaItem!.title,
                           maxLines: 1,
                           // Error saat diberi .sp
                           minFontSize: 16,
@@ -82,7 +80,7 @@ Future<dynamic> detailMusicModal(
                             fontWeight: FontWeight.bold,
                           ),
                           overflowReplacement: Marquee(
-                            text: musicStateController.title.value,
+                            text: detailMusicController.currentMediaItem!.title,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
@@ -106,7 +104,7 @@ Future<dynamic> detailMusicModal(
                         height: 3.h,
                       ),
                       Text(
-                        "${musicStateController.artist.value} • ${musicStateController.album.value}",
+                        "${detailMusicController.currentMediaItem!.artist} • ${detailMusicController.currentMediaItem!.album}",
                         style: TextStyle(
                           overflow: TextOverflow.ellipsis,
                           fontSize: 13.sp,
@@ -130,19 +128,18 @@ Future<dynamic> detailMusicModal(
             children: [
               ListTileBottomModal(
                 title:
-                    'Go to ${musicPlayerController.currentActivePlaylist.value?.title.toLowerCase()}',
+                    'Go to ${detailMusicController.currentActivePlaylist.title.toLowerCase()}',
                 icon: Icons.mode_standby_outlined,
                 changeColor: false,
                 onTap: () {
                   Get.back();
-                  if (musicPlayerController.isAzlistviewScreenActive.value) {
+                  if (detailMusicController.isAzlistviewScreenActive) {
                     Get.back();
                   } else {
                     Get.back();
                     // Tidak pakai Get.toNamed karena beda transisi.
                     Get.to(
-                      () => AlbumMusicScreen(
-                      ),
+                      () => AlbumMusicScreen(),
                       transition: Transition.downToUp,
                       duration: const Duration(milliseconds: 300),
                       popGesture: false,
@@ -160,7 +157,6 @@ Future<dynamic> detailMusicModal(
                     Get.back();
                     detailMusicCreditsDialog(
                       context: context,
-                      musicStateController: musicStateController,
                     );
                   }),
             ],

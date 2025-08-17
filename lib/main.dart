@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
@@ -104,8 +103,6 @@ class InitialBinding extends Bindings {
     // Anda bisa mendaftarkan semua service/controller global di sini
     Get.put(AudioStateController());
     Get.put(MusicPlayerController());
-
-    Get.put(MusicStateController());
     Get.put(MusicDownloadController());
     Get.put(ReadCodecController());
   }

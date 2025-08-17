@@ -1,5 +1,4 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
@@ -21,7 +20,6 @@ class HomeListGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final musicPlayerController = Get.find<MusicPlayerController>();
-    final musicStateController = Get.find<MusicStateController>();
     final homeAlbumGridController = Get.find<HomeController>();
 
     return GestureDetector(
@@ -31,12 +29,11 @@ class HomeListGrid extends StatelessWidget {
             musicPlayerController.currentActivePlaylist.value?.title == "") {
           audioStateController.clear();
           musicPlayerController.pauseMusic();
-          musicStateController.onClose();
+          // musicStateController.onClose();
           musicPlayerController.clearCurrentMediaItem();
           audioStateController.init(playlist);
           musicPlayerController.setActivePlaylist(playlist);
         }
-
         Get.toNamed('/album_music', id: 1);
       },
       child: Container(

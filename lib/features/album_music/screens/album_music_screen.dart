@@ -142,8 +142,8 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                 ),
                 onTap: () {
                   Get.toNamed('/detail');
-                  if (musicPlayerController.currentMediaItem?.id == "" ||
-                      musicPlayerController.currentMediaItem?.id !=
+                  if (musicPlayerController.getCurrentMediaItem?.id == "" ||
+                      musicPlayerController.getCurrentMediaItem?.id !=
                           sequence[index].tag.id) {
                     musicPlayerController.playMusicNow(
                       mediaItem: sequence[index].tag as MediaItem,

@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
+import 'package:cybeat_music_player/features/detail_music/controllers/detail_music_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -6,8 +6,8 @@ import 'package:hexcolor/hexcolor.dart';
 
 void detailMusicCreditsDialog({
   required BuildContext context,
-  required MusicStateController musicStateController,
 }) {
+  final DetailMusicController detailMusicController = Get.find();
   Get.dialog(
     name: 'musicCreditsDialog',
     barrierDismissible: true,
@@ -62,7 +62,7 @@ void detailMusicCreditsDialog({
             height: 15.h,
           ),
           Obx(() => Text(
-                musicStateController.title.value,
+                detailMusicController.currentMediaItem!.title,
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
@@ -84,7 +84,7 @@ void detailMusicCreditsDialog({
             height: 3.h,
           ),
           Obx(() => Text(
-                musicStateController.artist.value,
+                detailMusicController.currentMediaItem!.artist ?? '--',
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
@@ -106,7 +106,7 @@ void detailMusicCreditsDialog({
             height: 3.h,
           ),
           Obx(() => Text(
-                musicStateController.album.value,
+                detailMusicController.currentMediaItem!.album ?? '--',
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
@@ -128,7 +128,7 @@ void detailMusicCreditsDialog({
             height: 3.h,
           ),
           Obx(() => Text(
-                musicStateController.originalSource.value,
+                detailMusicController.currentMediaItem!.extras?['original_source'],
                 maxLines: 1,
                 style: TextStyle(
                   overflow: TextOverflow.ellipsis,
