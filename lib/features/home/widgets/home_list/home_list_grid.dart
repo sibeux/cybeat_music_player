@@ -42,7 +42,7 @@ class HomeListGrid extends StatelessWidget {
       child: Container(
         alignment: Alignment.centerLeft,
         child: Obx(
-          () => homeAlbumGridController.countGrid.value == 1
+          () => homeAlbumGridController.albumCountGrid.value == 1
               ? OneGridLayout(
                   playlist: playlist,
                   musicPlayerController: musicPlayerController,

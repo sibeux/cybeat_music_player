@@ -19,7 +19,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
     final idMusic = Get.arguments['idMusic'] ?? '';
     final addMusicToPlaylistController =
         Get.find<AddMusicToPlaylistController>();
-    final homeAlbumGridController = Get.find<HomeController>();
+    final homeController = Get.find<HomeController>();
     // Ambil data playlist yang sudah ada.
     addMusicToPlaylistController.getMusicOnPlaylist(idMusic: idMusic);
     return Stack(
@@ -158,7 +158,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                             .isTypingValue &&
                                         addMusicToPlaylistController
                                             .textValue.value.isNotEmpty
-                                    ? homeAlbumGridController
+                                    ? homeController
                                         .playlistCreatedList
                                         .where((element) {
                                           return addMusicToPlaylistController
@@ -205,7 +205,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                 // List playlist yang disimpan.
                                 ListSavedIn(
                                   homeAlbumGridController:
-                                      homeAlbumGridController,
+                                      homeController,
                                   musicPlaylistController:
                                       addMusicToPlaylistController,
                                 ),
@@ -216,7 +216,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                             .isTypingValue &&
                                         addMusicToPlaylistController
                                             .textValue.value.isNotEmpty
-                                    ? homeAlbumGridController
+                                    ? homeController
                                         .playlistCreatedList
                                         .where((element) {
                                           return !addMusicToPlaylistController
@@ -231,7 +231,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                         })
                                         .toList()
                                         .isNotEmpty
-                                    : homeAlbumGridController
+                                    : homeController
                                         .playlistCreatedList
                                         .where(
                                           (element) =>
@@ -259,7 +259,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                   ),
                                 ListRecentlyAdded(
                                   homeAlbumGridController:
-                                      homeAlbumGridController,
+                                      homeController,
                                   musicPlaylistController:
                                       addMusicToPlaylistController,
                                 ),
@@ -267,7 +267,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                         .isTypingValue &&
                                     addMusicToPlaylistController
                                         .textValue.value.isNotEmpty &&
-                                    homeAlbumGridController.playlistCreatedList
+                                    homeController.playlistCreatedList
                                         .where((element) {
                                           return !addMusicToPlaylistController
                                                   .savedInMusicList
@@ -281,7 +281,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                         })
                                         .toList()
                                         .isEmpty &&
-                                    homeAlbumGridController.playlistCreatedList
+                                    homeController.playlistCreatedList
                                         .where((element) {
                                           return addMusicToPlaylistController
                                                   .savedInMusicList
@@ -323,7 +323,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
           () => addMusicToPlaylistController
                       .isLoadingGetMusicOnPlaylist.value ||
                   addMusicToPlaylistController.isLoadingAddPlaylist.value ||
-                  homeAlbumGridController
+                  homeController
                       .isLoading.value // Ini loading pas di home screen.
               ? const Opacity(
                   opacity: 1,
@@ -335,7 +335,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
           () =>
               addMusicToPlaylistController.isLoadingGetMusicOnPlaylist.value ||
                       addMusicToPlaylistController.isLoadingAddPlaylist.value ||
-                      homeAlbumGridController
+                      homeController
                           .isLoading.value // Ini loading pas di home screen.
                   ? Center(
                       child: CircularProgressIndicator(

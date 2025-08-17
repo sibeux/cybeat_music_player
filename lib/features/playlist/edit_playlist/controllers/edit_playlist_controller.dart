@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class EditPlaylistController extends GetxController{
   Future<void> editPlaylist(String id, String name) async {
-    final homeAlbumGridController = Get.find<HomeController>();
+    final homeController = Get.find<HomeController>();
     const String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/crud_new_playlist';
 
@@ -32,7 +32,7 @@ class EditPlaylistController extends GetxController{
     } catch (e) {
       logError('Error update playlist: $e');
     } finally {
-      homeAlbumGridController.initializeAlbum();
+      homeController.initializeAlbum();
     }
   }
 }

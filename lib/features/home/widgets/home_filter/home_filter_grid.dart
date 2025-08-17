@@ -43,7 +43,7 @@ class HomeFilterGrid extends StatelessWidget {
   Widget _getFilter({required int index}) {
     final homeController = Get.find<HomeController>();
     return CustomDraggable(
-      key: Key(homeController.homeFilterChildren[index].toString()),
+      key: Key(homeController.filterChildren[index].toString()),
       data: index,
       child: HomeFilterScaleTap(
         filter: homeController.generateFilter[index].filter,

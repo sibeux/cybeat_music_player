@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
+import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
 import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/bindings/add_music_to_playlist_binding.dart';
@@ -92,10 +93,17 @@ class InitialBinding extends Bindings {
     // Gunakan Get.put() untuk controller yang harus langsung ada
     // dan hidup selamanya selama aplikasi berjalan.
     // Anda bisa mendaftarkan semua service/controller global di sini
-    // Get.put(AuthService());
-    // Get.put(ApiService());
     Get.put(AudioStateController());
     Get.put(MusicPlayerController());
+
+    // Daftarkan service sebagai singleton
+    Get.put(AlbumService());
+
+    /// Service seperti PlaylistService sering disebut sebagai 'singleton'.
+    /// Artinya, hanya ada satu instance dari service tersebut yang hidup selama aplikasi berjalan.
+    /// - Sumber Kebenaran Tunggal (Single Source of Truth)
+    /// - Siklus Hidup (Lifecycle) yang Panjang
+    /// - Efisiensi
 
     Get.put(MusicStateController());
     Get.put(MusicDownloadController());
@@ -145,7 +153,7 @@ class MyApp extends StatelessWidget {
                 name: '/',
                 page: () => RootPage(),
               ),
-              // Halaman yang butuh layar penuh (tanpa floating player/bottom nav)
+              // Halaman yang butuh layar penuh (tanpa floating button player)
               // tetap berada di sini. Contoh: Halaman detail lagu, new playlist, dll.
               GetPage(
                 name: '/detail',

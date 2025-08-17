@@ -38,7 +38,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
   Color dominantColor = Colors.black;
   List<AzListMusic> musicItems = [];
 
-  final homeAlbumGridController = Get.find<HomeController>();
+  final homeController = Get.find<HomeController>();
   final musicPlayerController = Get.find<MusicPlayerController>();
   final audioStateController = Get.find<AudioStateController>();
 
@@ -167,9 +167,11 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
     }
 
     void rebuildPlaylist() {
+      // Untuk build ulang susunan album di home screen.
       if (musicPlayerController.isNeedRebuildLastPlaylist.value) {
         musicPlayerController.isNeedRebuildLastPlaylist.value = false;
-        homeAlbumGridController.recentPlaylistUpdate(
+        // Method untuk update playlsit terakhir yang diputar.
+        homeController.updateLastPlayedAlbum(
             musicPlayerController.currentActivePlaylist.value!.uid);
       }
     }

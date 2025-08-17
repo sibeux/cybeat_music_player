@@ -70,6 +70,7 @@ class RootPage extends StatelessWidget {
   }
 }
 
+// Ini adalah anak route dari screen/navigator rootpage.
 Route<dynamic>? onGenerateNestedRoute(RouteSettings settings) {
   switch (settings.name) {
     case '/home':

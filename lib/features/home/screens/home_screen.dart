@@ -150,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 Obx(
                   // Awalnya, GridFilter ada const, tetapi di release mode,
                   // dia tidak bergeser, sehingga const dihapus.
-                  () => _homeController.homeFilterIsTapped.value ||
-                          !_homeController.homeFilterIsTapped.value
+                  () => _homeController.filterIsTapped.value ||
+                          !_homeController.filterIsTapped.value
                       ? HomeFilterGrid()
                       : SizedBox(),
                 ),
@@ -255,7 +255,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       _homeController.changeLayoutGrid();
                                     },
                                     child: Obx(
-                                      () => _homeController.countGrid.value == 1
+                                      () => _homeController
+                                                  .albumCountGrid.value ==
+                                              1
                                           ? Icon(Icons.view_list_outlined)
                                           : Icon(Icons.grid_view_outlined),
                                     ),
@@ -319,9 +321,9 @@ class _HomeScreenState extends State<HomeScreen> {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisSpacing: 15,
               mainAxisSpacing: 10,
-              crossAxisCount: _homeController.countGrid.value,
+              crossAxisCount: _homeController.albumCountGrid.value,
               childAspectRatio:
-                  _homeController.countGrid.value == 1 ? 40 / 9 : 2 / 3.5,
+                  _homeController.albumCountGrid.value == 1 ? 40 / 9 : 2 / 3.5,
             ),
             children: context,
           ),
@@ -333,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _getGeneratedChildren() {
     return List<Widget>.generate(
       _homeController.selectedAlbum.length >= 15
-          ? _homeController.jumlahDitampilkan.value
+          ? _homeController.jumlahAlbumDitampilkan.value
           : _homeController.selectedAlbum.length,
       (index) => _getChild(index: index),
     );
@@ -342,11 +344,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _getChild({required int index}) {
     final audioStateController = Get.find<AudioStateController>();
     return CustomDraggable(
-      key: Key(_homeController.children[index].toString()),
+      key: Key(_homeController.allAlbumChildren[index].toString()),
       data: index,
       child: HomeListScaleTap(
-        playlist:
-            _homeController.initiateAlbum[(_homeController.children[index])],
+        playlist: _homeController
+            .initiateAlbum[(_homeController.allAlbumChildren[index])],
         audioState: audioStateController,
       ),
     );

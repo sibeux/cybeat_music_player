@@ -69,11 +69,10 @@ class HomeFilterScaleTapState extends State<HomeFilterScaleTap>
       },
       onTapCancel: () => _restoreButtonSize(),
       onTapUp: (details) {
-        if (widget.filter != homeController.homeSelectedFilter.value &&
-            homeController.homeSelectedFilter.value == '') {
+        if (widget.filter != homeController.selectedFilter.value &&
+            homeController.selectedFilter.value == '') {
           homeController.onTapFilter(filter: widget.filter);
-        } else if (widget.filter ==
-                homeController.homeSelectedFilter.value ||
+        } else if (widget.filter == homeController.selectedFilter.value ||
             widget.filter == 'cancel') {
           // Reset filter jika filter yang dipilih sama dengan filter yang dipilih sebelumnya,
           // atau filter yang dipilih adalah cancel.
