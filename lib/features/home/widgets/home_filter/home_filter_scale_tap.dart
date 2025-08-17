@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/features/home/controllers/home_filter_album_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -61,7 +61,7 @@ class HomeFilterScaleTapState extends State<HomeFilterScaleTap>
 
   @override
   Widget build(BuildContext context) {
-    final filterAlbumCOntroller = Get.find<HomeFilterAlbumController>();
+    final homeController = Get.find<HomeController>();
 
     return GestureDetector(
       onTapDown: (details) {
@@ -69,15 +69,15 @@ class HomeFilterScaleTapState extends State<HomeFilterScaleTap>
       },
       onTapCancel: () => _restoreButtonSize(),
       onTapUp: (details) {
-        if (widget.filter != filterAlbumCOntroller.selectedFilter.value &&
-            filterAlbumCOntroller.selectedFilter.value == '') {
-          filterAlbumCOntroller.onTapFilter(filter: widget.filter);
+        if (widget.filter != homeController.homeSelectedFilter.value &&
+            homeController.homeSelectedFilter.value == '') {
+          homeController.onTapFilter(filter: widget.filter);
         } else if (widget.filter ==
-                filterAlbumCOntroller.selectedFilter.value ||
+                homeController.homeSelectedFilter.value ||
             widget.filter == 'cancel') {
           // Reset filter jika filter yang dipilih sama dengan filter yang dipilih sebelumnya,
           // atau filter yang dipilih adalah cancel.
-          filterAlbumCOntroller.onResetFilter();
+          homeController.onResetFilter();
         }
         _restoreButtonSize();
       },

@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/features/home/controllers/home_sort_preferences_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -75,12 +75,12 @@ class ListTileBottomModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sortPreferencesController = Get.put(HomeSortPreferencesController());
+    final homeController = Get.find<HomeController>();
     final sortValue = title == 'Recents' ? 'uid' : 'title';
     return Obx(() => ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0.h),
           minVerticalPadding: 5.h,
-          trailing: sortPreferencesController.sortValue == sortValue
+          trailing: homeController.sortValue == sortValue
               ? Icon(Icons.check, color: HexColor('#ac8bc9'))
               : null,
           title: Text(title),
@@ -90,7 +90,7 @@ class ListTileBottomModal extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
           onTap: () {
-            sortPreferencesController.saveSortBy(title);
+            homeController.saveSortBy(title);
             Get.back();
           },
         ));

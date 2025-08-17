@@ -3,18 +3,42 @@ import 'dart:convert';
 import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
-import 'package:cybeat_music_player/features/home/controllers/home_filter_album_controller.dart';
-import 'package:cybeat_music_player/features/home/controllers/home_sort_preferences_controller.dart';
+import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeController extends GetxController {
-  final filterAlbumController = Get.find<HomeFilterAlbumController>();
-  final sortPreferencesController = Get.find<HomeSortPreferencesController>();
+  // ============================== homeSortPreferencesController ==============================
+
+  final homeSortPreferences = ''.obs;
+  final isTapHomeSort = false.obs;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  // =============================== homeFilterAlbumController ==============================
+  var initialFilter = RxList<FilterItem>(
+    [
+      FilterItem(filter: 'playlist', text: 'Playlist'),
+      FilterItem(filter: 'album', text: 'Album'),
+      FilterItem(filter: 'category', text: 'Category'),
+    ],
+  );
+
+  var generateFilter = RxList<FilterItem>(
+    [
+      FilterItem(filter: 'playlist', text: 'Playlist'),
+      FilterItem(filter: 'album', text: 'Album'),
+      FilterItem(filter: 'category', text: 'Category'),
+    ],
+  );
+
+  var homeFilterChildren = RxList<int>([0, 1, 2]);
+  var homeSelectedFilter = ''.obs;
+  var homeFilterIsTapped = false.obs;
 
   var children = RxList([]);
   var selectedAlbum = RxList<Playlist?>([]);
@@ -49,6 +73,19 @@ class HomeController extends GetxController {
 
   final RefreshController refreshController =
       RefreshController(initialRefresh: false);
+
+  @override
+  void onInit() {
+    super.onInit();
+    initialization();
+  }
+
+  Future<void> initialization() async {
+    // Ambil data filter sort dari Shared Preferences
+    await getSortBy();
+    // Ambil data album dari database
+    await initializeAlbum();
+  }
 
   void onRefresh() async {
     // monitor network fetch
@@ -126,9 +163,9 @@ class HomeController extends GetxController {
         recentsList.indexWhere((playlist) => playlist.uid == uid);
     int normalIndex = 0;
 
-    if (sortPreferencesController.sortValue == 'title') {
+    if (sortValue == 'title') {
       normalIndex = getNearestindex(alphabeticalIndex, 'title');
-    } else if (sortPreferencesController.sortValue == 'uid') {
+    } else if (sortValue == 'uid') {
       normalIndex = getNearestindex(recentsIndex, 'uid');
     }
 
@@ -175,7 +212,7 @@ class HomeController extends GetxController {
   }
 
   void recentPlaylistUpdate(String uid) async {
-    String sort = sortPreferencesController.sortValue;
+    String sort = sortValue;
     final indexPin = jumlahPin.value;
     final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
     final currentChild = children[index];
@@ -198,8 +235,8 @@ class HomeController extends GetxController {
     jumlahDitampilkan.value = 15;
     isLoading.value = true;
 
-    String sort = sortPreferencesController.sortValue;
-    String filter = filterAlbumController.getSelectedFilter;
+    String sort = sortValue;
+    String filter = getSelectedFilter;
 
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?sort=$sort&filter=$filter';
@@ -393,4 +430,79 @@ class HomeController extends GetxController {
       countGrid.value = 3;
     }
   }
+
+  // ============================== homeFilterAlbumController ==============================
+
+  void onTapFilter({required String filter}) {
+    var index =
+        generateFilter.indexWhere((element) => element.filter == filter);
+
+    final currentChild = children[index];
+    final currentFilter = generateFilter[index];
+    children.removeAt(index);
+    generateFilter.removeAt(index);
+    children.insert(0, currentChild);
+    generateFilter.insert(0, currentFilter);
+
+    children.insert(0, 4);
+    generateFilter.insert(0, FilterItem(filter: 'cancel', text: 'Cancel'));
+
+    isTapped.value = !isTapped.value;
+    homeSelectedFilter.value = filter;
+
+    initializeAlbum();
+  }
+
+  void onResetFilter() {
+    var initialIndex = initialFilter
+        .indexWhere((element) => element.filter == homeSelectedFilter.value);
+    var currentIndex = generateFilter
+        .indexWhere((element) => element.filter == homeSelectedFilter.value);
+
+    final currentChild = children[currentIndex];
+    final currentFilter = generateFilter[currentIndex];
+    children.removeAt(currentIndex);
+    generateFilter.removeAt(currentIndex);
+
+    children.removeAt(0);
+    generateFilter.removeAt(0);
+
+    children.insert(initialIndex, currentChild);
+    generateFilter.insert(initialIndex, currentFilter);
+
+    isTapped.value = !isTapped.value;
+    homeSelectedFilter.value = '';
+
+    initializeAlbum();
+  }
+
+  get getSelectedFilter => homeSelectedFilter.value;
+
+  // ========================== homeSortPreferencesController ==========================
+
+  Future<void> saveSortBy(String value) async {
+    final SharedPreferences prefs = await _prefs;
+    isTapHomeSort.value = !isTapHomeSort.value;
+
+    switch (value) {
+      case 'Recents':
+        homeSortPreferences.value = 'uid';
+        prefs.setString('sort', 'uid');
+        initializeAlbum();
+        break;
+      case 'Alphabetical':
+        homeSortPreferences.value = 'title';
+        prefs.setString('sort', 'title');
+        initializeAlbum();
+        break;
+    }
+  }
+
+  Future<void> getSortBy() async {
+    final SharedPreferences prefs = await _prefs;
+    final sort = prefs.getString('sort') ?? 'uid';
+    homeSortPreferences.value = sort;
+  }
+
+  get sortValue => homeSortPreferences.value;
 }

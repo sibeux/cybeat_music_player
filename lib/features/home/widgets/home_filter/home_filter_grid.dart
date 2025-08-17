@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/features/home/controllers/home_filter_album_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_filter/home_filter_album.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_filter/home_filter_scale_tap.dart';
 import 'package:flutter/material.dart';
@@ -33,22 +33,22 @@ class HomeFilterGrid extends StatelessWidget {
   }
 
   List<Widget> _getGeneratedFilter() {
-    final filterAlbumController = Get.find<HomeFilterAlbumController>();
+    final homeController = Get.find<HomeController>();
     return List<Widget>.generate(
-      filterAlbumController.generateFilter.length,
+      homeController.generateFilter.length,
       (index) => _getFilter(index: index),
     );
   }
 
   Widget _getFilter({required int index}) {
-    final filterAlbumController = Get.find<HomeFilterAlbumController>();
+    final homeController = Get.find<HomeController>();
     return CustomDraggable(
-      key: Key(filterAlbumController.children[index].toString()),
+      key: Key(homeController.homeFilterChildren[index].toString()),
       data: index,
       child: HomeFilterScaleTap(
-        filter: filterAlbumController.generateFilter[index].filter,
+        filter: homeController.generateFilter[index].filter,
         child: HomeFilterAlbum(
-          text: filterAlbumController.generateFilter[index].text,
+          text: homeController.generateFilter[index].text,
         ),
       ),
     );

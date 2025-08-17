@@ -92,7 +92,9 @@ class MusicPlayerController extends GetxController {
   void playMusicNow({
     required AudioStateController audioStateController,
     required int index,
+    required MediaItem mediaItem,
   }) {
+    setCurrentMediaItem(mediaItem);
     final musicStateController = Get.find<MusicStateController>();
 
     audioStateController.player.value?.seek(Duration.zero, index: index);

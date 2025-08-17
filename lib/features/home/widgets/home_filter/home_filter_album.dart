@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/features/home/controllers/home_filter_album_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -13,7 +13,7 @@ class HomeFilterAlbum extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeFilterAlbumController = Get.find<HomeFilterAlbumController>();
+    final homeController = Get.find<HomeController>();
     return text.toLowerCase() == 'cancel'
         ? Container(
             height: 35,
@@ -34,10 +34,10 @@ class HomeFilterAlbum extends StatelessWidget {
               width: 80,
               height: 35,
               decoration: BoxDecoration(
-                color: homeFilterAlbumController.getSelectedFilter.toString() ==
+                color: homeController.getSelectedFilter.toString() ==
                         text.toLowerCase()
                     ? HexColor('#ac8bc9')
-                    : homeFilterAlbumController.getSelectedFilter.toString() ==
+                    : homeController.getSelectedFilter.toString() ==
                             ''
                         ? Colors.grey
                         : Colors.transparent,
@@ -48,10 +48,10 @@ class HomeFilterAlbum extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   color:
-                      homeFilterAlbumController.getSelectedFilter.toString() ==
+                      homeController.getSelectedFilter.toString() ==
                               text.toLowerCase()
                           ? HexColor('#fefffe')
-                          : homeFilterAlbumController.getSelectedFilter
+                          : homeController.getSelectedFilter
                                       .toString() ==
                                   ''
                               ? HexColor('#fefffe')

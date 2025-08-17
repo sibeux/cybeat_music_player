@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
-import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
@@ -13,12 +11,9 @@ import 'package:cybeat_music_player/features/playlist/edit_playlist/bindings/edi
 import 'package:cybeat_music_player/features/playlist/edit_playlist/screens/edit_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/bindings/new_playlist_binding.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
-import 'package:cybeat_music_player/features/search_album/screens/search_album_screen.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/features/home/screens/home_screen.dart';
-import 'package:cybeat_music_player/features/root_page/screens/root_page_screen.dart';
-import 'package:cybeat_music_player/features/recent_music/screens/recents_music_screen.dart';
+import 'package:cybeat_music_player/features/root_page/root_page.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -88,13 +83,6 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
-  // Inisiasi controller
-  // Harus dipanggil sebelum splash hilang karena di home screen dipakai.
-  Get.put(MusicStateController());
-  Get.put(MusicDownloadController());
-  Get.put(ReadCodecController());
-
   runApp(MyApp());
 }
 
@@ -108,6 +96,10 @@ class InitialBinding extends Bindings {
     // Get.put(ApiService());
     Get.put(AudioStateController());
     Get.put(MusicPlayerController());
+
+    Get.put(MusicStateController());
+    Get.put(MusicDownloadController());
+    Get.put(ReadCodecController());
   }
 }
 
@@ -148,25 +140,13 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             initialBinding: InitialBinding(),
             getPages: [
+              // Rute utama aplikasi sekarang adalah RootPage
               GetPage(
                 name: '/',
-                page: () => RootPageScreen(),
+                page: () => RootPage(),
               ),
-              GetPage(
-                name: '/home',
-                page: () => HomeScreen(),
-                binding: HomeBinding(),
-                fullscreenDialog: true,
-                popGesture: false,
-              ),
-              GetPage(
-                name: '/album_music',
-                page: () => AlbumMusicScreen(),
-                transition: Transition.leftToRightWithFade,
-                transitionDuration: const Duration(milliseconds: 300),
-                fullscreenDialog: true,
-                popGesture: false,
-              ),
+              // Halaman yang butuh layar penuh (tanpa floating player/bottom nav)
+              // tetap berada di sini. Contoh: Halaman detail lagu, new playlist, dll.
               GetPage(
                 name: '/detail',
                 page: () => DetailMusicScreen(),
@@ -175,14 +155,6 @@ class MyApp extends StatelessWidget {
                 transitionDuration: const Duration(milliseconds: 300),
                 popGesture: false,
                 fullscreenDialog: true,
-              ),
-              GetPage(
-                name: '/recents',
-                page: () => RecentsMusicScreen(),
-                transition: Transition.native,
-                transitionDuration: const Duration(milliseconds: 300),
-                fullscreenDialog: true,
-                popGesture: false,
               ),
               GetPage(
                 name: '/add_music_to_playlist',
@@ -208,23 +180,6 @@ class MyApp extends StatelessWidget {
                 fullscreenDialog: true,
                 popGesture: false,
               ),
-              GetPage(
-                name: '/search_album',
-                page: () => SearchAlbumScreen(),
-                transition: Transition.cupertino,
-                fullscreenDialog: true,
-                popGesture: false,
-              ),
-              // GetPage(
-              //   name: '/cybeat/category/:id',
-              //   page: () => SplashLinkMusicScreen(
-              //       path: 'category', uid: Get.parameters['id'] ?? ''),
-              // ),
-              // GetPage(
-              //   name: '/cybeat/album/:id',
-              //   page: () => SplashLinkMusicScreen(
-              //       path: 'album', uid: Get.parameters['id'] ?? ''),
-              // ),
             ],
           ),
         );

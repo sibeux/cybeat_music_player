@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cybeat_music_player/features/home/controllers/home_sort_preferences_controller.dart';
+import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_sort/show_sort_modal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -58,8 +58,6 @@ class ScaleTapSortState extends State<ScaleTapSort>
     colorOnTap = 1;
   }
 
-  final sortPreferencesController = Get.put(HomeSortPreferencesController());
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -93,7 +91,7 @@ class ScaleTapSortState extends State<ScaleTapSort>
                 ),
                 Obx(
                   () => Text(
-                    sortPreferencesController.sortValue == 'uid'
+                    Get.find<HomeController>().sortValue == 'uid'
                         ? "Recents"
                         : "Alphabetical",
                     style: const TextStyle(fontWeight: FontWeight.bold),

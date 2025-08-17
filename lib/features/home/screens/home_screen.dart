@@ -1,4 +1,3 @@
-import 'package:cybeat_music_player/features/home/controllers/home_filter_album_controller.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/music_state_controller.dart';
@@ -11,6 +10,7 @@ import 'package:cybeat_music_player/features/home/widgets/home_sort/scale_tap_so
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -34,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filterAlbumController = Get.find<HomeFilterAlbumController>();
     final musicPlayerController = Get.find<MusicPlayerController>();
     final musicStateController = Get.find<MusicStateController>();
     final audioStateController = Get.find<AudioStateController>();
@@ -56,30 +55,31 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: HexColor('#fefffe'),
         scrolledUnderElevation: 0,
         elevation: 0,
-        toolbarHeight: 30,
+        toolbarHeight: 30.h,
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               children: [
                 Row(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(100),
-                      child: const Image(
+                      child: Image(
                         image: AssetImage('assets/images/cybeat_splash.png'),
-                        width: 40,
-                        height: 40,
+                        width: 40.w,
+                        height: 40.h,
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.only(left: 10),
-                      child: const Text(
+                      margin: EdgeInsets.only(left: 10.w),
+                      child: Text(
                         'Your Library',
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 22.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -150,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 Obx(
                   // Awalnya, GridFilter ada const, tetapi di release mode,
                   // dia tidak bergeser, sehingga const dihapus.
-                  () => filterAlbumController.isTapped.value ||
-                          !filterAlbumController.isTapped.value
+                  () => _homeController.homeFilterIsTapped.value ||
+                          !_homeController.homeFilterIsTapped.value
                       ? HomeFilterGrid()
                       : SizedBox(),
                 ),

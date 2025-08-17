@@ -36,6 +36,8 @@ class HomeListGrid extends StatelessWidget {
           audioStateController.init(playlist);
           musicPlayerController.setActivePlaylist(playlist);
         }
+
+        Get.toNamed('/album_music', id: 1);
       },
       child: Container(
         alignment: Alignment.centerLeft,

@@ -146,6 +146,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                       musicPlayerController.currentMediaItem?.id !=
                           sequence[index].tag.id) {
                     musicPlayerController.playMusicNow(
+                      mediaItem: sequence[index].tag as MediaItem,
                       audioStateController: audioStateController,
                       index: index,
                     );
@@ -234,7 +235,8 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                           child: Row(
                             children: [
                               StreamBuilder<SequenceState?>(
-                                stream: audioStateController.player.value?.sequenceStateStream,
+                                stream: audioStateController
+                                    .player.value?.sequenceStateStream,
                                 builder: (context, snapshot) {
                                   List<IndexedAudioSource> sequence = [];
                                   if (snapshot.hasData) {
@@ -341,6 +343,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
     musicPlayerController.playMusicNow(
       audioStateController: audioStateController,
       index: index,
+      mediaItem: sequence[index].tag as MediaItem,
     );
   }
 
