@@ -1,4 +1,3 @@
-import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/button_done.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/list_recently_added.dart';
@@ -19,7 +18,6 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
     final idMusic = Get.arguments['idMusic'] ?? '';
     final addMusicToPlaylistController =
         Get.find<AddMusicToPlaylistController>();
-    final homeController = Get.find<HomeController>();
     // Ambil data playlist yang sudah ada.
     addMusicToPlaylistController.getMusicOnPlaylist(idMusic: idMusic);
     return Stack(
@@ -158,7 +156,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                             .isTypingValue &&
                                         addMusicToPlaylistController
                                             .textValue.value.isNotEmpty
-                                    ? homeController
+                                    ? addMusicToPlaylistController
                                         .playlistCreatedList
                                         .where((element) {
                                           return addMusicToPlaylistController
@@ -204,9 +202,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                   ),
                                 // List playlist yang disimpan.
                                 ListSavedIn(
-                                  homeAlbumGridController:
-                                      homeController,
-                                  musicPlaylistController:
+                                  addMusicToPlaylistController:
                                       addMusicToPlaylistController,
                                 ),
                                 const SizedBox(
@@ -216,7 +212,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                             .isTypingValue &&
                                         addMusicToPlaylistController
                                             .textValue.value.isNotEmpty
-                                    ? homeController
+                                    ? addMusicToPlaylistController
                                         .playlistCreatedList
                                         .where((element) {
                                           return !addMusicToPlaylistController
@@ -231,7 +227,7 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                         })
                                         .toList()
                                         .isNotEmpty
-                                    : homeController
+                                    : addMusicToPlaylistController
                                         .playlistCreatedList
                                         .where(
                                           (element) =>
@@ -258,16 +254,15 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ListRecentlyAdded(
-                                  homeAlbumGridController:
-                                      homeController,
-                                  musicPlaylistController:
+                                  addMusicToPlaylistController:
                                       addMusicToPlaylistController,
                                 ),
                                 if (addMusicToPlaylistController
                                         .isTypingValue &&
                                     addMusicToPlaylistController
                                         .textValue.value.isNotEmpty &&
-                                    homeController.playlistCreatedList
+                                    addMusicToPlaylistController
+                                        .playlistCreatedList
                                         .where((element) {
                                           return !addMusicToPlaylistController
                                                   .savedInMusicList
@@ -281,7 +276,8 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
                                         })
                                         .toList()
                                         .isEmpty &&
-                                    homeController.playlistCreatedList
+                                    addMusicToPlaylistController
+                                        .playlistCreatedList
                                         .where((element) {
                                           return addMusicToPlaylistController
                                                   .savedInMusicList
@@ -323,8 +319,8 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
           () => addMusicToPlaylistController
                       .isLoadingGetMusicOnPlaylist.value ||
                   addMusicToPlaylistController.isLoadingAddPlaylist.value ||
-                  homeController
-                      .isLoading.value // Ini loading pas di home screen.
+                  addMusicToPlaylistController
+                      .isHomeLoading // Ini loading pas di home screen.
               ? const Opacity(
                   opacity: 1,
                   child: ModalBarrier(dismissible: false, color: Colors.white),
@@ -335,8 +331,8 @@ class AddMusicToPlaylistScreen extends StatelessWidget {
           () =>
               addMusicToPlaylistController.isLoadingGetMusicOnPlaylist.value ||
                       addMusicToPlaylistController.isLoadingAddPlaylist.value ||
-                      homeController
-                          .isLoading.value // Ini loading pas di home screen.
+                      addMusicToPlaylistController
+                          .isHomeLoading // Ini loading pas di home screen.
                   ? Center(
                       child: CircularProgressIndicator(
                         color: HexColor('#8238be'),

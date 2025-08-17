@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/controller/search_album_controller.dart';
+import 'package:cybeat_music_player/features/search_album/controllers/search_album_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/search_album/widgets/scale_tap_search_album.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ class SearchAlbumList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SearchAlbumController searchAlbumController = Get.find();
+    final SearchAlbumController searchAlbumController = Get.find();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),

@@ -270,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Obx(
                                 () => _homeController.isTapped.value ||
                                         !_homeController.isTapped.value
-                                    ? _homeController.isLoading.value
+                                    ? _homeController.isLoading
                                         ? const SizedBox(
                                             height: 400,
                                             child: Center(

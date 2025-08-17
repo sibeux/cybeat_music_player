@@ -29,6 +29,8 @@ class AlbumService extends GetxService {
   var allAlbumChildren = RxList([]);
   var selectedAlbum = RxList<Playlist?>([]);
 
+  var isHomeLoading = false.obs;
+
   // ============================== homeSortPreferencesController ==============================
   final homeSortPreferences = ''.obs;
   final isTapHomeSort = false.obs;
@@ -61,6 +63,7 @@ class AlbumService extends GetxService {
   var fourCoverPlaylist = RxList<dynamic>([]);
 
   Future<void> initializeAlbum() async {
+    isHomeLoading.value = true;
     jumlahPin.value = 0;
 
     String sort = sortValue;
@@ -151,6 +154,8 @@ class AlbumService extends GetxService {
     } catch (e, st) {
       logError(
           'Error initializeAlbum home album grid controller: $e. Stacktrace: $st');
+    } finally {
+      isHomeLoading.value = false;
     }
   }
 
@@ -488,4 +493,33 @@ class AlbumService extends GetxService {
   }
 
   get sortValue => homeSortPreferences.value;
+
+  Future<void> editPlaylist(String id, String name) async {
+    const String url =
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/crud_new_playlist';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: {
+          'method': 'update',
+          'name_playlist': name,
+          'playlist_uid': id,
+        },
+      );
+
+      if (response.body.isEmpty) {
+        logError('Error: Response body is empty');
+        return;
+      }
+
+      final responseBody = jsonDecode(response.body);
+
+      logInfo('Response: $responseBody');
+    } catch (e) {
+      logError('Error update playlist: $e');
+    } finally {
+      initializeAlbum();
+    }
+  }
 }

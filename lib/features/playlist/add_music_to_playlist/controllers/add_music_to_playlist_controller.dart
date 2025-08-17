@@ -6,11 +6,13 @@ import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music_playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
+import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class AddMusicToPlaylistController extends GetxController {
+  final AlbumService albumService = Get.find<AlbumService>();
   var textController = TextEditingController();
   var textValue = ''.obs;
 
@@ -24,6 +26,9 @@ class AddMusicToPlaylistController extends GetxController {
   var isLoadingGetMusicOnPlaylist = false.obs;
   var isLoadingUpdateMusicOnPlaylist = false.obs;
   var isLoadingAddPlaylist = false.obs;
+
+  get isHomeLoading => albumService.isHomeLoading.value;
+  get playlistCreatedList => albumService.playlistCreatedList;
 
   void onChanged(String value) {
     isTyping.value = value.isNotEmpty;

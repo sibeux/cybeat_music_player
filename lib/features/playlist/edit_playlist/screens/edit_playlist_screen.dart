@@ -1,29 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/controller/search_album_controller.dart';
 import 'package:cybeat_music_player/features/playlist/edit_playlist/controllers/edit_playlist_controller.dart';
 import 'package:cybeat_music_player/features/playlist/edit_playlist/widgets/show_discard_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-final searchAlbumController = Get.put(SearchAlbumController());
 final FocusNode _focusNode = FocusNode();
-final textController = searchAlbumController.controller;
 
 class EditPlaylistScreen extends StatelessWidget {
-  const EditPlaylistScreen(
-      {super.key});
-
+  const EditPlaylistScreen({super.key});
+  
   @override
   Widget build(BuildContext context) {
     final editPlaylistController = Get.find<EditPlaylistController>();
     final String uid = Get.arguments['uid'] ?? '';
     final String playlistName = Get.arguments['playlistName'] ?? '';
+    final textController = editPlaylistController.controller;
     var tapIndex = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       textController.text = playlistName;
       tapIndex = 0;
-      searchAlbumController.textValue.value = textController.text;
+      editPlaylistController.textValue.value = textController.text;
     });
 
     return Scaffold(
@@ -35,7 +32,7 @@ class EditPlaylistScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            if (searchAlbumController.textValue.value.toLowerCase() !=
+            if (editPlaylistController.textValue.value.toLowerCase() !=
                 playlistName.toLowerCase()) {
               showModalDiscardDialog(context);
             } else {
@@ -53,8 +50,8 @@ class EditPlaylistScreen extends StatelessWidget {
         ),
         actions: [
           Obx(
-            () => searchAlbumController.isTypingValue &&
-                    searchAlbumController.textValue.value.toLowerCase() !=
+            () => editPlaylistController.isTyping.value &&
+                    editPlaylistController.textValue.value.toLowerCase() !=
                         playlistName.toLowerCase()
                 ? saveButton(
                     color: HexColor('#8238be'),
@@ -62,7 +59,7 @@ class EditPlaylistScreen extends StatelessWidget {
                       Get.back();
                       editPlaylistController.editPlaylist(
                         uid,
-                        searchAlbumController.textValue.value,
+                        editPlaylistController.textValue.value,
                       );
                     },
                   )
@@ -134,8 +131,8 @@ class EditPlaylistScreen extends StatelessWidget {
                     } else {}
                   },
                   onChanged: (value) {
-                    searchAlbumController.onTyping(value);
-                    searchAlbumController.textValue.value = value;
+                    editPlaylistController.onTyping(value);
+                    editPlaylistController.textValue.value = value;
                   },
                   controller: textController,
                   focusNode: _focusNode,

@@ -1,38 +1,30 @@
-import 'dart:convert';
-
-import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
-import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
+import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
-class EditPlaylistController extends GetxController{
+class EditPlaylistController extends GetxController {
+  final controller = TextEditingController();
+  var isTyping = false.obs;
+  var textValue = ''.obs;
+  var isKeybordFocus = false.obs;
+  final albumService = Get.find<AlbumService>();
+
+  void onTyping(String value) {
+    isTyping.value = value.isNotEmpty;
+    update();
+  }
+
+  void onChanged(String value) {
+    isTyping.value = value.isNotEmpty;
+    textValue.value = value;
+    isKeybordFocus.value = true;
+    update();
+  }
+
   Future<void> editPlaylist(String id, String name) async {
-    final homeController = Get.find<HomeController>();
-    const String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/crud_new_playlist';
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        body: {
-          'method': 'update',
-          'name_playlist': name,
-          'playlist_uid': id,
-        },
-      );
-
-      if (response.body.isEmpty) {
-        logError('Error: Response body is empty');
-        return;
-      }
-
-      final responseBody = jsonDecode(response.body);
-
-      logInfo('Response: $responseBody');
-    } catch (e) {
-      logError('Error update playlist: $e');
-    } finally {
-      homeController.initializeAlbum();
-    }
+    await albumService.editPlaylist(
+      id,
+      name,
+    );
   }
 }

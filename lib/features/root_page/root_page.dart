@@ -4,6 +4,7 @@ import 'package:cybeat_music_player/features/floating_bar/widgets/floating_playi
 import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
 import 'package:cybeat_music_player/features/home/screens/home_screen.dart';
 import 'package:cybeat_music_player/features/recent_music/screens/recents_music_screen.dart';
+import 'package:cybeat_music_player/features/search_album/bindings/search_album_binding.dart';
 import 'package:cybeat_music_player/features/search_album/screens/search_album_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -103,6 +104,7 @@ Route<dynamic>? onGenerateNestedRoute(RouteSettings settings) {
       return GetPageRoute(
         settings: settings,
         page: () => SearchAlbumScreen(),
+        binding: SearchAlbumBinding(),
         transition: Transition.cupertino,
         fullscreenDialog: true,
         popGesture: false,

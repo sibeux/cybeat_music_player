@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
+
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/list_playlist_container.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +7,10 @@ import 'package:get/get.dart';
 class ListSavedIn extends StatelessWidget {
   const ListSavedIn({
     super.key,
-    required this.homeAlbumGridController,
-    required this.musicPlaylistController,
+    required this.addMusicToPlaylistController,
   });
 
-  final HomeController homeAlbumGridController;
-  final AddMusicToPlaylistController musicPlaylistController;
+  final AddMusicToPlaylistController addMusicToPlaylistController;
 
   @override
   Widget build(BuildContext context) {
@@ -20,22 +18,22 @@ class ListSavedIn extends StatelessWidget {
       () => ListView.builder(
         shrinkWrap: true, // Agar ListView tidak error
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: musicPlaylistController.isTypingValue &&
-                musicPlaylistController.textValue.value.isNotEmpty
-            ? homeAlbumGridController.playlistCreatedList
+        itemCount: addMusicToPlaylistController.isTypingValue &&
+                addMusicToPlaylistController.textValue.value.isNotEmpty
+            ? addMusicToPlaylistController.playlistCreatedList
                 .where((element) {
-                  return musicPlaylistController.savedInMusicList
+                  return addMusicToPlaylistController.savedInMusicList
                           .contains(element.uid) &&
                       element.title.toLowerCase().contains(
-                            musicPlaylistController.textValue.value
+                            addMusicToPlaylistController.textValue.value
                                 .toLowerCase(),
                           );
                 })
                 .toList()
                 .length
-            : homeAlbumGridController.playlistCreatedList
+            : addMusicToPlaylistController.playlistCreatedList
                 .where(
-                  (element) => musicPlaylistController.savedInMusicList
+                  (element) => addMusicToPlaylistController.savedInMusicList
                       .contains(element.uid),
                 )
                 .toList()
@@ -43,19 +41,19 @@ class ListSavedIn extends StatelessWidget {
         itemBuilder: (context, index) {
           return ListPlaylistContainer(
             index: index,
-            listPlaylist: musicPlaylistController.isTypingValue &&
-                    musicPlaylistController.textValue.value.isNotEmpty
-                ? homeAlbumGridController.playlistCreatedList.where((element) {
-                    return musicPlaylistController.savedInMusicList
+            listPlaylist: addMusicToPlaylistController.isTypingValue &&
+                    addMusicToPlaylistController.textValue.value.isNotEmpty
+                ? addMusicToPlaylistController.playlistCreatedList.where((element) {
+                    return addMusicToPlaylistController.savedInMusicList
                             .contains(element.uid) &&
                         element.title.toLowerCase().contains(
-                              musicPlaylistController.textValue.value
+                              addMusicToPlaylistController.textValue.value
                                   .toLowerCase(),
                             );
                   }).toList()
-                : homeAlbumGridController.playlistCreatedList
+                : addMusicToPlaylistController.playlistCreatedList
                     .where(
-                      (element) => musicPlaylistController.savedInMusicList
+                      (element) => addMusicToPlaylistController.savedInMusicList
                           .contains(element.uid),
                     )
                     .toList(), // Playlist yang sudah disimpan.

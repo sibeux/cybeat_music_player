@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/controller/search_album_controller.dart';
+import 'package:cybeat_music_player/features/search_album/controllers/search_album_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/features/search_album/controllers/search_album_builder.dart';
@@ -12,7 +12,7 @@ class SearchAlbumScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final searchAlbumController = Get.put(SearchAlbumController());
+    final SearchAlbumController searchAlbumController = Get.find();
     final musicPlayerController = Get.find<MusicPlayerController>();
     final audioStateController = Get.find<AudioStateController>();
 

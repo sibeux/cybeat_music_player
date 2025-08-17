@@ -10,7 +10,6 @@ class HomeController extends GetxController {
 
   var filterIsTapped = false.obs;
   var jumlahAlbumDitampilkan = 15.obs;
-  var isLoading = true.obs;
   var isTapped = false.obs;
 
   get selectedAlbum => albumService.selectedAlbum;
@@ -25,6 +24,7 @@ class HomeController extends GetxController {
   get fourCoverCategory => albumService.fourCoverCategory;
   get sortValue => albumService.sortValue;
   get playlistCreatedList => albumService.playlistCreatedList;
+  get isLoading => albumService.isHomeLoading.value;
 
   @override
   void onInit() async {
@@ -37,9 +37,7 @@ class HomeController extends GetxController {
 
   void initializeAlbum() async {
     jumlahAlbumDitampilkan.value = 15;
-    isLoading.value = true;
     await albumService.initializeAlbum();
-    isLoading.value = false;
   }
 
   void onLoading() async {
