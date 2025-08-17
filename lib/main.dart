@@ -92,10 +92,6 @@ class InitialBinding extends Bindings {
   void dependencies() {
     // Gunakan Get.put() untuk controller yang harus langsung ada
     // dan hidup selamanya selama aplikasi berjalan.
-    // Anda bisa mendaftarkan semua service/controller global di sini
-    Get.put(AudioStateController());
-    Get.put(MusicPlayerController());
-
     // Daftarkan service sebagai singleton
     Get.put(AlbumService());
 
@@ -104,6 +100,10 @@ class InitialBinding extends Bindings {
     /// - Sumber Kebenaran Tunggal (Single Source of Truth)
     /// - Siklus Hidup (Lifecycle) yang Panjang
     /// - Efisiensi
+    ///
+    // Anda bisa mendaftarkan semua service/controller global di sini
+    Get.put(AudioStateController());
+    Get.put(MusicPlayerController());
 
     Get.put(MusicStateController());
     Get.put(MusicDownloadController());

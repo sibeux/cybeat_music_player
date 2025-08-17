@@ -9,6 +9,7 @@ import 'package:cybeat_music_player/controller/music_download_controller.dart';
 import 'package:cybeat_music_player/controller/music_play/read_codec_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -100,13 +101,12 @@ class AudioStateController extends GetxController {
   }
 
   Future<void> init(Playlist list) async {
+    final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
 
     String url =
         "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist?uid=${list.uid}&type=$type";
-    const api =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
@@ -146,10 +146,8 @@ class AudioStateController extends GetxController {
         }
       } else {
         final response = await http.get(Uri.parse(url));
-        final apiResponse = await http.get(Uri.parse(api));
 
         final List<dynamic> listData = json.decode(response.body);
-        final List<dynamic> apiData = json.decode(apiResponse.body);
 
         if (listData.isNotEmpty && type != 'offline') {
           final prefs = await SharedPreferences.getInstance();
@@ -160,11 +158,10 @@ class AudioStateController extends GetxController {
             children: listData.map(
               (item) {
                 return AudioSource.uri(
-                  // Uri.parse(item['link_gdrive']),
                   Uri.parse(
                     regexGdriveHostUrl(
                       url: item['link_gdrive'],
-                      listApiKey: apiData,
+                      listApiKey: albumService.gdriveApiKeyList,
                     ),
                   ),
                   tag: MediaItem(
@@ -172,11 +169,11 @@ class AudioStateController extends GetxController {
                     title: capitalizeEachWord(item['title']),
                     artist: capitalizeEachWord(item['artist']),
                     album: capitalizeEachWord(item['album']),
-                    // artUri: Uri.parse(item['cover']),
                     artUri: Uri.parse(
                       regexGdriveHostUrl(
                         url: item['cover'],
-                        listApiKey: apiData,
+                        listApiKey: albumService.gdriveApiKeyList,
+                        isAudio: false,
                       ),
                     ),
                     extras: {
@@ -186,7 +183,7 @@ class AudioStateController extends GetxController {
                       'original_source': item['link_gdrive'],
                       'url': regexGdriveHostUrl(
                         url: item['link_gdrive'],
-                        listApiKey: apiData,
+                        listApiKey: albumService.gdriveApiKeyList,
                       ),
                       'is_downloaded':
                           uidDownloadedSongs.contains(item['id_music'])
@@ -267,8 +264,8 @@ class AudioStateController extends GetxController {
         clear();
         musicPlayerController.pauseMusic();
         init(musicPlayerController.currentActivePlaylist.value!);
-        musicPlayerController
-            .setActivePlaylist(musicPlayerController.currentActivePlaylist.value!);
+        musicPlayerController.setActivePlaylist(
+            musicPlayerController.currentActivePlaylist.value!);
 
         // Tampilkan toast.
         showRemoveAlbumToast('Music has been deleted from the playlist');

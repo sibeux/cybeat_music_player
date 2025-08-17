@@ -18,12 +18,12 @@ class HomeListFourCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeAlbumGridController = Get.find<HomeController>();
+    final homeController = Get.find<HomeController>();
 
     List listCover(String uid, String type) {
       final List<dynamic> list = type.toLowerCase() == 'playlist'
-          ? homeAlbumGridController.fourCoverPlaylist
-          : homeAlbumGridController.fourCoverCategory;
+          ? homeController.fourCoverPlaylist
+          : homeController.fourCoverCategory;
 
       final data = list
           .where((element) => element['playlist_uid'] == uid)

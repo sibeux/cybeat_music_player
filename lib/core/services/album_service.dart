@@ -24,6 +24,7 @@ class AlbumService extends GetxService {
   // Ini adalah daftar playlist yang dibuat oleh user.
   var playlistCreatedList =
       RxList<Playlist>([]); // diakses oleh music_playlist_screen.dart
+  var gdriveApiKeyList = RxList<dynamic>([]);
 
   var allAlbumChildren = RxList([]);
   var selectedAlbum = RxList<Playlist?>([]);
@@ -65,15 +66,16 @@ class AlbumService extends GetxService {
     String sort = sortValue;
     String filter = getSelectedFilter;
 
-    String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?sort=$sort&filter=$filter';
-
+    const String endpoint =
+        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist";
+    String url = '$endpoint?sort=$sort&filter=$filter';
     const api =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api';
 
     try {
       final response = await http.post(Uri.parse(url));
       final apiResponse = await http.get(Uri.parse(api));
+      gdriveApiKeyList.value = json.decode(apiResponse.body);
       final jumlahFavorite = await getSumFavoriteSong();
       final listJumlahCategory = await getSumCategorySong();
       await getFourCoverAlbum(method: 'four_cover_category', type: 'category');
@@ -99,7 +101,6 @@ class AlbumService extends GetxService {
       }
 
       final List<dynamic> listData = json.decode(response.body);
-      final List<dynamic> apiData = json.decode(apiResponse.body);
 
       final list = listData.map((item) {
         jumlahPin.value =
@@ -112,7 +113,7 @@ class AlbumService extends GetxService {
               ? ''
               : regexGdriveHostUrl(
                   url: item['image'],
-                  listApiKey: apiData,
+                  listApiKey: gdriveApiKeyList,
                 ),
           type: (item['type']).toString().capitalizeFirst!,
           author: item['type'] == 'album'
@@ -147,8 +148,9 @@ class AlbumService extends GetxService {
       initiateAlbum.value = list;
       allAlbumList.value = list;
       logSuccess('Successfully initialized album with ${list.length} items');
-    } catch (e) {
-      logError('Error initializeAlbum home album grid controller: $e');
+    } catch (e, st) {
+      logError(
+          'Error initializeAlbum home album grid controller: $e. Stacktrace: $st');
     }
   }
 
@@ -297,7 +299,7 @@ class AlbumService extends GetxService {
 
   Future<List> getSumCategorySong() async {
     String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?count_category=uid';
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist?count_category=uid';
 
     List<dynamic> listData = [];
 
@@ -313,22 +315,62 @@ class AlbumService extends GetxService {
 
   Future<void> getFourCoverAlbum(
       {required String method, required String type}) async {
-    List<dynamic> fourCover = [];
+    List<dynamic> responseBody = [];
 
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/four_cover_album?method=$method';
 
     try {
       final response = await http.post(Uri.parse(url));
-      fourCover = json.decode(response.body);
+      responseBody = json.decode(response.body);
+
+      if (responseBody.isEmpty) {
+        logError('No data found for four cover album of type: $type');
+        return;
+      }
+
+      final List<dynamic> formattedImageUrl = responseBody.map((item) {
+        return {
+          'playlist_uid': item['playlist_uid'],
+          'cover_1': item['cover_1'] == null
+              ? null
+              : regexGdriveHostUrl(
+                  url: item['cover_1'],
+                  listApiKey: gdriveApiKeyList,
+                  isAudio: false,
+                ),
+          'cover_2': item['cover_2'] == null
+              ? null
+              : regexGdriveHostUrl(
+                  url: item['cover_2'],
+                  listApiKey: gdriveApiKeyList,
+                  isAudio: false,
+                ),
+          'cover_3': item['cover_3'] == null
+              ? null
+              : regexGdriveHostUrl(
+                  url: item['cover_3'],
+                  listApiKey: gdriveApiKeyList,
+                  isAudio: false,
+                ),
+          'cover_4': item['cover_4'] == null
+              ? null
+              : regexGdriveHostUrl(
+                  url: item['cover_4'],
+                  listApiKey: gdriveApiKeyList,
+                  isAudio: false,
+                ),
+          'total_non_null_cover': item['total_non_null_cover']
+        };
+      }).toList();
+
+      if (type == 'category') {
+        fourCoverCategory.value = formattedImageUrl;
+      } else if (type == 'playlist') {
+        fourCoverPlaylist.value = formattedImageUrl;
+      }
     } catch (e) {
       logError('Error getFourCoverAlbum: $e');
-    }
-
-    if (type == 'category') {
-      fourCoverCategory.value = fourCover;
-    } else if (type == 'playlist') {
-      fourCoverPlaylist.value = fourCover;
     }
   }
 
@@ -357,7 +399,6 @@ class AlbumService extends GetxService {
         }
       }
     }
-
     return isNegative ? index - 1 : index;
   }
 
