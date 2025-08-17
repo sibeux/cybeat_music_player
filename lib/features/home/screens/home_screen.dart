@@ -26,11 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final _scrollController = ScrollController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final audioStateController = Get.find<AudioStateController>();
     return Scaffold(

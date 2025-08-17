@@ -62,6 +62,7 @@ class MusicPlayerController extends GetxController {
         final mediaItem = sequenceState?.currentSource?.tag as MediaItem?;
         if (mediaItem != null) {
           updateCurrentMediaItem(mediaItem);
+          getDominantColor(mediaItem.artUri.toString());
         }
       });
     }
@@ -137,18 +138,6 @@ class MusicPlayerController extends GetxController {
     }
   }
 
-  void updateState(SequenceState? sequenceState) {
-    // Ini penyebab ada junk lama saat ganti lagu.
-    // if (cover.value.contains('.webp')) {
-    //   floatingPlayingMusicController.listColor.value = [
-    //     Colors.black,
-    //     Colors.white
-    //   ];
-    // } else {
-    //   floatingPlayingMusicController.getDominantColor(cover.value);
-    // }
-  }
-
   void playMusicNow({
     required AudioStateController audioStateController,
     required int index,
@@ -163,11 +152,6 @@ class MusicPlayerController extends GetxController {
         initialIndex: index);
 
     playMusic();
-
-    // musicStateController.streamAudioPlayer(
-    //   audioStateController.player.value!,
-    //   _currentMediaItem.value!,
-    // );
 
     updateCurrentMediaItem(_currentMediaItem.value!);
 

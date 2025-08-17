@@ -73,7 +73,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                           MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
-                                          height: 20.h,
+                                          height: 20,
                                           child: AutoSizeText(
                                             musicPlayerController
                                                     .getCurrentMediaItem
@@ -118,7 +118,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                           ),
                                         ),
                                         SizedBox(
-                                          height: 20.h,
+                                          height: 20,
                                           child: AutoSizeText(
                                             musicPlayerController
                                                     .getCurrentMediaItem

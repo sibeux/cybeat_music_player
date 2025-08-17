@@ -29,7 +29,6 @@ class HomeListGrid extends StatelessWidget {
             musicPlayerController.currentActivePlaylist.value?.title == "") {
           audioStateController.clear();
           musicPlayerController.pauseMusic();
-          // musicStateController.onClose();
           musicPlayerController.clearCurrentMediaItem();
           audioStateController.init(playlist);
           musicPlayerController.setActivePlaylist(playlist);

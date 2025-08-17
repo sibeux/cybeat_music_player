@@ -33,21 +33,6 @@ class AudioStateController extends GetxController {
   @override
   void onInit() {
     player.value = AudioPlayer();
-
-    /**
-     * stream ini tidak digunakan, karena saat
-     * pertama kali buka album, stream ini akan
-     * di-dispose dan tidak bisa di-listen lagi.
-     * Maka, stream ini dipindahkan ke clear()
-     */
-
-    // player.playbackEventStream.listen(
-    //   (event) {},
-    //   onError: (Object e, StackTrace stackTrace) {
-    //     logger.e('A stream error occurred: $e');
-    //   },
-    // );
-
     super.onInit();
   }
 
@@ -66,6 +51,7 @@ class AudioStateController extends GetxController {
 
     player.value?.playbackEventStream.listen(
       (event) {
+        logInfo(event.toString());
         if (musicPlayerController.isPlayingNow.value) {
           final MediaItem item = queue[player.value!.currentIndex!];
 
