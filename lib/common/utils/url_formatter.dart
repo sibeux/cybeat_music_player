@@ -29,9 +29,10 @@ String regexGdriveHostUrl({
   final googleDriveRegex =
       RegExp(r'/d/([a-zA-Z0-9_-]+)|files/([a-zA-Z0-9_-]+)');
   final match = googleDriveRegex.firstMatch(url);
-  final cacheEndpoint = listApiKey.map((item) {
-    return item['cybeat_cache_url'].toString();
-  });
+  final cacheEndpoint = listApiKey.where((item) {
+    final email = item['email']?.toString() ?? '';
+    return email == 'cybeat_cache_url';
+  }).toList();
 
   if (match != null) {
     // Ambil ID dari grup yang cocok (grup 1 atau grup 2)
@@ -39,7 +40,7 @@ String regexGdriveHostUrl({
 
     if (isAudio) {
       if (isAudioCached) {
-        return "$cacheEndpoint/$fileId";
+        return "${cacheEndpoint.first['gdrive_api']}/$fileId";
       } else {
         return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/$musicId";
       }

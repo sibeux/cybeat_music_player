@@ -59,7 +59,7 @@ class AudioStateController extends GetxController {
     // Reset ID saat player di-clear.
     lastProcessedMusicId = null;
 
-    // Sebelumnya adalah playbackEventStream. Dia berfungsi untuk listen-
+    // PlaybackEventStream, dia berfungsi untuk listen-
     // player sedang dalam kondisi apa? Makanya listen ini bekerja berulang-ulang.
     activePlayer.value?.sequenceStateStream.listen(
       (event) async {
@@ -69,8 +69,8 @@ class AudioStateController extends GetxController {
           final MediaItem item = queue[currentIndex];
           final String currentMusicId = item.extras!['music_id'];
           // KONDISI UTAMA:
-          // ** 1. Player dalam state 'ready' (artinya lagu baru sudah di-load).
-          // ** Point 1 jika pake playbackEventStream.
+          // ** 1. Player dalam state 'ready' event.processingState == ProcessingState.ready 
+          // ** (artinya lagu baru sudah di-load).
           // 2. ID musik saat ini BERBEDA dengan ID yang terakhir kita proses.
           if (currentMusicId != lastProcessedMusicId) {
             // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
@@ -78,7 +78,7 @@ class AudioStateController extends GetxController {
             // Baru panggil fungsi-fungsi Anda.
             await onReadCodec(
               url: item.extras!['url'],
-              metadata: item.extras!['metadata'],
+              mediaItem: item,
             );
             setRecentsMusic(currentMusicId);
           }
@@ -202,7 +202,7 @@ class AudioStateController extends GetxController {
       await activePlayer.value?.setAudioSource(playlist.value!);
     } catch (e, st) {
       // logger.e('Error loading audio source: $e');
-      logError('Error loading audio source: $e');
+      logError('Error loading audio source: $e, st:$st');
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
     }
   }
@@ -298,18 +298,22 @@ class AudioStateController extends GetxController {
   }
 
   Future<void> onReadCodec(
-      {required String url, required Map<String, dynamic> metadata}) async {
+      {required String url, required MediaItem mediaItem}) async {
     const lossyFormats = ['mp3', 'aac', 'ogg', 'opus', 'wma'];
     // Ini berfungsi sebagai placeholder laoding saat fetch.
     bitsPerRawSample.value = '--';
     sampleRate.value = '--';
     bitRate.value = '--';
     try {
+      final Map<String, dynamic> metadata = mediaItem.extras?['metadata'];
       // Cek dulu apakah udah ada metadata atau belum?
       if (metadata['metadata_id_music'] != null) {
         bitsPerRawSample.value = metadata['bits_per_raw_sample'];
         sampleRate.value = metadata['sample_rate'];
         bitRate.value = metadata['bit_rate'];
+        codecName.value = metadata['codec_name'];
+        musicQuality.value =
+            mediaItem.extras?['is_lossless'] ? 'lossless' : 'lossy';
         // Kalo ada isinya, gak usah dicek.
         return;
       }

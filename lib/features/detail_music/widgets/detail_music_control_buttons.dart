@@ -132,7 +132,7 @@ class DetailMusicControlButtons extends StatelessWidget {
     final icons = [
       Icon(Icons.repeat, color: Colors.white, size: 30.sp),
       Icon(Icons.repeat, color: Colors.amber, size: 30.sp),
-      Icon(Icons.repeat_one, color: Colors.lightBlueAccent, size: 30.sp),
+      Icon(Icons.repeat_one, color: Colors.redAccent, size: 30.sp),
     ];
 
     final msg = [
