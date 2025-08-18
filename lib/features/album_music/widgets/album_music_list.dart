@@ -12,7 +12,6 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:path/path.dart' as path;
 
 class AlbumMusicList extends StatelessWidget {
   const AlbumMusicList({
@@ -50,8 +49,6 @@ class AlbumMusicList extends StatelessWidget {
       marginList = 12;
       indexIcon = const SpectrumAnimation();
     }
-
-    const lossyFormats = ['mp3', 'aac', 'ogg', 'opus', 'wma'];
 
     return SizedBox(
       height: 70.h,
@@ -98,10 +95,7 @@ class AlbumMusicList extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (!lossyFormats.contains(path
-                        .extension(mediaItem.extras!['url'].toString())
-                        .replaceFirst('.', '')
-                        .toLowerCase()))
+                    if (mediaItem.extras?['is_lossless'])
                       Positioned(
                         right: 0,
                         top: 0,

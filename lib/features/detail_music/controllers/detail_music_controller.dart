@@ -11,7 +11,7 @@ class DetailMusicController extends GetxController {
   MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
   get currentActivePlaylist =>
       musicPlayerController.currentActivePlaylist.value;
-  get isAzlistviewScreenActive =>
+  get isAlbumMusicScreenActive =>
       musicPlayerController.isAzlistviewScreenActive.value;
   get sampleRate => audioStateController.sampleRate.value;
   get bitsPerRawSample => audioStateController.bitsPerRawSample.value;

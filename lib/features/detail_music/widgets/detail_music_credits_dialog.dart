@@ -128,7 +128,8 @@ void detailMusicCreditsDialog({
             height: 3.h,
           ),
           Obx(() => Text(
-                detailMusicController.currentMediaItem!.extras?['original_source'],
+                detailMusicController
+                    .currentMediaItem!.extras?['original_source'],
                 maxLines: 1,
                 style: TextStyle(
                   overflow: TextOverflow.ellipsis,
@@ -141,7 +142,7 @@ void detailMusicCreditsDialog({
             height: 15.h,
           ),
           Text(
-            "Already Hosted",
+            "Cache Source",
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.bold,
@@ -152,7 +153,9 @@ void detailMusicCreditsDialog({
             height: 3.h,
           ),
           Text(
-            "YES",
+            detailMusicController.currentMediaItem!.extras?['is_cached']
+                ? detailMusicController.currentMediaItem!.extras!['url']
+                : '—',
             maxLines: 1,
             style: TextStyle(
               overflow: TextOverflow.ellipsis,

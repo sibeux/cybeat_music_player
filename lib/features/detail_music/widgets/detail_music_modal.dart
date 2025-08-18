@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
+import 'package:cybeat_music_player/features/album_music/bindings/album_music_binding.dart';
 import 'package:cybeat_music_player/features/detail_music/controllers/detail_music_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_credits_dialog.dart';
 import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
@@ -43,7 +44,8 @@ Future<dynamic> detailMusicModal(
             child: Row(
               children: [
                 CachedNetworkImage(
-                  imageUrl: detailMusicController.currentMediaItem!.artUri.toString(),
+                  imageUrl:
+                      detailMusicController.currentMediaItem!.artUri.toString(),
                   height: 50.h,
                   width: 50.w,
                   maxHeightDiskCache: 200,
@@ -133,7 +135,7 @@ Future<dynamic> detailMusicModal(
                 changeColor: false,
                 onTap: () {
                   Get.back();
-                  if (detailMusicController.isAzlistviewScreenActive) {
+                  if (detailMusicController.isAlbumMusicScreenActive) {
                     Get.back();
                   } else {
                     Get.back();
@@ -142,6 +144,7 @@ Future<dynamic> detailMusicModal(
                       () => AlbumMusicScreen(),
                       transition: Transition.downToUp,
                       duration: const Duration(milliseconds: 300),
+                      binding: AlbumMusicBinding(),
                       popGesture: false,
                       fullscreenDialog: true,
                       id: 1,

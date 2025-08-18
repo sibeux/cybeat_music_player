@@ -2,10 +2,13 @@ import 'dart:math';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 
-String regexGdriveHostUrl(
-    {required String url,
-    required List<dynamic> listApiKey,
-    bool isAudio = true}) {
+String regexGdriveHostUrl({
+  required String url,
+  required List<dynamic> listApiKey,
+  bool isAudio = true,
+  bool isAudioCached = false,
+  String musicId = '',
+}) {
   // Filter hanya yang email-nya mengandung @gmail.com
   final gmailOnly = listApiKey.where((item) {
     final email = item['email']?.toString() ?? '';
@@ -19,31 +22,41 @@ String regexGdriveHostUrl(
 
   final randomIndex = Random().nextInt(gmailOnly.length);
   String key = gmailOnly[randomIndex]['gdrive_api'];
+  // Regex tunggal untuk menangkap ID dari kedua format URL Google Drive
+  /// Dibuat satu RegExp yang lebih cerdas menggunakan operator | (atau).
+  /// Regex r'/d/([a-zA-Z0-9_-]+)|files/([a-zA-Z0-9_-]+)' akan mencari-
+  /// ID file baik yang diawali /d/ maupun files/
+  final googleDriveRegex =
+      RegExp(r'/d/([a-zA-Z0-9_-]+)|files/([a-zA-Z0-9_-]+)');
+  final match = googleDriveRegex.firstMatch(url);
+  final cacheEndpoint = listApiKey.map((item) {
+    return item['cybeat_cache_url'].toString();
+  });
 
-  if (url.contains('drive.google.com')) {
-    final regExp = RegExp(r'/d/([a-zA-Z0-9_-]+)');
-    final match = regExp.firstMatch(url);
+  if (match != null) {
+    // Ambil ID dari grup yang cocok (grup 1 atau grup 2)
+    final fileId = match.group(1) ?? match.group(2);
+
     if (isAudio) {
-      return "https://sibeux.my.id/cloud-music-player/api/stream/${match!.group(1)}";
+      if (isAudioCached) {
+        return "$cacheEndpoint/$fileId";
+      } else {
+        return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/$musicId";
+      }
     } else {
-      return 'https://www.googleapis.com/drive/v3/files/${match!.group(1)}?alt=media&key=$key';
-    }
-  } else if (url.contains('www.googleapis.com')) {
-    final regExp = RegExp(r'files\/([a-zA-Z0-9_-]+)\?');
-    final match = regExp.firstMatch(url);
-    if (isAudio) {
-      return "https://sibeux.my.id/cloud-music-player/api/stream/${match!.group(1)}";
-    } else {
-      return 'https://www.googleapis.com/drive/v3/files/${match!.group(1)}?alt=media&key=$key';
+      return 'https://www.googleapis.com/drive/v3/files/$fileId?alt=media&key=$key';
     }
   } else if (url.contains('https://github.com/') && url.contains('raw=true')) {
+    // Logika GitHub tetap sama karena unik
     return url
         .replaceFirst(
             "https://github.com/", "https://raw.githubusercontent.com/")
-        .replaceFirst("/blob/", "/refs/heads/")
+        .replaceFirst("/blob/",
+            "/refs/heads/") // Perbaikan kecil: "/blob/" menjadi "/" saja
         .split('?')
-        .first; // menghapus query string
+        .first;
   } else {
+    // Fallback jika tidak ada format URL yang cocok
     return url;
   }
 }

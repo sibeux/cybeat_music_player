@@ -117,6 +117,7 @@ class AlbumService extends GetxService {
               : regexGdriveHostUrl(
                   url: item['image'],
                   listApiKey: gdriveApiKeyList,
+                  isAudio: false,
                 ),
           type: (item['type']).toString().capitalizeFirst!,
           author: item['type'] == 'album'

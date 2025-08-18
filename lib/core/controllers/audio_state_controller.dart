@@ -31,6 +31,12 @@ class AudioStateController extends GetxController {
   var sampleRate = '--'.obs;
   var bitsPerRawSample = '--'.obs;
   var bitRate = '--'.obs;
+  var codecName = ''.obs;
+  var musicQuality = ''.obs;
+
+  // Jadikan 'uid' sebagai variabel di luar listener agar nilainya tidak di-reset.
+  // Sebaiknya ini menjadi variabel instance di dalam class Anda.
+  String? lastProcessedMusicId;
 
   final musicPlayerController = Get.find<MusicPlayerController>();
 
@@ -50,23 +56,31 @@ class AudioStateController extends GetxController {
     activePlayer.value?.stop();
     activePlayer.value?.dispose();
     activePlayer.value = AudioPlayer();
-    var uid = '';
+    // Reset ID saat player di-clear.
+    lastProcessedMusicId = null;
 
-    activePlayer.value?.playbackEventStream.listen(
-      (event) {
-        if (musicPlayerController.isPlayingNow.value) {
-          final MediaItem item = queue[activePlayer.value!.currentIndex!];
-          // setRecentsMusic ditaruh di luar agar saat lagu looping, dia-
-          // tetap kirim ke database.
-          setRecentsMusic(item.extras!['music_id']);
-          // Untuk cek apakah lagu terakhir diputar itu adalah lagu yang sama.
-          if (item.extras?['music_id'] != uid) {
-            // Set uid terakhir lagu yang diputar.
-            uid = item.extras!['music_id'];
-            // Untuk read codec file.
-            // Ditaruh di dalam karena kalau lagu sebelumnya sama,
-            // maka tidak perlu read codec lagi.
-            onReadCodec(item.extras!['url']);
+    // Sebelumnya adalah playbackEventStream. Dia berfungsi untuk listen-
+    // player sedang dalam kondisi apa? Makanya listen ini bekerja berulang-ulang.
+    activePlayer.value?.sequenceStateStream.listen(
+      (event) async {
+        // Kita hanya peduli saat ada item yang sedang diproses dan player siap memainkannya.
+        final currentIndex = activePlayer.value?.currentIndex;
+        if (currentIndex != null) {
+          final MediaItem item = queue[currentIndex];
+          final String currentMusicId = item.extras!['music_id'];
+          // KONDISI UTAMA:
+          // ** 1. Player dalam state 'ready' (artinya lagu baru sudah di-load).
+          // ** Point 1 jika pake playbackEventStream.
+          // 2. ID musik saat ini BERBEDA dengan ID yang terakhir kita proses.
+          if (currentMusicId != lastProcessedMusicId) {
+            // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
+            lastProcessedMusicId = currentMusicId;
+            // Baru panggil fungsi-fungsi Anda.
+            await onReadCodec(
+              url: item.extras!['url'],
+              metadata: item.extras!['metadata'],
+            );
+            setRecentsMusic(currentMusicId);
           }
         }
       },
@@ -80,8 +94,9 @@ class AudioStateController extends GetxController {
     final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
-    String url =
-        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist?uid=${list.uid}&type=$type";
+    const String endpoint =
+        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist";
+    String url = "$endpoint?uid=${list.uid}&type=$type";
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
     try {
@@ -127,13 +142,14 @@ class AudioStateController extends GetxController {
           playlist.value = ConcatenatingAudioSource(
             children: listData.map(
               (item) {
+                final String musicUrl = regexGdriveHostUrl(
+                  url: item['link_gdrive'],
+                  listApiKey: albumService.gdriveApiKeyList,
+                  musicId: item['id_music'],
+                  isAudioCached: item['cache_music_id'] != null ? true : false,
+                );
                 return AudioSource.uri(
-                  Uri.parse(
-                    regexGdriveHostUrl(
-                      url: item['link_gdrive'],
-                      listApiKey: albumService.gdriveApiKeyList,
-                    ),
-                  ),
+                  Uri.parse(musicUrl),
                   tag: MediaItem(
                     id: '${_nextMediaId++}',
                     title: capitalizeEachWord(item['title']),
@@ -147,14 +163,25 @@ class AudioStateController extends GetxController {
                       ),
                     ),
                     extras: {
-                      'favorite': item['favorite'],
                       'music_id': item['id_music'],
+                      'url': musicUrl,
+                      'favorite': item['favorite'],
                       'id_playlist_music': item['id_playlist_music'] ?? '',
                       'original_source': item['link_gdrive'],
-                      'url': regexGdriveHostUrl(
-                        url: item['link_gdrive'],
-                        listApiKey: albumService.gdriveApiKeyList,
-                      ),
+                      'is_cached':
+                          item['cache_music_id'] != null ? true : false,
+                      'is_lossless':
+                          item['music_quality'] == 'lossless' ? true : false,
+                      'metadata': {
+                        // metadata_id_music dibiarkan null gpp kalo kosong.
+                        // Buat cek di onReadCodec.
+                        'metadata_id_music': item['metadata_id_music'],
+                        'codec_name': item['codec_name'] ?? '--',
+                        'sample_rate': item['sample_rate'] ?? '--',
+                        'bit_rate': item['bit_rate'] ?? '--',
+                        'bits_per_raw_sample':
+                            item['bits_per_raw_sample'] ?? '--',
+                      },
                       'is_downloaded':
                           uidDownloadedSongs.contains(item['id_music'])
                               ? true
@@ -178,12 +205,6 @@ class AudioStateController extends GetxController {
       logError('Error loading audio source: $e');
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
     }
-  }
-
-  @override
-  void dispose() {
-    activePlayer.value?.dispose();
-    super.dispose();
   }
 
   Future<void> deleteMusicFromPlaylist({
@@ -255,30 +276,43 @@ class AudioStateController extends GetxController {
     }
   }
 
-  Future<void> setSourceAudio(ConcatenatingAudioSource playlist) async {
-    this.playlist.value = playlist;
-    queue = playlist.sequence.map((e) => e.tag as MediaItem).toList();
-    await activePlayer.value?.setAudioSource(playlist);
-  }
-
   void setRecentsMusic(String? id) async {
     String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/recents_music?_id=$id';
+        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/recents_music';
     try {
       await http.post(
         Uri.parse(url),
+        body: {
+          'music_id': id,
+          'codec_name': codecName.value,
+          'quality': musicQuality.value,
+          'bits_per_raw_sample': bitsPerRawSample.value,
+          'sample_rate': sampleRate.value,
+          'bit_rate': bitRate.value,
+        },
       );
+      logSuccess('setRecentsMusic success');
     } catch (e) {
       logError('Error set recents music: $e');
     }
   }
 
-  Future<void> onReadCodec(String url) async {
+  Future<void> onReadCodec(
+      {required String url, required Map<String, dynamic> metadata}) async {
+    const lossyFormats = ['mp3', 'aac', 'ogg', 'opus', 'wma'];
     // Ini berfungsi sebagai placeholder laoding saat fetch.
     bitsPerRawSample.value = '--';
     sampleRate.value = '--';
     bitRate.value = '--';
     try {
+      // Cek dulu apakah udah ada metadata atau belum?
+      if (metadata['metadata_id_music'] != null) {
+        bitsPerRawSample.value = metadata['bits_per_raw_sample'];
+        sampleRate.value = metadata['sample_rate'];
+        bitRate.value = metadata['bit_rate'];
+        // Kalo ada isinya, gak usah dicek.
+        return;
+      }
       // 1. Jalankan FFprobe langsung dengan URL
       final session = await FFprobeKit.getMediaInformation(url);
       final information = session.getMediaInformation();
@@ -299,6 +333,11 @@ class AudioStateController extends GetxController {
         bitRate.value = fileBitRate != '--'
             ? (int.parse(fileBitRate) / 1000).toStringAsFixed(0)
             : '--';
+        codecName.value = audioStream.getProperty('codec_name') ?? '';
+        musicQuality.value =
+            lossyFormats.contains(codecName.value.toLowerCase())
+                ? "lossy"
+                : "lossless";
       }
     } catch (e) {
       logError('Error onReadCodec: $e');
