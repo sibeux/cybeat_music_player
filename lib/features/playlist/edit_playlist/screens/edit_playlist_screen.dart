@@ -1,0 +1,187 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cybeat_music_player/features/playlist/edit_playlist/controllers/edit_playlist_controller.dart';
+import 'package:cybeat_music_player/features/playlist/edit_playlist/widgets/show_discard_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
+
+final FocusNode _focusNode = FocusNode();
+
+class EditPlaylistScreen extends StatelessWidget {
+  const EditPlaylistScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    final editPlaylistController = Get.find<EditPlaylistController>();
+    final String uid = Get.arguments['uid'] ?? '';
+    final String playlistName = Get.arguments['playlistName'] ?? '';
+    final textController = editPlaylistController.controller;
+    var tapIndex = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      textController.text = playlistName;
+      tapIndex = 0;
+      editPlaylistController.textValue.value = textController.text;
+    });
+
+    return Scaffold(
+      backgroundColor: HexColor('#fefffe'),
+      appBar: AppBar(
+        backgroundColor: HexColor('#fefffe'),
+        toolbarHeight: 80,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            if (editPlaylistController.textValue.value.toLowerCase() !=
+                playlistName.toLowerCase()) {
+              showModalDiscardDialog(context);
+            } else {
+              Get.back();
+            }
+          },
+        ),
+        title: const Text(
+          'Edit Playlist',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        actions: [
+          Obx(
+            () => editPlaylistController.isTyping.value &&
+                    editPlaylistController.textValue.value.toLowerCase() !=
+                        playlistName.toLowerCase()
+                ? saveButton(
+                    color: HexColor('#8238be'),
+                    onTap: () {
+                      Get.back();
+                      editPlaylistController.editPlaylist(
+                        uid,
+                        editPlaylistController.textValue.value,
+                      );
+                    },
+                  )
+                : saveButton(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    onTap: () {},
+                  ),
+          )
+        ],
+      ),
+      body: Column(
+        children: [
+          Center(
+            child: CachedNetworkImage(
+              imageUrl: '',
+              fit: BoxFit.cover,
+              height: 200,
+              width: 200,
+              maxHeightDiskCache: 500,
+              maxWidthDiskCache: 500,
+              filterQuality: FilterQuality.low,
+              placeholder: (context, url) => Image.asset(
+                'assets/images/placeholder_cover_music.png',
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.low,
+              ),
+              errorWidget: (context, url, error) => Image.asset(
+                'assets/images/placeholder_cover_music.png',
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.low,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          GestureDetector(
+            child: Text(
+              'Change Image',
+              style: TextStyle(
+                color: Colors.black.withValues(alpha: 0.8),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 35,
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Theme(
+                data: ThemeData(
+                  textSelectionTheme: TextSelectionThemeData(
+                    cursorColor: Colors.blue, // Cursor color
+                    selectionColor: Colors.yellow.withValues(alpha: 0.4),
+                    selectionHandleColor: Colors.blue.withValues(alpha: 0.5),
+                  ),
+                ),
+                child: TextField(
+                  onTap: () {
+                    if (tapIndex == 0) {
+                      textController.selection = TextSelection(
+                        baseOffset: 0,
+                        extentOffset: textController.text.length,
+                      );
+                      tapIndex++;
+                    } else {}
+                  },
+                  onChanged: (value) {
+                    editPlaylistController.onTyping(value);
+                    editPlaylistController.textValue.value = value;
+                  },
+                  controller: textController,
+                  focusNode: _focusNode,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black.withValues(alpha: 0.7),
+                  ),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(bottom: 0),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black
+                              .withValues(alpha: 0.7)), // Color when focused
+                    ),
+                    hintText: 'Playlist Name',
+                    hintStyle: TextStyle(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        fontSize: 40),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  GestureDetector saveButton({
+    required Color color,
+    required void Function() onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        // default margin dari IconButton ke kanan adalah 24
+        // makanya leading gak perlu dikasih margin
+        margin: const EdgeInsets.only(right: 24),
+        child: Text(
+          'Save',
+          style: TextStyle(
+            color: color,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
