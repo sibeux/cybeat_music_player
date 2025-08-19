@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 10,
                 ),
                 Obx(
-                  // Awalnya, GridFilter ada const, tetapi di release mode,
+                  // Awalnya, HomeFilterGrid ada const, tetapi di release mode,
                   // dia tidak bergeser, sehingga const dihapus.
                   () => _homeController.filterIsTapped.value ||
                           !_homeController.filterIsTapped.value

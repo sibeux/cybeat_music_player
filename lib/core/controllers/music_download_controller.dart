@@ -219,7 +219,7 @@ class MusicDownloadController extends GetxController {
         // (Ikon centang downloaded hilang).
         mediaItem.extras!['is_downloaded'] = false;
 
-        logError('File deleted: $filePath');
+        logInfo('File deleted: $filePath');
         showRemoveAlbumToast('Music has been deleted from offline');
         Get.back();
       } else {

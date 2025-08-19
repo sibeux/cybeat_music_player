@@ -5,6 +5,8 @@ import 'package:cybeat_music_player/common/widgets/floating_bar/floating_playing
 import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
 import 'package:cybeat_music_player/features/home/screens/home_screen.dart';
 import 'package:cybeat_music_player/features/recent_music/screens/recents_music_screen.dart';
+import 'package:cybeat_music_player/features/root_page/controllers/navigation_history_controller.dart';
+import 'package:cybeat_music_player/features/root_page/controllers/root_navigator_observer.dart';
 import 'package:cybeat_music_player/features/search_album/bindings/search_album_binding.dart';
 import 'package:cybeat_music_player/features/search_album/screens/search_album_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,36 +21,34 @@ class RootPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Menghilangkan splash screen
     FlutterNativeSplash.remove();
     final musicPlayerController = Get.find<MusicPlayerController>();
-    // Handler untuk tombol back fisik,
-    // agar tidak close app.
+
+    // 1. Daftarkan controller agar bisa di-find oleh Observer
+    final historyController = Get.put(NavigationHistoryController());
+
     return PopScope(
-      canPop: false, // Mencegah pop default
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) {
-          // Cek apakah ada rute yang bisa di-pop di navigator bersarang
-          final navigatorState = Get.nestedKey(1)?.currentState;
-          if (navigatorState != null && navigatorState.canPop()) {
-            // Jika bisa pop, lakukan pop pada navigator bersarang
-            navigatorState.pop();
-          } else {
-            // Jika tidak ada yang bisa di-pop, pop navigator utama
-            SystemNavigator.pop();
-          }
-        } // Jika tidak ada yang bisa di-pop, biarkan sistem menangani back
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, result) {
+        if (didPop) return;
+        // 3. LOGIKA BARU: Cek panjang riwayat, BUKAN canPop()
+        // Jika riwayat lebih dari 1, berarti kita bisa kembali.
+        if (historyController.routeHistory.length > 1) {
+          Get.nestedKey(1)?.currentState?.pop();
+        } else {
+          // Jika hanya ada 1 (atau 0), kita di halaman home. Minimize aplikasi.
+          // MoveToBackground.moveTaskToBack();
+          SystemNavigator.pop();
+        }
       },
       child: Stack(
         children: [
-          // BAGIAN 1: "ISI" YANG BERUBAH-UBAH
           Navigator(
-            // ID ini PENTING untuk memberi tahu GetX navigator mana yang harus digunakan
             key: Get.nestedKey(1),
-            initialRoute: '/home', // Rute awal untuk navigator nested ini
+            initialRoute: '/home',
+            // 2. Tambahkan observer ke navigator
+            observers: [RootNavigatorObserver()],
             onGenerateRoute: (settings) {
-              // Logika untuk menentukan halaman mana yang akan ditampilkan.
-              // Bisa dibilang, ini adalah anak route dari navigator bersarang.
               return onGenerateNestedRoute(settings);
             },
           ),
@@ -80,7 +80,7 @@ Route<dynamic>? onGenerateNestedRoute(RouteSettings settings) {
         settings: settings,
         page: () => HomeScreen(),
         binding: HomeBinding(),
-        fullscreenDialog: true,
+        fullscreenDialog: false,
         popGesture: false,
       );
     case '/album_music':
@@ -117,4 +117,3 @@ Route<dynamic>? onGenerateNestedRoute(RouteSettings settings) {
           page: () => const Center(child: Text("Page not found")));
   }
 }
-

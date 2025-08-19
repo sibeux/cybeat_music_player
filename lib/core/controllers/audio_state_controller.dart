@@ -69,7 +69,7 @@ class AudioStateController extends GetxController {
           final MediaItem item = queue[currentIndex];
           final String currentMusicId = item.extras!['music_id'];
           // KONDISI UTAMA:
-          // ** 1. Player dalam state 'ready' event.processingState == ProcessingState.ready 
+          // ** 1. Player dalam state 'ready' event.processingState == ProcessingState.ready
           // ** (artinya lagu baru sudah di-load).
           // 2. ID musik saat ini BERBEDA dengan ID yang terakhir kita proses.
           if (currentMusicId != lastProcessedMusicId) {
@@ -100,104 +100,88 @@ class AudioStateController extends GetxController {
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
     try {
+      late RxList<dynamic> listData;
+      late List<dynamic> uidDownloadedSongs;
       if (type == 'offline') {
         final musicDownloadController = Get.find<MusicDownloadController>();
         await musicDownloadController.getDownloadedSongs();
-        if (musicDownloadController.musicOfflineList.isNotEmpty) {
-          playlist.value = ConcatenatingAudioSource(
-            children: musicDownloadController.musicOfflineList.map(
-              (item) {
-                return AudioSource.uri(
-                  Uri.file(item['filePath']),
-                  tag: MediaItem(
-                    id: '${_nextMediaId++}',
-                    title: capitalizeEachWord(item['title']),
-                    artist: capitalizeEachWord(item['artist']),
-                    album: capitalizeEachWord(item['album']),
-                    artUri: Uri.parse(item['cover']),
-                    extras: {
-                      'favorite': item['favorite'],
-                      'music_id': item['id_music'],
-                      'original_source': item['filePath'],
-                      'url': item['filePath'],
-                      'is_downloaded': item['is_downloaded'],
-                    },
-                  ),
-                );
-              },
-            ).toList(),
-          );
-        } else {
-          playlist.value = ConcatenatingAudioSource(
-            children: [],
-          );
+        if (musicDownloadController.musicOfflineList.isEmpty) {
+          listData = RxList<dynamic>([]);
+          return;
         }
+        listData = musicDownloadController.musicOfflineList;
       } else {
         final response = await http.get(Uri.parse(url));
-        final List<dynamic> listData = json.decode(response.body);
-        if (listData.isNotEmpty && type != 'offline') {
+        final responseBody = json.decode(response.body);
+        if (responseBody.isNotEmpty && type != 'offline') {
           final prefs = await SharedPreferences.getInstance();
-          final uidDownloadedSongs =
-              prefs.getStringList('uidDownloadedSongs') ?? [];
-          playlist.value = ConcatenatingAudioSource(
-            children: listData.map(
-              (item) {
-                final String musicUrl = regexGdriveHostUrl(
-                  url: item['link_gdrive'],
-                  listApiKey: albumService.gdriveApiKeyList,
-                  musicId: item['id_music'],
-                  isAudioCached: item['cache_music_id'] != null ? true : false,
-                );
-                return AudioSource.uri(
-                  Uri.parse(musicUrl),
-                  tag: MediaItem(
-                    id: '${_nextMediaId++}',
-                    title: capitalizeEachWord(item['title']),
-                    artist: capitalizeEachWord(item['artist']),
-                    album: capitalizeEachWord(item['album']),
-                    artUri: Uri.parse(
-                      regexGdriveHostUrl(
-                        url: item['cover'],
-                        listApiKey: albumService.gdriveApiKeyList,
-                        isAudio: false,
-                      ),
-                    ),
-                    extras: {
-                      'music_id': item['id_music'],
-                      'url': musicUrl,
-                      'favorite': item['favorite'],
-                      'id_playlist_music': item['id_playlist_music'] ?? '',
-                      'original_source': item['link_gdrive'],
-                      'is_cached':
-                          item['cache_music_id'] != null ? true : false,
-                      'is_lossless':
-                          item['music_quality'] == 'lossless' ? true : false,
-                      'metadata': {
-                        // metadata_id_music dibiarkan null gpp kalo kosong.
-                        // Buat cek di onReadCodec.
-                        'metadata_id_music': item['metadata_id_music'],
-                        'codec_name': item['codec_name'] ?? '--',
-                        'sample_rate': item['sample_rate'] ?? '--',
-                        'bit_rate': item['bit_rate'] ?? '--',
-                        'bits_per_raw_sample':
-                            item['bits_per_raw_sample'] ?? '--',
-                      },
-                      'is_downloaded':
-                          uidDownloadedSongs.contains(item['id_music'])
-                              ? true
-                              : false,
-                    },
-                  ),
-                );
-              },
-            ).toList(),
-          );
+          uidDownloadedSongs = prefs.getStringList('uidDownloadedSongs') ?? [];
+          listData = [].obs; // inisialisasi dulu
+          listData.assignAll(responseBody); // assign dari List biasa
         } else {
-          playlist.value = ConcatenatingAudioSource(
-            children: [],
-          );
+          listData = RxList<dynamic>([]);
         }
       }
+      if (listData.isEmpty) {
+        playlist.value = ConcatenatingAudioSource(
+          children: [],
+        );
+        return;
+      }
+      playlist.value = ConcatenatingAudioSource(
+        children: listData.map(
+          (item) {
+            final String musicUrl = regexGdriveHostUrl(
+              url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
+              listApiKey: albumService.gdriveApiKeyList,
+              musicId: item['id_music'],
+              isAudioCached: item['cache_music_id'] != null ? true : false,
+            );
+            return AudioSource.uri(
+              Uri.parse(musicUrl),
+              tag: MediaItem(
+                id: '${_nextMediaId++}',
+                title: capitalizeEachWord(item['title']),
+                artist: capitalizeEachWord(item['artist']),
+                album: capitalizeEachWord(item['album']),
+                artUri: Uri.parse(
+                  regexGdriveHostUrl(
+                    url: item['cover'],
+                    listApiKey: albumService.gdriveApiKeyList,
+                    isAudio: false,
+                  ),
+                ),
+                extras: {
+                  'music_id': item['id_music'],
+                  'url': musicUrl,
+                  'favorite': item['favorite'],
+                  'id_playlist_music': item['id_playlist_music'] ?? '',
+                  'original_source': type != 'offline'
+                      ? item['link_gdrive']
+                      : item['filePath'],
+                  'is_cached': item['cache_music_id'] != null ? true : false,
+                  'is_lossless':
+                      item['music_quality'] == 'lossless' ? true : false,
+                  'metadata': {
+                    // metadata_id_music dibiarkan null gpp kalo kosong.
+                    // Buat cek di onReadCodec.
+                    'metadata_id_music': item['metadata_id_music'] ?? '',
+                    'codec_name': item['codec_name'] ?? '--',
+                    'sample_rate': item['sample_rate'] ?? '--',
+                    'bit_rate': item['bit_rate'] ?? '--',
+                    'bits_per_raw_sample': item['bits_per_raw_sample'] ?? '--',
+                  },
+                  'is_downloaded': type != 'offline'
+                      ? uidDownloadedSongs.contains(item['id_music'])
+                          ? true
+                          : false
+                      : false,
+                },
+              ),
+            );
+          },
+        ).toList(),
+      );
       queue = playlist.value!.sequence.map((e) => e.tag as MediaItem).toList();
       await activePlayer.value?.setAudioSource(playlist.value!);
     } catch (e, st) {
@@ -307,7 +291,11 @@ class AudioStateController extends GetxController {
     try {
       final Map<String, dynamic> metadata = mediaItem.extras?['metadata'];
       // Cek dulu apakah udah ada metadata atau belum?
-      if (metadata['metadata_id_music'] != null) {
+      // Cek juga apakah metadatanya memang sudah sesuai format?
+      final bool isMetadataCorrect = metadata['bits_per_raw_sample'] != '--' ||
+          metadata['sample_rate'] != '--' ||
+          metadata['bit_rate'] != '--';
+      if (metadata['metadata_id_music'] != null && (isMetadataCorrect)) {
         bitsPerRawSample.value = metadata['bits_per_raw_sample'];
         sampleRate.value = metadata['sample_rate'];
         bitRate.value = metadata['bit_rate'];
