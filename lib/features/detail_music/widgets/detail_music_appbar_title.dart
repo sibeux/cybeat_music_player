@@ -1,6 +1,6 @@
-
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class DetailMusicAppbarTitle extends StatelessWidget {
@@ -11,30 +11,31 @@ class DetailMusicAppbarTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final musicPlayerController = Get.find<MusicPlayerController>();
-
+    // Agar reactive, jangan dikasih .value saat assign ke variable.
+    final playlist = musicPlayerController.currentActivePlaylist;
     return Column(
       children: [
         Obx(
           () => Text(
-            'PLAYING FROM ${musicPlayerController.currentActivePlaylist.value?.type}',
-            style: const TextStyle(
+            'PLAYING FROM ${playlist.value?.type.toUpperCase()}',
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 11,
+              fontSize: 11.sp,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        const SizedBox(
-          height: 5,
+        SizedBox(
+          height: 5.h,
         ),
         Obx(
           () => Text(
             // "日本の歌",
-            musicPlayerController.currentActivePlaylist.value?.title ?? '',
-            style: const TextStyle(
+            playlist.value?.title ?? '',
+            style: TextStyle(
               color: Colors.white,
               overflow: TextOverflow.ellipsis,
-              fontSize: 14,
+              fontSize: 14.sp,
               fontWeight: FontWeight.bold,
             ),
           ),

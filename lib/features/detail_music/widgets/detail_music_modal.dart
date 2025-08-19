@@ -130,7 +130,7 @@ Future<dynamic> detailMusicModal(
             children: [
               ListTileBottomModal(
                 title:
-                    'Go to ${detailMusicController.currentActivePlaylist.title.toLowerCase()}',
+                    'Go to ${detailMusicController.currentActivePlaylist.title}',
                 icon: Icons.mode_standby_outlined,
                 changeColor: false,
                 onTap: () {
