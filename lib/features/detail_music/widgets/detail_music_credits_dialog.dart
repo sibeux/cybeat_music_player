@@ -117,6 +117,31 @@ void detailMusicCreditsDialog({
             height: 15.h,
           ),
           Text(
+            "Uploader",
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          Obx(() => Text(
+                detailMusicController.currentMediaItem!.extras?['uploader']
+                        .toString()
+                        .capitalize ??
+                    'Cybeat',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black.withValues(alpha: 0.6),
+                ),
+              )),
+          SizedBox(
+            height: 15.h,
+          ),
+          Text(
             "Original Source",
             style: TextStyle(
               fontSize: 14.sp,
