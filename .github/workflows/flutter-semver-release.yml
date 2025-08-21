@@ -1,0 +1,71 @@
+# Nama alur kerja yang akan muncul di tab "Actions" GitHub
+name: Flutter Release CI/CD
+
+# Pemicu: Alur kerja ini akan berjalan saat ada 'push' ke tag yang cocok dengan pola 'v*.*.*'
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Contoh: v1.0.0, v2.3.4
+
+# Jobs: Kumpulan tugas yang akan dijalankan
+jobs:
+  build-and-release:
+    # Menggunakan runner Ubuntu versi terbaru
+    runs-on: ubuntu-latest
+
+    steps:
+      # Langkah 1: Checkout kode dari repositori
+      - name:  checkout
+        uses: actions/checkout@v4
+
+      # Langkah 2: Setup Java Development Kit (JDK) yang diperlukan untuk build Android
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Langkah 3: Setup Flutter SDK menggunakan action dari Subosito
+      # Anda bisa menentukan versi atau channel Flutter yang spesifik di sini
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'dev' # atau 'beta', 'dev', 'stable'
+
+      # Langkah 4: Mengambil dependensi proyek dari pubspec.yaml
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      # Langkah 5 (CI): Menganalisis kode untuk error atau potensi masalah
+      - name: Analyze project source
+        run: flutter analyze
+
+      # Langkah 6 (CI): Menjalankan semua tes unit dan widget
+      - name: Run widget tests
+        run: flutter test
+
+      # Langkah 7: Membangun APK untuk rilis
+      - name: Build APK
+        run: flutter build apk --release
+
+      # Langkah 8: Membangun App Bundle (AAB) untuk rilis
+      - name: Build AAB
+        run: flutter build appbundle --release
+        
+      # Langkah 9: Membuat GitHub Release
+      # Action ini akan mengambil tag yang memicu workflow, lalu membuat release
+      # dan mengunggah artefak (APK dan AAB) ke dalamnya.
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          # Token ini diperlukan untuk memberikan izin kepada action untuk membuat release
+          # di repositori Anda. Tidak perlu membuat token baru, ini sudah disediakan oleh GitHub.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Daftar file yang akan diunggah sebagai artefak rilis.
+          # Path ini sesuai dengan output default dari perintah `flutter build`.
+          artifacts: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+          # Jika `true`, release notes akan dibuat secara otomatis dari commit message
+          # antara tag ini dan tag sebelumnya.
+          generateReleaseNotes: true

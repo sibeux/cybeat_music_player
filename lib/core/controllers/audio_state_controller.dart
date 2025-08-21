@@ -131,11 +131,14 @@ class AudioStateController extends GetxController {
       playlist.value = ConcatenatingAudioSource(
         children: listData.map(
           (item) {
+            final String uploader = item['uploader'] ?? 'cybeat';
             final String musicUrl = regexGdriveHostUrl(
               url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
               listApiKey: albumService.gdriveApiKeyList,
               musicId: item['id_music'],
               isAudioCached: item['cache_music_id'] != null ? true : false,
+              isSuspicious: item['is_suspicious'] == 'true' ? true : false,
+              uploader: uploader,
             );
             return AudioSource.uri(
               Uri.parse(musicUrl),
@@ -176,6 +179,9 @@ class AudioStateController extends GetxController {
                           ? true
                           : false
                       : false,
+                  'uploader': uploader,
+                  'is_suspicious':
+                      item['is_suspicious'] == 'true' ? true : false,
                 },
               ),
             );

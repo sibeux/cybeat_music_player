@@ -7,7 +7,9 @@ String regexGdriveHostUrl({
   required List<dynamic> listApiKey,
   bool isAudio = true,
   bool isAudioCached = false,
+  bool isSuspicious = false,
   String musicId = '',
+  String uploader = '',
 }) {
   // Filter hanya yang email-nya mengandung @gmail.com
   final gmailOnly = listApiKey.where((item) {
@@ -42,7 +44,7 @@ String regexGdriveHostUrl({
       if (isAudioCached) {
         return "${cacheEndpoint.first['gdrive_api']}/$fileId";
       } else {
-        return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/$musicId";
+        return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/$musicId/$uploader/$isSuspicious";
       }
     } else {
       return 'https://www.googleapis.com/drive/v3/files/$fileId?alt=media&key=$key';
