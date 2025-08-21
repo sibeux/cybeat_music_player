@@ -30,7 +30,11 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          # Tentukan versi Flutter yang sama dengan di komputer Anda
+          flutter-version: '3.35.1' 
           channel: 'dev' # atau 'beta', 'dev', 'stable'
+          # Mengaktifkan cache untuk mempercepat build selanjutnya
+          cache: true
 
       # Langkah 4: Mengambil dependensi proyek dari pubspec.yaml
       - name: Get Flutter dependencies
