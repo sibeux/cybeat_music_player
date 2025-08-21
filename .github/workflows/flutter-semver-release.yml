@@ -71,7 +71,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # Daftar file yang akan diunggah sebagai artefak rilis.
           # Path ini sesuai dengan output default dari perintah `flutter build`.
-          artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab"
+          artifacts: "build/app/outputs/bundle/release/app-release.aab,build/app/outputs/flutter-apk/*-release.apk,build/symbols"
           # Jika `true`, release notes akan dibuat secara otomatis dari commit message
           # antara tag ini dan tag sebelumnya.
           generateReleaseNotes: true
