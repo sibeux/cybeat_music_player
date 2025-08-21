@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
+import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:get/get.dart';
@@ -15,21 +16,21 @@ class HomeController extends GetxController {
   var jumlahAlbumDitampilkan = 15.obs;
   var isTapped = false.obs;
 
-  get selectedAlbum => albumService.selectedAlbum;
-  get initiateAlbum => albumService.initiateAlbum;
-  get filterChildren => albumService.filterChildren;
-  get generateFilter => albumService.generateFilter;
-  get selectedFilter => albumService.homeSelectedFilter;
-  get albumCountGrid => albumService.albumCountGrid;
-  get allAlbumChildren => albumService.allAlbumChildren;
-  get getSelectedFilter => albumService.getSelectedFilter;
-  get fourCoverPlaylist => albumService.fourCoverPlaylist;
-  get fourCoverCategory => albumService.fourCoverCategory;
-  get sortValue => albumService.sortValue;
-  get playlistCreatedList => albumService.playlistCreatedList;
-  get isLoading => albumService.isHomeLoading.value;
+  RxList<Playlist?> get selectedAlbum => albumService.selectedAlbum;
+  RxList<Playlist> get initiateAlbum => albumService.initiateAlbum;
+  RxList<int> get filterChildren => albumService.filterChildren;
+  RxList<FilterItem> get generateFilter => albumService.generateFilter;
+  RxString get selectedFilter => albumService.homeSelectedFilter;
+  RxInt get albumCountGrid => albumService.albumCountGrid;
+  RxList get allAlbumChildren => albumService.allAlbumChildren;
+  dynamic get getSelectedFilter => albumService.getSelectedFilter;
+  RxList get fourCoverPlaylist => albumService.fourCoverPlaylist;
+  RxList get fourCoverCategory => albumService.fourCoverCategory;
+  dynamic get sortValue => albumService.sortValue;
+  RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
+  bool get isLoading => albumService.isHomeLoading.value;
 
-  get currentMediaItem => musicPlayerController.getCurrentMediaItem;
+  MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
 
   @override
   void onInit() async {

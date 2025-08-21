@@ -55,7 +55,7 @@ class MusicPlayerController extends GetxController {
       sequenceStateStreamSubscription =
           player.sequenceStateStream.listen((sequenceState) {
         // PERBAIKAN: Tambahkan null check untuk menghindari error
-        final mediaItem = sequenceState?.currentSource?.tag as MediaItem?;
+        final mediaItem = sequenceState.currentSource?.tag as MediaItem?;
         // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
         // buka album atau tidak.
         // By default, audio player udah "siap" putar dari indeks pertama.

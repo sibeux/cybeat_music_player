@@ -38,7 +38,7 @@ class SearchAlbumController extends GetxController {
     update();
   }
 
-  get getTextValue => textValue.value;
+  String get getTextValue => textValue.value;
 
-  get isTypingValue => isTyping.value;
+  bool get isTypingValue => isTyping.value;
 }

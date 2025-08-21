@@ -122,7 +122,7 @@ class DetailMusicControlButtons extends StatelessWidget {
         color: Colors.white,
         onPressed: () => audioPlayer.seek(
           Duration.zero,
-          index: audioPlayer.effectiveIndices!.first,
+          index: audioPlayer.effectiveIndices.first,
         ),
       );
     }

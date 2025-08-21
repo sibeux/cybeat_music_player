@@ -6,6 +6,7 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music_playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
+import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,8 +28,8 @@ class AddMusicToPlaylistController extends GetxController {
   var isLoadingUpdateMusicOnPlaylist = false.obs;
   var isLoadingAddPlaylist = false.obs;
 
-  get isHomeLoading => albumService.isHomeLoading.value;
-  get playlistCreatedList => albumService.playlistCreatedList;
+  bool get isHomeLoading => albumService.isHomeLoading.value;
+  RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
 
   void onChanged(String value) {
     isTyping.value = value.isNotEmpty;

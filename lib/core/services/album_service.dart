@@ -467,7 +467,7 @@ class AlbumService extends GetxService {
     homeSelectedFilter.value = '';
   }
 
-  get getSelectedFilter => homeSelectedFilter.value;
+  String get getSelectedFilter => homeSelectedFilter.value;
 
   // ========================== homeSortPreferencesController ==========================
 
@@ -493,7 +493,7 @@ class AlbumService extends GetxService {
     homeSortPreferences.value = sort;
   }
 
-  get sortValue => homeSortPreferences.value;
+  String get sortValue => homeSortPreferences.value;
 
   Future<void> editPlaylist(String id, String name) async {
     const String url =

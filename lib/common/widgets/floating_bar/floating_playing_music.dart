@@ -279,7 +279,7 @@ class FloatingPlayingMusic extends StatelessWidget {
           onPressed: () => audioStateController.activePlayer.value?.seek(
             Duration.zero,
             index: audioStateController
-                .activePlayer.value?.effectiveIndices!.first,
+                .activePlayer.value?.effectiveIndices.first,
           ),
         ),
       );
