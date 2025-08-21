@@ -32,7 +32,7 @@ jobs:
         with:
           # Tentukan versi Flutter yang sama dengan di komputer Anda
           flutter-version: '3.35.1' 
-          channel: 'dev' # atau 'beta', 'dev', 'stable'
+          channel: 'stable' # atau 'beta', 'dev', 'stable'
           # Mengaktifkan cache untuk mempercepat build selanjutnya
           cache: true
 
