@@ -53,8 +53,8 @@ jobs:
         run: flutter test
 
       # Langkah 7: Membangun APK untuk rilis
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build Split APKs with Debug Symbols
+        run: flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64 --split-debug-info=build/symbols
 
       # Langkah 8: Membangun App Bundle (AAB) untuk rilis
       - name: Build AAB
