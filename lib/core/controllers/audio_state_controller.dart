@@ -21,7 +21,7 @@ class AudioStateController extends GetxController {
   /// late dipakai kalau kamu mau deklarasi variabel tanpa langsung inisialisasi, tapi janji bakal diisi sebelum dipakai.
   /// obs atau Rx di GetX butuh nilai awal (meskipun null). Jadi kalau mau reaktif, biasanya nggak perlu late, cukup kasih default.
   final activePlayer = Rx<AudioPlayer?>(null);
-  final playlist = Rx<ConcatenatingAudioSource?>(null);
+  final playlist = Rx<dynamic>(null);
   static int _nextMediaId = 1;
   // qeueu untuk testing screen
   List<MediaItem> queue = [];
@@ -127,71 +127,65 @@ class AudioStateController extends GetxController {
         }
       }
       if (listData.isEmpty) {
-        playlist.value = ConcatenatingAudioSource(
-          children: [],
-        );
+        playlist.value = [];
         return;
       }
-      playlist.value = ConcatenatingAudioSource(
-        children: listData.map(
-          (item) {
-            final String uploader = item['uploader'] ?? 'cybeat';
-            final String musicUrl = regexGdriveHostUrl(
-              url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
-              listApiKey: albumService.gdriveApiKeyList,
-              musicId: item['id_music'],
-              isAudioCached: item['cache_music_id'] != null ? true : false,
-              isSuspicious: item['is_suspicious'] == 'true' ? true : false,
-              uploader: uploader,
-            );
-            return AudioSource.uri(
-              Uri.parse(musicUrl),
-              tag: MediaItem(
-                id: '${_nextMediaId++}',
-                title: capitalizeEachWord(item['title']),
-                artist: capitalizeEachWord(item['artist']),
-                album: capitalizeEachWord(item['album']),
-                artUri: Uri.parse(
-                  regexGdriveHostUrl(
-                    url: item['cover'],
-                    listApiKey: albumService.gdriveApiKeyList,
-                    isAudio: false,
-                  ),
+      playlist.value = listData.map(
+        (item) {
+          final String uploader = item['uploader'] ?? 'cybeat';
+          final String musicUrl = regexGdriveHostUrl(
+            url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
+            listApiKey: albumService.gdriveApiKeyList,
+            musicId: item['id_music'],
+            isAudioCached: item['cache_music_id'] != null ? true : false,
+            isSuspicious: item['is_suspicious'] == 'true' ? true : false,
+            uploader: uploader,
+          );
+          return AudioSource.uri(
+            Uri.parse(musicUrl),
+            tag: MediaItem(
+              id: '${_nextMediaId++}',
+              title: capitalizeEachWord(item['title']),
+              artist: capitalizeEachWord(item['artist']),
+              album: capitalizeEachWord(item['album']),
+              artUri: Uri.parse(
+                regexGdriveHostUrl(
+                  url: item['cover'],
+                  listApiKey: albumService.gdriveApiKeyList,
+                  isAudio: false,
                 ),
-                extras: {
-                  'music_id': item['id_music'],
-                  'url': musicUrl,
-                  'favorite': item['favorite'],
-                  'id_playlist_music': item['id_playlist_music'] ?? '',
-                  'original_source': type != 'offline'
-                      ? item['link_gdrive']
-                      : item['filePath'],
-                  'is_cached': item['cache_music_id'] != null ? true : false,
-                  'is_lossless':
-                      item['music_quality'] == 'lossless' ? true : false,
-                  'metadata': {
-                    // metadata_id_music dibiarkan null gpp kalo kosong.
-                    // Buat cek di onReadCodec.
-                    'metadata_id_music': item['metadata_id_music'] ?? '',
-                    'codec_name': item['codec_name'] ?? '--',
-                    'sample_rate': item['sample_rate'] ?? '--',
-                    'bit_rate': item['bit_rate'] ?? '--',
-                    'bits_per_raw_sample': item['bits_per_raw_sample'] ?? '--',
-                  },
-                  'is_downloaded': type != 'offline'
-                      ? uidDownloadedSongs.contains(item['id_music'])
-                          ? true
-                          : false
-                      : false,
-                  'uploader': uploader,
-                  'is_suspicious':
-                      item['is_suspicious'] == 'true' ? true : false,
-                },
               ),
-            );
-          },
-        ).toList(),
-      );
+              extras: {
+                'music_id': item['id_music'],
+                'url': musicUrl,
+                'favorite': item['favorite'],
+                'id_playlist_music': item['id_playlist_music'] ?? '',
+                'original_source':
+                    type != 'offline' ? item['link_gdrive'] : item['filePath'],
+                'is_cached': item['cache_music_id'] != null ? true : false,
+                'is_lossless':
+                    item['music_quality'] == 'lossless' ? true : false,
+                'metadata': {
+                  // metadata_id_music dibiarkan null gpp kalo kosong.
+                  // Buat cek di onReadCodec.
+                  'metadata_id_music': item['metadata_id_music'] ?? '',
+                  'codec_name': item['codec_name'] ?? '--',
+                  'sample_rate': item['sample_rate'] ?? '--',
+                  'bit_rate': item['bit_rate'] ?? '--',
+                  'bits_per_raw_sample': item['bits_per_raw_sample'] ?? '--',
+                },
+                'is_downloaded': type != 'offline'
+                    ? uidDownloadedSongs.contains(item['id_music'])
+                        ? true
+                        : false
+                    : false,
+                'uploader': uploader,
+                'is_suspicious': item['is_suspicious'] == 'true' ? true : false,
+              },
+            ),
+          );
+        },
+      ).toList();
       queue = playlist.value!.sequence.map((e) => e.tag as MediaItem).toList();
       await activePlayer.value?.setAudioSource(playlist.value!);
     } catch (e, st) {
