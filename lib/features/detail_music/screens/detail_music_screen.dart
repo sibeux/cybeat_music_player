@@ -7,39 +7,20 @@ import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_c
 import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_modal.dart';
 import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_title_artist.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../widgets/detail_music_background_blur.dart';
 import '../widgets/detail_music_progress_bar.dart';
 
-class DetailMusicScreen extends StatefulWidget {
+class DetailMusicScreen extends StatelessWidget {
   const DetailMusicScreen({
     super.key,
   });
 
   @override
-  State<DetailMusicScreen> createState() => _DetailMusicScreenState();
-}
-
-class _DetailMusicScreenState extends State<DetailMusicScreen> {
-  final audioStateController = Get.find<AudioStateController>();
-
-  @override
-  void setState(VoidCallback fn) {
-    // Subscriptions only can be closed asynchronously,
-    // therefore events can occur after widget has been disposed.
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final audioStateController = Get.find<AudioStateController>();
     return Stack(
       children: [
         Stack(
@@ -72,11 +53,11 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             centerTitle: true,
-            toolbarHeight: 70,
+            toolbarHeight: 70.h,
             leading: IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.keyboard_arrow_down,
-                size: 35,
+                size: 35.sp,
                 color: Colors.white,
               ),
               onPressed: () {
@@ -86,9 +67,9 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
             title: const DetailMusicAppbarTitle(),
             actions: [
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.more_vert,
-                  size: 35,
+                  size: 35.sp,
                   color: Colors.white,
                 ),
                 onPressed: () {
@@ -98,21 +79,21 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
             ],
           ),
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
             child: Column(
               children: [
                 // cover kecil
                 const DetailMusicCoverImage(),
-                const SizedBox(
-                  height: 35,
+                SizedBox(
+                  height: 30.h,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: Row(
                     children: [
                       const DetailMusicTitleArtist(),
-                      const SizedBox(
-                        width: 15,
+                      SizedBox(
+                        width: 15.w,
                       ),
                       DetailMusicFavoriteButton(
                         player: audioStateController.activePlayer.value!,
@@ -120,15 +101,15 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20.h,
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: DetailMusicCodecInfo(),
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 25.h,
                 ),
                 // to create one straight line
                 // child: Divider(
@@ -136,8 +117,8 @@ class _DetailMusicScreenState extends State<DetailMusicScreen> {
                 //   thickness: 1,
                 DetailMusicProgressBarMusic(
                     audioPlayer: audioStateController.activePlayer.value!),
-                const SizedBox(
-                  height: 15,
+                SizedBox(
+                  height: 15.h,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(0.0),

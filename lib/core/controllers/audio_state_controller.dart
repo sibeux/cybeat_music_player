@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
@@ -11,8 +9,6 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
-import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
-import 'package:ffmpeg_kit_flutter_new/stream_information.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -35,6 +31,7 @@ class AudioStateController extends GetxController {
   var bitRate = '--'.obs;
   var codecName = ''.obs;
   var musicQuality = ''.obs;
+  var initAlbumLoading = false.obs;
 
   // Jadikan 'uid' sebagai variabel di luar listener agar nilainya tidak di-reset.
   // Sebaiknya ini menjadi variabel instance di dalam class Anda.
@@ -78,11 +75,15 @@ class AudioStateController extends GetxController {
             // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
             lastProcessedMusicId = currentMusicId;
             // Baru panggil fungsi-fungsi Anda.
-            await onReadCodec(
+            final isCodecExist = await checkCodecAudio(
               url: item.extras!['url'],
               mediaItem: item,
             );
-            setRecentsMusic(currentMusicId);
+            setRecentsCodecMusic(
+              musicId: currentMusicId,
+              isCodecExist: isCodecExist,
+              musicUrl: item.extras!['url'],
+            );
           }
         }
       },
@@ -93,6 +94,7 @@ class AudioStateController extends GetxController {
   }
 
   Future<void> init(Playlist list) async {
+    initAlbumLoading.value = true;
     final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
@@ -196,6 +198,8 @@ class AudioStateController extends GetxController {
       // logger.e('Error loading audio source: $e');
       logError('Error loading audio source: $e, st:$st');
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
+    } finally {
+      initAlbumLoading.value = false;
     }
   }
 
@@ -247,7 +251,6 @@ class AudioStateController extends GetxController {
         init(musicPlayerController.currentActivePlaylist.value!);
         musicPlayerController.setActivePlaylist(
             musicPlayerController.currentActivePlaylist.value!);
-
         // Tampilkan toast.
         showRemoveAlbumToast('Music has been deleted from the playlist');
         Get.back();
@@ -268,30 +271,52 @@ class AudioStateController extends GetxController {
     }
   }
 
-  void setRecentsMusic(String? id) async {
+  void setRecentsCodecMusic({
+    required String? musicId,
+    required bool isCodecExist,
+    required String musicUrl,
+  }) async {
+    const String methodName = "setRecentsCodecMusic";
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/recents_music';
     try {
-      await http.post(
+      final bool checkOnlyFromStreamDrive = musicUrl
+          .contains("https://sibeux.my.id/cloud-music-player/api/stream/");
+      final response = await http.post(
         Uri.parse(url),
         body: {
-          'music_id': id,
-          'codec_name': codecName.value,
-          'quality': musicQuality.value,
-          'bits_per_raw_sample': bitsPerRawSample.value,
-          'sample_rate': sampleRate.value,
-          'bit_rate': bitRate.value,
+          'music_id': musicId,
+          'codec_exist':
+              (isCodecExist || !checkOnlyFromStreamDrive) ? "true" : "false",
+          'music_url': musicUrl,
         },
       );
-      logSuccess('setRecentsMusic success');
-    } catch (e) {
-      logError('Error set recents music: $e');
+      final body = jsonDecode(response.body);
+      if (body.isEmpty) {
+        logError('Body response $methodName is null: $body');
+        return;
+      }
+      if (response.statusCode != 200) {
+        logError("Failed $methodName: $body");
+        return;
+      }
+      if (body['success'] == true && body['codec'] != null) {
+        logSuccess('$methodName success: $body');
+        bitsPerRawSample.value = body["codec"]["bits_per_raw_sample"];
+        sampleRate.value = body["codec"]["sample_rate"];
+        bitRate.value = body["codec"]["bit_rate"];
+      } else {
+        logInfo('$methodName: Codec sudah diset sebelumnya. Response: $body');
+      }
+    } catch (e, st) {
+      logError('Error $methodName: $e, st: $st');
     }
   }
 
-  Future<void> onReadCodec(
-      {required String url, required MediaItem mediaItem}) async {
-    const lossyFormats = ['mp3', 'aac', 'ogg', 'opus', 'wma'];
+  Future<bool> checkCodecAudio({
+    required String url,
+    required MediaItem mediaItem,
+  }) async {
     // Ini berfungsi sebagai placeholder laoding saat fetch.
     bitsPerRawSample.value = '--';
     sampleRate.value = '--';
@@ -300,10 +325,10 @@ class AudioStateController extends GetxController {
       final Map<String, dynamic> metadata = mediaItem.extras?['metadata'];
       // Cek dulu apakah udah ada metadata atau belum?
       // Cek juga apakah metadatanya memang sudah sesuai format?
-      final bool isMetadataCorrect = metadata['bits_per_raw_sample'] != '--' ||
+      final bool isMetadataExist = metadata['bits_per_raw_sample'] != '--' ||
           metadata['sample_rate'] != '--' ||
           metadata['bit_rate'] != '--';
-      if (metadata['metadata_id_music'] != null && (isMetadataCorrect)) {
+      if (metadata['metadata_id_music'] != null && (isMetadataExist)) {
         bitsPerRawSample.value = metadata['bits_per_raw_sample'];
         sampleRate.value = metadata['sample_rate'];
         bitRate.value = metadata['bit_rate'];
@@ -311,36 +336,13 @@ class AudioStateController extends GetxController {
         musicQuality.value =
             mediaItem.extras?['is_lossless'] ? 'lossless' : 'lossy';
         // Kalo ada isinya, gak usah dicek.
-        return;
-      }
-      // 1. Jalankan FFprobe langsung dengan URL
-      final session = await FFprobeKit.getMediaInformation(url);
-      final information = session.getMediaInformation();
-      if (information != null) {
-        // 2. Proses ekstraksi data sama persis seperti file lokal
-        final audioStream = information.getStreams().firstWhere(
-              (s) => s.getType() == 'audio',
-              orElse: () => StreamInformation(information.getAllProperties()),
-            );
-        bitsPerRawSample.value =
-            audioStream.getProperty('bits_per_raw_sample') ?? '--';
-        final String fileSampleRate =
-            audioStream.getProperty('sample_rate') ?? '--';
-        final String fileBitRate = audioStream.getProperty('bit_rate') ?? '--';
-        sampleRate.value = fileSampleRate != '--'
-            ? (int.parse(fileSampleRate) / 1000).toString()
-            : '--';
-        bitRate.value = fileBitRate != '--'
-            ? (int.parse(fileBitRate) / 1000).toStringAsFixed(0)
-            : '--';
-        codecName.value = audioStream.getProperty('codec_name') ?? '';
-        musicQuality.value =
-            lossyFormats.contains(codecName.value.toLowerCase())
-                ? "lossy"
-                : "lossless";
+        return true;
+      } else {
+        return false;
       }
     } catch (e) {
       logError('Error onReadCodec: $e');
+      return false;
     }
   }
 }

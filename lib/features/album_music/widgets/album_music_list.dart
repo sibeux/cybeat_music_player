@@ -231,14 +231,14 @@ class IndexNumberList extends StatelessWidget {
                 : Transform.scale(
                     scale: 0.8,
                     child: CircularPercentIndicator(
-                      radius: 20,
-                      lineWidth: 2,
+                      radius: 20.r,
+                      lineWidth: 2.w,
                       percent: musicDownloadController.dataProgressDownload[
                           mediaItem.extras!['music_id']]!['progress'],
                       center: Text(
                         '${(musicDownloadController.dataProgressDownload[mediaItem.extras!['music_id']]!['progress'] * 100).toStringAsFixed(0)}%',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           color: HexColor('#8238be'),
                           fontWeight: FontWeight.bold,
                         ),

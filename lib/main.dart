@@ -62,7 +62,8 @@ Future<void> main() async {
     androidNotificationIcon: 'mipmap/ic_launcher',
     androidShowNotificationBadge: true,
   );
-  // Konfigurasi Status Bar dan Navigation Bar
+  // Configuration Status Bar dan Navigation Bar
+  // Ini juga ditaruh di  route /home.
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.white,
     statusBarBrightness: Brightness.dark,

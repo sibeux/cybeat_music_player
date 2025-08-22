@@ -81,81 +81,79 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
     Widget content = StreamBuilder<SequenceState?>(
       stream: audioStateController.activePlayer.value?.sequenceStateStream,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (albumMusicController.initAlbumLoading.value) {
           // Menampilkan shimmer saat data sedang dimuat.
-          return const ShimmerMusicList();
+          return ShimmerMusicList();
         }
-        if (snapshot.hasData) {
-          final state = snapshot.data;
-          final sequence = state?.sequence ?? [];
 
-          if (sequence.isEmpty) {
-            return Center(
-              child: Text(
-                'No songs available in this ${musicPlayerController.currentActivePlaylist.value!.type.toLowerCase()}',
-                style: TextStyle(
-                  color: Colors.black.withValues(alpha: 0.7),
-                  fontSize: 16,
-                ),
-              ),
-            );
-          }
-
-          musicItems = sequence
-              .map(
-                (e) => AzListMusic(
-                  title: e.tag.title,
-                  tag: e.tag.title.substring(0, 1).toUpperCase(),
-                ),
-              )
-              .toList();
-
-          return AzListView(
-            data: musicItems,
-            itemCount: sequence.length,
-            indexBarAlignment: Alignment.topRight,
-            indexBarOptions: IndexBarOptions(
-              indexHintDecoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.7),
-                shape: BoxShape.circle,
-              ),
-              selectItemDecoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: HexColor('#6a5081'),
-              ),
-              needRebuild: true,
-              selectTextStyle: TextStyle(
-                color: HexColor('#fefffe'),
-                fontSize: 12,
+        if (snapshot.data?.sequence.isEmpty ?? true) {
+          return Center(
+            child: Text(
+              'No songs available in this ${musicPlayerController.currentActivePlaylist.value!.type.toLowerCase()}',
+              style: TextStyle(
+                color: Colors.black.withValues(alpha: 0.7),
+                fontSize: 16,
               ),
             ),
-            itemBuilder: (context, index) {
-              // Akan di-print terus saat scroll.
-              // print(index);
-              return InkWell(
-                child: AlbumMusicList(
-                  mediaItem: sequence[index].tag as MediaItem,
-                  audioPlayer: audioStateController.activePlayer.value!,
-                  index: index,
-                  audioState: audioStateController,
-                ),
-                onTap: () {
-                  Get.toNamed('/detail');
-                  if (musicPlayerController.getCurrentMediaItem?.id == "" ||
-                      musicPlayerController.getCurrentMediaItem?.id !=
-                          sequence[index].tag.id) {
-                    musicPlayerController.playMusicNow(
-                      mediaItem: sequence[index].tag as MediaItem,
-                      audioStateController: audioStateController,
-                      index: index,
-                    );
-                  }
-                },
-              );
-            },
           );
         }
-        return const SizedBox();
+
+        final state = snapshot.data;
+        final sequence = state?.sequence ?? [];
+
+        musicItems = sequence
+            .map(
+              (e) => AzListMusic(
+                title: e.tag.title,
+                tag: e.tag.title.substring(0, 1).toUpperCase(),
+              ),
+            )
+            .toList();
+
+        return AzListView(
+          data: musicItems,
+          itemCount: sequence.length,
+          indexBarAlignment: Alignment.topRight,
+          indexBarOptions: IndexBarOptions(
+            indexHintDecoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.7),
+              shape: BoxShape.circle,
+            ),
+            selectItemDecoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: HexColor('#6a5081'),
+            ),
+            needRebuild: true,
+            selectTextStyle: TextStyle(
+              color: HexColor('#fefffe'),
+              fontSize: 12,
+            ),
+          ),
+          itemBuilder: (context, index) {
+            // Akan di-print terus saat scroll.
+            // print(index);
+            return InkWell(
+              child: AlbumMusicList(
+                mediaItem: sequence[index].tag as MediaItem,
+                audioPlayer: audioStateController.activePlayer.value!,
+                index: index,
+                audioState: audioStateController,
+              ),
+              onTap: () {
+                Get.toNamed('/detail');
+                if (musicPlayerController.getCurrentMediaItem?.id == "" ||
+                    musicPlayerController.getCurrentMediaItem?.id !=
+                        sequence[index].tag.id) {
+                  musicPlayerController.playMusicNow(
+                    mediaItem: sequence[index].tag as MediaItem,
+                    audioStateController: audioStateController,
+                    index: index,
+                  );
+                }
+              },
+            );
+          },
+        );
       },
     );
 

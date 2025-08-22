@@ -13,51 +13,55 @@ class DetailMusicControlButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        StreamBuilder<LoopMode>(
-          stream: audioPlayer.loopModeStream,
-          builder: (context, snapshot) {
-            return _repeatButton(context, snapshot.data ?? LoopMode.off);
-          },
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.skip_previous,
-            size: 30.sp,
-            color: Colors.white,
+    return SizedBox(
+      width: double.infinity,
+      height: 80.h,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          StreamBuilder<LoopMode>(
+            stream: audioPlayer.loopModeStream,
+            builder: (context, snapshot) {
+              return _repeatButton(context, snapshot.data ?? LoopMode.off);
+            },
           ),
-          onPressed: () {
-            audioPlayer.seekToPrevious();
-            audioPlayer.play();
-          },
-        ),
-        StreamBuilder<PlayerState>(
-          stream: audioPlayer.playerStateStream,
-          builder: (_, snapshot) {
-            final playerState = snapshot.data;
-            return _playPauseButton(playerState);
-          },
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.skip_next,
-            size: 30.sp,
-            color: Colors.white,
+          IconButton(
+            icon: Icon(
+              Icons.skip_previous,
+              size: 30.sp,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              audioPlayer.seekToPrevious();
+              audioPlayer.play();
+            },
           ),
-          onPressed: () {
-            audioPlayer.seekToNext();
-            audioPlayer.play();
-          },
-        ),
-        StreamBuilder<bool>(
-          stream: audioPlayer.shuffleModeEnabledStream,
-          builder: (context, snapshot) {
-            return _shuffleButton(context, snapshot.data ?? false);
-          },
-        ),
-      ],
+          StreamBuilder<PlayerState>(
+            stream: audioPlayer.playerStateStream,
+            builder: (_, snapshot) {
+              final playerState = snapshot.data;
+              return _playPauseButton(playerState);
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.skip_next,
+              size: 30.sp,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              audioPlayer.seekToNext();
+              audioPlayer.play();
+            },
+          ),
+          StreamBuilder<bool>(
+            stream: audioPlayer.shuffleModeEnabledStream,
+            builder: (context, snapshot) {
+              return _shuffleButton(context, snapshot.data ?? false);
+            },
+          ),
+        ],
+      ),
     );
   }
 

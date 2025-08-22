@@ -3,75 +3,83 @@ name: Flutter Release CI/CD
 
 # Pemicu: Alur kerja ini akan berjalan saat ada 'push' ke tag yang cocok dengan pola 'v*.*.*'
 on:
-  push:
-    tags:
-      - 'v*.*.*' # Contoh: v1.0.0, v2.3.4
+    push:
+        tags:
+            - "v*.*.*" # Contoh: v1.0.0, v2.3.4
 
 # Jobs: Kumpulan tugas yang akan dijalankan
 jobs:
-  build-and-release:
-    # Menggunakan runner Ubuntu versi terbaru
-    runs-on: ubuntu-latest
+    build-and-release:
+        # Menggunakan runner Ubuntu versi terbaru
+        runs-on: ubuntu-latest
 
-    # TAMBAHKAN BLOK INI UNTUK MEMBERIKAN IZIN
-    permissions:
-        contents: write
+        # TAMBAHKAN BLOK INI UNTUK MEMBERIKAN IZIN
+        permissions:
+            contents: write
 
-    steps:
-      # Langkah 1: Checkout kode dari repositori
-      - name:  checkout
-        uses: actions/checkout@v4
+        steps:
+            # Langkah 1: Checkout kode dari repositori
+            - name: checkout
+              uses: actions/checkout@v4
 
-      # Langkah 2: Setup Java Development Kit (JDK) yang diperlukan untuk build Android
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+            # Langkah 2: Setup Java Development Kit (JDK) yang diperlukan untuk build Android
+            - name: Setup Java
+              uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "17"
 
-      # Langkah 3: Setup Flutter SDK menggunakan action dari Subosito
-      # Anda bisa menentukan versi atau channel Flutter yang spesifik di sini
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          # Tentukan versi Flutter yang sama dengan di komputer Anda
-          flutter-version: '3.35.1' 
-          channel: 'stable' # atau 'beta', 'dev', 'stable'
-          # Mengaktifkan cache untuk mempercepat build selanjutnya
-          cache: true
+            # Langkah 3: Setup Flutter SDK menggunakan action dari Subosito
+            # Anda bisa menentukan versi atau channel Flutter yang spesifik di sini
+            - name: Setup Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  # Tentukan versi Flutter yang sama dengan di komputer Anda
+                  flutter-version: "3.35.1"
+                  channel: "stable" # atau 'beta', 'dev', 'stable'
+                  # Mengaktifkan cache untuk mempercepat build selanjutnya
+                  cache: true
 
-      # Langkah 4: Mengambil dependensi proyek dari pubspec.yaml
-      - name: Get Flutter dependencies
-        run: flutter pub get
+            # Langkah 4: Mengambil dependensi proyek dari pubspec.yaml
+            - name: Get Flutter dependencies
+              run: flutter pub get
 
-      # Langkah 5 (CI): Menganalisis kode untuk error atau potensi masalah
-      - name: Analyze project source
-        run: flutter analyze
+            # Langkah 5 (CI): Menganalisis kode untuk error atau potensi masalah
+            - name: Analyze project source
+              run: flutter analyze
 
-      # Langkah 6 (CI): Menjalankan semua tes unit dan widget
-      - name: Run widget tests
-        run: flutter test
+            # Langkah 6 (CI): Menjalankan semua tes unit dan widget
+            - name: Run widget tests
+              run: flutter test
 
-      # Langkah 7: Membangun APK untuk rilis
-      - name: Build Split APKs with Debug Symbols
-        run: flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64 --split-debug-info=build/symbols
+            # Langkah 7: Membangun APK untuk rilis
+            - name: Build Split APKs with Debug Symbols
+              run: flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64 --split-debug-info=build/symbols
 
-      # Langkah 8: Membangun App Bundle (AAB) untuk rilis
-      - name: Build AAB
-        run: flutter build appbundle --release
-        
-      # Langkah 9: Membuat GitHub Release
-      # Action ini akan mengambil tag yang memicu workflow, lalu membuat release
-      # dan mengunggah artefak (APK dan AAB) ke dalamnya.
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
-        with:
-          # Token ini diperlukan untuk memberikan izin kepada action untuk membuat release
-          # di repositori Anda. Tidak perlu membuat token baru, ini sudah disediakan oleh GitHub.
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # Daftar file yang akan diunggah sebagai artefak rilis.
-          # Path ini sesuai dengan output default dari perintah `flutter build`.
-          artifacts: "build/app/outputs/bundle/release/app-release.aab,build/app/outputs/flutter-apk/*-release.apk,build/symbols"
-          # Jika `true`, release notes akan dibuat secara otomatis dari commit message
-          # antara tag ini dan tag sebelumnya.
-          generateReleaseNotes: true
+            # Langkah 8: Membangun App Bundle (AAB) untuk rilis
+            - name: Build AAB
+              run: flutter build appbundle --release
+
+            - name: Rename Release Artifacts
+              run: |
+                  VERSION=${{ github.ref_name }}
+                  mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/cybeat-$VERSION-v8a-release.apk
+                  mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/cybeat-$VERSION-v7a-release.apk
+                  mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/cybeat-$VERSION-x86_64-release.apk
+                  mv build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/cybeat-$VERSION-release.aab
+
+            # Langkah 9: Membuat GitHub Release
+            # Action ini akan mengambil tag yang memicu workflow, lalu membuat release
+            # dan mengunggah artefak (APK dan AAB) ke dalamnya.
+            - name: Create GitHub Release
+              uses: ncipollo/release-action@v1
+              with:
+                  # Token ini diperlukan untuk memberikan izin kepada action untuk membuat release
+                  # di repositori Anda. Tidak perlu membuat token baru, ini sudah disediakan oleh GitHub.
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  # Daftar file yang akan diunggah sebagai artefak rilis.
+                  # Path ini sesuai dengan output default dari perintah `flutter build`.
+                  artifacts: "build/app/outputs/bundle/release/cybeat-*.aab,build/app/outputs/flutter-apk/cybeat-*.apk,build/symbols"
+                  # Jika `true`, release notes akan dibuat secara otomatis dari commit message
+                  # antara tag ini dan tag sebelumnya.
+                  generateReleaseNotes: true

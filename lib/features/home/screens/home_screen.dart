@@ -6,6 +6,7 @@ import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_sc
 import 'package:cybeat_music_player/features/playlist/new_playlist/widgets/show_new_playlist_modal.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_sort/scale_tap_sort.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_reorderable_grid_view/widgets/custom_draggable.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,6 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     final audioStateController = Get.find<AudioStateController>();
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
