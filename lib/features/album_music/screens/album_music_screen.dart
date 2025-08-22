@@ -334,9 +334,9 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
     AudioStateController audioStateController,
     List<IndexedAudioSource> sequence,
   ) {
-    final index = audioStateController.playlist.value!.length < 2
+    final index = audioStateController.playlist.length < 2
         ? 0
-        : random(0, audioStateController.playlist.value!.length - 1);
+        : random(0, audioStateController.playlist.length - 1);
     // Langsung buka detail screen.
     Get.toNamed('/detail');
     musicPlayerController.playMusicNow(

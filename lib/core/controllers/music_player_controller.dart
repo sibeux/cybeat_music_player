@@ -146,9 +146,11 @@ class MusicPlayerController extends GetxController {
 
     audioStateController.activePlayer.value?.seek(Duration.zero, index: index);
 
-    audioStateController.activePlayer.value?.setAudioSource(
-        audioStateController.playlist.value!,
-        initialIndex: index);
+    // {kode "APEL"}
+    audioStateController.activePlayer.value?.setAudioSources(
+      audioStateController.playlist,
+      initialIndex: index,
+    );
 
     playMusic();
 

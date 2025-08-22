@@ -21,7 +21,7 @@ class AudioStateController extends GetxController {
   /// late dipakai kalau kamu mau deklarasi variabel tanpa langsung inisialisasi, tapi janji bakal diisi sebelum dipakai.
   /// obs atau Rx di GetX butuh nilai awal (meskipun null). Jadi kalau mau reaktif, biasanya nggak perlu late, cukup kasih default.
   final activePlayer = Rx<AudioPlayer?>(null);
-  final playlist = Rx<dynamic>(null);
+  final playlist = RxList<UriAudioSource>([]);
   static int _nextMediaId = 1;
   // qeueu untuk testing screen
   List<MediaItem> queue = [];
@@ -127,7 +127,7 @@ class AudioStateController extends GetxController {
         }
       }
       if (listData.isEmpty) {
-        playlist.value = [];
+        playlist.value = <UriAudioSource>[];
         return;
       }
       playlist.value = listData.map(
@@ -186,8 +186,10 @@ class AudioStateController extends GetxController {
           );
         },
       ).toList();
-      queue = playlist.value!.sequence.map((e) => e.tag as MediaItem).toList();
-      await activePlayer.value?.setAudioSource(playlist.value!);
+      queue = playlist.map((e) => e.tag as MediaItem).toList();
+      // {kode "APEL"} Sebelumnya, ini setAudioSource -tanpa s- karena ConcatenatingAudioSource-
+      // yang sekarang udah deprecated, makanya pakai yang ada -s-.
+      await activePlayer.value?.setAudioSources(playlist);
     } catch (e, st) {
       // logger.e('Error loading audio source: $e');
       logError('Error loading audio source: $e, st:$st');
@@ -274,14 +276,17 @@ class AudioStateController extends GetxController {
     String url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/recents_music';
     try {
-      final bool checkOnlyFromStreamDrive = musicUrl
+      // Cek apakah ini url untuk stream drive.
+      final bool checkFromStreamDrive = musicUrl
           .contains("https://sibeux.my.id/cloud-music-player/api/stream/");
       final response = await http.post(
         Uri.parse(url),
         body: {
           'music_id': musicId,
           'codec_exist':
-              (isCodecExist || !checkOnlyFromStreamDrive) ? "true" : "false",
+              // Jika codec sudah ada ATAU berasal dari stream drive-
+              // maka tidak perlu dicek lewat backend recent music.
+              (isCodecExist || checkFromStreamDrive) ? "true" : "false",
           'music_url': musicUrl,
         },
       );
@@ -321,6 +326,7 @@ class AudioStateController extends GetxController {
       // Cek juga apakah metadatanya memang sudah sesuai format?
       final bool isMetadataExist = metadata['bits_per_raw_sample'] != '--' ||
           metadata['sample_rate'] != '--' ||
+          metadata['codec_name'] != '--' ||
           metadata['bit_rate'] != '--';
       if (metadata['metadata_id_music'] != null && (isMetadataExist)) {
         bitsPerRawSample.value = metadata['bits_per_raw_sample'];
