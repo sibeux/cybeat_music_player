@@ -85,6 +85,7 @@ void detailMusicCreditsDialog({
           ),
           Obx(() => Text(
                 detailMusicController.currentMediaItem!.artist ?? '--',
+                maxLines: 3,
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
@@ -107,6 +108,7 @@ void detailMusicCreditsDialog({
           ),
           Obx(() => Text(
                 detailMusicController.currentMediaItem!.album ?? '--',
+                maxLines: 3,
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
@@ -130,6 +132,8 @@ void detailMusicCreditsDialog({
           Obx(() => Text(
                 detailMusicController.currentMediaItem!.extras?['uploader']
                         .toString()
+                        .split('@')
+                        .first
                         .capitalize ??
                     'Cybeat',
                 style: TextStyle(

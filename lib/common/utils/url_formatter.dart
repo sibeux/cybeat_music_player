@@ -24,6 +24,9 @@ String regexGdriveHostUrl({
 
   final randomIndex = Random().nextInt(gmailOnly.length);
   String key = gmailOnly[randomIndex]['gdrive_api'];
+  if (key.isEmpty){
+    // Do Nothing.
+  }
   // Regex tunggal untuk menangkap ID dari kedua format URL Google Drive
   /// Dibuat satu RegExp yang lebih cerdas menggunakan operator | (atau).
   /// Regex r'/d/([a-zA-Z0-9_-]+)|files/([a-zA-Z0-9_-]+)' akan mencari-
@@ -44,10 +47,10 @@ String regexGdriveHostUrl({
       if (isAudioCached) {
         return "${cacheEndpoint.first['gdrive_api']}/$fileId";
       } else {
-        return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/$musicId/$uploader/$isSuspicious";
+        return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/$musicId/$uploader/$isSuspicious/audio";
       }
     } else {
-      return 'https://www.googleapis.com/drive/v3/files/$fileId?alt=media&key=$key';
+      return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/555/cybeat/false/image";
     }
   } else if (url.contains('https://github.com/') && url.contains('raw=true')) {
     // Logika GitHub tetap sama karena unik
