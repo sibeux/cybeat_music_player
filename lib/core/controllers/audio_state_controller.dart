@@ -251,7 +251,7 @@ class AudioStateController extends GetxController {
         // Harus ada ini agar azlistview di-rebuild.
         // Bagian ini berfungsi untuk fetch ulang data list musik dari API.
         clear();
-        musicPlayerController.pauseMusic();
+        musicPlayerController.killMusic();
         init(musicPlayerController.currentActivePlaylist.value!);
         musicPlayerController.setActivePlaylist(
             musicPlayerController.currentActivePlaylist.value!);

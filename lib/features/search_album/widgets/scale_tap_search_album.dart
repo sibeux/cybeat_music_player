@@ -100,7 +100,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                     musicPlayerController.currentActivePlaylist.value?.uid ==
                         "") {
                   audioState.clear();
-                  musicPlayerController.pauseMusic();
+                  musicPlayerController.killMusic();
                   musicPlayerController.clearCurrentMediaItem();
                   audioState.init(widget.playlist);
                   musicPlayerController.setActivePlaylist(widget.playlist);

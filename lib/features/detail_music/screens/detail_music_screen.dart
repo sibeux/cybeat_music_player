@@ -25,13 +25,6 @@ class DetailMusicScreen extends StatelessWidget {
       children: [
         Stack(
           children: [
-            // Shimmer.fromColors(
-            //   baseColor: Colors.grey.shade300,
-            //   highlightColor: Colors.grey.shade100,
-            //   child: Container(
-            //     color: Colors.black,
-            //   ),
-            // ),
             Container(
               width: double.infinity,
               height: double.infinity,
@@ -115,8 +108,7 @@ class DetailMusicScreen extends StatelessWidget {
                 // child: Divider(
                 //   color: Colors.white,
                 //   thickness: 1,
-                DetailMusicProgressBarMusic(
-                    audioPlayer: audioStateController.activePlayer.value!),
+                DetailMusicProgressBarMusic(),
                 SizedBox(
                   height: 15.h,
                 ),
@@ -125,10 +117,10 @@ class DetailMusicScreen extends StatelessWidget {
                   child: DetailMusicControlButtons(
                       audioPlayer: audioStateController.activePlayer.value!),
                 ),
-                const SizedBox(
+                SizedBox(
                   // buat ngatur jarak antara control buttons
                   // dan bottom navigation
-                  height: 35,
+                  height: 35.h,
                 ),
               ],
             ),

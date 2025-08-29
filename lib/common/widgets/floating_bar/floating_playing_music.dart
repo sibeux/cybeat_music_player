@@ -118,7 +118,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                           ),
                                         ),
                                         SizedBox(
-                                          height: 20,
+                                          height: 20.h,
                                           child: AutoSizeText(
                                             musicPlayerController
                                                     .getCurrentMediaItem
@@ -165,14 +165,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                StreamBuilder<PlayerState>(
-                                  stream: audioStateController
-                                      .activePlayer.value?.playerStateStream,
-                                  builder: (_, snapshot) {
-                                    final playerState = snapshot.data;
-                                    return _playPauseButton(playerState);
-                                  },
-                                ),
+                                _playPauseButton(),
                                 IconButton(
                                   splashColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
@@ -189,30 +182,11 @@ class FloatingPlayingMusic extends StatelessWidget {
                               ],
                             ),
                             Container(
-                              padding: const EdgeInsets.only(right: 20),
-                              height: 3.5,
+                              padding: EdgeInsets.only(right: 20.w),
+                              height: 3.5.h,
                               child: LinearProgressIndicator(
-                                value: (musicPlayerController
-                                                .currentMusicPosition
-                                                .value
-                                                .inMilliseconds >
-                                            0 &&
-                                        musicPlayerController
-                                                .currentMusicPosition
-                                                .value
-                                                .inMilliseconds <
-                                            musicPlayerController
-                                                .currentMusicDuration
-                                                .value
-                                                .inMilliseconds)
-                                    ? musicPlayerController.currentMusicPosition
-                                            .value.inMilliseconds /
-                                        musicPlayerController
-                                            .currentMusicDuration
-                                            .value
-                                            .inMilliseconds
-                                    : 0.0,
-                                borderRadius: BorderRadius.circular(50),
+                                value: musicPlayerController.sliderValue,
+                                borderRadius: BorderRadius.circular(50.r),
                                 color: musicPlayerController.listColor[1],
                                 backgroundColor: Colors.grey,
                               ),
@@ -241,48 +215,49 @@ class FloatingPlayingMusic extends StatelessWidget {
     );
   }
 
-  Widget _playPauseButton(PlayerState? playerState) {
-    final processingState = playerState?.processingState;
+  Widget _playPauseButton() {
     final audioStateController = Get.find<AudioStateController>();
     final MusicPlayerController musicPlayerController = Get.find();
-    final playing = playerState?.playing;
-    if (processingState == ProcessingState.loading ||
-        processingState == ProcessingState.buffering) {
-      return IconButton(
-        icon: const Icon(
-          Icons.play_circle_filled,
-          color: Colors.grey,
-        ),
-        onPressed: () {},
-      );
-    }
-    if (playing != true) {
-      return Obx(
-        () => IconButton(
-          icon: const Icon(Icons.play_circle_fill),
-          color: musicPlayerController.listColor[1],
-          onPressed: audioStateController.activePlayer.value?.play,
-        ),
-      );
-    } else if (processingState != ProcessingState.completed) {
-      return Obx(
-        () => IconButton(
-          icon: const Icon(Icons.pause_circle_filled),
-          color: musicPlayerController.listColor[1],
-          onPressed: audioStateController.activePlayer.value?.pause,
-        ),
-      );
-    } else {
-      return Obx(
-        () => IconButton(
-          icon: const Icon(Icons.replay),
-          onPressed: () => audioStateController.activePlayer.value?.seek(
-            Duration.zero,
-            index: audioStateController
-                .activePlayer.value?.effectiveIndices.first,
+    final processingState = musicPlayerController.currentMusicPlayerState;
+    return Obx(() {
+      if (processingState.value == ProcessingState.loading ||
+          processingState.value == ProcessingState.buffering) {
+        return IconButton(
+          icon: const Icon(
+            Icons.play_circle_filled,
+            color: Colors.grey,
           ),
-        ),
-      );
-    }
+          onPressed: () {},
+        );
+      }
+      if (musicPlayerController.isMusicPlayingNow.value != true) {
+        return Obx(
+          () => IconButton(
+            icon: const Icon(Icons.play_circle_fill),
+            color: musicPlayerController.listColor[1],
+            onPressed: audioStateController.activePlayer.value?.play,
+          ),
+        );
+      } else if (processingState.value != ProcessingState.completed) {
+        return Obx(
+          () => IconButton(
+            icon: const Icon(Icons.pause_circle_filled),
+            color: musicPlayerController.listColor[1],
+            onPressed: audioStateController.activePlayer.value?.pause,
+          ),
+        );
+      } else {
+        return Obx(
+          () => IconButton(
+            icon: const Icon(Icons.replay),
+            onPressed: () => audioStateController.activePlayer.value?.seek(
+              Duration.zero,
+              index: audioStateController
+                  .activePlayer.value?.effectiveIndices.first,
+            ),
+          ),
+        );
+      }
+    });
   }
 }

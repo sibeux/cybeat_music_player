@@ -140,7 +140,7 @@ class SearchAlbumScreen extends StatelessWidget {
           ),
           Obx(
             () => SizedBox(
-              height: musicPlayerController.isPlayingNow.value ? 50.h : 0,
+              height: musicPlayerController.isMusicActiveNow.value ? 50.h : 0,
             ),
           ),
         ],
