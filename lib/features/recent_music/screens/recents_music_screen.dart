@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
+import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/features/recent_music/widgets/recents_music_list.dart';
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
@@ -17,16 +19,6 @@ class RecentsMusicScreen extends StatefulWidget {
   State<RecentsMusicScreen> createState() => _RecentsMusicScreenState();
 }
 
-String filteredUrl(String url, String key) {
-  if (url.contains('drive.google.com')) {
-    RegExp regExp = RegExp(r'/d/([a-zA-Z0-9_-]+)');
-    Match? match = regExp.firstMatch(url);
-    return 'https://www.googleapis.com/drive/v3/files/${match!.group(1)}?alt=media&key=$key';
-  } else {
-    return url;
-  }
-}
-
 class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
   String? _error;
   var isLoading = true;
@@ -39,16 +31,12 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
   }
 
   void getMusicData() async {
+    final AlbumService albumService = Get.find();
     const url =
         'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist?recents_music';
-    const api =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php';
 
     try {
       final response = await http.get(Uri.parse(url));
-      final apiResponse = await http.get(Uri.parse(api));
-
-      final List<dynamic> apiData = json.decode(apiResponse.body);
 
       if (response.statusCode >= 400) {
         setState(() {
@@ -73,7 +61,11 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
             title: item['title'],
             artist: item['artist'],
             album: item['album'],
-            cover: filteredUrl(item['cover'], apiData[0]['gdrive_api']),
+            cover: regexGdriveHostUrl(
+              url: item['cover'],
+              isAudio: false,
+              listApiKey: albumService.gdriveApiKeyList,
+            ),
             linkDrive: item['link_gdrive'],
             time: item['time'],
             favorite: item['favorite'],

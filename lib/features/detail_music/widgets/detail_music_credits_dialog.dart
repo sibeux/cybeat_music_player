@@ -87,6 +87,7 @@ void detailMusicCreditsDialog({
                 detailMusicController.currentMediaItem!.artist ?? '--',
                 maxLines: 3,
                 style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                   color: Colors.black.withValues(alpha: 0.6),
@@ -110,6 +111,7 @@ void detailMusicCreditsDialog({
                 detailMusicController.currentMediaItem!.album ?? '--',
                 maxLines: 3,
                 style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                   color: Colors.black.withValues(alpha: 0.6),

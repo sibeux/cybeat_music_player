@@ -154,7 +154,9 @@ class MusicPlayerController extends GetxController {
 
     playMusic();
 
-    setLastPlayingPlaylist();
+    if (currentActivePlaylist.value!.type != 'offline') {
+      setLastPlayingPlaylist();
+    }
 
     audioStateController.activePlayer.value?.play();
   }

@@ -70,8 +70,9 @@ class AudioStateController extends GetxController {
           // KONDISI UTAMA:
           // ** 1. Player dalam state 'ready' event.processingState == ProcessingState.ready
           // ** (artinya lagu baru sudah di-load).
-          // 2. ID musik saat ini BERBEDA dengan ID yang terakhir kita proses.
-          if (currentMusicId != lastProcessedMusicId) {
+          // 2. ID musik saat ini BERBEDA dengan ID yang terakhir kita proses-
+          // dan tidak dari album offline.
+          if (currentMusicId != lastProcessedMusicId && !item.extras!['is_offline']) {
             // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
             lastProcessedMusicId = currentMusicId;
             // Baru panggil fungsi-fungsi Anda.
@@ -140,6 +141,7 @@ class AudioStateController extends GetxController {
             isAudioCached: item['cache_music_id'] != null ? true : false,
             isSuspicious: item['is_suspicious'] == 'true' ? true : false,
             uploader: uploader,
+            isOffline: type == 'offline' ? true : false,
           );
           return AudioSource.uri(
             Uri.parse(musicUrl),
@@ -181,6 +183,7 @@ class AudioStateController extends GetxController {
                     : false,
                 'uploader': uploader,
                 'is_suspicious': item['is_suspicious'] == 'true' ? true : false,
+                'is_offline': type == 'offline' ? true : false,
               },
             ),
           );
