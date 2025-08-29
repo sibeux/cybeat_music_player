@@ -81,21 +81,20 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
     Widget content = StreamBuilder<SequenceState?>(
       stream: audioStateController.activePlayer.value?.sequenceStateStream,
       builder: (context, snapshot) {
-        if (albumMusicController.initAlbumLoading.value) {
-          // Menampilkan shimmer saat data sedang dimuat.
-          return ShimmerMusicList();
-        }
-
-        if (snapshot.data?.sequence.isEmpty ?? true) {
-          return Center(
-            child: Text(
-              'No songs available in this ${musicPlayerController.currentActivePlaylist.value!.type.toLowerCase()}',
-              style: TextStyle(
-                color: Colors.black.withValues(alpha: 0.7),
-                fontSize: 16,
+        if (snapshot.data?.sequence.isEmpty ??
+            true && albumMusicController.initAlbumLoading.value) {
+          if (!albumMusicController.initAlbumLoading.value) {
+            return Center(
+              child: Text(
+                'No songs available in this ${musicPlayerController.currentActivePlaylist.value!.type.toLowerCase()}',
+                style: TextStyle(
+                  color: Colors.black.withValues(alpha: 0.7),
+                  fontSize: 16,
+                ),
               ),
-            ),
-          );
+            );
+          }
+          return ShimmerMusicList();
         }
 
         final state = snapshot.data;

@@ -72,7 +72,8 @@ class AudioStateController extends GetxController {
           // ** (artinya lagu baru sudah di-load).
           // 2. ID musik saat ini BERBEDA dengan ID yang terakhir kita proses-
           // dan tidak dari album offline.
-          if (currentMusicId != lastProcessedMusicId && !item.extras!['is_offline']) {
+          if (currentMusicId != lastProcessedMusicId &&
+              !item.extras!['is_offline']) {
             // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
             lastProcessedMusicId = currentMusicId;
             // Baru panggil fungsi-fungsi Anda.
@@ -129,6 +130,7 @@ class AudioStateController extends GetxController {
       }
       if (listData.isEmpty) {
         playlist.value = <UriAudioSource>[];
+        await activePlayer.value?.setAudioSources(playlist);
         return;
       }
       playlist.value = listData.map(
