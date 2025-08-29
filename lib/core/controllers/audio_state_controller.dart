@@ -32,6 +32,7 @@ class AudioStateController extends GetxController {
   var codecName = ''.obs;
   var musicQuality = ''.obs;
   var initAlbumLoading = false.obs;
+  var isAlbumEmpty = false.obs;
 
   // Jadikan 'uid' sebagai variabel di luar listener agar nilainya tidak di-reset.
   // Sebaiknya ini menjadi variabel instance di dalam class Anda.
@@ -97,6 +98,7 @@ class AudioStateController extends GetxController {
 
   Future<void> init(Playlist list) async {
     initAlbumLoading.value = true;
+    isAlbumEmpty.value = false;
     final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
@@ -129,6 +131,7 @@ class AudioStateController extends GetxController {
         }
       }
       if (listData.isEmpty) {
+        isAlbumEmpty.value = true;
         playlist.value = <UriAudioSource>[];
         await activePlayer.value?.setAudioSources(playlist);
         return;

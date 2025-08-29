@@ -83,13 +83,13 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
       builder: (context, snapshot) {
         if (snapshot.data?.sequence.isEmpty ??
             true && albumMusicController.initAlbumLoading.value) {
-          if (!albumMusicController.initAlbumLoading.value) {
+          if (audioStateController.isAlbumEmpty.value) {
             return Center(
               child: Text(
                 'No songs available in this ${musicPlayerController.currentActivePlaylist.value!.type.toLowerCase()}',
                 style: TextStyle(
                   color: Colors.black.withValues(alpha: 0.7),
-                  fontSize: 16,
+                  fontSize: 16.sp,
                 ),
               ),
             );
@@ -125,7 +125,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
             needRebuild: true,
             selectTextStyle: TextStyle(
               color: HexColor('#fefffe'),
-              fontSize: 12,
+              fontSize: 12.sp,
             ),
           ),
           itemBuilder: (context, index) {
@@ -206,14 +206,14 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
             },
           ),
           centerTitle: true,
-          toolbarHeight: 60,
+          toolbarHeight: 60.h,
           title: Obx(
             () => Text(
               musicPlayerController.currentActivePlaylist.value?.title ?? '',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: HexColor('#1e0b2b'),
-                fontSize: 21,
+                fontSize: 21.sp,
               ),
             ),
           ),
@@ -229,7 +229,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                         Container(
                           color: HexColor('#fefffe'),
                           width: double.infinity,
-                          height: 50,
+                          height: 50.h,
                           child: Row(
                             children: [
                               StreamBuilder<SequenceState?>(
@@ -252,30 +252,31 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                                       }
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8),
-                                      margin: const EdgeInsets.only(left: 18),
-                                      width: 180,
-                                      height: 35,
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8.w),
+                                      margin: EdgeInsets.only(left: 18.w),
+                                      width: 180.w,
+                                      height: 35.h,
                                       decoration: BoxDecoration(
                                         color: HexColor('#ac8bc9'),
-                                        borderRadius: BorderRadius.circular(50),
+                                        borderRadius:
+                                            BorderRadius.circular(50.r),
                                       ),
                                       child: Row(
                                         children: [
                                           Icon(
                                             Icons.play_circle_fill,
                                             color: HexColor('#fefffe'),
-                                            size: 30,
+                                            size: 30.sp,
                                           ),
-                                          const SizedBox(
-                                            width: 5,
+                                          SizedBox(
+                                            width: 5.w,
                                           ),
                                           Text(
                                             'Shuffle Playback',
                                             style: TextStyle(
                                               color: HexColor('#fefffe'),
-                                              fontSize: 16,
+                                              fontSize: 16.sp,
                                             ),
                                           ),
                                         ],
@@ -292,13 +293,13 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                                     Colors.black.withValues(alpha: 0.02),
                                 icon: Icon(
                                   Icons.list_rounded,
-                                  size: 30,
+                                  size: 30.sp,
                                   color: HexColor('#8d8c8c'),
                                 ),
                                 onPressed: null,
                               ),
-                              const SizedBox(
-                                width: 15,
+                              SizedBox(
+                                width: 15.w,
                               ),
                             ],
                           ),
@@ -306,7 +307,7 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                         Expanded(
                           child: Container(
                             color: HexColor('#fefffe'),
-                            padding: const EdgeInsets.only(top: 8),
+                            padding: EdgeInsets.only(top: 8.h),
                             width: double.infinity,
                             child: content,
                           ),
