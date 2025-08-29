@@ -59,7 +59,7 @@ class RootPage extends StatelessWidget {
             left: 0,
             right: 0,
             child: Obx(
-              () => musicPlayerController.isPlayingNow.value
+              () => musicPlayerController.isMusicActiveNow.value
                   ? Material(
                       child: FloatingPlayingMusic(),
                     )

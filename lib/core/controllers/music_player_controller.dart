@@ -13,7 +13,8 @@ class MusicPlayerController extends GetxController {
   var currentActivePlaylist = Rx<Playlist?>(null);
   final _currentMediaItem = Rx<MediaItem?>(null);
 
-  var isPlayingNow = false.obs;
+  var isMusicActiveNow = false.obs;
+  var isMusicPlayingNow = false.obs;
   var isNeedRebuildLastPlaylist = false.obs;
   var isAzlistviewScreenActive = false.obs;
 
@@ -21,12 +22,26 @@ class MusicPlayerController extends GetxController {
 
   var currentMusicDuration = Duration.zero.obs;
   var currentMusicPosition = Duration.zero.obs;
+  var currentMusicBuffer = Duration.zero.obs;
+  var currentMusicPlayerState = ProcessingState.idle.obs;
 
   StreamSubscription<Duration?>? durationStreamSubscription;
   StreamSubscription<Duration?>? positionStreamSubscription;
+  StreamSubscription<Duration?>? bufferedStreamSubscription;
   StreamSubscription<SequenceState?>? sequenceStateStreamSubscription;
+  StreamSubscription<PlayerState?>? playerStateStreamSubscription;
 
   MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
+
+  // Dipakai di floating widget.
+  double get sliderValue {
+    return (currentMusicPosition.value.inMilliseconds > 0 &&
+            currentMusicPosition.value.inMilliseconds <
+                currentMusicDuration.value.inMilliseconds)
+        ? currentMusicPosition.value.inMilliseconds /
+            currentMusicDuration.value.inMilliseconds
+        : 0.0;
+  }
 
   @override
   void onReady() {
@@ -52,6 +67,15 @@ class MusicPlayerController extends GetxController {
         updateCurrentMusicPosition(position);
       });
 
+      bufferedStreamSubscription =
+          player.bufferedPositionStream.listen((buffer) {
+        updateCurrentMusicBuffer(buffer);
+      });
+
+      playerStateStreamSubscription = player.playerStateStream.listen((state) {
+        updateCurrentMusicPlayerState(state);
+      });
+
       sequenceStateStreamSubscription =
           player.sequenceStateStream.listen((sequenceState) {
         // PERBAIKAN: Tambahkan null check untuk menghindari error
@@ -61,7 +85,6 @@ class MusicPlayerController extends GetxController {
         // By default, audio player udah "siap" putar dari indeks pertama.
         if (mediaItem != null && getCurrentMediaItem != null) {
           updateCurrentMediaItem(mediaItem);
-          getDominantColor(mediaItem.artUri.toString());
         }
       });
     }
@@ -71,6 +94,7 @@ class MusicPlayerController extends GetxController {
   void _cancelSubscriptions() {
     durationStreamSubscription?.cancel();
     positionStreamSubscription?.cancel();
+    bufferedStreamSubscription?.cancel();
     sequenceStateStreamSubscription?.cancel();
   }
 
@@ -93,12 +117,21 @@ class MusicPlayerController extends GetxController {
   // ** ----------------------------------------------------
 
   void updateCurrentMusicDuration(Duration? duration) {
-    // pakai this karena nama parameter sama dengan nama variabel
     currentMusicDuration.value = duration ?? Duration.zero;
   }
 
   void updateCurrentMusicPosition(Duration? position) {
     currentMusicPosition.value = position ?? Duration.zero;
+  }
+
+  void updateCurrentMusicBuffer(Duration? buffer) {
+    currentMusicBuffer.value = buffer ?? Duration.zero;
+  }
+
+  void updateCurrentMusicPlayerState(PlayerState? state) {
+    final processingState = state?.processingState;
+    currentMusicPlayerState.value = processingState ?? ProcessingState.idle;
+    isMusicPlayingNow.value = state!.playing;
   }
 
   void updateCurrentMediaItem(MediaItem mediaItem) {
@@ -109,12 +142,12 @@ class MusicPlayerController extends GetxController {
     _currentMediaItem.value = null;
   }
 
-  void playMusic() {
-    isPlayingNow.value = true;
+  void activateMusic() {
+    isMusicActiveNow.value = true;
   }
 
-  void pauseMusic() {
-    isPlayingNow.value = false;
+  void killMusic() {
+    isMusicActiveNow.value = false;
   }
 
   void setActivePlaylist(Playlist playlist) {
@@ -152,60 +185,12 @@ class MusicPlayerController extends GetxController {
       initialIndex: index,
     );
 
-    playMusic();
+    activateMusic();
 
     if (currentActivePlaylist.value!.type != 'offline') {
       setLastPlayingPlaylist();
     }
 
     audioStateController.activePlayer.value?.play();
-  }
-
-  Future<void> getDominantColor(String url) async {
-    // final PaletteGenerator paletteGenerator =
-    //     await PaletteGenerator.fromImageProvider(
-    //   // Penyesuaian ukuran gambar agar lebih cepat.
-    //   CachedNetworkImageProvider(
-    //     url,
-    //     maxHeight: 8,
-    //     maxWidth: 8,
-    //     scale: 0.1,
-    //   ),
-    //   size: const Size(256.0, 170.0),
-    //   region: const Rect.fromLTRB(41.8, 4.4, 217.8, 170.0),
-    //   maximumColorCount: 20,
-    // );
-
-    // final Map<String, Color?> color = {
-    //   'lightMutedColor': paletteGenerator.lightMutedColor?.color,
-    //   'darkMutedColor': paletteGenerator.darkMutedColor?.color,
-    //   'lightVibrantColor': paletteGenerator.lightVibrantColor?.color,
-    //   'darkVibrantColor': paletteGenerator.darkVibrantColor?.color,
-    //   'mutedColor': paletteGenerator.mutedColor?.color,
-    //   'vibrantColor': paletteGenerator.vibrantColor?.color,
-    // };
-
-    // double numLuminance = 0;
-    // Color fixColor = Colors.black;
-
-    // for (final value in color.values) {
-    //   if (value != null &&
-    //       value.computeLuminance() +
-    //               paletteGenerator.dominantColor!.color.computeLuminance() >
-    //           numLuminance) {
-    //     numLuminance = value.computeLuminance();
-    //     fixColor = value;
-    //   }
-    // }
-
-    // if (fixColor == paletteGenerator.dominantColor!.color) {
-    //   fixColor = Colors.white;
-    // }
-    // final list = [paletteGenerator.dominantColor!.color, fixColor];
-    // listColor.value = list;
-  }
-
-  double isDark(Color background) {
-    return (background.computeLuminance());
   }
 }

@@ -39,7 +39,7 @@ class MusicDownloadController extends GetxController {
             playlist.title ||
         musicPlayerController.currentActivePlaylist.value?.title == "") {
       audioState.clear();
-      musicPlayerController.pauseMusic();
+      musicPlayerController.killMusic();
       musicPlayerController.clearCurrentMediaItem();
       audioState.init(playlist);
       musicPlayerController.setActivePlaylist(playlist);
@@ -210,7 +210,7 @@ class MusicDownloadController extends GetxController {
 
         // Jika musik yang dihapus sedang diputar, hentikan pemutaran
         audioState.clear();
-        musicPlayerController.pauseMusic();
+        musicPlayerController.killMusic();
         audioState.init(musicPlayerController.currentActivePlaylist.value!);
         musicPlayerController.setActivePlaylist(
             musicPlayerController.currentActivePlaylist.value!);
