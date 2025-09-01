@@ -1,4 +1,4 @@
-name: Flutter Build (Dev/Staging)
+name: Flutter Build (Staging)
 
 on:
     pull_request:
@@ -25,7 +25,7 @@ jobs:
             # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
             - name: Generate .env.staging
               run: |
-                  echo "${{ secrets.ENV_VARS_PROD }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.staging
+                  echo "${{ secrets.ENV_VARS_STAGE }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.staging
 
             # Verifikasi (opsional, untuk debugging)
             - name: Verify .env.staging content

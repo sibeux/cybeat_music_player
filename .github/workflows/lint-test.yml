@@ -42,7 +42,7 @@ jobs:
             # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
             - name: Generate .env.development
               run: |
-                  echo "${{ secrets.ENV_VARS_PROD }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.development
+                  echo "${{ secrets.ENV_VARS_DEV }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.development
 
             # Verifikasi (opsional, untuk debugging)
             - name: Verify .env.development content

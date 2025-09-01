@@ -1,1 +1,1 @@
-masukkan isi file ENV_VARS_PROD.json ke github action repository secret
+masukkan isi file ENV_VARS_*.json ke github action repository secret
