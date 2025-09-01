@@ -52,17 +52,13 @@ jobs:
             - name: Run widget tests
               run: flutter test
 
-            # Langkah kunci: Membuat file .env.production dari secret JSON
+            # Langkah kunci: Membuat file .env dari secret JSON
             # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
-            - name: Generate .env.production
+            - name: Generate .env
               run: |
+                  echo "${{ secrets.ENV_VARS_DEV }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.development
+                  echo "${{ secrets.ENV_VARS_STAGE }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.staging
                   echo "${{ secrets.ENV_VARS_PROD }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.production
-
-            # Verifikasi (opsional, untuk debugging)
-            - name: Verify .env.production content
-              run: |
-                  echo "File .env.production berhasil dibuat. Isinya:"
-                  cat .env.production # Hati-hati, ini akan menampilkan KEY tapi GitHub akan menyensor VALUE di log
 
             # Langkah 7: Membangun APK untuk rilis
             - name: Build Split APKs with Debug Symbols
