@@ -21,6 +21,13 @@ jobs:
             - name: Get dependencies
               run: flutter pub get
 
+            # STEP BARU UNTUK DEBUGGING
+            - name: DEBUG - Show ENV_VARS_DEV content
+              run: |
+                  echo "--- Start of Secret Content ---"
+                  echo "${{ secrets.ENV_VARS_DEV }}"
+                  echo "--- End of Secret Content ---"
+
             # Langkah kunci: Membuat file .env.staging dari secret JSON
             # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
             - name: Generate .env.staging
