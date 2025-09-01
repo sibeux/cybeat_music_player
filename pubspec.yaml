@@ -80,6 +80,7 @@ dependencies:
     # Paket usang yang mungkin perlu diganti di masa depan
     draggable_scrollbar: ^0.1.0 # Tidak diupdate sejak 2021
     flutter_reorderable_grid_view: ^5.0.0 # Tidak diupdate sejak 2022
+    flutter_dotenv: ^6.0.0
 
 dev_dependencies:
     flutter_test:
@@ -113,6 +114,10 @@ flutter:
         - assets/animations/music-spectrum-2.json
         - assets/images/cybeat_splash.png
         - assets/images/badge-en-lossless.png
+        - .env.default
+        - .env.production
+        - .env.development
+        - .env.staging
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/assets-and-images/#resolution-aware

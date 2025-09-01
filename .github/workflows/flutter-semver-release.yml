@@ -52,9 +52,21 @@ jobs:
             - name: Run widget tests
               run: flutter test
 
+            # Langkah kunci: Membuat file .env.production dari secret JSON
+            # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
+            - name: Generate .env.production
+              run: |
+                echo "${{ secrets.ENV_VARS_PROD }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.production
+
+            # Verifikasi (opsional, untuk debugging)
+            - name: Verify .env.production content
+              run: |
+                echo "File .env.production berhasil dibuat. Isinya:"
+                cat .env.production # Hati-hati, ini akan menampilkan KEY tapi GitHub akan menyensor VALUE di log
+
             # Langkah 7: Membangun APK untuk rilis
             - name: Build Split APKs with Debug Symbols
-              run: flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64 --split-debug-info=build/symbols
+              run: flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64 --split-debug-info=build/symbols --dart-define=ENV=production
 
             # Langkah 8: Membangun App Bundle (AAB) untuk rilis
             - name: Build AAB
