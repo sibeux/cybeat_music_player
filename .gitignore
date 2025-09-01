@@ -42,3 +42,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 docs/flutterfire_configure.txt
+.env.production
+.env.staging
+.env.development
+.github/secrets/ENV_VARS_PROD.json
