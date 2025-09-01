@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 String regexGdriveHostUrl({
   required String url,
@@ -51,15 +52,16 @@ String regexGdriveHostUrl({
   if (match != null) {
     // Ambil ID dari grup yang cocok (grup 1 atau grup 2)
     final fileId = match.group(1) ?? match.group(2);
+    String musicStreamApi = dotenv.env['MUSIC_STREAM_API_URL'] ?? '';
 
     if (isAudio) {
       if (isAudioCached) {
         return "${cacheEndpoint.first['gdrive_api']}/$fileId";
       } else {
-        return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/$musicId/$uploader/$isSuspicious/audio";
+        return "$musicStreamApi/$fileId/$musicId/$uploader/$isSuspicious/audio";
       }
     } else {
-      return "https://sibeux.my.id/cloud-music-player/api/stream/$fileId/555/cybeat/false/image";
+      return "$musicStreamApi/$fileId/555/cybeat/false/image";
     }
   } else if (url.contains('https://github.com/') && url.contains('raw=true')) {
     // Logika GitHub tetap sama karena unik

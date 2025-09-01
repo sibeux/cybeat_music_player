@@ -10,6 +10,7 @@ import 'package:cybeat_music_player/core/controllers/music_player_controller.dar
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
@@ -102,8 +103,8 @@ class AudioStateController extends GetxController {
     final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
-    const String endpoint =
-        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist";
+    String endpoint =
+        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
     String url = "$endpoint?uid=${list.uid}&type=$type";
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
@@ -210,8 +211,11 @@ class AudioStateController extends GetxController {
   Future<void> deleteMusicFromPlaylist({
     required String idPlaylistMusic,
   }) async {
-    const url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist';
+    String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
+    if (url.isEmpty) {
+      logError('Url API is empty');
+      return;
+    }
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -281,12 +285,12 @@ class AudioStateController extends GetxController {
     required String musicUrl,
   }) async {
     const String methodName = "setRecentsCodecMusic";
-    String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/recents_music';
+    String url = dotenv.env['RECENT_MUSIC_API_URL'] ?? '';
+    String musicStreamApi = dotenv.env['MUSIC_STREAM_API_URL'] ?? '';
     try {
       // Cek apakah ini url untuk stream drive.
       final bool checkFromStreamDrive = musicUrl
-          .contains("https://sibeux.my.id/cloud-music-player/api/stream/");
+          .contains(musicStreamApi);
       final response = await http.post(
         Uri.parse(url),
         body: {

@@ -9,6 +9,7 @@ import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -57,8 +58,7 @@ class AddMusicToPlaylistController extends GetxController {
   Future<void> getMusicOnPlaylist({required String idMusic}) async {
     isLoadingGetMusicOnPlaylist.value = true;
 
-    const String endpoint =
-        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist";
+    String endpoint = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
     String url = '$endpoint?id_music=$idMusic&method=get_music_on_playlist';
     try {
       final response = await http.get(Uri.parse(url));
@@ -92,8 +92,7 @@ class AddMusicToPlaylistController extends GetxController {
   }) async {
     isLoadingUpdateMusicOnPlaylist.value = true;
 
-    const url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/music_playlist';
+    String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
     // Ini adalah ID playlist, bukan ID music.
     // Menghitung perbedaan.
     Set<String> setStrSaved = savedInMusicList.toSet();

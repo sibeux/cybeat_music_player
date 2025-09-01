@@ -5,6 +5,7 @@ import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -69,11 +70,11 @@ class AlbumService extends GetxService {
     String sort = sortValue;
     String filter = getSelectedFilter;
 
-    const String endpoint =
-        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist";
+    String endpoint =
+        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
     String url = '$endpoint?sort=$sort&filter=$filter';
-    const api =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api';
+    String api = dotenv.env['GDRIVE_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    
 
     try {
       final response = await http.post(Uri.parse(url));
@@ -242,16 +243,16 @@ class AlbumService extends GetxService {
   }
 
   Future<bool> setPinData({required String action, required String uid}) async {
+    String playlistApi =
+        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
     String url = '';
 
     switch (action) {
       case 'pin':
-        url =
-            'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/pin_playlist.php?action=pin&uid=$uid';
+        url = '$playlistApi?action=pin&uid=$uid';
         break;
       case 'unpin':
-        url =
-            'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/pin_playlist.php?action=unpin&uid=$uid';
+        url = '$playlistApi?action=unpin&uid=$uid';
         break;
       default:
         break;
@@ -288,8 +289,9 @@ class AlbumService extends GetxService {
   }
 
   Future<String> getSumFavoriteSong() async {
-    String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist.php?count_favorite=true';
+    String playlistApi =
+        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    String url = '$playlistApi?count_favorite=true';
 
     List<dynamic> listData = [];
 
@@ -304,8 +306,9 @@ class AlbumService extends GetxService {
   }
 
   Future<List> getSumCategorySong() async {
-    String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist?count_category=uid';
+    String playlistApi =
+        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    String url = '$playlistApi?count_category=uid';
 
     List<dynamic> listData = [];
 
@@ -322,9 +325,8 @@ class AlbumService extends GetxService {
   Future<void> getFourCoverAlbum(
       {required String method, required String type}) async {
     List<dynamic> responseBody = [];
-
-    String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/four_cover_album?method=$method';
+    String api = dotenv.env['FOURCOVER_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    String url = '$api?method=$method';
 
     try {
       final response = await http.post(Uri.parse(url));
@@ -496,8 +498,8 @@ class AlbumService extends GetxService {
   String get sortValue => homeSortPreferences.value;
 
   Future<void> editPlaylist(String id, String name) async {
-    const String url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/crud_new_playlist';
+    String url =
+        dotenv.env['CRUD_PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
 
     try {
       final response = await http.post(
