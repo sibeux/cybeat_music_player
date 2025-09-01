@@ -38,6 +38,18 @@ jobs:
             - name: Get dependencies
               run: flutter pub get
 
+            # Langkah kunci: Membuat file .env.development dari secret JSON
+            # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
+            - name: Generate .env.development
+              run: |
+                  echo "${{ secrets.ENV_VARS_PROD }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.development
+
+            # Verifikasi (opsional, untuk debugging)
+            - name: Verify .env.development content
+              run: |
+                  echo "File .env.development berhasil dibuat. Isinya:"
+                  cat .env.development # Hati-hati, ini akan menampilkan KEY tapi GitHub akan menyensor VALUE di log
+
             # Lint (analyze)
             - name: Run flutter analyze
               run: flutter analyze

@@ -21,6 +21,18 @@ jobs:
             - name: Get dependencies
               run: flutter pub get
 
+            # Langkah kunci: Membuat file .env.staging dari secret JSON
+            # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
+            - name: Generate .env.staging
+              run: |
+                  echo "${{ secrets.ENV_VARS_PROD }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.staging
+
+            # Verifikasi (opsional, untuk debugging)
+            - name: Verify .env.staging content
+              run: |
+                  echo "File .env.staging berhasil dibuat. Isinya:"
+                  cat .env.staging # Hati-hati, ini akan menampilkan KEY tapi GitHub akan menyensor VALUE di log
+
             - name: Run Analyze
               run: flutter analyze
 
