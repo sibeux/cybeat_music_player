@@ -32,6 +32,10 @@ class AudioStateController extends GetxController {
   var bitRate = '--'.obs;
   var codecName = ''.obs;
   var musicQuality = ''.obs;
+
+  var bgColor = '#000000'.obs;
+  var textColor = '#ffffff'.obs;
+
   var initAlbumLoading = false.obs;
   var isAlbumEmpty = false.obs;
 
@@ -80,13 +84,18 @@ class AudioStateController extends GetxController {
             lastProcessedMusicId = currentMusicId;
             // Baru panggil fungsi-fungsi Anda.
             final isCodecExist = await checkCodecAudio(
-              url: item.extras!['url'],
               mediaItem: item,
             );
-            setRecentsCodecMusic(
+            final isDominantColorExist = await checkDominantColor(
+              mediaItem: item,
+            );
+            // Panggil method set recents music.
+            setRecentsCodecDominantColor(
               musicId: currentMusicId,
               isCodecExist: isCodecExist,
+              isDominantColorExist: isDominantColorExist,
               musicUrl: item.extras!['url'],
+              imageUrl: item.artUri.toString(),
             );
           }
         }
@@ -181,6 +190,10 @@ class AudioStateController extends GetxController {
                   'sample_rate': item['sample_rate'] ?? '--',
                   'bit_rate': item['bit_rate'] ?? '--',
                   'bits_per_raw_sample': item['bits_per_raw_sample'] ?? '--',
+                },
+                'dominant_color': {
+                  'bg_color': item['bg_color'] ?? '',
+                  'text_color': item['text_color'] ?? '',
                 },
                 'is_downloaded': type != 'offline'
                     ? uidDownloadedSongs.contains(item['id_music'])
@@ -279,18 +292,19 @@ class AudioStateController extends GetxController {
     }
   }
 
-  void setRecentsCodecMusic({
+  void setRecentsCodecDominantColor({
     required String? musicId,
     required bool isCodecExist,
+    required bool isDominantColorExist,
     required String musicUrl,
+    required String imageUrl,
   }) async {
     const String methodName = "setRecentsCodecMusic";
     String url = dotenv.env['RECENT_MUSIC_API_URL'] ?? '';
     String musicStreamApi = dotenv.env['MUSIC_STREAM_API_URL'] ?? '';
     try {
       // Cek apakah ini url untuk stream drive.
-      final bool checkFromStreamDrive = musicUrl
-          .contains(musicStreamApi);
+      final bool checkFromStreamDrive = musicUrl.contains(musicStreamApi);
       final response = await http.post(
         Uri.parse(url),
         body: {
@@ -299,7 +313,10 @@ class AudioStateController extends GetxController {
               // Jika codec sudah ada ATAU berasal dari stream drive-
               // maka tidak perlu dicek lewat backend recent music.
               (isCodecExist || checkFromStreamDrive) ? "true" : "false",
+          // Dominant color tidak perlu checkFromStreamDrive karena hanya lewat recents.
+          'dominant_color_exist': isDominantColorExist ? "true" : "false",
           'music_url': musicUrl,
+          'image_url': imageUrl,
         },
       );
       final body = jsonDecode(response.body);
@@ -311,11 +328,20 @@ class AudioStateController extends GetxController {
         logError("Failed $methodName: $body");
         return;
       }
-      if (body['success'] == true && body['codec'] != null) {
+      if (body['success'] == true &&
+          (body['codec'] != null || body['dominant_color'] != null)) {
         logSuccess('$methodName success: $body');
-        bitsPerRawSample.value = body["codec"]["bits_per_raw_sample"];
-        sampleRate.value = body["codec"]["sample_rate"];
-        bitRate.value = body["codec"]["bit_rate"];
+        // Cek apakah codec ada isinya.
+        if (body['codec'] != null) {
+          bitsPerRawSample.value = body["codec"]["bits_per_raw_sample"];
+          sampleRate.value = body["codec"]["sample_rate"];
+          bitRate.value = body["codec"]["bit_rate"];
+        }
+        // Cek apakah dominant_color ada isinya.
+        if (body['dominant_color'] != null) {
+          bgColor.value = body["dominant_color"]["bg_color"];
+          textColor.value = body["dominant_color"]["text_color"];
+        }
       } else {
         logInfo('$methodName: Codec sudah diset sebelumnya. Response: $body');
       }
@@ -325,7 +351,6 @@ class AudioStateController extends GetxController {
   }
 
   Future<bool> checkCodecAudio({
-    required String url,
     required MediaItem mediaItem,
   }) async {
     // Ini berfungsi sebagai placeholder laoding saat fetch.
@@ -354,6 +379,29 @@ class AudioStateController extends GetxController {
       }
     } catch (e) {
       logError('Error onReadCodec: $e');
+      return false;
+    }
+  }
+
+  Future<bool> checkDominantColor({
+    required MediaItem mediaItem,
+  }) async {
+    bgColor.value = '#000000';
+    textColor.value = '#ffffff';
+    try {
+      final Map<String, dynamic> dominantColor =
+          mediaItem.extras?['dominant_color'];
+      final bool isDominantColorExist =
+          dominantColor['bg_color'] != '' && dominantColor['text_color'] != '';
+      if (isDominantColorExist) {
+        bgColor.value = dominantColor['bg_color'];
+        textColor.value = dominantColor['text_color'];
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e, st) {
+      logError('Error checkDominantColor: $e, st: $st');
       return false;
     }
   }

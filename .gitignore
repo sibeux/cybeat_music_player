@@ -46,3 +46,5 @@ docs/flutterfire_configure.txt
 .env.staging
 .env.development
 .github/secrets/ENV_VARS_PROD.json
+.github/secrets/ENV_VARS_DEV.json
+.github/secrets/ENV_VARS_STAGE.json

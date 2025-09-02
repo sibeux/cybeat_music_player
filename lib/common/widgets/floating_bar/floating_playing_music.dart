@@ -52,7 +52,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                         width: double.infinity,
                         height: 45.h,
                         decoration: BoxDecoration(
-                          color: musicPlayerController.listColor[0],
+                          color: HexColor(audioStateController.bgColor.value),
                           borderRadius: BorderRadius.only(
                             topRight: Radius.circular(100.r),
                             bottomRight: Radius.circular(100.r),
@@ -84,8 +84,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                             maxLines: 1,
                                             style: TextStyle(
                                               // fontSize: 14,
-                                              color: musicPlayerController
-                                                  .listColor[1],
+                                              color: HexColor(audioStateController.textColor.value),
                                               fontWeight: FontWeight.bold,
                                             ),
                                             overflowReplacement: Marquee(
@@ -95,8 +94,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                                   '',
                                               style: TextStyle(
                                                 fontSize: 14.sp,
-                                                color: musicPlayerController
-                                                    .listColor[1],
+                                                color: HexColor(audioStateController.textColor.value),
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               scrollAxis: Axis.horizontal,
@@ -129,8 +127,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                             maxLines: 1,
                                             style: TextStyle(
                                                 // fontSize: 12,
-                                                color: musicPlayerController
-                                                    .listColor[1],
+                                                color: HexColor(audioStateController.textColor.value),
                                                 fontWeight: FontWeight.normal),
                                             overflowReplacement: Marquee(
                                               text: musicPlayerController
@@ -139,8 +136,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                                   '',
                                               style: TextStyle(
                                                 fontSize: 12.sp,
-                                                color: musicPlayerController
-                                                    .listColor[1],
+                                                color: HexColor(audioStateController.textColor.value),
                                                 fontWeight: FontWeight.normal,
                                               ),
                                               scrollAxis: Axis.horizontal,
@@ -171,7 +167,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                                   highlightColor: Colors.transparent,
                                   icon: Icon(
                                     Icons.skip_next_rounded,
-                                    color: musicPlayerController.listColor[1],
+                                    color: HexColor(audioStateController.textColor.value),
                                   ),
                                   onPressed: () {
                                     audioStateController.activePlayer.value
@@ -187,7 +183,7 @@ class FloatingPlayingMusic extends StatelessWidget {
                               child: LinearProgressIndicator(
                                 value: musicPlayerController.sliderValue,
                                 borderRadius: BorderRadius.circular(50.r),
-                                color: musicPlayerController.listColor[1],
+                                color: HexColor(audioStateController.textColor.value),
                                 backgroundColor: Colors.grey,
                               ),
                             ),
@@ -234,7 +230,7 @@ class FloatingPlayingMusic extends StatelessWidget {
         return Obx(
           () => IconButton(
             icon: const Icon(Icons.play_circle_fill),
-            color: musicPlayerController.listColor[1],
+            color: HexColor(audioStateController.textColor.value),
             onPressed: audioStateController.activePlayer.value?.play,
           ),
         );
@@ -242,7 +238,7 @@ class FloatingPlayingMusic extends StatelessWidget {
         return Obx(
           () => IconButton(
             icon: const Icon(Icons.pause_circle_filled),
-            color: musicPlayerController.listColor[1],
+            color: HexColor(audioStateController.textColor.value),
             onPressed: audioStateController.activePlayer.value?.pause,
           ),
         );
