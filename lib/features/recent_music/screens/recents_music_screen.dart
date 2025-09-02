@@ -6,6 +6,7 @@ import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/features/recent_music/widgets/recents_music_list.dart';
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart' as http;
@@ -32,8 +33,8 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
 
   void getMusicData() async {
     final AlbumService albumService = Get.find();
-    const url =
-        'https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist?recents_music';
+    String api = dotenv.env['PLAYLIST_API_URL'] ?? '';
+    String url = '$api?recents_music';
 
     try {
       final response = await http.get(Uri.parse(url));

@@ -4,7 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
@@ -17,8 +17,6 @@ class MusicPlayerController extends GetxController {
   var isMusicPlayingNow = false.obs;
   var isNeedRebuildLastPlaylist = false.obs;
   var isAzlistviewScreenActive = false.obs;
-
-  var listColor = RxList<Color>([Colors.black, Colors.white]);
 
   var currentMusicDuration = Duration.zero.obs;
   var currentMusicPosition = Duration.zero.obs;
@@ -157,8 +155,7 @@ class MusicPlayerController extends GetxController {
   }
 
   Future<void> setLastPlayingPlaylist() async {
-    const endpoint =
-        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/playlist";
+    String endpoint = dotenv.env['PLAYLIST_API_URL'] ?? '';
     String api = '$endpoint?play_playlist=${currentActivePlaylist.value?.uid}';
     try {
       await http.post(
