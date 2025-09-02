@@ -42,17 +42,10 @@ jobs:
                   echo "version=$VERSION" >> $GITHUB_OUTPUT
 
             - name: Build APK (staging)
-              run: flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64 --dart-define=ENV=staging
-
-            - name: Rename Staging Artifacts
-              run: |
-                  VERSION=${{ github.ref_name }}
-                  mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/cybeat-$VERSION-v8a-release.apk
-                  mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/cybeat-$VERSION-v7a-release.apk
-                  mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/cybeat-$VERSION-x86_64-release.apk
+              run: flutter build apk --release --split-per-abi --target-platform android-arm64 --dart-define=ENV=staging
 
             - name: Upload Artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: cybeat-cybeat-*
-                  path: build/app/outputs/flutter-apk/cybeat-*.apk
+                  name: cybeat-${{ steps.version.outputs.version }}
+                  path: build/app/outputs/flutter-apk/*.apk
