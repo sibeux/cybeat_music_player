@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
@@ -18,6 +19,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -75,6 +77,12 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  // Panggil .env
+  const env = String.fromEnvironment('ENV', defaultValue: 'development');
+  // Load default, lalu override env spesifik
+  await dotenv.load(fileName: ".env.default");
+  await dotenv.load(fileName: ".env.$env");
+  logInfo('Running application in $env mode');
   runApp(MyApp());
 }
 

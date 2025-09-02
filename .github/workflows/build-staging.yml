@@ -1,0 +1,51 @@
+name: Flutter Build Release (Staging)
+
+on:
+    pull_request:
+        branches:
+            - staging
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setup Flutter
+              uses: subosito/flutter-action@v2.10.0
+              with:
+                  flutter-version: "3.35.1"
+                  channel: stable
+                  cache: true
+
+            - name: Get dependencies
+              run: flutter pub get
+
+            # Langkah kunci: Membuat file .env dari secret JSON
+            # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
+            - name: Generate .env
+              run: |
+                  echo "${{ secrets.ENV_VARS_DEV }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.development
+                  echo "${{ secrets.ENV_VARS_STAGE }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.staging
+                  echo "${{ secrets.ENV_VARS_PROD }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.production
+
+            - name: Run Analyze
+              run: flutter analyze
+
+            - name: Run Tests
+              run: flutter test
+
+            - name: Extract version
+              id: version
+              run: |
+                  VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //;s/\+.*//')
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+            - name: Build APK (staging)
+              run: flutter build apk --release --split-per-abi --target-platform android-arm64 --dart-define=ENV=staging
+
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cybeat-${{ steps.version.outputs.version }}
+                  path: build/app/outputs/flutter-apk/*.apk
