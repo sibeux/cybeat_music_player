@@ -44,14 +44,6 @@ jobs:
             - name: Get Flutter dependencies
               run: flutter pub get
 
-            # Langkah 5 (CI): Menganalisis kode untuk error atau potensi masalah
-            - name: Analyze project source
-              run: flutter analyze
-
-            # Langkah 6 (CI): Menjalankan semua tes unit dan widget
-            - name: Run widget tests
-              run: flutter test
-
             # Langkah kunci: Membuat file .env dari secret JSON
             # Runner 'ubuntu-latest' sudah memiliki jq terinstal secara default.
             - name: Generate .env
@@ -59,6 +51,14 @@ jobs:
                   echo "${{ secrets.ENV_VARS_DEV }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.development
                   echo "${{ secrets.ENV_VARS_STAGE }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.staging
                   echo "${{ secrets.ENV_VARS_PROD }}" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env.production
+
+            # Langkah 5 (CI): Menganalisis kode untuk error atau potensi masalah
+            - name: Analyze project source
+              run: flutter analyze
+
+            # Langkah 6 (CI): Menjalankan semua tes unit dan widget
+            - name: Run widget tests
+              run: flutter test
 
             # Langkah 7: Membangun APK untuk rilis
             - name: Build Split APKs with Debug Symbols
