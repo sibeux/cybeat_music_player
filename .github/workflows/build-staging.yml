@@ -41,8 +41,11 @@ jobs:
                   VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //;s/\+.*//')
                   echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-            - name: Build APK (staging/dev)
-              run: flutter build apk --debug --split-per-abi
+            - name: Build Profile
+              run: flutter build apk --profile --dart-define=ENV=staging
+
+            - name: Build APK (staging)
+              run: flutter build apk --debug --split-per-abi --dart-define=ENV=staging
 
             - name: Upload Artifact
               uses: actions/upload-artifact@v4
