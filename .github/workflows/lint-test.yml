@@ -1,4 +1,4 @@
-name: Lint & Test
+name: Lint & Test (develop)
 
 on:
     push:
@@ -17,7 +17,7 @@ jobs:
         steps:
             # Checkout kode dari PR
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v3
 
             # Setup Java (dibutuhkan Flutter untuk build Android)
             - name: Setup Java
@@ -28,7 +28,7 @@ jobs:
 
             # Setup Flutter
             - name: Setup Flutter
-              uses: subosito/flutter-action@v2
+              uses: subosito/flutter-action@v2.10.0
               with:
                   flutter-version: "3.35.1"
                   channel: "stable"
