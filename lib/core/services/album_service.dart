@@ -74,7 +74,6 @@ class AlbumService extends GetxService {
         dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
     String url = '$endpoint?sort=$sort&filter=$filter';
     String api = dotenv.env['GDRIVE_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    
 
     try {
       final response = await http.post(Uri.parse(url));
