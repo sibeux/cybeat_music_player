@@ -125,6 +125,9 @@ class AudioStateController extends GetxController {
         await musicDownloadController.getDownloadedSongs();
         if (musicDownloadController.musicOfflineList.isEmpty) {
           listData = RxList<dynamic>([]);
+          isAlbumEmpty.value = true;
+          playlist.value = <UriAudioSource>[];
+          await activePlayer.value?.setAudioSources(playlist);
           return;
         }
         listData = musicDownloadController.musicOfflineList;
