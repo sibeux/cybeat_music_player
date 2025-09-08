@@ -91,6 +91,7 @@ class MusicPlayerController extends GetxController {
         logError(
             'Player Error code: ${error.code}. Error message: ${error.message}. AudioSource index: ${error.index}');
         if (error.index != null && error.message == "Source error") {
+          logInfo('Trying to reload the audio source...');
           await player.pause();
           await Future.delayed(const Duration(milliseconds: 500));
           await player.play();
