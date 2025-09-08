@@ -28,6 +28,7 @@ class MusicPlayerController extends GetxController {
   StreamSubscription<Duration?>? bufferedStreamSubscription;
   StreamSubscription<SequenceState?>? sequenceStateStreamSubscription;
   StreamSubscription<PlayerState?>? playerStateStreamSubscription;
+  StreamSubscription<PlayerException?>? playerErrorStreamSubscription;
 
   MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
 
@@ -71,7 +72,7 @@ class MusicPlayerController extends GetxController {
       });
 
       playerStateStreamSubscription = player.playerStateStream.listen((state) {
-        updateCurrentMusicPlayerState(state);
+        updateCurrentMusicPlayerState(state, player);
       });
 
       sequenceStateStreamSubscription =
@@ -85,6 +86,17 @@ class MusicPlayerController extends GetxController {
           updateCurrentMediaItem(mediaItem);
         }
       });
+
+      playerErrorStreamSubscription = player.errorStream.listen((error) async {
+        logError(
+            'Player Error code: ${error.code}. Error message: ${error.message}. AudioSource index: ${error.index}');
+        if (error.index != null && error.message == "Source error") {
+          logInfo('Trying to reload the audio source...');
+          await player.pause();
+          await Future.delayed(const Duration(milliseconds: 500));
+          await player.play();
+        }
+      });
     }
   }
 
@@ -94,6 +106,7 @@ class MusicPlayerController extends GetxController {
     positionStreamSubscription?.cancel();
     bufferedStreamSubscription?.cancel();
     sequenceStateStreamSubscription?.cancel();
+    playerErrorStreamSubscription?.cancel();
   }
 
   @override
@@ -126,7 +139,8 @@ class MusicPlayerController extends GetxController {
     currentMusicBuffer.value = buffer ?? Duration.zero;
   }
 
-  void updateCurrentMusicPlayerState(PlayerState? state) {
+  Future<void> updateCurrentMusicPlayerState(
+      PlayerState? state, AudioPlayer player) async {
     final processingState = state?.processingState;
     currentMusicPlayerState.value = processingState ?? ProcessingState.idle;
     isMusicPlayingNow.value = state!.playing;
