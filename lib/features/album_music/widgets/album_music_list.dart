@@ -100,7 +100,14 @@ class AlbumMusicList extends StatelessWidget {
                         right: 0,
                         top: 0,
                         child: Image.asset(
-                          'assets/images/badge-en-lossless.png',
+                          mediaItem.extras?['metadata']['codec_name'] == 'alac'
+                              ? 'assets/images/badge-alac.png'
+                              : double.parse(mediaItem.extras?['metadata']
+                                              ['sample_rate'])
+                                          .toInt() >=
+                                      96
+                                  ? 'assets/images/badge-en-hires.png'
+                                  : 'assets/images/badge-en-lossless.png',
                           fit: BoxFit.cover,
                           width: 30.w,
                           height: 30.h,
@@ -122,7 +129,7 @@ class AlbumMusicList extends StatelessWidget {
                       Text(
                         capitalizeEachWord(mediaItem.title),
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 14.sp,
                           color: HexColor(colorTitle),
                           overflow: TextOverflow.ellipsis,
                           fontWeight: FontWeight.bold,
@@ -135,7 +142,7 @@ class AlbumMusicList extends StatelessWidget {
                             child: Icon(
                               Icons.audiotrack_outlined,
                               color: HexColor('#b4b5b4'),
-                              size: 15,
+                              size: 15.sp,
                             ),
                           ),
                           Expanded(
@@ -143,7 +150,7 @@ class AlbumMusicList extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   color: HexColor('#b4b5b4'),
                                   overflow: TextOverflow.ellipsis,
                                   fontWeight: FontWeight.values[4],
@@ -162,7 +169,7 @@ class AlbumMusicList extends StatelessWidget {
                 highlightColor: Colors.black.withValues(alpha: 0.02),
                 icon: Icon(
                   Icons.more_vert_sharp,
-                  size: 30,
+                  size: 30.sp,
                   color: HexColor('#b5b5b4'),
                 ),
                 onPressed: () {
@@ -175,13 +182,13 @@ class AlbumMusicList extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(
-                width: 15,
+              SizedBox(
+                width: 15.w,
               ),
             ],
           ),
-          const SizedBox(
-            height: 10,
+          SizedBox(
+            height: 10.h,
           ),
           Container(
             margin: EdgeInsets.only(left: 18.w, right: 10.w),
