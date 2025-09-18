@@ -18,6 +18,8 @@ class MusicPlayerController extends GetxController {
   var isNeedRebuildLastPlaylist = false.obs;
   var isAzlistviewScreenActive = false.obs;
 
+  var numberOfError = 0;
+
   var currentMusicDuration = Duration.zero.obs;
   var currentMusicPosition = Duration.zero.obs;
   var currentMusicBuffer = Duration.zero.obs;
@@ -91,10 +93,16 @@ class MusicPlayerController extends GetxController {
         logError(
             'Player Error code: ${error.code}. Error message: ${error.message}. AudioSource index: ${error.index}');
         if (error.index != null) {
+          numberOfError += 1;
           logInfo('Trying to reload the audio source...');
           await player.pause();
           await Future.delayed(const Duration(milliseconds: 500));
           await player.play();
+        }
+        if (numberOfError >= 10) {
+          logError('Too many errors, skipping playback.');
+          await player.seekToNext();
+          numberOfError = 0;
         }
       });
     }
@@ -185,23 +193,34 @@ class MusicPlayerController extends GetxController {
     required AudioStateController audioStateController,
     required int index,
     required MediaItem mediaItem,
-  }) {
-    updateCurrentMediaItem(mediaItem);
+  }) async {
+    // Gunakan variabel lokal untuk menghindari pengulangan dan null check
+    final player = audioStateController.activePlayer.value;
+    if (player == null) return; // Guard clause jika player tidak ada
 
-    audioStateController.activePlayer.value?.seek(Duration.zero, index: index);
-
-    // {kode "APEL"}
-    audioStateController.activePlayer.value?.setAudioSources(
-      audioStateController.playlist,
-      initialIndex: index,
-    );
-
+    numberOfError = 0;
+    updateCurrentMediaItem(mediaItem); // Ini dipakai saat pertama kali putar music.
     activateMusic();
 
     if (currentActivePlaylist.value!.type != 'offline') {
       setLastPlayingPlaylist();
     }
 
-    audioStateController.activePlayer.value?.play();
+    try {
+      // setAudioSources adalah operasi utama dan harus ditunggu (await)
+      // Tidak perlu seek() sebelumnya karena initialIndex sudah menanganinya.
+      //** player.seek(Duration.zero, index: 
+      // {kode "APEL"}
+      await player.setAudioSources(
+        audioStateController.playlist,
+        initialIndex: index,
+      );
+
+      // Panggil play() setelah playlist berhasil di-load.
+      player.play();
+    } catch (e) {
+      // Tambahkan penanganan error jika proses load playlist gagal
+      logError("Error playMusicNow: $e");
+    }
   }
 }
