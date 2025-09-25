@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.1.28+24
+version: 1.1.29+24
 
 environment:
     sdk: ">=3.3.3 <4.0.0"
@@ -69,7 +69,7 @@ dependencies:
     # riverpod: ^2.5.1 # Tidak perlu, flutter_riverpod sudah menyertakannya
 
     # Paket Audio (Upgrade Besar)
-    just_audio: ^0.10.4
+    just_audio: ^0.10.5
     just_audio_background: ^0.0.1-beta.17
     audio_service: 0.18.18
 
