@@ -1,4 +1,5 @@
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/add_all_music/add_all_music_add_modal_effect_tap.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -62,9 +63,11 @@ Future<dynamic> addAllMusicAddModal(
               itemCount:
                   addMusicToPlaylistController.playlistCreatedList.length,
               itemBuilder: (context, index) {
-                return ListTileBottomModal(
-                  title: addMusicToPlaylistController
-                      .playlistCreatedList[index].title,
+                return AddAllMusicAddModalEffectTap(
+                  child: ListTileBottomModal(
+                    title: addMusicToPlaylistController
+                        .playlistCreatedList[index].title,
+                  ),
                 );
               },
             ),

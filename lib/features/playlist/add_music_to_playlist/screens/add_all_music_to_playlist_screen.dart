@@ -1,7 +1,7 @@
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/controllers/add_music_to_playlist_controller.dart';
-import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/add_all_music_add_modal.dart';
-import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/add_all_music_button_effect_tap.dart';
-import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/add_all_music_listile.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/add_all_music/add_all_music_add_modal.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/add_all_music/add_all_music_button_effect_tap.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/add_all_music/add_all_music_listile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
