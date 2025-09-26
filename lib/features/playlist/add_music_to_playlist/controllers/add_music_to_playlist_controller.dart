@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
@@ -15,12 +16,14 @@ import 'package:http/http.dart' as http;
 
 class AddMusicToPlaylistController extends GetxController {
   final AlbumService albumService = Get.find<AlbumService>();
+  final AudioStateController audioStateController = Get.find();
   var textController = TextEditingController();
   var textValue = ''.obs;
 
   var listMusicOnPlaylist = RxList<MusicPlaylist>([]);
   var savedInMusicList = RxList<String>([]);
   var newAddedMusic = RxList<String>([]);
+  var addAllMusicId = RxList<String>([]);
 
   var isTyping = false.obs;
   var isKeybordFocus = false.obs;
@@ -28,9 +31,11 @@ class AddMusicToPlaylistController extends GetxController {
   var isLoadingGetMusicOnPlaylist = false.obs;
   var isLoadingUpdateMusicOnPlaylist = false.obs;
   var isLoadingAddPlaylist = false.obs;
+  var isSelectAll = false.obs;
 
   bool get isHomeLoading => albumService.isHomeLoading.value;
   RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
+  List<MediaItem> get currentQueue => audioStateController.queue;
 
   void onChanged(String value) {
     isTyping.value = value.isNotEmpty;
@@ -45,6 +50,33 @@ class AddMusicToPlaylistController extends GetxController {
 
   void tapAddMusicToPlaylist(String idPlaylist) {
     newAddedMusic.add(idPlaylist);
+  }
+
+  void toggleSelectAll({required bool isBulkSelect, String idMusic = ''}) {
+    if (isBulkSelect) {
+      if (isSelectAll.value) {
+        // Jika sudah select all, maka batalkan select all
+        isSelectAll.value = false;
+        addAllMusicId.clear();
+      } else {
+        // Jika belum select all, maka select all
+        isSelectAll.value = true;
+        addAllMusicId.clear();
+        addAllMusicId.addAll(currentQueue.map((e) => e.id).toList());
+      }
+    } else {
+      if (addAllMusicId.contains(idMusic)) {
+        addAllMusicId.remove(idMusic);
+      } else {
+        addAllMusicId.add(idMusic);
+      }
+      // Cek apakah semua musik sudah dipilih
+      if (addAllMusicId.length == currentQueue.length) {
+        isSelectAll.value = true;
+      } else {
+        isSelectAll.value = false;
+      }
+    }
   }
 
   void tapRemoveMusicFromPlaylist(String idPlaylist) {
