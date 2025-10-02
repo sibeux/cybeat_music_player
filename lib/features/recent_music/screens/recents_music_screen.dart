@@ -61,17 +61,17 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
             uid: item['id_music'],
             title: item['title'],
             artist: item['artist'],
-            album: item['album'],
+            album: item['album'] ?? "Unknown Album",
             cover: regexGdriveHostUrl(
               url: item['cover'],
               isAudio: false,
               listApiKey: albumService.gdriveApiKeyList,
             ),
-            linkDrive: item['link_gdrive'],
-            time: item['time'],
-            favorite: item['favorite'],
-            category: item['category'],
-            dateAdded: item['date_added'],
+            linkDrive: '',
+            time: '',
+            favorite: '',
+            category: '',
+            dateAdded: '',
           ),
         );
       }
