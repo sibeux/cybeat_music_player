@@ -2,6 +2,7 @@ import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/cont
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/widgets/add_all_music/add_all_music_add_modal_effect_tap.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -67,6 +68,9 @@ Future<dynamic> addAllMusicAddModal(
                   child: ListTileBottomModal(
                     title: addMusicToPlaylistController
                         .playlistCreatedList[index].title,
+                    onTap: () {
+                      Get.back();
+                    },
                   ),
                 );
               },
@@ -82,9 +86,11 @@ class ListTileBottomModal extends StatelessWidget {
   const ListTileBottomModal({
     super.key,
     required this.title,
+    required this.onTap,
   });
 
   final String title;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +103,7 @@ class ListTileBottomModal extends StatelessWidget {
         fontSize: 14.sp,
         fontWeight: FontWeight.bold,
       ),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }

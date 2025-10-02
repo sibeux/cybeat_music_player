@@ -7,6 +7,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
+class NoGlowScrollBehavior extends ScrollBehavior {
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
+
 class AddAllMusicToPlaylistScreen extends StatelessWidget {
   const AddAllMusicToPlaylistScreen({super.key});
 
@@ -63,14 +70,23 @@ class AddAllMusicToPlaylistScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: addMusicToPlaylistController.currentQueue.length,
-              itemBuilder: (context, index) {
-                return AddAllMusicListile(
-                  mediaItem: addMusicToPlaylistController.currentQueue[index],
-                  addMusicToPlaylistController: addMusicToPlaylistController,
-                );
-              },
+            child: ScrollConfiguration(
+              behavior: NoGlowScrollBehavior(),
+              child: GlowingOverscrollIndicator(
+                axisDirection: AxisDirection.down,
+                color: HexColor('#8238be'),
+                child: ListView.builder(
+                  itemCount: addMusicToPlaylistController.currentQueue.length,
+                  itemBuilder: (context, index) {
+                    return AddAllMusicListile(
+                      mediaItem:
+                          addMusicToPlaylistController.currentQueue[index],
+                      addMusicToPlaylistController:
+                          addMusicToPlaylistController,
+                    );
+                  },
+                ),
+              ),
             ),
           ),
           Container(
@@ -85,29 +101,31 @@ class AddAllMusicToPlaylistScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
             color: HexColor('#fefffe'),
-            child: Obx(() => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    AbsorbPointer(
-                      absorbing:
-                          addMusicToPlaylistController.addAllMusicId.isEmpty,
-                      child: AddAllMusicButtonEffectTap(
-                        onTap: () {
-                          addAllMusicAddModal(
-                              context, addMusicToPlaylistController);
-                        },
-                        child: Icon(
-                          Icons.add_to_photos_outlined,
-                          color: addMusicToPlaylistController
-                                  .addAllMusicId.isNotEmpty
-                              ? HexColor('#000000').withValues(alpha: 0.5)
-                              : HexColor('#e1e1e1'),
-                          size: 25.sp,
-                        ),
+            child: Obx(
+              () => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  AbsorbPointer(
+                    absorbing:
+                        addMusicToPlaylistController.addAllMusicId.isEmpty,
+                    child: AddAllMusicButtonEffectTap(
+                      onTap: () {
+                        addAllMusicAddModal(
+                            context, addMusicToPlaylistController);
+                      },
+                      child: Icon(
+                        Icons.add_to_photos_outlined,
+                        color: addMusicToPlaylistController
+                                .addAllMusicId.isNotEmpty
+                            ? HexColor('#000000').withValues(alpha: 0.5)
+                            : HexColor('#e1e1e1'),
+                        size: 25.sp,
                       ),
                     ),
-                  ],
-                )),
+                  ),
+                ],
+              ),
+            ),
           )
         ],
       ),

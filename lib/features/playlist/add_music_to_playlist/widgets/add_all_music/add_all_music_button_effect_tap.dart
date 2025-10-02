@@ -61,7 +61,6 @@ class AddAllMusicButtonEffectTapState
         if (widget.onTap != null) {
           widget.onTap!();
         }
-        // showSortModalBottom(context);
       },
       onTapCancel: _restoreButtonSize,
       child: Opacity(

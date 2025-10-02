@@ -60,12 +60,6 @@ class AddAllMusicAddModalEffectTapState
 
   @override
   Widget build(BuildContext context) {
-    onTap() {
-      // print('tapped');
-    }
-
-    DateTime dateTime1 = DateTime.now();
-
     return GestureDetector(
       onPanDown: (details) {
         _shrinkButtonSize();
@@ -78,16 +72,8 @@ class AddAllMusicAddModalEffectTapState
         // ini masih ada gunanya
         _restoreButtonSize();
       },
-      onTapUp: (_) {
-        // sejauh ini nggak ada gunanya
+      onTapUp: (details) {
         _restoreButtonSize();
-        Duration difference = DateTime.now().difference(dateTime1);
-        if (difference.inMilliseconds < 500) {
-          Future.delayed(
-            const Duration(milliseconds: clickAnimationDurationMillis * 2),
-            () => onTap.call(),
-          );
-        }
       },
       onTapCancel: _restoreButtonSize, // ini kemungkinan ada sih
       child: AnimatedContainer(
