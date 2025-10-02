@@ -72,30 +72,30 @@ void detailMusicCreditsDialog({
           SizedBox(
             height: 15.h,
           ),
-          Text(
-            "Performed by",
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(
-            height: 3.h,
-          ),
-          Obx(() => Text(
-                detailMusicController.currentMediaItem!.artist ?? '--',
-                maxLines: 3,
-                style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
-              )),
-          SizedBox(
-            height: 15.h,
-          ),
+          // Text(
+          //   "Performed by",
+          //   style: TextStyle(
+          //     fontSize: 14.sp,
+          //     fontWeight: FontWeight.bold,
+          //     color: Colors.black,
+          //   ),
+          // ),
+          // SizedBox(
+          //   height: 3.h,
+          // ),
+          // Obx(() => Text(
+          //       detailMusicController.currentMediaItem!.artist ?? '--',
+          //       maxLines: 3,
+          //       style: TextStyle(
+          //         overflow: TextOverflow.ellipsis,
+          //         fontSize: 14.sp,
+          //         fontWeight: FontWeight.w400,
+          //         color: Colors.black.withValues(alpha: 0.6),
+          //       ),
+          //     )),
+          // SizedBox(
+          //   height: 15.h,
+          // ),
           Text(
             "Album",
             style: TextStyle(
@@ -109,6 +109,32 @@ void detailMusicCreditsDialog({
           ),
           Obx(() => Text(
                 detailMusicController.currentMediaItem!.album ?? '--',
+                maxLines: 3,
+                style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black.withValues(alpha: 0.6),
+                ),
+              )),
+          SizedBox(
+            height: 15.h,
+          ),
+          Text(
+            "Disc",
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          Obx(() => Text(
+                detailMusicController
+                        .currentMediaItem!.extras!['disc_number'] ??
+                    '--',
                 maxLines: 3,
                 style: TextStyle(
                   overflow: TextOverflow.ellipsis,

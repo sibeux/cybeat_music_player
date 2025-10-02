@@ -177,6 +177,7 @@ class AudioStateController extends GetxController {
               ),
               extras: {
                 'music_id': item['id_music'],
+                'disc_number': item['disc_number'],
                 'url': musicUrl,
                 'favorite': item['favorite'],
                 'id_playlist_music': item['id_playlist_music'] ?? '',
