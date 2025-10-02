@@ -167,7 +167,7 @@ class AudioStateController extends GetxController {
               id: '${_nextMediaId++}',
               title: capitalizeEachWord(item['title']),
               artist: capitalizeEachWord(item['artist']),
-              album: capitalizeEachWord(item['album']),
+              album: capitalizeEachWord(item['album'] ?? "Unknown Album"),
               artUri: Uri.parse(
                 regexGdriveHostUrl(
                   url: item['cover'],
