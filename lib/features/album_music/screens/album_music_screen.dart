@@ -5,8 +5,9 @@ import 'package:cybeat_music_player/features/album_music/controllers/album_music
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/features/album_music/widgets/album_music_list.dart';
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/azlist_mode/azlist_view_mode.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/simple_mode/simple_view_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -100,58 +101,18 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
         final state = snapshot.data;
         final sequence = state?.sequence ?? [];
 
-        musicItems = sequence
-            .map(
-              (e) => AzListMusic(
-                title: e.tag.title,
-                tag: e.tag.title.substring(0, 1).toUpperCase(),
-              ),
-            )
-            .toList();
-
-        return AzListView(
-          data: musicItems,
-          itemCount: sequence.length,
-          indexBarAlignment: Alignment.topRight,
-          indexBarOptions: IndexBarOptions(
-            indexHintDecoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.7),
-              shape: BoxShape.circle,
-            ),
-            selectItemDecoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: HexColor('#6a5081'),
-            ),
-            needRebuild: true,
-            selectTextStyle: TextStyle(
-              color: HexColor('#fefffe'),
-              fontSize: 12.sp,
-            ),
-          ),
-          itemBuilder: (context, index) {
-            // Akan di-print terus saat scroll.
-            // print(index);
-            return InkWell(
-              child: AlbumMusicList(
-                mediaItem: sequence[index].tag as MediaItem,
-                audioPlayer: audioStateController.activePlayer.value!,
-                index: index,
-                audioState: audioStateController,
-              ),
-              onTap: () {
-                Get.toNamed('/detail');
-                if (musicPlayerController.getCurrentMediaItem?.id == "" ||
-                    musicPlayerController.getCurrentMediaItem?.id !=
-                        sequence[index].tag.id) {
-                  musicPlayerController.playMusicNow(
-                    mediaItem: sequence[index].tag as MediaItem,
-                    audioStateController: audioStateController,
-                    index: index,
-                  );
-                }
-              },
-            );
-          },
+        return Obx(
+          () => albumMusicController.isSimpleMode
+              ? SimpleViewMode(
+                  sequence: sequence,
+                  audioStateController: audioStateController,
+                  albumMusicController: albumMusicController,
+                )
+              : AzlistViewMode(
+                  audioStateController: audioStateController,
+                  albumMusicController: albumMusicController,
+                  sequence: sequence,
+                ),
         );
       },
     );

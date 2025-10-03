@@ -31,6 +31,8 @@ class AlbumService extends GetxService {
   var selectedAlbum = RxList<Playlist?>([]);
 
   var isHomeLoading = false.obs;
+  // Use in setting app and album music screen
+  var isSimpleMode = false.obs;
 
   // ============================== homeSortPreferencesController ==============================
   final homeSortPreferences = ''.obs;
@@ -522,6 +524,23 @@ class AlbumService extends GetxService {
       logError('Error update playlist: $e');
     } finally {
       initializeAlbum();
+    }
+  }
+
+  Future<void> getSimpleMode() async {
+    final SharedPreferences prefs = await _prefs;
+    final simpleMode = prefs.getBool('simple_mode') ?? false;
+    isSimpleMode.value = simpleMode;
+  }
+
+  void toggleSimpleMode(bool value) async{
+    final SharedPreferences prefs = await _prefs;
+    isSimpleMode.value = value;
+
+    if (value == true){
+      prefs.setBool('simple_mode', true);
+    } else {
+      prefs.setBool('simple_mode', false);
     }
   }
 }

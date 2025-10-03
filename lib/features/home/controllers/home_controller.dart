@@ -36,6 +36,8 @@ class HomeController extends GetxController {
   void onInit() async {
     // Ambil data filter sort dari Shared Preferences
     await albumService.getSortBy();
+    // Dapatkan mode music listview.
+    await albumService.getSimpleMode();
     // Ambil data album dari database
     initializeAlbum();
     super.onInit();

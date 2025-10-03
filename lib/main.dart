@@ -13,6 +13,8 @@ import 'package:cybeat_music_player/features/playlist/edit_playlist/bindings/edi
 import 'package:cybeat_music_player/features/playlist/edit_playlist/screens/edit_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/bindings/new_playlist_binding.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
+import 'package:cybeat_music_player/features/setting_app/bindings/setting_app_binding.dart';
+import 'package:cybeat_music_player/features/setting_app/screens/setting_app_screen.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/root_page/root_page.dart';
@@ -187,6 +189,14 @@ class MyApp extends StatelessWidget {
                 page: () => EditPlaylistScreen(),
                 binding: EditPlaylistBinding(),
                 transition: Transition.downToUp,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/setting_app',
+                page: () => SettingAppScreen(),
+                binding: SettingAppBinding(),
+                transition: Transition.rightToLeftWithFade,
                 fullscreenDialog: true,
                 popGesture: false,
               ),
