@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
@@ -15,12 +16,14 @@ import 'package:http/http.dart' as http;
 
 class AddMusicToPlaylistController extends GetxController {
   final AlbumService albumService = Get.find<AlbumService>();
+  final AudioStateController audioStateController = Get.find();
   var textController = TextEditingController();
   var textValue = ''.obs;
 
   var listMusicOnPlaylist = RxList<MusicPlaylist>([]);
   var savedInMusicList = RxList<String>([]);
   var newAddedMusic = RxList<String>([]);
+  var addAllMusicId = RxList<String>([]);
 
   var isTyping = false.obs;
   var isKeybordFocus = false.obs;
@@ -28,9 +31,12 @@ class AddMusicToPlaylistController extends GetxController {
   var isLoadingGetMusicOnPlaylist = false.obs;
   var isLoadingUpdateMusicOnPlaylist = false.obs;
   var isLoadingAddPlaylist = false.obs;
+  var isSelectAll = false.obs;
 
   bool get isHomeLoading => albumService.isHomeLoading.value;
   RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
+  List<MediaItem> get currentQueue => audioStateController.queue;
+  bool get isTypingValue => isTyping.value;
 
   void onChanged(String value) {
     isTyping.value = value.isNotEmpty;
@@ -45,6 +51,33 @@ class AddMusicToPlaylistController extends GetxController {
 
   void tapAddMusicToPlaylist(String idPlaylist) {
     newAddedMusic.add(idPlaylist);
+  }
+
+  void toggleSelectAll({required bool isBulkSelect, String idMusic = ''}) {
+    if (isBulkSelect) {
+      if (isSelectAll.value) {
+        // Jika sudah select all, maka batalkan select all
+        isSelectAll.value = false;
+        addAllMusicId.clear();
+      } else {
+        // Jika belum select all, maka select all
+        isSelectAll.value = true;
+        addAllMusicId.clear();
+        addAllMusicId.addAll(currentQueue.map((e) => e.id).toList());
+      }
+    } else {
+      if (addAllMusicId.contains(idMusic)) {
+        addAllMusicId.remove(idMusic);
+      } else {
+        addAllMusicId.add(idMusic);
+      }
+      // Cek apakah semua musik sudah dipilih
+      if (addAllMusicId.length == currentQueue.length) {
+        isSelectAll.value = true;
+      } else {
+        isSelectAll.value = false;
+      }
+    }
   }
 
   void tapRemoveMusicFromPlaylist(String idPlaylist) {
@@ -181,5 +214,24 @@ class AddMusicToPlaylistController extends GetxController {
     }
   }
 
-  bool get isTypingValue => isTyping.value;
+  Future<void> addAllMusicToPlaylist({required String idPlaylist}) async {
+
+    // String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
+    // try {
+    //   final response = await http.post(
+    //     Uri.parse(url),
+    //     headers: {"Content-Type": "application/json"}, // Pastikan JSON
+    //     body: jsonEncode({
+    //           // Tidak perlu `json.encode()`, karena `jsonEncode()` otomatis menangani List
+    //       'all_id_music': addAllMusicId,
+    //       'method': 'add_all_music_to_playlist',
+    //       'id_playlist_music': idPlaylist,
+    //     }),
+    //   );
+    // } catch (e) {
+    //   logError('Error addAllMusicToPlaylist: $e');
+    // } finally{
+      
+    // }
+  }
 }

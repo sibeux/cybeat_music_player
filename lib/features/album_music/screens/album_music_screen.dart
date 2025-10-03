@@ -292,11 +292,14 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                                 highlightColor:
                                     Colors.black.withValues(alpha: 0.02),
                                 icon: Icon(
-                                  Icons.list_rounded,
+                                  Icons.library_music_outlined,
                                   size: 30.sp,
                                   color: HexColor('#8d8c8c'),
                                 ),
-                                onPressed: null,
+                                onPressed: () {
+                                  albumMusicController
+                                      .getToAddAllMusicToPlaylistScreen();
+                                },
                               ),
                               SizedBox(
                                 width: 15.w,

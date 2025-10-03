@@ -7,6 +7,7 @@ import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
 import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/bindings/add_music_to_playlist_binding.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_all_music_to_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_music_to_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/edit_playlist/bindings/edit_playlist_binding.dart';
 import 'package:cybeat_music_player/features/playlist/edit_playlist/screens/edit_playlist_screen.dart';
@@ -161,6 +162,14 @@ class MyApp extends StatelessWidget {
                 name: '/add_music_to_playlist',
                 page: () => AddMusicToPlaylistScreen(),
                 transition: Transition.downToUp,
+                binding: AddMusicToPlaylistBinding(),
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/add_all_music_to_playlist',
+                page: () => AddAllMusicToPlaylistScreen(),
+                transition: Transition.rightToLeft,
                 binding: AddMusicToPlaylistBinding(),
                 fullscreenDialog: true,
                 popGesture: false,
