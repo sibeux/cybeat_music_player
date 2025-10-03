@@ -216,22 +216,22 @@ class AddMusicToPlaylistController extends GetxController {
 
   Future<void> addAllMusicToPlaylist({required String idPlaylist}) async {
 
-    String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {"Content-Type": "application/json"}, // Pastikan JSON
-        body: jsonEncode({
-              // Tidak perlu `json.encode()`, karena `jsonEncode()` otomatis menangani List
-          'all_id_music': addAllMusicId,
-          'method': 'add_all_music_to_playlist',
-          'id_playlist_music': idPlaylist,
-        }),
-      );
-    } catch (e) {
-      logError('Error addAllMusicToPlaylist: $e');
-    } finally{
+    // String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
+    // try {
+    //   final response = await http.post(
+    //     Uri.parse(url),
+    //     headers: {"Content-Type": "application/json"}, // Pastikan JSON
+    //     body: jsonEncode({
+    //           // Tidak perlu `json.encode()`, karena `jsonEncode()` otomatis menangani List
+    //       'all_id_music': addAllMusicId,
+    //       'method': 'add_all_music_to_playlist',
+    //       'id_playlist_music': idPlaylist,
+    //     }),
+    //   );
+    // } catch (e) {
+    //   logError('Error addAllMusicToPlaylist: $e');
+    // } finally{
       
-    }
+    // }
   }
 }
