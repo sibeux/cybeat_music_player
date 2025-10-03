@@ -7,7 +7,6 @@ import 'package:cybeat_music_player/core/controllers/music_player_controller.dar
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,11 +17,9 @@ class MusicDownloadController extends GetxController {
   var dataProgressDownload = <String, Map<String, dynamic>>{}.obs;
 
   final musicPlayerController = Get.find<MusicPlayerController>();
+  final audioStateController = Get.find<AudioStateController>();
 
-  void goOfflineScreen({
-    required AudioStateController audioState,
-    required BuildContext context,
-  }) {
+  void goOfflineScreen() {
     Playlist playlist = Playlist(
       uid: 'offline',
       title: 'Offline Music',
@@ -38,10 +35,10 @@ class MusicDownloadController extends GetxController {
     if (musicPlayerController.currentActivePlaylist.value?.title !=
             playlist.title ||
         musicPlayerController.currentActivePlaylist.value?.title == "") {
-      audioState.clear();
+      audioStateController.clear();
       musicPlayerController.killMusic();
       musicPlayerController.clearCurrentMediaItem();
-      audioState.init(playlist);
+      audioStateController.init(playlist);
       musicPlayerController.setActivePlaylist(playlist);
     }
 

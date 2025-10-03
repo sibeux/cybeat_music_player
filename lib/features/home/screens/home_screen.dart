@@ -1,8 +1,8 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_filter/home_filter_grid.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_scale_tap.dart';
+import 'package:cybeat_music_player/features/home/widgets/scale_tap_profile.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/widgets/show_new_playlist_modal.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_sort/scale_tap_sort.dart';
 import 'package:flutter/material.dart';
@@ -34,14 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
       systemNavigationBarColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
-    final audioStateController = Get.find<AudioStateController>();
     return Scaffold(
       backgroundColor: HexColor('#fefffe'),
       appBar: AppBar(
         backgroundColor: HexColor('#fefffe'),
         scrolledUnderElevation: 0,
         elevation: 0,
-        toolbarHeight: 30.h,
+        toolbarHeight: 20.h,
         automaticallyImplyLeading: false,
       ),
       body: Column(
@@ -52,13 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image(
-                        image: AssetImage('assets/images/cybeat_splash.png'),
-                        width: 40.w,
-                        height: 40.h,
-                      ),
+                    ScaleTapProfile(
+                      onTap: () {
+                        // ** Kalau drawer dari file ini, perlu Builder.
+                        // Ini memanggil drawer di root page.
+                        Scaffold.of(context).openDrawer();
+                      },
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 10.w),
@@ -71,40 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        final musicDownloadController =
-                            Get.find<MusicDownloadController>();
-                        musicDownloadController.goOfflineScreen(
-                          audioState: audioStateController,
-                          context: context,
-                        );
-                      },
-                      child: const Icon(
-                        Icons.file_download_outlined,
-                        color: Colors.black,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Get.toNamed(
-                          '/recents',
-                          id: 1,
-                        );
-                      },
-                      child: const Icon(
-                        Icons.history,
-                        color: Colors.black,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
                     GestureDetector(
                       onTap: () {
                         Get.toNamed('/search_album', id: 1);
@@ -130,8 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   ],
                 ),
-                const SizedBox(
-                  height: 10,
+                SizedBox(
+                  height: 15.h,
                 ),
                 Obx(
                   // Awalnya, HomeFilterGrid ada const, tetapi di release mode,
@@ -166,13 +130,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 20, right: 10),
+              padding: EdgeInsets.only(left: 20.w, right: 10.w),
               child: RawScrollbar(
                 radius: const Radius.circular(10),
                 controller: _scrollController,
                 thumbVisibility: false,
                 timeToFade: const Duration(milliseconds: 500),
-                padding: const EdgeInsets.only(top: 55),
+                padding: EdgeInsets.only(top: 55.h),
                 thickness: 5,
                 thumbColor: HexColor('#ac8bc9').withValues(alpha: 0.7),
                 trackVisibility: false,
@@ -229,8 +193,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                           child: Column(
                             children: [
-                              const SizedBox(
-                                height: 15,
+                              SizedBox(
+                                height: 15.h,
                               ),
                               Row(
                                 children: [
@@ -269,14 +233,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 child: Text('No album found'),
                                               )
                                             : _getReorderableAlbum()
-                                    : const SizedBox(),
+                                    : SizedBox(),
                               ),
                             ],
                           ),
                         ),
                         // ini sama aja padding kanan 20
-                        const SizedBox(
-                          width: 10,
+                        SizedBox(
+                          width: 10.w,
                         )
                       ],
                     ),

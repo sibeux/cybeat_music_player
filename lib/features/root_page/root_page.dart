@@ -4,6 +4,7 @@ import 'package:cybeat_music_player/features/album_music/screens/album_music_scr
 import 'package:cybeat_music_player/common/widgets/floating_bar/floating_playing_music.dart';
 import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
 import 'package:cybeat_music_player/features/home/screens/home_screen.dart';
+import 'package:cybeat_music_player/features/root_page/widgets/root_navigation_drawer.dart';
 import 'package:cybeat_music_player/features/recent_music/screens/recents_music_screen.dart';
 import 'package:cybeat_music_player/features/root_page/controllers/navigation_history_controller.dart';
 import 'package:cybeat_music_player/features/root_page/controllers/root_navigator_observer.dart';
@@ -27,46 +28,50 @@ class RootPage extends StatelessWidget {
     // 1. Daftarkan controller agar bisa di-find oleh Observer
     final historyController = Get.put(NavigationHistoryController());
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (bool didPop, result) {
-        if (didPop) return;
-        // 3. LOGIKA BARU: Cek panjang riwayat, BUKAN canPop()
-        // Jika riwayat lebih dari 1, berarti kita bisa kembali.
-        if (historyController.routeHistory.length > 1) {
-          Get.nestedKey(1)?.currentState?.pop();
-        } else {
-          // Jika hanya ada 1 (atau 0), kita di halaman home. Minimize aplikasi.
-          // MoveToBackground.moveTaskToBack();
-          SystemNavigator.pop();
-        }
-      },
-      child: Stack(
-        children: [
-          Navigator(
-            key: Get.nestedKey(1),
-            initialRoute: '/home',
-            // 2. Tambahkan observer ke navigator
-            observers: [RootNavigatorObserver()],
-            onGenerateRoute: (settings) {
-              return onGenerateNestedRoute(settings);
-            },
-          ),
-          // BAGIAN 2: "CANGKANG" YANG PERSISTEN
-          // Floating player Anda akan selalu ada di atas halaman apa pun.
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Obx(
-              () => musicPlayerController.isMusicActiveNow.value
-                  ? Material(
-                      child: FloatingPlayingMusic(),
-                    )
-                  : const SizedBox(),
+    return Scaffold(
+      drawerBarrierDismissible: true,
+      drawer: RootNavigationDrawer(),
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, result) {
+          if (didPop) return;
+          // 3. LOGIKA BARU: Cek panjang riwayat, BUKAN canPop()
+          // Jika riwayat lebih dari 1, berarti kita bisa kembali.
+          if (historyController.routeHistory.length > 1) {
+            Get.nestedKey(1)?.currentState?.pop();
+          } else {
+            // Jika hanya ada 1 (atau 0), kita di halaman home. Minimize aplikasi.
+            // MoveToBackground.moveTaskToBack();
+            SystemNavigator.pop();
+          }
+        },
+        child: Stack(
+          children: [
+            Navigator(
+              key: Get.nestedKey(1),
+              initialRoute: '/home',
+              // 2. Tambahkan observer ke navigator
+              observers: [RootNavigatorObserver()],
+              onGenerateRoute: (settings) {
+                return onGenerateNestedRoute(settings);
+              },
             ),
-          ),
-        ],
+            // BAGIAN 2: "CANGKANG" YANG PERSISTEN
+            // Floating player Anda akan selalu ada di atas halaman apa pun.
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Obx(
+                () => musicPlayerController.isMusicActiveNow.value
+                    ? Material(
+                        child: FloatingPlayingMusic(),
+                      )
+                    : const SizedBox(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -97,7 +102,7 @@ Route<dynamic>? onGenerateNestedRoute(RouteSettings settings) {
       return GetPageRoute(
         settings: settings,
         page: () => RecentsMusicScreen(),
-        transition: Transition.native,
+        transition: Transition.rightToLeftWithFade,
         transitionDuration: const Duration(milliseconds: 300),
         fullscreenDialog: true,
         popGesture: false,
