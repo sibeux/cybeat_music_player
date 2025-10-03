@@ -6,7 +6,8 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
-import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/azlist_view_mode.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/azlist_mode/azlist_view_mode.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/simple_mode/simple_view_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -100,10 +101,18 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
         final state = snapshot.data;
         final sequence = state?.sequence ?? [];
 
-        return AzlistViewMode(
-          audioStateController: audioStateController,
-          albumMusicController: albumMusicController,
-          sequence: sequence,
+        return Obx(
+          () => albumMusicController.isSimpleMode
+              ? SimpleViewMode(
+                  sequence: sequence,
+                  audioStateController: audioStateController,
+                  albumMusicController: albumMusicController,
+                )
+              : AzlistViewMode(
+                  audioStateController: audioStateController,
+                  albumMusicController: albumMusicController,
+                  sequence: sequence,
+                ),
         );
       },
     );
