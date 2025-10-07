@@ -6,6 +6,7 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
+import 'package:cybeat_music_player/features/album_music/screens/album_music_screen_search.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/azlist_mode/azlist_view_mode.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/simple_mode/simple_view_mode.dart';
 import 'package:flutter/material.dart';
@@ -166,6 +167,15 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
               rebuildPlaylist();
             },
           ),
+          actions: [
+            IconButton(onPressed: (){
+              Get.to(()=> const AlbumMusicScreenSearch());
+            }, icon: Icon(
+              Icons.search,
+              size: 28.sp,
+              color: HexColor('#8d8c8c'),
+            ))
+          ],
           centerTitle: true,
           toolbarHeight: 60.h,
           title: Obx(
