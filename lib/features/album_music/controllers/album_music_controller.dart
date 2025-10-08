@@ -7,13 +7,20 @@ import 'package:cybeat_music_player/core/controllers/music_player_controller.dar
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AlbumMusicController extends GetxController {
   final AudioStateController audioStateController = Get.find();
   final musicPlayerController = Get.find<MusicPlayerController>();
   final AlbumService albumService = Get.find();
+  final RefreshController refreshController =
+      RefreshController(initialRefresh: false);
 
   var flexibleSpaceMachineHeight = 0.0.obs;
+  var countMusicAlbum = 0;
+  var sisaJumlahMusicTersedia = 0;
+  var jumlahMusicDitampilkan = 0.obs;
+  var underLoadingFetchMusic = false;
 
   RxBool get initAlbumLoading => audioStateController.initAlbumLoading;
   bool get isSimpleMode => albumService.isSimpleMode.value;
@@ -70,6 +77,21 @@ class AlbumMusicController extends GetxController {
         audioStateController: audioStateController,
         index: index,
       );
+    }
+  }
+
+  void onLoading() {
+    if (!underLoadingFetchMusic && sisaJumlahMusicTersedia == 0) {
+      refreshController.loadNoData();
+    } else {
+      if (sisaJumlahMusicTersedia >= 100) {
+        jumlahMusicDitampilkan.value += 100;
+        sisaJumlahMusicTersedia -= 100;
+      } else {
+        jumlahMusicDitampilkan.value += sisaJumlahMusicTersedia;
+        sisaJumlahMusicTersedia = 0;
+      }
+      refreshController.loadComplete();
     }
   }
 }
