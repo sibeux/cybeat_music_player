@@ -30,6 +30,8 @@ class AlbumService extends GetxService {
   var allAlbumChildren = RxList([]);
   var selectedAlbum = RxList<Playlist?>([]);
 
+  var defaultAlbumColor = "ffffff".obs;
+
   var isHomeLoading = false.obs;
   // Use in setting app and album music screen
   var isSimpleMode = false.obs;
@@ -524,6 +526,25 @@ class AlbumService extends GetxService {
       logError('Error update playlist: $e');
     } finally {
       initializeAlbum();
+    }
+  }
+
+  Future<void> getDominantColorAlbum({required String albumCover}) async {
+    const String api =
+        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/get_dominant_color_album";
+    try {
+      final response = await http.post(Uri.parse(api), body: {
+        'image_url': albumCover,
+      });
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200 && body['success'] == true) {
+        defaultAlbumColor.value = body["dominant_color"]["bg_color"];
+        logInfo('Dominant color album: $body');
+      } else {
+        logError("Error on getDominantColorAlbum: ${body['reason']}");
+      }
+    } catch (e, st) {
+      logError("Error on getDominantColorAlbum: $e, stackTrace: $st");
     }
   }
 

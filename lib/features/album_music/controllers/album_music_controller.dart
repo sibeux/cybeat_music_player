@@ -17,12 +17,14 @@ class AlbumMusicController extends GetxController {
       RefreshController(initialRefresh: false);
 
   var flexibleSpaceMachineHeight = 0.0.obs;
+  var jumlahMusicDitampilkan = 0.obs;
+
   var countMusicAlbum = 0;
   var sisaJumlahMusicTersedia = 0;
-  var jumlahMusicDitampilkan = 0.obs;
   var underLoadingFetchMusic = false;
 
   RxBool get initAlbumLoading => audioStateController.initAlbumLoading;
+  RxString get defaultAlbumColor => albumService.defaultAlbumColor;
   bool get isSimpleMode => albumService.isSimpleMode.value;
 
   // logic untuk shuffle music.
@@ -94,4 +96,6 @@ class AlbumMusicController extends GetxController {
       refreshController.loadComplete();
     }
   }
+
+  
 }
