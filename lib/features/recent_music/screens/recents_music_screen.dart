@@ -58,7 +58,7 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
       for (final item in listData) {
         loadedItems.add(
           Music(
-            uid: item['id_music'],
+            musicId: item['id_music'],
             title: item['title'],
             artist: item['artist'],
             album: item['album'] ?? "Unknown Album",
@@ -68,10 +68,10 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
               listApiKey: albumService.gdriveApiKeyList,
             ),
             linkDrive: '',
-            time: '',
-            favorite: '',
-            category: '',
-            dateAdded: '',
+            extras: {
+              'key1': 'value1',
+              'key2': 'value2',
+            },
           ),
         );
       }

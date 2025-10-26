@@ -1,4 +1,3 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/album_music/controllers/album_music_controller.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/simple_mode/album_music_simple_list.dart';
@@ -49,17 +48,15 @@ class SimpleViewMode extends StatelessWidget {
                 controller: _scrollController,
                 itemCount: sequence.length,
                 itemBuilder: (context, index) {
-                  final mediaItem = sequence[index].tag as MediaItem;
                   return InkWell(
                     onTap: () {
-                      albumMusicController.navigateToDetailMusicScreen(
-                        sequence: sequence,
-                        index: index,
-                      );
+                      // albumMusicController.navigateToDetailMusicScreen(
+                      //   index: index,
+                      // );
                     },
                     child: AlbumMusicSimpleList(
                       index: index,
-                      mediaItem: mediaItem,
+                      music: audioStateController.playlist[index],
                       audioStateController: audioStateController,
                       albumMusicController: albumMusicController,
                     ),

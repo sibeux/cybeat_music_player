@@ -38,6 +38,8 @@ class DetailMusicController extends GetxController {
 
   AudioPlayer? get player => audioStateController.activePlayer.value;
   bool get isMusicPlayingNow => musicPlayerController.isMusicPlayingNow.value;
+  bool get isLastIndexMusic => musicPlayerController.isLastIndexMusic;
+  bool get isShuffleEnabled => musicPlayerController.isShuffleEnabled.value;
 
   Duration get duration => musicPlayerController.currentMusicDuration.value;
   Duration get position => musicPlayerController.currentMusicPosition.value;
@@ -94,5 +96,17 @@ class DetailMusicController extends GetxController {
     player!.seek(Duration(milliseconds: position.round()));
     // Setelah selesai, baru update state
     isSeeking.value = false;
+  }
+
+  void seekNextButton() {
+    musicPlayerController.seekNextButton();
+  }
+
+  void seekPreviousButton() {
+    musicPlayerController.seekPreviousButton();
+  }
+
+  void toggleShuffleButton() {
+    musicPlayerController.toggleShuffleButton();
   }
 }

@@ -315,7 +315,6 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
     Get.toNamed('/detail');
     musicPlayerController.playMusicNow(
       audioStateController: audioStateController,
-      index: index,
       mediaItem: sequence[index].tag as MediaItem,
     );
   }

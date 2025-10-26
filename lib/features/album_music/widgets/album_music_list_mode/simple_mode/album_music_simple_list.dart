@@ -3,6 +3,7 @@ import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
+import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/features/album_music/controllers/album_music_controller.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_index_number_list.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_modal.dart';
@@ -14,18 +15,26 @@ import 'package:hexcolor/hexcolor.dart';
 class AlbumMusicSimpleList extends StatelessWidget {
   const AlbumMusicSimpleList({
     super.key,
-    required this.mediaItem,
+    required this.music,
     required this.audioStateController,
     required this.albumMusicController,
     required this.index,
   });
   final AudioStateController audioStateController;
   final AlbumMusicController albumMusicController;
-  final MediaItem mediaItem;
+  final Music music;
   final int index;
 
   @override
   Widget build(BuildContext context) {
+    final mediaItem = MediaItem(
+      id: music.musicId,
+      title: music.title,
+      album: music.album,
+      artUri: Uri.parse(music.cover),
+      artist: music.artist,
+      extras: music.extras,
+    );
     final musikDimainkan =
         Get.find<MusicPlayerController>().getCurrentMediaItem;
     final musicDownloadController = Get.find<MusicDownloadController>();

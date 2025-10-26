@@ -1,4 +1,3 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/features/album_music/controllers/album_music_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
@@ -12,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -346,12 +344,12 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
                     ),
                   ),
                 ),
-                StreamBuilder<SequenceState?>(
-                  stream: audioStateController
-                      .activePlayer.value?.sequenceStateStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.data?.sequence.isEmpty ??
-                        true && albumMusicController.initAlbumLoading.value) {
+                Obx(
+                  () {
+                    if (albumMusicController.initAlbumLoading.value) {
+                      return SliverToBoxAdapter(child: ShimmerMusicList());
+                    }
+                    if (audioStateController.playlist.isEmpty) {
                       if (audioStateController.isAlbumEmpty.value) {
                         albumMusicController.underLoadingFetchMusic = false;
                         albumMusicController.sisaJumlahMusicTersedia = 0;
@@ -369,18 +367,16 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
                         );
                       }
                       albumMusicController.underLoadingFetchMusic = true;
-                      return SliverToBoxAdapter(child: ShimmerMusicList());
                     }
 
                     albumMusicController.underLoadingFetchMusic = false;
-                    final state = snapshot.data;
-                    final sequence = state?.sequence ?? [];
+                    final musicList = audioStateController.playlist;
                     if (albumMusicController.countMusicAlbum == 0) {
-                      albumMusicController.countMusicAlbum = sequence.length;
+                      albumMusicController.countMusicAlbum = musicList.length;
                       albumMusicController.jumlahMusicDitampilkan.value =
-                          sequence.length >= 100 ? 100 : sequence.length;
+                          musicList.length >= 100 ? 100 : musicList.length;
                       albumMusicController.sisaJumlahMusicTersedia =
-                          sequence.length -
+                          musicList.length -
                               albumMusicController.jumlahMusicDitampilkan.value;
                     }
 
@@ -399,16 +395,14 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
                                 child: albumMusicController.isSimpleMode
                                     ? AlbumMusicSimpleList(
                                         index: index,
-                                        mediaItem:
-                                            sequence[index].tag as MediaItem,
+                                        music: musicList[index],
                                         audioStateController:
                                             audioStateController,
                                         albumMusicController:
                                             albumMusicController,
                                       )
                                     : AlbumMusicAzlistList(
-                                        mediaItem:
-                                            sequence[index].tag as MediaItem,
+                                        music: musicList[index],
                                         audioPlayer: audioStateController
                                             .activePlayer.value!,
                                         index: index,
@@ -417,7 +411,7 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
                                 onTap: () {
                                   albumMusicController
                                       .navigateToDetailMusicScreen(
-                                    sequence: sequence,
+                                    music: musicList[index],
                                     index: index,
                                   );
                                 },
