@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
@@ -11,6 +12,8 @@ import 'package:just_audio/just_audio.dart';
 class DetailMusicController extends GetxController {
   final MusicPlayerController musicPlayerController = Get.find();
   final AudioStateController audioStateController = Get.find();
+
+  final uiTrigger = 0.obs;
 
   // --- TAMBAHKAN STATE BARU ---
   var isSeeking = false.obs;
@@ -71,7 +74,19 @@ class DetailMusicController extends GetxController {
     return '$minutes:$seconds';
   }
 
-  void setfavorite(String? id, String? isFavorite) async {
+  void setfavorite() async {
+    uiTrigger.value++;
+    var isFavorite = '0';
+    final id = currentMediaItem!.extras?['music_id'];
+    if (currentMediaItem!.extras?['favorite'] == '1') {
+      isFavorite = '0';
+      currentMediaItem!.extras?['favorite'] = '0';
+      showToast('Removed from favorite');
+    } else {
+      isFavorite = '1';
+      currentMediaItem!.extras?['favorite'] = '1';
+      showToast('Added to favorite');
+    }
     String api = dotenv.env['FAVORITE_API_URL'] ?? '';
     String url = '$api?_id=$id&_favorite=$isFavorite';
 
