@@ -179,6 +179,7 @@ class AudioStateController extends GetxController {
             extras: {
               'index': '${_nextMediaId++}',
               'music_id': item['id_music'],
+              'file_drive_id': '',
               'disc_number': item['disc_number'],
               'url': musicUrl,
               'favorite': item['favorite'],
@@ -224,11 +225,7 @@ class AudioStateController extends GetxController {
             ),
           )
           .toList();
-      // {kode "APEL"} Sebelumnya, ini setAudioSource -tanpa s- karena ConcatenatingAudioSource-
-      // yang sekarang udah deprecated, makanya pakai yang ada -s-.
-      // await activePlayer.value?.setAudioSources(playlist);
     } catch (e, st) {
-      // logger.e('Error loading audio source: $e');
       logError('Error loading audio source: $e, st:$st');
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
     } finally {
@@ -420,6 +417,4 @@ class AudioStateController extends GetxController {
       return false;
     }
   }
-
-  
 }

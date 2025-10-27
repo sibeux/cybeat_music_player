@@ -38,6 +38,8 @@ class DetailMusicController extends GetxController {
 
   AudioPlayer? get player => audioStateController.activePlayer.value;
   bool get isMusicPlayingNow => musicPlayerController.isMusicPlayingNow.value;
+  bool get isWaitingGetMusicStreamUrl =>
+      musicPlayerController.isWaitingGetMusicStreamUrl.value;
   bool get isLastIndexMusic => musicPlayerController.isLastIndexMusic;
   bool get isShuffleEnabled => musicPlayerController.isShuffleEnabled.value;
 

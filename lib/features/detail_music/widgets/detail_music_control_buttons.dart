@@ -46,8 +46,7 @@ class DetailMusicControlButtons extends StatelessWidget {
             detailMusicController.seekNextButton();
           },
         ),
-             _shuffleButton(context)
-        
+        _shuffleButton(context)
       ],
     );
   }
@@ -78,7 +77,8 @@ class DetailMusicControlButtons extends StatelessWidget {
     final DetailMusicController detailMusicController = Get.find();
     return Obx(() {
       if (detailMusicController.playerState == ProcessingState.loading ||
-          detailMusicController.playerState == ProcessingState.buffering) {
+          detailMusicController.playerState == ProcessingState.buffering ||
+          detailMusicController.isWaitingGetMusicStreamUrl) {
         return IconButton(
           iconSize: 60.sp,
           icon: Icon(
@@ -97,7 +97,7 @@ class DetailMusicControlButtons extends StatelessWidget {
         );
       } else if (detailMusicController.playerState !=
               ProcessingState.completed ||
-          detailMusicController.isLastIndexMusic == false) {
+          (detailMusicController.isLastIndexMusic == false)) {
         return IconButton(
           icon: const Icon(Icons.pause_circle_filled),
           iconSize: 60.sp,

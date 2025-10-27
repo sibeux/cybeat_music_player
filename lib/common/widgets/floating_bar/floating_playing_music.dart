@@ -243,7 +243,8 @@ class FloatingPlayingMusic extends StatelessWidget {
             onPressed: audioStateController.activePlayer.value?.play,
           ),
         );
-      } else if (processingState.value != ProcessingState.completed) {
+      } else if (processingState.value != ProcessingState.completed ||
+          musicPlayerController.isLastIndexMusic == false) {
         return Obx(
           () => IconButton(
             icon: const Icon(Icons.pause_circle_filled),
