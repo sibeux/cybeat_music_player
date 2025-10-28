@@ -38,26 +38,25 @@ class AlbumMusicSimpleList extends StatelessWidget {
     final musikDimainkan =
         Get.find<MusicPlayerController>().getCurrentMediaItem;
     final musicDownloadController = Get.find<MusicDownloadController>();
-    String colorTitle = "#313031";
-    String colorIndex = "#8d8c8c";
-    double marginList = 18;
-    FontWeight fontWeightTitleIndex = FontWeight.normal;
 
-    if (musikDimainkan?.extras!['music_id'] == mediaItem.extras!['music_id']) {
-      colorTitle = '#8238be';
-      colorIndex = '#8238be';
-      marginList = 10;
-      fontWeightTitleIndex = FontWeight.bold;
-    }
-
-    // Perbedaa dari azlist: ini diletakkan setelah if,
-    // karena yang diubah di sini adalah style, bukan value widget-nya.
-    Widget indexIcon = Text(
-      mediaItem.id.toString().padLeft(2, '0'),
-      style: TextStyle(
-        fontSize: 12.sp,
-        color: HexColor(colorIndex),
-        fontWeight: fontWeightTitleIndex,
+    Widget indexIcon = Obx(
+      () => Text(
+        mediaItem.extras!['index'].toString().padLeft(2, '0'),
+        style: TextStyle(
+          fontSize: 12.sp,
+          color: Get.find<MusicPlayerController>()
+                      .getCurrentMediaItem
+                      ?.extras!['music_id'] ==
+                  mediaItem.id
+              ? HexColor('#8238be')
+              : HexColor("#8d8c8c"),
+          fontWeight: Get.find<MusicPlayerController>()
+                      .getCurrentMediaItem
+                      ?.extras!['music_id'] ==
+                  mediaItem.id
+              ? FontWeight.bold
+              : FontWeight.normal,
+        ),
       ),
     );
 
@@ -69,12 +68,19 @@ class AlbumMusicSimpleList extends StatelessWidget {
         children: [
           Row(
             children: [
-              AlbumMusicIndexNumberList(
-                marginList: marginList,
-                musicDownloadController: musicDownloadController,
-                mediaItem: mediaItem,
-                indexIcon: indexIcon,
-                musikDimainkan: musikDimainkan,
+              Obx(
+                () => AlbumMusicIndexNumberList(
+                  marginList: Get.find<MusicPlayerController>()
+                              .getCurrentMediaItem
+                              ?.extras!['music_id'] ==
+                          mediaItem.id
+                      ? 10
+                      : 18,
+                  musicDownloadController: musicDownloadController,
+                  mediaItem: mediaItem,
+                  indexIcon: indexIcon,
+                  musikDimainkan: musikDimainkan,
+                ),
               ),
               SizedBox(
                 width: 2.w,
@@ -86,13 +92,25 @@ class AlbumMusicSimpleList extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        capitalizeEachWord(mediaItem.title),
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: HexColor(colorTitle),
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: fontWeightTitleIndex,
+                      Obx(
+                        () => Text(
+                          capitalizeEachWord(mediaItem.title),
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Get.find<MusicPlayerController>()
+                                        .getCurrentMediaItem
+                                        ?.extras!['music_id'] ==
+                                    mediaItem.id
+                                ? HexColor('#8238be')
+                                : HexColor("#313031"),
+                            overflow: TextOverflow.ellipsis,
+                            fontWeight: Get.find<MusicPlayerController>()
+                                        .getCurrentMediaItem
+                                        ?.extras!['music_id'] ==
+                                    mediaItem.id
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
                         ),
                       ),
                       Row(
