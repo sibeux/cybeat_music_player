@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/features/album_music/controllers/album_music_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
@@ -168,13 +165,15 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
             },
           ),
           actions: [
-            IconButton(onPressed: (){
-              Get.to(()=> const AlbumMusicScreenSearch());
-            }, icon: Icon(
-              Icons.search,
-              size: 28.sp,
-              color: HexColor('#8d8c8c'),
-            ))
+            IconButton(
+                onPressed: () {
+                  Get.to(() => const AlbumMusicScreenSearch());
+                },
+                icon: Icon(
+                  Icons.search,
+                  size: 28.sp,
+                  color: HexColor('#8d8c8c'),
+                ))
           ],
           centerTitle: true,
           toolbarHeight: 60.h,
@@ -203,59 +202,44 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
                           height: 50.h,
                           child: Row(
                             children: [
-                              StreamBuilder<SequenceState?>(
-                                stream: audioStateController
-                                    .activePlayer.value?.sequenceStateStream,
-                                builder: (context, snapshot) {
-                                  List<IndexedAudioSource> sequence = [];
-                                  if (snapshot.hasData) {
-                                    final state = snapshot.data;
-                                    sequence = state?.sequence ?? [];
-                                  }
-                                  return InkWell(
-                                    onTap: () {
-                                      if (snapshot.hasData &&
-                                          sequence.isNotEmpty) {
-                                        _shuffleMusic(
-                                          audioStateController,
-                                          sequence,
-                                        );
-                                      }
-                                    },
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 8.w),
-                                      margin: EdgeInsets.only(left: 18.w),
-                                      width: 180.w,
-                                      height: 35.h,
-                                      decoration: BoxDecoration(
-                                        color: HexColor('#ac8bc9'),
-                                        borderRadius:
-                                            BorderRadius.circular(50.r),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.play_circle_fill,
-                                            color: HexColor('#fefffe'),
-                                            size: 30.sp,
-                                          ),
-                                          SizedBox(
-                                            width: 5.w,
-                                          ),
-                                          Text(
-                                            'Shuffle Playback',
-                                            style: TextStyle(
+                              Obx(() => AbsorbPointer(
+                                    child: InkWell(
+                                      onTap: () {
+                                        _shuffleMusic();
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8.w),
+                                        margin: EdgeInsets.only(left: 18.w),
+                                        width: 180.w,
+                                        height: 35.h,
+                                        decoration: BoxDecoration(
+                                          color: HexColor('#ac8bc9'),
+                                          borderRadius:
+                                              BorderRadius.circular(50.r),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.play_circle_fill,
                                               color: HexColor('#fefffe'),
-                                              fontSize: 16.sp,
+                                              size: 30.sp,
                                             ),
-                                          ),
-                                        ],
+                                            SizedBox(
+                                              width: 5.w,
+                                            ),
+                                            Text(
+                                              'Shuffle Playback',
+                                              style: TextStyle(
+                                                color: HexColor('#fefffe'),
+                                                fontSize: 16.sp,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
+                                  ),),
                               const Expanded(
                                 child: SizedBox(),
                               ),
@@ -304,22 +288,9 @@ class _AlbumMusicScreenState extends State<AlbumMusicScreen> {
   }
 
   // logic untuk shuffle music.
-  void _shuffleMusic(
-    AudioStateController audioStateController,
-    List<IndexedAudioSource> sequence,
-  ) {
-    final index = audioStateController.playlist.length < 2
-        ? 0
-        : random(0, audioStateController.playlist.length - 1);
+  void _shuffleMusic() {
+    musicPlayerController.seekNextButton(isFromShuffleButton: true);
     // Langsung buka detail screen.
     Get.toNamed('/detail');
-    musicPlayerController.playMusicNow(
-      audioStateController: audioStateController,
-      mediaItem: sequence[index].tag as MediaItem,
-    );
-  }
-
-  int random(int min, int max) {
-    return min + Random().nextInt(max - min);
   }
 }

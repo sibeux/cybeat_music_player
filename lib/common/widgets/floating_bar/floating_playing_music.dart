@@ -226,7 +226,8 @@ class FloatingPlayingMusic extends StatelessWidget {
     final processingState = musicPlayerController.currentMusicPlayerState;
     return Obx(() {
       if (processingState.value == ProcessingState.loading ||
-          processingState.value == ProcessingState.buffering) {
+          processingState.value == ProcessingState.buffering ||
+          musicPlayerController.isWaitingGetMusicStreamUrl.value) {
         return IconButton(
           icon: const Icon(
             Icons.play_circle_filled,

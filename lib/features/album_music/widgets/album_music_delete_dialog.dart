@@ -129,6 +129,7 @@ void deleteMusic(
     );
   } else if (type.toLowerCase() == 'playlist') {
     // delete music from playlist
+    print(mediaItem.extras?['id_playlist_music']);
     audioState.deleteMusicFromPlaylist(
       idPlaylistMusic: mediaItem.extras?['id_playlist_music'],
     );

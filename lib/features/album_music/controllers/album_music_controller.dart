@@ -29,21 +29,15 @@ class AlbumMusicController extends GetxController {
 
   // logic untuk shuffle music.
   void shuffleMusic() {
-    final sequence = audioStateController.activePlayer.value?.sequence;
-    final index = audioStateController.playlist.length < 2
-        ? 0
-        : random(0, audioStateController.playlist.length - 1);
     if (initAlbumLoading.value) {
       showRemoveAlbumToast('Wait a moment...');
     } else if (audioStateController.isAlbumEmpty.value) {
       showRemoveAlbumToast('Album is empty');
     } else {
       // Langsung buka detail screen.
+      musicPlayerController.seekNextButton(isFromShuffleButton: true);
+      // Langsung buka detail screen.
       Get.toNamed('/detail');
-      musicPlayerController.playMusicNow(
-        audioStateController: audioStateController,
-        mediaItem: sequence![index].tag as MediaItem,
-      );
     }
   }
 

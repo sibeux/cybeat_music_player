@@ -87,17 +87,17 @@ class MusicPlayerController extends GetxController {
         updateCurrentMusicPlayerState(state, player);
       });
 
-      // sequenceStateStreamSubscription =
-      //     player.sequenceStateStream.listen((sequenceState) {
-      //   // PERBAIKAN: Tambahkan null check untuk menghindari error
-      //   final mediaItem = sequenceState.currentSource?.tag as MediaItem?;
-      //   // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
-      //   // buka album atau tidak.
-      //   // By default, audio player udah "siap" putar dari indeks pertama.
-      //   if (mediaItem != null && getCurrentMediaItem != null) {
-      //     updateCurrentMediaItem(mediaItem);
-      //   }
-      // });
+      sequenceStateStreamSubscription =
+          player.sequenceStateStream.listen((sequenceState) {
+        // PERBAIKAN: Tambahkan null check untuk menghindari error
+        final mediaItem = sequenceState.currentSource?.tag as MediaItem?;
+        // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
+        // buka album atau tidak.
+        // By default, audio player udah "siap" putar dari indeks pertama.
+        if (mediaItem != null && getCurrentMediaItem != null) {
+          updateCurrentMediaItem(mediaItem);
+        }
+      });
 
       playerErrorStreamSubscription = player.errorStream.listen((error) async {
         logError(
@@ -109,7 +109,7 @@ class MusicPlayerController extends GetxController {
           await Future.delayed(const Duration(milliseconds: 500));
           await player.play();
         }
-        if (numberOfError >= 10) {
+        if (numberOfError >= 5) {
           logError('Too many errors, skipping playback.');
           seekNextButton();
           numberOfError = 0;
@@ -165,7 +165,6 @@ class MusicPlayerController extends GetxController {
     // Saat music telah selesai diputar, tunggu 0.5 detik dan ganti lagu berikutnya.
     if (state.processingState == ProcessingState.completed) {
       await Future.delayed(Duration(milliseconds: 500));
-      logInfo(state.processingState.toString());
       seekNextButton(isFromButton: false);
     }
   }
@@ -250,24 +249,30 @@ class MusicPlayerController extends GetxController {
     // reset number of error saat ganti lagu.
     numberOfError = 0;
 
-    // Ambil URL awal (fallback)
     final String initialUrl = mediaItem.extras!['url'];
     final bool isApiStream = initialUrl
         .contains('https://sibeux.my.id/cloud-music-player/api/stream');
 
     try {
       if (isFromButton) {
-        player.stop();
-        player.seek(Duration.zero, index: 0);
+        // player.stop();
+        // player.seek(Duration.zero, index: 0);
       }
       final url = isApiStream
-          ? (await getStreamDirectUrl(url: initialUrl))['stream_url']
+          // ? (await getStreamDirectUrl(url: initialUrl))['stream_url'] ?? ''
+          ? initialUrl
           : initialUrl;
-      await player.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(url),
-          tag: mediaItem,
-        ),
+      await player.setAudioSources(
+        [
+          AudioSource.uri(
+            Uri.parse(url),
+            tag: mediaItem,
+          ),
+          // AudioSource.uri(
+          //   Uri.parse(url),
+          //   tag: mediaItem,
+          // ),
+        ],
         initialIndex: 0,
       );
 
@@ -278,15 +283,17 @@ class MusicPlayerController extends GetxController {
     }
   }
 
-  void seekNextButton({bool isFromButton = true}) {
-    int originalCurrentIndexSong =
-        int.parse(getCurrentMediaItem!.extras!['index']) - 1;
+  void seekNextButton(
+      {bool isFromButton = true, bool isFromShuffleButton = false}) {
+    int originalCurrentIndexSong = isFromShuffleButton
+        ? 0
+        : int.parse(getCurrentMediaItem!.extras!['index']) - 1;
     final playlistLength = Get.find<AudioStateController>().playlist.length;
     final random = Random();
     if (!isShuffleEnabled.value) {
       originalCurrentIndexSong += 1;
     }
-    int index = isShuffleEnabled.value
+    int index = isShuffleEnabled.value || isFromShuffleButton
         ? random.nextInt(
             playlistLength) // 0 sampai 1000 (inklusif 0, eksklusif 1001)
         : originalCurrentIndexSong;

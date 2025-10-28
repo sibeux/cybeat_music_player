@@ -60,6 +60,16 @@ Future<void> main() async {
   // Tampilkan splash screen sampai app siap
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // Inisialisasi Just Audio Background
+  // await AudioService.init(
+  //   builder: () => MyAudioHandler(),
+  //   config: const AudioServiceConfig(
+  //     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+  //     androidNotificationChannelName: 'Audio playback',
+  //     androidNotificationOngoing: true,
+  //     androidNotificationIcon: 'mipmap/ic_launcher',
+  //     androidShowNotificationBadge: true,
+  //   ),
+  // );
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'Audio playback',
