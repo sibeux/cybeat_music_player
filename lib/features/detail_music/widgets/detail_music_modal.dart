@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/album_music/bindings/album_music_binding.dart';
+import 'package:cybeat_music_player/features/album_music/screens/album_music_screen_search.dart';
 import 'package:cybeat_music_player/features/detail_music/controllers/detail_music_controller.dart';
 import 'package:cybeat_music_player/features/detail_music/widgets/detail_music_credits_dialog.dart';
-import 'package:cybeat_music_player/features/album_music/screens/album_music_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -141,7 +141,7 @@ Future<dynamic> detailMusicModal(
                     Get.back();
                     // Tidak pakai Get.toNamed karena beda transisi.
                     Get.to(
-                      () => AlbumMusicScreen(),
+                      () => AlbumMusicScreenSearch(),
                       transition: Transition.downToUp,
                       duration: const Duration(milliseconds: 300),
                       binding: AlbumMusicBinding(),

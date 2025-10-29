@@ -13,7 +13,7 @@ class ShimmerMusicList extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       child: Column(
         children: [
-          for (int i = 0; i < 10; i++) const ShimmerLoading(),
+          for (int i = 0; i <= 5; i++) const ShimmerLoading(),
         ],
       ),
     );
