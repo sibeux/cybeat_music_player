@@ -1,4 +1,3 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/album_music/controllers/album_music_controller.dart';
@@ -55,16 +54,15 @@ class AzlistViewMode extends StatelessWidget {
         // print(index);
         return InkWell(
           child: AlbumMusicAzlistList(
-            mediaItem: sequence[index].tag as MediaItem,
+            music: audioStateController.playlist[index],
             audioPlayer: audioStateController.activePlayer.value!,
             index: index,
             audioState: audioStateController,
           ),
           onTap: () {
-            albumMusicController.navigateToDetailMusicScreen(
-              sequence: sequence,
-              index: index,
-            );
+            // albumMusicController.navigateToDetailMusicScreen(
+            //   index: index,
+            // );
           },
         );
       },

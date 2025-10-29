@@ -134,11 +134,12 @@ class HomeController extends GetxController {
                 'total_non_null_cover': e['total_non_null_cover']
               })
           .toList();
-
-      albumCover = data[0]['cover_1'];
+      albumCover = data[0]['cover_1'] ?? '';
     } else {
       albumCover = playlist.image;
     }
-    albumService.getDominantColorAlbum(albumCover: albumCover);
+    if (albumCover != '') {
+      albumService.getDominantColorAlbum(albumCover: albumCover);
+    }
   }
 }

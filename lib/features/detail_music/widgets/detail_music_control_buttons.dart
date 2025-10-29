@@ -15,6 +15,7 @@ class DetailMusicControlButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DetailMusicController detailMusicController = Get.find();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -31,8 +32,7 @@ class DetailMusicControlButtons extends StatelessWidget {
             color: Colors.white,
           ),
           onPressed: () {
-            audioPlayer.seekToPrevious();
-            audioPlayer.play();
+            detailMusicController.seekPreviousButton();
           },
         ),
         _playPauseButton(),
@@ -43,43 +43,33 @@ class DetailMusicControlButtons extends StatelessWidget {
             color: Colors.white,
           ),
           onPressed: () {
-            audioPlayer.seekToNext();
-            audioPlayer.play();
+            detailMusicController.seekNextButton();
           },
         ),
-        StreamBuilder<bool>(
-          stream: audioPlayer.shuffleModeEnabledStream,
-          builder: (context, snapshot) {
-            return _shuffleButton(context, snapshot.data ?? false);
-          },
-        ),
+        _shuffleButton(context)
       ],
     );
   }
 
-  Widget _shuffleButton(BuildContext context, bool isEnabled) {
-    return IconButton(
-      icon: isEnabled
-          ? Icon(
-              Icons.shuffle,
-              color: Colors.lightBlueAccent,
-              size: 30.sp,
-            )
-          : Icon(
-              Icons.shuffle,
-              color: Colors.white,
-              size: 30.sp,
-            ),
-      onPressed: () async {
-        final enable = !isEnabled;
-        audioPlayer.setShuffleModeEnabled(enable);
-        if (enable) {
-          showToast('Shuffle enabled');
-          await audioPlayer.shuffle();
-        } else {
-          showToast('Shuffle disabled');
-        }
-      },
+  Widget _shuffleButton(BuildContext context) {
+    final DetailMusicController detailMusicController = Get.find();
+    return Obx(
+      () => IconButton(
+        icon: detailMusicController.isShuffleEnabled
+            ? Icon(
+                Icons.shuffle,
+                color: Colors.lightBlueAccent,
+                size: 30.sp,
+              )
+            : Icon(
+                Icons.shuffle,
+                color: Colors.white,
+                size: 30.sp,
+              ),
+        onPressed: () {
+          detailMusicController.toggleShuffleButton();
+        },
+      ),
     );
   }
 
@@ -87,7 +77,8 @@ class DetailMusicControlButtons extends StatelessWidget {
     final DetailMusicController detailMusicController = Get.find();
     return Obx(() {
       if (detailMusicController.playerState == ProcessingState.loading ||
-          detailMusicController.playerState == ProcessingState.buffering) {
+          detailMusicController.playerState == ProcessingState.buffering ||
+          detailMusicController.isWaitingGetMusicStreamUrl) {
         return IconButton(
           iconSize: 60.sp,
           icon: Icon(
@@ -105,7 +96,8 @@ class DetailMusicControlButtons extends StatelessWidget {
           onPressed: audioPlayer.play,
         );
       } else if (detailMusicController.playerState !=
-          ProcessingState.completed) {
+              ProcessingState.completed ||
+          (detailMusicController.isLastIndexMusic == false)) {
         return IconButton(
           icon: const Icon(Icons.pause_circle_filled),
           iconSize: 60.sp,

@@ -166,7 +166,6 @@ class ListTileBottomModal extends StatelessWidget {
                 musicPlayerController.getCurrentMediaItem?.id != mediaItem.id) {
               musicPlayerController.playMusicNow(
                 audioStateController: audioStateController,
-                index: index,
                 mediaItem: mediaItem,
               );
               Get.back();

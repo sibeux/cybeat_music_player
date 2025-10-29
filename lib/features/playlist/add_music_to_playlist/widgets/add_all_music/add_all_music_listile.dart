@@ -36,7 +36,7 @@ class AddAllMusicListile extends StatelessWidget {
                   alignment: Alignment.center,
                   margin: EdgeInsets.only(left: 10.w),
                   child: Text(
-                    mediaItem.id.toString().padLeft(2, '0'),
+                    mediaItem.extras!['index'].toString().padLeft(2, '0'),
                     style: TextStyle(
                       fontSize: 12,
                       color: HexColor('#8d8c8c'),
