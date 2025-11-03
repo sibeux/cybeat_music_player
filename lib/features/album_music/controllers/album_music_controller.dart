@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -15,12 +14,20 @@ class AlbumMusicController extends GetxController {
   final AlbumService albumService = Get.find();
   final RefreshController refreshController =
       RefreshController(initialRefresh: false);
+  final textController = TextEditingController();
 
   var flexibleSpaceMachineHeight = 0.0.obs;
   var jumlahMusicDitampilkan = 0.obs;
-
   var countMusicAlbum = 0;
   var sisaJumlahMusicTersedia = 0;
+
+  var textValue = ''.obs;
+  var filteredMusic = RxList<Music>([]);
+
+  var isTapSearch = false.obs;
+  var isTyping = false.obs;
+  var isSearch = false.obs;
+  var isKeybordFocus = false.obs;
   var underLoadingFetchMusic = false;
 
   RxBool get initAlbumLoading => audioStateController.initAlbumLoading;
@@ -34,19 +41,77 @@ class AlbumMusicController extends GetxController {
     } else if (audioStateController.isAlbumEmpty.value) {
       showRemoveAlbumToast('Album is empty');
     } else {
-      // Langsung buka detail screen.
       musicPlayerController.seekNextButton(isFromShuffleButton: true);
       // Langsung buka detail screen.
       Get.toNamed('/detail');
     }
   }
 
-  int random(int min, int max) {
-    return min + Random().nextInt(max - min);
+  void toggleTapIconSearch() {
+    if (initAlbumLoading.value) {
+      showRemoveAlbumToast('Wait a moment...');
+    } else if (audioStateController.isAlbumEmpty.value) {
+      showRemoveAlbumToast('Album is empty');
+    } else {
+      isTapSearch.value = !isTapSearch.value;
+      filterAlbum('');
+    }
+  }
+
+  void onTyping(String value) {
+    isTyping.value = value.isNotEmpty;
+    update();
+  }
+
+  void onChanged(String value) {
+    isTyping.value = value.isNotEmpty;
+    textValue.value = value;
+    isKeybordFocus.value = true;
+    filterAlbum(value);
+    update();
+  }
+
+  void backButtonSearchTapped() async {
+    isKeybordFocus.value
+        ? await Future.delayed(const Duration(milliseconds: 100), () {
+            toggleTapIconSearch();
+            isKeybordFocus.value = false;
+          })
+        : toggleTapIconSearch();
+    // untuk menghilangkan keyboard
+    FocusManager.instance.primaryFocus?.unfocus();
+    clearTextField();
+  }
+
+  void clearTextField() {
+    textController.clear();
+    textValue.value = '';
+    isTyping.value = false;
+    filterAlbum('');
+  }
+
+  void filterAlbum(String value) {
+    final results = audioStateController.playlist
+        .where((music) =>
+            music.title.toLowerCase().contains(value.toLowerCase()) ||
+            music.artist.toLowerCase().contains(value.toLowerCase()))
+        .toList();
+    filteredMusic.value = results;
+    isSearch.value = !isSearch.value;
   }
 
   void updateLastPlayedAlbum(String uid) async {
     await albumService.updateLastPlayedAlbum(uid);
+  }
+
+  void rebuildPlaylist() {
+    // Untuk build ulang susunan album di home screen.
+    if (musicPlayerController.isNeedRebuildLastPlaylist.value) {
+      musicPlayerController.isNeedRebuildLastPlaylist.value = false;
+      // Method untuk update playlsit terakhir yang diputar.
+      updateLastPlayedAlbum(
+          musicPlayerController.currentActivePlaylist.value!.uid);
+    }
   }
 
   void getToAddAllMusicToPlaylistScreen() {
@@ -63,6 +128,7 @@ class AlbumMusicController extends GetxController {
     required int index,
     required Music music,
   }) {
+    FocusManager.instance.primaryFocus?.unfocus();
     final mediaItem = MediaItem(
       id: music.musicId,
       title: music.title,
@@ -71,7 +137,8 @@ class AlbumMusicController extends GetxController {
       artist: music.artist,
       extras: music.extras,
     );
-    final musicList = audioStateController.playlist;
+    final musicList =
+        isTapSearch.value ? filteredMusic : audioStateController.playlist;
     Get.toNamed('/detail');
     if (musicPlayerController.getCurrentMediaItem?.id == "" ||
         musicPlayerController.getCurrentMediaItem?.id !=
