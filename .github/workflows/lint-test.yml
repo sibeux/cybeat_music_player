@@ -6,6 +6,7 @@ on:
             - "feature/*"
             - "fix/*"
             - "optimize/*"
+            - "refactor/*"
     pull_request:
         branches:
             - develop
