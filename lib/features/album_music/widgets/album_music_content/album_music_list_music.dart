@@ -47,6 +47,14 @@ class AlbumMusicListMusic extends StatelessWidget {
           albumMusicController.underLoadingFetchMusic = true;
         }
 
+        if (albumMusicController.isTyping.value &&
+            (albumMusicController.filteredMusic.isEmpty ||
+                albumMusicController.textValue.value.trim().isEmpty)) {
+          return SliverFillRemaining(
+            child: albumEmpty(albumMusicController.textValue.value),
+          );
+        }
+
         albumMusicController.underLoadingFetchMusic = false;
         final musicList = audioStateController.playlist;
         if (albumMusicController.countMusicAlbum == 0) {
@@ -103,6 +111,47 @@ class AlbumMusicListMusic extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget albumEmpty(String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 15.w),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Couldn\'t find',
+              style: TextStyle(
+                color: Colors.black.withValues(alpha: 0.9),
+                fontWeight: FontWeight.bold,
+                fontSize: 20.sp,
+              ),
+            ),
+            SizedBox(height: 2.h),
+            Text(
+              "\"$value\"",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black.withValues(alpha: 0.9),
+                fontWeight: FontWeight.bold,
+                fontSize: 20.sp,
+              ),
+            ),
+            SizedBox(height: 15.h),
+            Text(
+              'Try searching again using a different spelling or keyword.',
+              style: TextStyle(
+                color: Colors.black.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w500,
+                fontSize: 12.sp,
+              ),
+            ),
+            SizedBox(height: 50.h),
+          ],
+        ),
+      ),
     );
   }
 }
