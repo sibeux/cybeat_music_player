@@ -118,6 +118,17 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
             ),
             child: CustomScrollView(
               slivers: [
+                SliverAppBar(
+                  automaticallyImplyLeading: false,
+                  title: Text(
+                    'Album Music',
+                    style: TextStyle(
+                      color: Colors.black.withValues(alpha: 1),
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
                 Obx(
                   () => SliverAppBar(
                     // backgroundColor: Colors.transparent,
@@ -145,6 +156,16 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
                         rebuildPlaylist();
                       },
                     ),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.search_rounded,
+                        ),
+                        color: Colors.black,
+                        tooltip: 'Search',
+                        onPressed: () {},
+                      ),
+                    ],
                     flexibleSpace: FlexibleSpaceBar(
                       expandedTitleScale: 1,
                       centerTitle: true,
@@ -402,10 +423,10 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
                                             albumMusicController,
                                       )
                                     : AlbumMusicAzlistList(
+                                        index: index,
                                         music: musicList[index],
                                         audioPlayer: audioStateController
                                             .activePlayer.value!,
-                                        index: index,
                                         audioState: audioStateController,
                                       ),
                                 onTap: () {

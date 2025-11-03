@@ -247,7 +247,7 @@ class AlbumService extends GetxService {
 
   Future<bool> setPinData({required String action, required String uid}) async {
     String playlistApi =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+        dotenv.env['PIN_PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
     String url = '';
 
     switch (action) {
@@ -262,10 +262,15 @@ class AlbumService extends GetxService {
     }
 
     try {
-      await http.post(Uri.parse(url));
+      final response = await http.post(Uri.parse(url));
+      if (response.body.isEmpty) {
+        logError('Error: Response body is empty');
+        return false;
+      }
+      logInfo('Success set pin response: ${response.body}');
       return true;
-    } catch (e) {
-      logError('Error set pin: $e');
+    } catch (e, st) {
+      logError('Error set pin: $e,$st');
       return false;
     }
   }
@@ -554,11 +559,11 @@ class AlbumService extends GetxService {
     isSimpleMode.value = simpleMode;
   }
 
-  void toggleSimpleMode(bool value) async{
+  void toggleSimpleMode(bool value) async {
     final SharedPreferences prefs = await _prefs;
     isSimpleMode.value = value;
 
-    if (value == true){
+    if (value == true) {
       prefs.setBool('simple_mode', true);
     } else {
       prefs.setBool('simple_mode', false);

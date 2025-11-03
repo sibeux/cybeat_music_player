@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -15,6 +14,7 @@ class AlbumMusicController extends GetxController {
   final AlbumService albumService = Get.find();
   final RefreshController refreshController =
       RefreshController(initialRefresh: false);
+  final textController = TextEditingController();
 
   var flexibleSpaceMachineHeight = 0.0.obs;
   var jumlahMusicDitampilkan = 0.obs;
@@ -34,15 +34,10 @@ class AlbumMusicController extends GetxController {
     } else if (audioStateController.isAlbumEmpty.value) {
       showRemoveAlbumToast('Album is empty');
     } else {
-      // Langsung buka detail screen.
       musicPlayerController.seekNextButton(isFromShuffleButton: true);
       // Langsung buka detail screen.
       Get.toNamed('/detail');
     }
-  }
-
-  int random(int min, int max) {
-    return min + Random().nextInt(max - min);
   }
 
   void updateLastPlayedAlbum(String uid) async {
