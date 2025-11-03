@@ -5,8 +5,8 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/features/album_music/controllers/album_music_controller.dart';
-import 'package:cybeat_music_player/features/album_music/widgets/album_music_index_number_list.dart';
-import 'package:cybeat_music_player/features/album_music/widgets/album_music_modal.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_widget_musiclist/album_music_index_number_list.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_widget_musiclist/album_music_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

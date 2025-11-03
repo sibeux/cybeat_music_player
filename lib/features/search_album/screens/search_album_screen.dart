@@ -27,11 +27,11 @@ class SearchAlbumScreen extends StatelessWidget {
             color: HexColor('#575757'),
           ),
           tooltip: 'Back',
-          onPressed: () {
+          onPressed: () async {
             // untuk menghilangkan keyboard
             FocusManager.instance.primaryFocus?.unfocus();
             searchAlbumController.isKeybordFocus.value
-                ? Future.delayed(const Duration(milliseconds: 200), () {
+                ? await Future.delayed(const Duration(milliseconds: 200), () {
                     Get.back(
                       closeOverlays: true,
                       id: 1,
