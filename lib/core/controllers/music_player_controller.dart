@@ -90,13 +90,13 @@ class MusicPlayerController extends GetxController {
       sequenceStateStreamSubscription =
           player.sequenceStateStream.listen((sequenceState) {
         // PERBAIKAN: Tambahkan null check untuk menghindari error
-        final mediaItem = sequenceState.currentSource?.tag as MediaItem?;
-        // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
-        // buka album atau tidak.
-        // By default, audio player udah "siap" putar dari indeks pertama.
-        if (mediaItem != null && getCurrentMediaItem != null) {
-          updateCurrentMediaItem(mediaItem);
-        }
+        // final mediaItem = sequenceState.currentSource?.tag as MediaItem?;
+        // // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
+        // // buka album atau tidak.
+        // // By default, audio player udah "siap" putar dari indeks pertama.
+        // if (mediaItem != null && getCurrentMediaItem != null) {
+        //   updateCurrentMediaItem(mediaItem);
+        // }
       });
 
       playerErrorStreamSubscription = player.errorStream.listen((error) async {
@@ -255,13 +255,23 @@ class MusicPlayerController extends GetxController {
 
     try {
       if (isFromButton) {
-        // player.stop();
-        // player.seek(Duration.zero, index: 0);
+        player.stop();
+        player.seek(Duration.zero, index: 0);
       }
-      final url = isApiStream
-          // ? (await getStreamDirectUrl(url: initialUrl))['stream_url'] ?? ''
-          ? initialUrl
-          : initialUrl;
+      var url = "";
+      var musicId = "0";
+      if (isApiStream) {
+        final responseBody = (await getStreamDirectUrl(url: initialUrl));
+        url = responseBody['stream_url'] ?? '';
+        musicId = responseBody['music_id'] ?? '0';
+      } else {
+        url = initialUrl;
+        musicId = mediaItem.id;
+      }
+
+      // cek apakah ini request terakhir
+      if (musicId != mediaItem.id) return; // dibatalkan
+
       await player.setAudioSources(
         [
           AudioSource.uri(
