@@ -237,11 +237,11 @@ class MusicPlayerController extends GetxController {
     required MediaItem mediaItem,
     bool isFromButton = true,
   }) async {
+    updateCurrentMediaItem(
+        mediaItem); // Ini dipakai saat pertama kali putar music.
     // Gunakan variabel lokal untuk menghindari pengulangan dan null check
     final player = audioStateController.activePlayer.value;
     if (player == null) return; // Guard clause jika player tidak ada
-    updateCurrentMediaItem(
-        mediaItem); // Ini dipakai saat pertama kali putar music.
     activateMusic();
     if (currentActivePlaylist.value!.type != 'offline') {
       setLastPlayingPlaylist();
@@ -270,7 +270,7 @@ class MusicPlayerController extends GetxController {
       }
 
       // cek apakah ini request terakhir
-      if (musicId != mediaItem.id) return; // dibatalkan
+      if (musicId != _currentMediaItem.value!.id) return; // dibatalkan
 
       await player.setAudioSources(
         [
