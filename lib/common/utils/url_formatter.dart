@@ -50,7 +50,7 @@ String regexGdriveHostUrl({
     // return url;
   }
 
-  if (match != null) {
+  if (match != null && !url.contains('cdncloudflare/')) {
     // Ambil ID dari grup yang cocok (grup 1 atau grup 2)
     final fileId = match.group(1) ?? match.group(2);
     String musicStreamApi = dotenv.env['MUSIC_STREAM_API_URL'] ?? '';
@@ -63,6 +63,12 @@ String regexGdriveHostUrl({
       }
     } else {
       return "$musicStreamApi/$fileId/555/cybeat/false/image";
+    }
+  } else if (url.contains('cdncloudflare/')) {
+    if (isAudio) {
+      return url;
+    } else {
+      return "https://cdn.sibeux.my.id/${url.replaceFirst("cdncloudflare/", '')}";
     }
   } else if (url.contains('https://github.com/') && url.contains('raw=true')) {
     // Logika GitHub tetap sama karena unik

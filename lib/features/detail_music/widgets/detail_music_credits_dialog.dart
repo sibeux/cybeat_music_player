@@ -212,6 +212,10 @@ void detailMusicCreditsDialog({
           Obx(() => Text(
                 detailMusicController.currentMediaItem!.extras?['is_cached']
                     ? detailMusicController.currentMediaItem!.extras!['url']
+                            .toString()
+                            .contains('cdncloudflare/')
+                        ? "Cloudflare CDN"
+                        : detailMusicController.currentMediaItem!.extras!['url']
                     : '—',
                 maxLines: 1,
                 style: TextStyle(

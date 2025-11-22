@@ -204,11 +204,21 @@ class MusicPlayerController extends GetxController {
     }
   }
 
-  Future<Map<String, dynamic>> getStreamDirectUrl({required String url}) async {
+  Future<Map<String, dynamic>> getStreamDirectUrl(
+      {required String url,
+      required String source,
+      String musicId = '0'}) async {
     isWaitingGetMusicStreamUrl.value = true;
-    const methodName = "getStreamDirectUrl";
+    final methodName = "getStreamDirectUrl $source";
     try {
-      final response = await http.get(Uri.parse(url));
+      String api = '';
+      if (source == 'gdrive') {
+        api = url;
+      } else if (source == 'cloudflare') {
+        api =
+            "https://sibeux.my.id/cloud-music-player/api/get_hmac_token?path=$url&music_id=$musicId";
+      }
+      final response = await http.get(Uri.parse(api));
       if (response.body.isEmpty) {
         final reason =
             'Error in $methodName: Response body is empty: ${response.statusCode}';
@@ -250,8 +260,9 @@ class MusicPlayerController extends GetxController {
     numberOfError = 0;
 
     final String initialUrl = mediaItem.extras!['url'];
-    final bool isApiStream = initialUrl
+    final bool isGdriveStream = initialUrl
         .contains('https://sibeux.my.id/cloud-music-player/api/stream');
+    final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
 
     try {
       if (isFromButton) {
@@ -260,8 +271,17 @@ class MusicPlayerController extends GetxController {
       }
       var url = "";
       var musicId = "0";
-      if (isApiStream) {
-        final responseBody = (await getStreamDirectUrl(url: initialUrl));
+      if (isGdriveStream) {
+        final responseBody =
+            (await getStreamDirectUrl(url: initialUrl, source: 'gdrive'));
+        url = responseBody['stream_url'] ?? '';
+        musicId = responseBody['music_id'] ?? '0';
+      } else if (isCloudflareStream) {
+        final responseBody = (await getStreamDirectUrl(
+          url: initialUrl.replaceFirst("cdncloudflare", ''),
+          source: 'cloudflare',
+          musicId: mediaItem.id,
+        ));
         url = responseBody['stream_url'] ?? '';
         musicId = responseBody['music_id'] ?? '0';
       } else {
