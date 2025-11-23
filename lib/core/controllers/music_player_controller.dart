@@ -90,13 +90,13 @@ class MusicPlayerController extends GetxController {
       sequenceStateStreamSubscription =
           player.sequenceStateStream.listen((sequenceState) {
         // PERBAIKAN: Tambahkan null check untuk menghindari error
-        // final mediaItem = sequenceState.currentSource?.tag as MediaItem?;
-        // // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
-        // // buka album atau tidak.
-        // // By default, audio player udah "siap" putar dari indeks pertama.
-        // if (mediaItem != null && getCurrentMediaItem != null) {
-        //   updateCurrentMediaItem(mediaItem);
-        // }
+        final mediaItem = sequenceState.currentSource?.tag as MediaItem?;
+        // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
+        // buka album atau tidak.
+        // By default, audio player udah "siap" putar dari indeks pertama.
+        if (mediaItem != null && getCurrentMediaItem != null) {
+          updateCurrentMediaItem(mediaItem);
+        }
       });
 
       playerErrorStreamSubscription = player.errorStream.listen((error) async {
@@ -266,16 +266,18 @@ class MusicPlayerController extends GetxController {
 
     try {
       if (isFromButton) {
-        player.stop();
-        player.seek(Duration.zero, index: 0);
+        // player.stop();
+        // player.seek(Duration.zero, index: 0);
       }
       var url = "";
       var musicId = "0";
       if (isGdriveStream) {
-        final responseBody =
-            (await getStreamDirectUrl(url: initialUrl, source: 'gdrive'));
-        url = responseBody['stream_url'] ?? '';
-        musicId = responseBody['music_id'] ?? '0';
+        // final responseBody =
+        //     await getStreamDirectUrl(url: initialUrl, source: 'gdrive');
+        // url = responseBody['stream_url'] ?? '';
+        // musicId = responseBody['music_id'] ?? '0';
+        url = initialUrl;
+        musicId = mediaItem.id;
       } else if (isCloudflareStream) {
         final responseBody = (await getStreamDirectUrl(
           url: initialUrl.replaceFirst("cdncloudflare", ''),
