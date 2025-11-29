@@ -279,13 +279,17 @@ class MusicPlayerController extends GetxController {
         url = initialUrl;
         musicId = mediaItem.id;
       } else if (isCloudflareStream) {
-        final responseBody = (await getStreamDirectUrl(
-          url: initialUrl.replaceFirst("cdncloudflare", ''),
-          source: 'cloudflare',
-          musicId: mediaItem.id,
-        ));
-        url = responseBody['stream_url'] ?? '';
-        musicId = responseBody['music_id'] ?? '0';
+        // final responseBody = (await getStreamDirectUrl(
+        //   url: initialUrl.replaceFirst("cdncloudflare", ''),
+        //   source: 'cloudflare',
+        //   musicId: mediaItem.id,
+        // ));
+        // url = responseBody['stream_url'] ?? '';
+        // musicId = responseBody['music_id'] ?? '0';
+        String path = initialUrl.replaceFirst("cdncloudflare", '');
+        url =
+            "https://sibeux.my.id/cloud-music-player/api/get_hmac_token?path=$path&music_id=${mediaItem.id}";
+        musicId = mediaItem.id;
       } else {
         url = initialUrl;
         musicId = mediaItem.id;
