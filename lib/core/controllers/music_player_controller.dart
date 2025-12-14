@@ -215,8 +215,10 @@ class MusicPlayerController extends GetxController {
       if (source == 'gdrive') {
         api = url;
       } else if (source == 'cloudflare') {
+        String endpoint =
+            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
         api =
-            "https://sibeux.my.id/cloud-music-player/api/get_hmac_token?path=$url&music_id=$musicId";
+            "$endpoint?path=$url&music_id=$musicId";
       }
       final response = await http.get(Uri.parse(api));
       if (response.body.isEmpty) {
@@ -287,8 +289,10 @@ class MusicPlayerController extends GetxController {
         // url = responseBody['stream_url'] ?? '';
         // musicId = responseBody['music_id'] ?? '0';
         String path = initialUrl.replaceFirst("cdncloudflare", '');
+        String endpoint =
+            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
         url =
-            "https://sibeux.my.id/cloud-music-player/api/get_hmac_token?path=$path&music_id=${mediaItem.id}";
+            "$endpoint?path=$path&music_id=${mediaItem.id}";
         musicId = mediaItem.id;
       } else {
         url = initialUrl;

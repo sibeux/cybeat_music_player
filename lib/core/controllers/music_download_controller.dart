@@ -7,6 +7,7 @@ import 'package:cybeat_music_player/core/controllers/music_player_controller.dar
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -75,11 +76,20 @@ class MusicDownloadController extends GetxController {
       dataProgressDownload[mediaItem.extras!['music_id']] = {
         'progress': 0.0,
       };
-
+      // buat url direct download
+      String initialUrl = mediaItem.extras!['url'];
+      final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
+      if (isCloudflareStream) {
+        String path = initialUrl.replaceFirst("cdncloudflare", '');
+        String endpoint =
+            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+        initialUrl =
+            "$endpoint?path=$path&music_id=${mediaItem.id}";
+      }
       // Unduh file dari URL dan simpan di path cache
       final dio = Dio();
       await dio.download(
-        mediaItem.extras!['url'],
+        initialUrl,
         filePath,
         onReceiveProgress: (count, total) {
           if (total != -1) {
@@ -90,7 +100,6 @@ class MusicDownloadController extends GetxController {
           }
         },
       );
-
       // Setelah file diunduh, simpan metadata di SharedPreferences atau SQLite
       await saveDownloadedSong(mediaItem, filePath);
     } catch (e) {

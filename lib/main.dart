@@ -111,7 +111,7 @@ class InitialBinding extends Bindings {
     Get.put(AlbumService());
     // Gunakan Get.put() untuk controller yang harus langsung ada
     // dan hidup selamanya selama aplikasi berjalan.
-    // Anda bisa mendaftarkan semua service/controller global di sini
+    // Juga bisa mendaftarkan semua service/controller global di sini
     Get.put(MusicPlayerController());
     Get.put(AudioStateController());
     Get.put(MusicDownloadController());
@@ -120,11 +120,11 @@ class InitialBinding extends Bindings {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  // This widget is the root of your application.
+  // This widget is the root of application.
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(393, 804), // ukuran HP kamu
+      designSize: const Size(393, 804), // ukuran HP
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
