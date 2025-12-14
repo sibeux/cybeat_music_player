@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,8 +20,12 @@ class MusicPlayerController extends GetxController {
   var isMusicPlayingNow = false.obs;
   var isNeedRebuildLastPlaylist = false.obs;
   var isAzlistviewScreenActive = false.obs;
+  var isWaitingGetMusicStreamUrl = false.obs;
+  var isShuffleEnabled = false.obs;
+  var isRepeatEnabled = 'off'.obs; // off, all, one
 
   var numberOfError = 0;
+  int currentIndexShuffle = 0;
 
   var currentMusicDuration = Duration.zero.obs;
   var currentMusicPosition = Duration.zero.obs;
@@ -33,6 +40,9 @@ class MusicPlayerController extends GetxController {
   StreamSubscription<PlayerException?>? playerErrorStreamSubscription;
 
   MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
+  bool get isLastIndexMusic =>
+      Get.find<AudioStateController>().playlist.length ==
+      int.parse(getCurrentMediaItem!.extras!['index']) - 1 + 1;
 
   // Dipakai di floating widget.
   double get sliderValue {
@@ -99,9 +109,9 @@ class MusicPlayerController extends GetxController {
           await Future.delayed(const Duration(milliseconds: 500));
           await player.play();
         }
-        if (numberOfError >= 10) {
+        if (numberOfError >= 5) {
           logError('Too many errors, skipping playback.');
-          await player.seekToNext();
+          seekNextButton();
           numberOfError = 0;
         }
       });
@@ -152,6 +162,11 @@ class MusicPlayerController extends GetxController {
     final processingState = state?.processingState;
     currentMusicPlayerState.value = processingState ?? ProcessingState.idle;
     isMusicPlayingNow.value = state!.playing;
+    // Saat music telah selesai diputar, tunggu 0.5 detik dan ganti lagu berikutnya.
+    if (state.processingState == ProcessingState.completed) {
+      await Future.delayed(Duration(milliseconds: 500));
+      seekNextButton(isFromButton: false);
+    }
   }
 
   void updateCurrentMediaItem(MediaItem mediaItem) {
@@ -189,38 +204,190 @@ class MusicPlayerController extends GetxController {
     }
   }
 
+  Future<Map<String, dynamic>> getStreamDirectUrl(
+      {required String url,
+      required String source,
+      String musicId = '0'}) async {
+    isWaitingGetMusicStreamUrl.value = true;
+    final methodName = "getStreamDirectUrl $source";
+    try {
+      String api = '';
+      if (source == 'gdrive') {
+        api = url;
+      } else if (source == 'cloudflare') {
+        String endpoint =
+            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+        api =
+            "$endpoint?path=$url&music_id=$musicId";
+      }
+      final response = await http.get(Uri.parse(api));
+      if (response.body.isEmpty) {
+        final reason =
+            'Error in $methodName: Response body is empty: ${response.statusCode}';
+        logError(reason);
+        return {};
+      }
+      final responseBody = json.decode(response.body);
+      if (responseBody['success'] == true) {
+        logSuccess('$methodName success: $responseBody');
+        return responseBody;
+      } else {
+        final e = 'Error in $methodName: $responseBody';
+        logError(e);
+        return {};
+      }
+    } catch (e, st) {
+      logError('Error in $methodName: $e stacktrace: $st');
+      return {};
+    } finally {
+      isWaitingGetMusicStreamUrl.value = false;
+    }
+  }
+
   void playMusicNow({
     required AudioStateController audioStateController,
-    required int index,
     required MediaItem mediaItem,
+    bool isFromButton = true,
   }) async {
+    updateCurrentMediaItem(
+        mediaItem); // Ini dipakai saat pertama kali putar music.
     // Gunakan variabel lokal untuk menghindari pengulangan dan null check
     final player = audioStateController.activePlayer.value;
     if (player == null) return; // Guard clause jika player tidak ada
-
-    numberOfError = 0;
-    updateCurrentMediaItem(mediaItem); // Ini dipakai saat pertama kali putar music.
     activateMusic();
-
     if (currentActivePlaylist.value!.type != 'offline') {
       setLastPlayingPlaylist();
     }
+    // reset number of error saat ganti lagu.
+    numberOfError = 0;
+
+    final String initialUrl = mediaItem.extras!['url'];
+    final bool isGdriveStream = initialUrl
+        .contains('https://sibeux.my.id/cloud-music-player/api/stream');
+    final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
 
     try {
-      // setAudioSources adalah operasi utama dan harus ditunggu (await)
-      // Tidak perlu seek() sebelumnya karena initialIndex sudah menanganinya.
-      //** player.seek(Duration.zero, index: 
-      // {kode "APEL"}
+      if (isFromButton) {
+        // player.stop();
+        // player.seek(Duration.zero, index: 0);
+      }
+      var url = "";
+      var musicId = "0";
+      if (isGdriveStream) {
+        // final responseBody =
+        //     await getStreamDirectUrl(url: initialUrl, source: 'gdrive');
+        // url = responseBody['stream_url'] ?? '';
+        // musicId = responseBody['music_id'] ?? '0';
+        url = initialUrl;
+        musicId = mediaItem.id;
+      } else if (isCloudflareStream) {
+        // final responseBody = (await getStreamDirectUrl(
+        //   url: initialUrl.replaceFirst("cdncloudflare", ''),
+        //   source: 'cloudflare',
+        //   musicId: mediaItem.id,
+        // ));
+        // url = responseBody['stream_url'] ?? '';
+        // musicId = responseBody['music_id'] ?? '0';
+        String path = initialUrl.replaceFirst("cdncloudflare", '');
+        String endpoint =
+            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+        url =
+            "$endpoint?path=$path&music_id=${mediaItem.id}";
+        musicId = mediaItem.id;
+      } else {
+        url = initialUrl;
+        musicId = mediaItem.id;
+      }
+
+      // cek apakah ini request terakhir
+      if (musicId != _currentMediaItem.value!.id) return; // dibatalkan
+
       await player.setAudioSources(
-        audioStateController.playlist,
-        initialIndex: index,
+        [
+          AudioSource.uri(
+            Uri.parse(url),
+            tag: mediaItem,
+          ),
+          // AudioSource.uri(
+          //   Uri.parse(url),
+          //   tag: mediaItem,
+          // ),
+        ],
+        initialIndex: 0,
       );
 
-      // Panggil play() setelah playlist berhasil di-load.
-      player.play();
-    } catch (e) {
+      player.play(); // user langsung dengar musik
+    } catch (e, st) {
       // Tambahkan penanganan error jika proses load playlist gagal
-      logError("Error playMusicNow: $e");
+      logError("Error playMusicNow: $e. ST: $st");
     }
+  }
+
+  void seekNextButton(
+      {bool isFromButton = true, bool isFromShuffleButton = false}) {
+    int originalCurrentIndexSong = isFromShuffleButton
+        ? 0
+        : int.parse(getCurrentMediaItem!.extras!['index']) - 1;
+    final playlistLength = Get.find<AudioStateController>().playlist.length;
+    final random = Random();
+    if (!isShuffleEnabled.value) {
+      originalCurrentIndexSong += 1;
+    }
+    int index = isShuffleEnabled.value || isFromShuffleButton
+        ? random.nextInt(
+            playlistLength) // 0 sampai 1000 (inklusif 0, eksklusif 1001)
+        : originalCurrentIndexSong;
+
+    if (!(!isShuffleEnabled.value &&
+        playlistLength < originalCurrentIndexSong + 1)) {
+      final music = Get.find<AudioStateController>().playlist[index];
+      final mediaItem = MediaItem(
+        id: music.musicId,
+        title: music.title,
+        album: music.album,
+        artUri: Uri.parse(music.cover),
+        artist: music.artist,
+        extras: music.extras,
+      );
+      playMusicNow(
+        audioStateController: Get.find<AudioStateController>(),
+        mediaItem: mediaItem,
+        isFromButton: isFromButton,
+      );
+    }
+  }
+
+  void seekPreviousButton() {
+    int currentIndex = int.parse(getCurrentMediaItem!.extras!['index']) - 1;
+    if (1 != currentIndex + 1) {
+      currentIndex -= 1;
+      final music = Get.find<AudioStateController>().playlist[currentIndex];
+      final mediaItem = MediaItem(
+        id: music.musicId,
+        title: music.title,
+        album: music.album,
+        artUri: Uri.parse(music.cover),
+        artist: music.artist,
+        extras: music.extras,
+      );
+      playMusicNow(
+        audioStateController: Get.find<AudioStateController>(),
+        mediaItem: mediaItem,
+        isFromButton: true,
+      );
+    }
+  }
+
+  void toggleShuffleButton() {
+    isShuffleEnabled.value = !isShuffleEnabled.value;
+    if (isShuffleEnabled.value) {
+      showToast('Shuffle enabled');
+    } else {
+      showToast('Shuffle disabled');
+    }
+  }
+
+  void toggleRepeatButton(String repeat) {
+    isRepeatEnabled.value = repeat;
   }
 }

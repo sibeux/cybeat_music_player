@@ -27,13 +27,17 @@ class HomeListGrid extends StatelessWidget {
         if (musicPlayerController.currentActivePlaylist.value?.title !=
                 playlist.title ||
             musicPlayerController.currentActivePlaylist.value?.title == "") {
+          homeController.getDominantColorAlbum(playlist: playlist);
           audioStateController.clear();
           musicPlayerController.killMusic();
           musicPlayerController.clearCurrentMediaItem();
           audioStateController.init(playlist);
           musicPlayerController.setActivePlaylist(playlist);
         }
-        Get.toNamed('/album_music', id: 1);
+        Get.toNamed(
+          '/album_music',
+          id: 1,
+        );
       },
       child: Container(
         alignment: Alignment.centerLeft,

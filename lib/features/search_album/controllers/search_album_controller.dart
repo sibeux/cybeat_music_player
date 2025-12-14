@@ -32,7 +32,6 @@ class SearchAlbumController extends GetxController {
             album.type.toLowerCase().contains(value.toLowerCase()) ||
             album.author.toLowerCase().contains(value.toLowerCase()))
         .toList();
-
     filteredAlbum.value = results;
     isSearch.value = !isSearch.value;
     update();

@@ -30,7 +30,11 @@ class AlbumService extends GetxService {
   var allAlbumChildren = RxList([]);
   var selectedAlbum = RxList<Playlist?>([]);
 
+  var defaultAlbumColor = "ffffff".obs;
+
   var isHomeLoading = false.obs;
+  // Use in setting app and album music screen
+  var isSimpleMode = false.obs;
 
   // ============================== homeSortPreferencesController ==============================
   final homeSortPreferences = ''.obs;
@@ -243,7 +247,7 @@ class AlbumService extends GetxService {
 
   Future<bool> setPinData({required String action, required String uid}) async {
     String playlistApi =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+        dotenv.env['PIN_PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
     String url = '';
 
     switch (action) {
@@ -258,10 +262,15 @@ class AlbumService extends GetxService {
     }
 
     try {
-      await http.post(Uri.parse(url));
+      final response = await http.post(Uri.parse(url));
+      if (response.body.isEmpty) {
+        logError('Error: Response body is empty');
+        return false;
+      }
+      logInfo('Success set pin response: ${response.body}');
       return true;
-    } catch (e) {
-      logError('Error set pin: $e');
+    } catch (e, st) {
+      logError('Error set pin: $e,$st');
       return false;
     }
   }
@@ -522,6 +531,42 @@ class AlbumService extends GetxService {
       logError('Error update playlist: $e');
     } finally {
       initializeAlbum();
+    }
+  }
+
+  Future<void> getDominantColorAlbum({required String albumCover}) async {
+    const String api =
+        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/get_dominant_color_album";
+    try {
+      final response = await http.post(Uri.parse(api), body: {
+        'image_url': albumCover,
+      });
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200 && body['success'] == true) {
+        defaultAlbumColor.value = body["dominant_color"]["bg_color"];
+        logInfo('Dominant color album: $body');
+      } else {
+        logError("Error on getDominantColorAlbum: ${body['reason']}");
+      }
+    } catch (e, st) {
+      logError("Error on getDominantColorAlbum: $e, stackTrace: $st");
+    }
+  }
+
+  Future<void> getSimpleMode() async {
+    final SharedPreferences prefs = await _prefs;
+    final simpleMode = prefs.getBool('simple_mode') ?? false;
+    isSimpleMode.value = simpleMode;
+  }
+
+  void toggleSimpleMode(bool value) async {
+    final SharedPreferences prefs = await _prefs;
+    isSimpleMode.value = value;
+
+    if (value == true) {
+      prefs.setBool('simple_mode', true);
+    } else {
+      prefs.setBool('simple_mode', false);
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
+import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -22,7 +23,7 @@ class AudioStateController extends GetxController {
   /// late dipakai kalau kamu mau deklarasi variabel tanpa langsung inisialisasi, tapi janji bakal diisi sebelum dipakai.
   /// obs atau Rx di GetX butuh nilai awal (meskipun null). Jadi kalau mau reaktif, biasanya nggak perlu late, cukup kasih default.
   final activePlayer = Rx<AudioPlayer?>(null);
-  final playlist = RxList<UriAudioSource>([]);
+  final playlist = RxList<Music>([]);
   static int _nextMediaId = 1;
   // qeueu untuk testing screen
   List<MediaItem> queue = [];
@@ -69,33 +70,36 @@ class AudioStateController extends GetxController {
     activePlayer.value?.sequenceStateStream.listen(
       (event) async {
         // Kita hanya peduli saat ada item yang sedang diproses dan player siap memainkannya.
-        final currentIndex = activePlayer.value?.currentIndex;
+        final currentIndex = musicPlayerController.getCurrentMediaItem?.id;
         if (currentIndex != null) {
-          final MediaItem item = queue[currentIndex];
-          final String currentMusicId = item.extras!['music_id'];
+          final String currentMusicId =
+              musicPlayerController.getCurrentMediaItem!.id;
           // KONDISI UTAMA:
           // ** 1. Player dalam state 'ready' event.processingState == ProcessingState.ready
           // ** (artinya lagu baru sudah di-load).
           // 2. ID musik saat ini BERBEDA dengan ID yang terakhir kita proses-
           // dan tidak dari album offline.
           if (currentMusicId != lastProcessedMusicId &&
-              !item.extras!['is_offline']) {
+              !musicPlayerController
+                  .getCurrentMediaItem!.extras!['is_offline']) {
             // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
             lastProcessedMusicId = currentMusicId;
             // Baru panggil fungsi-fungsi Anda.
             final isCodecExist = await checkCodecAudio(
-              mediaItem: item,
+              mediaItem: musicPlayerController.getCurrentMediaItem!,
             );
             final isDominantColorExist = await checkDominantColor(
-              mediaItem: item,
+              mediaItem: musicPlayerController.getCurrentMediaItem!,
             );
             // Panggil method set recents music.
             setRecentsCodecDominantColor(
               musicId: currentMusicId,
               isCodecExist: isCodecExist,
               isDominantColorExist: isDominantColorExist,
-              musicUrl: item.extras!['url'],
-              imageUrl: item.artUri.toString(),
+              musicUrl:
+                  musicPlayerController.getCurrentMediaItem!.extras!['url'],
+              imageUrl:
+                  musicPlayerController.getCurrentMediaItem!.artUri.toString(),
             );
           }
         }
@@ -126,8 +130,8 @@ class AudioStateController extends GetxController {
         if (musicDownloadController.musicOfflineList.isEmpty) {
           listData = RxList<dynamic>([]);
           isAlbumEmpty.value = true;
-          playlist.value = <UriAudioSource>[];
-          await activePlayer.value?.setAudioSources(playlist);
+          playlist.value = <Music>[];
+          await activePlayer.value?.setAudioSources([]);
           return;
         }
         listData = musicDownloadController.musicOfflineList;
@@ -145,13 +149,17 @@ class AudioStateController extends GetxController {
       }
       if (listData.isEmpty) {
         isAlbumEmpty.value = true;
-        playlist.value = <UriAudioSource>[];
-        await activePlayer.value?.setAudioSources(playlist);
+        playlist.value = <Music>[];
+        await activePlayer.value?.setAudioSources([]);
         return;
       }
       playlist.value = listData.map(
         (item) {
-          final String uploader = item['uploader'] ?? 'cybeat';
+          final String uploader = item['uploader'] == null
+              ? "Cybeat"
+              : item['uploader'].toString().trim() == ''
+                  ? "Cybeat"
+                  : item['uploader'];
           final String musicUrl = regexGdriveHostUrl(
             url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
             listApiKey: albumService.gdriveApiKeyList,
@@ -161,62 +169,73 @@ class AudioStateController extends GetxController {
             uploader: uploader,
             isOffline: type == 'offline' ? true : false,
           );
-          return AudioSource.uri(
-            Uri.parse(musicUrl),
-            tag: MediaItem(
-              id: '${_nextMediaId++}',
-              title: capitalizeEachWord(item['title']),
-              artist: capitalizeEachWord(item['artist']),
-              album: capitalizeEachWord(item['album']),
-              artUri: Uri.parse(
-                regexGdriveHostUrl(
-                  url: item['cover'],
-                  listApiKey: albumService.gdriveApiKeyList,
-                  isAudio: false,
-                ),
-              ),
-              extras: {
-                'music_id': item['id_music'],
-                'url': musicUrl,
-                'favorite': item['favorite'],
-                'id_playlist_music': item['id_playlist_music'] ?? '',
-                'original_source':
-                    type != 'offline' ? item['link_gdrive'] : item['filePath'],
-                'is_cached': item['cache_music_id'] != null ? true : false,
-                'is_lossless':
-                    item['music_quality'] == 'lossless' ? true : false,
-                'metadata': {
-                  // metadata_id_music dibiarkan null gpp kalo kosong.
-                  // Buat cek di onReadCodec.
-                  'metadata_id_music': item['metadata_id_music'] ?? '',
-                  'codec_name': item['codec_name'] ?? '--',
-                  'sample_rate': item['sample_rate'] ?? '--',
-                  'bit_rate': item['bit_rate'] ?? '--',
-                  'bits_per_raw_sample': item['bits_per_raw_sample'] ?? '--',
-                },
-                'dominant_color': {
-                  'bg_color': item['bg_color'] ?? '',
-                  'text_color': item['text_color'] ?? '',
-                },
-                'is_downloaded': type != 'offline'
-                    ? uidDownloadedSongs.contains(item['id_music'])
-                        ? true
-                        : false
-                    : false,
-                'uploader': uploader,
-                'is_suspicious': item['is_suspicious'] == 'true' ? true : false,
-                'is_offline': type == 'offline' ? true : false,
-              },
+          return Music(
+            musicId: item['id_music'],
+            album: capitalizeEachWord(item['album'] ?? "Unknown Album"),
+            artist: capitalizeEachWord(item['artist']),
+            cover: regexGdriveHostUrl(
+              url: item['cover'],
+              listApiKey: albumService.gdriveApiKeyList,
+              isAudio: false,
             ),
+            linkDrive: musicUrl,
+            title: capitalizeEachWord(item['title']),
+            extras: {
+              'index': '${_nextMediaId++}',
+              'music_id': item['id_music'],
+              'file_drive_id': '',
+              'disc_number': item['disc_number'],
+              'url': musicUrl,
+              'favorite': item['favorite'],
+              'id_playlist_music': item['id_playlist_music'] ?? '',
+              'original_source': type != 'offline'
+                  ? item['link_gdrive'].toString().contains('cdncloudflare/')
+                      ? "Backblaze B2"
+                      : item['link_gdrive']
+                  : item['filePath'],
+              'is_cached': item['cache_music_id'] != null ||
+                      item['link_gdrive'].toString().contains('cdncloudflare/')
+                  ? true
+                  : false,
+              'is_lossless': item['music_quality'] == 'lossless' ? true : false,
+              'metadata': {
+                // metadata_id_music dibiarkan null gpp kalo kosong.
+                // Buat cek di onReadCodec.
+                'metadata_id_music': item['metadata_id_music'] ?? '',
+                'codec_name': item['codec_name'] ?? '--',
+                'sample_rate': item['sample_rate'] ?? '--',
+                'bit_rate': item['bit_rate'] ?? '--',
+                'bits_per_raw_sample': item['bits_per_raw_sample'] ?? '--',
+              },
+              'dominant_color': {
+                'bg_color': item['bg_color'] ?? '',
+                'text_color': item['text_color'] ?? '',
+              },
+              'is_downloaded': type != 'offline'
+                  ? uidDownloadedSongs.contains(item['id_music'])
+                      ? true
+                      : false
+                  : false,
+              'uploader': uploader,
+              'is_suspicious': item['is_suspicious'] == 'true' ? true : false,
+              'is_offline': type == 'offline' ? true : false,
+            },
           );
         },
       ).toList();
-      queue = playlist.map((e) => e.tag as MediaItem).toList();
-      // {kode "APEL"} Sebelumnya, ini setAudioSource -tanpa s- karena ConcatenatingAudioSource-
-      // yang sekarang udah deprecated, makanya pakai yang ada -s-.
-      await activePlayer.value?.setAudioSources(playlist);
+      queue = playlist
+          .map(
+            (e) => MediaItem(
+              id: e.musicId,
+              title: e.title,
+              album: e.album,
+              artUri: Uri.parse(e.cover),
+              artist: e.artist,
+              extras: e.extras,
+            ),
+          )
+          .toList();
     } catch (e, st) {
-      // logger.e('Error loading audio source: $e');
       logError('Error loading audio source: $e, st:$st');
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
     } finally {
