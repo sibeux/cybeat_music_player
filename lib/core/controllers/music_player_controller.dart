@@ -204,11 +204,21 @@ class MusicPlayerController extends GetxController {
     }
   }
 
-  Future<Map<String, dynamic>> getStreamDirectUrl({required String url}) async {
+  Future<Map<String, dynamic>> getStreamDirectUrl(
+      {required String url,
+      required String source,
+      String musicId = '0'}) async {
     isWaitingGetMusicStreamUrl.value = true;
-    const methodName = "getStreamDirectUrl";
+    final methodName = "getStreamDirectUrl $source";
     try {
-      final response = await http.get(Uri.parse(url));
+      String api = '';
+      if (source == 'gdrive') {
+        api = url;
+      } else if (source == 'cloudflare') {
+        api =
+            "https://sibeux.my.id/cloud-music-player/api/get_hmac_token?path=$url&music_id=$musicId";
+      }
+      final response = await http.get(Uri.parse(api));
       if (response.body.isEmpty) {
         final reason =
             'Error in $methodName: Response body is empty: ${response.statusCode}';
@@ -237,11 +247,11 @@ class MusicPlayerController extends GetxController {
     required MediaItem mediaItem,
     bool isFromButton = true,
   }) async {
+    updateCurrentMediaItem(
+        mediaItem); // Ini dipakai saat pertama kali putar music.
     // Gunakan variabel lokal untuk menghindari pengulangan dan null check
     final player = audioStateController.activePlayer.value;
     if (player == null) return; // Guard clause jika player tidak ada
-    updateCurrentMediaItem(
-        mediaItem); // Ini dipakai saat pertama kali putar music.
     activateMusic();
     if (currentActivePlaylist.value!.type != 'offline') {
       setLastPlayingPlaylist();
@@ -250,18 +260,44 @@ class MusicPlayerController extends GetxController {
     numberOfError = 0;
 
     final String initialUrl = mediaItem.extras!['url'];
-    final bool isApiStream = initialUrl
+    final bool isGdriveStream = initialUrl
         .contains('https://sibeux.my.id/cloud-music-player/api/stream');
+    final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
 
     try {
       if (isFromButton) {
         // player.stop();
         // player.seek(Duration.zero, index: 0);
       }
-      final url = isApiStream
-          // ? (await getStreamDirectUrl(url: initialUrl))['stream_url'] ?? ''
-          ? initialUrl
-          : initialUrl;
+      var url = "";
+      var musicId = "0";
+      if (isGdriveStream) {
+        // final responseBody =
+        //     await getStreamDirectUrl(url: initialUrl, source: 'gdrive');
+        // url = responseBody['stream_url'] ?? '';
+        // musicId = responseBody['music_id'] ?? '0';
+        url = initialUrl;
+        musicId = mediaItem.id;
+      } else if (isCloudflareStream) {
+        // final responseBody = (await getStreamDirectUrl(
+        //   url: initialUrl.replaceFirst("cdncloudflare", ''),
+        //   source: 'cloudflare',
+        //   musicId: mediaItem.id,
+        // ));
+        // url = responseBody['stream_url'] ?? '';
+        // musicId = responseBody['music_id'] ?? '0';
+        String path = initialUrl.replaceFirst("cdncloudflare", '');
+        url =
+            "https://sibeux.my.id/cloud-music-player/api/get_hmac_token?path=$path&music_id=${mediaItem.id}";
+        musicId = mediaItem.id;
+      } else {
+        url = initialUrl;
+        musicId = mediaItem.id;
+      }
+
+      // cek apakah ini request terakhir
+      if (musicId != _currentMediaItem.value!.id) return; // dibatalkan
+
       await player.setAudioSources(
         [
           AudioSource.uri(

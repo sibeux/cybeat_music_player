@@ -155,7 +155,11 @@ class AudioStateController extends GetxController {
       }
       playlist.value = listData.map(
         (item) {
-          final String uploader = item['uploader'] ?? 'cybeat';
+          final String uploader = item['uploader'] == null
+              ? "Cybeat"
+              : item['uploader'].toString().trim() == ''
+                  ? "Cybeat"
+                  : item['uploader'];
           final String musicUrl = regexGdriveHostUrl(
             url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
             listApiKey: albumService.gdriveApiKeyList,
@@ -184,9 +188,15 @@ class AudioStateController extends GetxController {
               'url': musicUrl,
               'favorite': item['favorite'],
               'id_playlist_music': item['id_playlist_music'] ?? '',
-              'original_source':
-                  type != 'offline' ? item['link_gdrive'] : item['filePath'],
-              'is_cached': item['cache_music_id'] != null ? true : false,
+              'original_source': type != 'offline'
+                  ? item['link_gdrive'].toString().contains('cdncloudflare/')
+                      ? "Backblaze B2"
+                      : item['link_gdrive']
+                  : item['filePath'],
+              'is_cached': item['cache_music_id'] != null ||
+                      item['link_gdrive'].toString().contains('cdncloudflare/')
+                  ? true
+                  : false,
               'is_lossless': item['music_quality'] == 'lossless' ? true : false,
               'metadata': {
                 // metadata_id_music dibiarkan null gpp kalo kosong.

@@ -196,6 +196,36 @@ void detailMusicCreditsDialog({
                 ),
               )),
           SizedBox(
+            height: 15.h,
+          ),
+          Text(
+            "Cached From",
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          Obx(() => Text(
+                detailMusicController.currentMediaItem!.extras?['is_cached']
+                    ? detailMusicController.currentMediaItem!.extras!['url']
+                            .toString()
+                            .contains('cdncloudflare/')
+                        ? "Cloudflare CDN"
+                        : detailMusicController.currentMediaItem!.extras!['url']
+                    : '—',
+                maxLines: 1,
+                style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black.withValues(alpha: 0.6),
+                ),
+              )),
+          SizedBox(
             height: 10.h,
           ),
         ],
