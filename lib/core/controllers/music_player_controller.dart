@@ -263,7 +263,7 @@ class MusicPlayerController extends GetxController {
 
     final String initialUrl = mediaItem.extras!['url'];
     final bool isGdriveStream = initialUrl
-        .contains('https://sibeux.my.id/cloud-music-player/api/stream');
+        .contains('sibeux.my.id/cloud-music-player/api/stream');
     final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
 
     try {
@@ -318,7 +318,6 @@ class MusicPlayerController extends GetxController {
 
       player.play(); // user langsung dengar musik
     } catch (e, st) {
-      // Tambahkan penanganan error jika proses load playlist gagal
       logError("Error playMusicNow: $e. ST: $st");
     }
   }

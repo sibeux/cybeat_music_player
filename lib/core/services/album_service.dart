@@ -535,8 +535,8 @@ class AlbumService extends GetxService {
   }
 
   Future<void> getDominantColorAlbum({required String albumCover}) async {
-    const String api =
-        "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/get_dominant_color_album";
+    final String api =
+        dotenv.env['DOMINANT_COLOR_ALBUM_URL'] ?? 'Kunci API Tidak Ditemukan';
     try {
       final response = await http.post(Uri.parse(api), body: {
         'image_url': albumCover,
