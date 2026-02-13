@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         // ** Kalau drawer dari file ini, perlu Builder.
                         // Ini memanggil drawer di root page.
-                        Scaffold.of(context).openDrawer();
+                        _homeController.openDrawer(context);
                       },
                     ),
                     Container(

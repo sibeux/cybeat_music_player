@@ -4,6 +4,10 @@ import 'dart:ui';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
+import 'package:cybeat_music_player/core/services/secure_storage_service.dart';
+import 'package:cybeat_music_player/features/auth_user/bindings/user_register_binding.dart';
+import 'package:cybeat_music_player/features/auth_user/screens/register/email_check_screen.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
 import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/bindings/add_music_to_playlist_binding.dart';
@@ -101,7 +105,7 @@ Future<void> main() async {
 
 class InitialBinding extends Bindings {
   @override
-  void dependencies() {
+  void dependencies() async {
     // Daftarkan service sebagai singleton
     /// Service seperti PlaylistService sering disebut sebagai 'singleton'.
     /// Artinya, hanya ada satu instance dari service tersebut yang hidup selama aplikasi berjalan.
@@ -115,6 +119,9 @@ class InitialBinding extends Bindings {
     Get.put(MusicPlayerController());
     Get.put(AudioStateController());
     Get.put(MusicDownloadController());
+
+    Get.put(SecureStorageService());
+    await Get.putAsync(() => AuthService().init());
   }
 }
 
@@ -161,6 +168,15 @@ class MyApp extends StatelessWidget {
               ),
               // Halaman yang butuh layar penuh (tanpa floating button player)
               // tetap berada di sini. Contoh: Halaman detail lagu, new playlist, dll.
+              GetPage(
+                name: '/email_check',
+                page: () => EmailCheckScreen(),
+                binding: UserRegisterBinding(),
+                transition: Transition.native,
+                transitionDuration: const Duration(milliseconds: 300),
+                popGesture: false,
+                fullscreenDialog: true,
+              ),
               GetPage(
                 name: '/detail',
                 page: () => DetailMusicScreen(),
