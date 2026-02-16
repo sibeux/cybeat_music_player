@@ -22,7 +22,9 @@ class SplashController extends GetxController {
       logError('Error during JWT check: $e');
     } finally {
       isLoading.value = false;
-      Get.offAllNamed('/home', id: 1);
+      Get.offAndToNamed('/home', id: 1);
+      // Force delete SplashController as automatic disposal in nested nav can be unreliable
+      Get.delete<SplashController>();
     }
   }
 }

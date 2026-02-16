@@ -1,14 +1,19 @@
+import 'package:cybeat_music_player/features/splash_page/controllers/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends GetView<SplashController> {
   const SplashPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Trigger controller initialization, agar lazyput di binding dijalankan.
+    controller.isLoading;
+
     // Membuat status bar menjadi transparan agar warna background terlihat penuh
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Untuk Android

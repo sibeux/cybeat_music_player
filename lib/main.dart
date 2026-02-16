@@ -111,6 +111,8 @@ class InitialBinding extends Bindings {
     // FIX-20260217-01: SecureStorageService & AuthService dipindahkan ke main() agar blocking
     // InitialBinding harus synchronous agar Get.put selanjutnya (MusicPlayerController)
     // tereksekusi duluan sebelum RootPage di-render yang membutuhkan controller tersebut.
+    // Get.put(SecureStorageService());
+    // await Get.putAsync(() => AuthService().init());
     Get.put(AlbumService());
     // Gunakan Get.put() untuk controller yang harus langsung ada
     // dan hidup selamanya selama aplikasi berjalan.
