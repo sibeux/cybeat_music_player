@@ -10,6 +10,8 @@ import 'package:cybeat_music_player/features/root_page/controllers/navigation_hi
 import 'package:cybeat_music_player/features/root_page/controllers/root_navigator_observer.dart';
 import 'package:cybeat_music_player/features/search_album/bindings/search_album_binding.dart';
 import 'package:cybeat_music_player/features/search_album/screens/search_album_screen.dart';
+import 'package:cybeat_music_player/features/splash_page/bindings/splash_binding.dart';
+import 'package:cybeat_music_player/features/splash_page/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -47,7 +49,7 @@ class RootPage extends StatelessWidget {
           children: [
             Navigator(
               key: Get.nestedKey(1),
-              initialRoute: '/home',
+              initialRoute: '/splash',
               // Tambahkan observer ke navigator
               observers: [RootNavigatorObserver()],
               onGenerateRoute: (settings) {
@@ -78,6 +80,14 @@ class RootPage extends StatelessWidget {
 // Ini adalah anak route dari screen/navigator rootpage.
 Route<dynamic>? onGenerateNestedRoute(RouteSettings settings) {
   switch (settings.name) {
+    case '/splash':
+      return GetPageRoute(
+        settings: settings,
+        page: () => SplashPage(),
+        binding: SplashBinding(),
+        fullscreenDialog: true,
+        popGesture: false,
+      );
     case '/home':
       return GetPageRoute(
         settings: settings,

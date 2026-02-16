@@ -1,15 +1,21 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/core/repositories/auth_repository.dart';
 import 'package:cybeat_music_player/core/services/secure_storage_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AuthService extends GetxService {
   final _storage = Get.find<SecureStorageService>();
+  final AuthRepository _authRepo = AuthRepository();
+
+  String userId = "";
 
   var accessToken = "".obs;
   DateTime? expiry;
+  var isTokenValid = false.obs;
 
   // Derived getter - KISS principle
   // KISS: Keep It Simple, Stupid
@@ -86,5 +92,22 @@ class AuthService extends GetxService {
     accessToken.value = "";
     expiry = null;
     _storage.clear();
+  }
+
+  Future<void> checkJwtToken() async {
+    try {
+      final isValid = await _authRepo.checkJwtToken(accessToken.value);
+      if (isValid) {
+        logSuccess('JWT token is valid. User authenticated.');
+        isTokenValid.value = true;
+        final Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken.value);
+        userId = decodedToken['data']['user_id'];
+      } else {
+        logInfo('JWT token is invalid or expired. Logging out.');
+        logout();
+      }
+    } catch (e) {
+      logError('Error checking JWT token: $e');
+    }
   }
 }

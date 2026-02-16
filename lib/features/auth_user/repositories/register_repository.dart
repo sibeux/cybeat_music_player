@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-class AuthRepository {
+class RegisterRepository {
   Future<bool> checkEmail({required String email}) async {
     const String url =
         'https://cybeat.sibeux.my.id/cloud-music-player/api/auth/register';

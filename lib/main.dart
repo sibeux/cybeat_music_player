@@ -19,7 +19,6 @@ import 'package:cybeat_music_player/features/playlist/new_playlist/bindings/new_
 import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
 import 'package:cybeat_music_player/features/setting_app/bindings/setting_app_binding.dart';
 import 'package:cybeat_music_player/features/setting_app/screens/setting_app_screen.dart';
-import 'package:cybeat_music_player/features/splash_page/splash_page.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/root_page/root_page.dart';
@@ -91,20 +90,27 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env.default");
   await dotenv.load(fileName: ".env.$env");
   logInfo('Running application in $env mode');
+
+  // FIX-20260217-01: Load Service sebelum runApp agar siap digunakan di halaman awal
+  // Problem: Jika ditaruh di InitialBinding, bisa terjadi race condition dimana UI dimuat sebelum service selesai init.
+  Get.put(SecureStorageService());
+  await Get.putAsync(() => AuthService().init());
+
   runApp(MyApp());
 }
 
 class InitialBinding extends Bindings {
   @override
-  void dependencies() async {
+  void dependencies() {
     // Daftarkan service sebagai singleton
     /// Service seperti PlaylistService sering disebut sebagai 'singleton'.
     /// Artinya, hanya ada satu instance dari service tersebut yang hidup selama aplikasi berjalan.
     /// - Sumber Kebenaran Tunggal (Single Source of Truth)
     /// - Siklus Hidup (Lifecycle) yang Panjang
     /// - Efisiensi
-    Get.put(SecureStorageService());
-    await Get.putAsync(() => AuthService().init());
+    // FIX-20260217-01: SecureStorageService & AuthService dipindahkan ke main() agar blocking
+    // InitialBinding harus synchronous agar Get.put selanjutnya (MusicPlayerController)
+    // tereksekusi duluan sebelum RootPage di-render yang membutuhkan controller tersebut.
     Get.put(AlbumService());
     // Gunakan Get.put() untuk controller yang harus langsung ada
     // dan hidup selamanya selama aplikasi berjalan.
@@ -151,14 +157,9 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             initialBinding: InitialBinding(),
             getPages: [
-              // Rute utama aplikasi sekarang adalah SpashScreen,
-              // yang akan memutuskan apakah pengguna perlu login atau langsung ke RootPage.
+              // Rute utama aplikasi sekarang adalah RootPage.
               GetPage(
                 name: '/',
-                page: () => SplashPage(),
-              ),
-              GetPage(
-                name: '/root',
                 page: () => RootPage(),
               ),
               // Halaman yang butuh layar penuh (tanpa floating button player)

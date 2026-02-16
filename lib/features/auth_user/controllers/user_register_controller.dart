@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/features/auth_user/interfaces/auth_form_controller_contract.dart';
-import 'package:cybeat_music_player/features/auth_user/repositories/auth_repository.dart';
+import 'package:cybeat_music_player/features/auth_user/repositories/register_repository.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserRegisterController extends AuthFormControllerContract {
-  final AuthRepository _authRepo = AuthRepository();
-  
+  final RegisterRepository _authRepo = RegisterRepository();
+
   var isLoading = false.obs;
   var isEmailRegistered = false.obs;
   var isRedirecting = false.obs;
