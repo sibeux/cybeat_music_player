@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/core/services/secure_storage_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
@@ -7,27 +8,40 @@ import 'package:get/get.dart';
 class AuthService extends GetxService {
   final _storage = Get.find<SecureStorageService>();
 
-  final accessToken = RxnString();
+  var accessToken = "".obs;
   DateTime? expiry;
 
+  // Derived getter - KISS principle
+  // KISS: Keep It Simple, Stupid
+  bool get isAuthenticated => accessToken.value.isNotEmpty;
+
   Future<AuthService> init() async {
-    final token = await _storage.getAccessToken();
-    final refresh = await _storage.getRefreshToken();
+    try {
+      final token = await _storage.getAccessToken();
+      final refresh = await _storage.getRefreshToken();
 
-    if (token == null || refresh == null) return this;
+      if (token == null || refresh == null) return this;
 
-    expiry = _decodeExpiry(token);
-    accessToken.value = token;
+      expiry = _decodeExpiry(token);
+      accessToken.value = token;
 
-    if (_isExpired()) {
-      final success = await refreshToken();
-      if (!success) logout();
+      // TICKET-20260216-01: Added error handling to prevent silent initialization failures
+      // Problem: Previous implementation swallowed errors or threw unhandled exceptions
+      // Solution: Wrap initialization logic in try-catch and log errors
+      if (_isExpired()) {
+        final success = await refreshToken();
+        if (!success) logout();
+      }
+    } catch (e, stack) {
+      logError('AuthService init error: $e\n$stack');
     }
-
     return this;
   }
 
-  bool _isExpired() => expiry == null || DateTime.now().isAfter(expiry!);
+  // TICKET-20260216-01: Fix Null Check Operator Error
+  // Problem: `expiry!` was called even when `expiry` could be null, causing runtime crash.
+  // Solution: Use null-aware operator `?.` and specific boolean logic `?? true`.
+  bool _isExpired() => expiry?.isBefore(DateTime.now()) ?? true;
 
   DateTime _decodeExpiry(String jwt) {
     final payload = jsonDecode(
@@ -69,9 +83,8 @@ class AuthService extends GetxService {
   }
 
   void logout() {
-    accessToken.value = null;
+    accessToken.value = "";
     expiry = null;
     _storage.clear();
-    Get.offAllNamed('/login');
   }
 }

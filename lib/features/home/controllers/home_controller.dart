@@ -4,7 +4,6 @@ import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 

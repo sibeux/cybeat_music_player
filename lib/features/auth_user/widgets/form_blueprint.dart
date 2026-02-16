@@ -5,7 +5,6 @@ import 'package:cybeat_music_player/features/auth_user/interfaces/auth_form_cont
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/get_utils.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class FormBlueprint extends StatelessWidget {

@@ -1,15 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/features/auth_user/interfaces/auth_form_controller_contract.dart';
+import 'package:cybeat_music_player/features/auth_user/repositories/auth_repository.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
 class UserRegisterController extends AuthFormControllerContract {
+  final AuthRepository _authRepo = AuthRepository();
+  
   var isLoading = false.obs;
   var isEmailRegistered = false.obs;
   var isRedirecting = false.obs;
@@ -126,41 +127,25 @@ class UserRegisterController extends AuthFormControllerContract {
   Future<void> checkEmail({required String email}) async {
     isLoading.value = true;
 
-    const String url =
-        'https://cybeat.sibeux.my.id/cloud-music-player/api/auth/email';
-
     try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: {
-          'email': email,
-        },
-      ).timeout(const Duration(seconds: 10));
+      // Memanggil fungsi dari repository
+      bool emailExists = await _authRepo.checkEmail(email: email);
 
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-        final emailExists = jsonResponse['email_exists'].toString() == 'true';
-
-        if (emailExists) {
-          isEmailRegistered.value = true;
-        } else {
-          isEmailRegistered.value = false;
-          // Get.off(
-          //   () => const RegisterDataScreen(),
-          //   transition: Transition.rightToLeftWithFade,
-          //   fullscreenDialog: true,
-          //   popGesture: false,
-          //   arguments: {
-          //     'email': email,
-          //   },
-          // );
-        }
+      if (emailExists) {
+        isEmailRegistered.value = true;
       } else {
-        logError('Failed checking. Error: ${response.statusCode}');
-        showRemoveAlbumToast("Failed checking email. Please try again.");
+        isEmailRegistered.value = false;
+
+        // Logika navigasi dipindah ke sini (Controller)
+        // Get.off(
+        //   () => const RegisterDataScreen(),
+        //   transition: Transition.rightToLeftWithFade,
+        //   fullscreenDialog: true,
+        //   popGesture: false,
+        //   arguments: {
+        //     'email': email,
+        //   },
+        // );
       }
     } on TimeoutException {
       showRemoveAlbumToast("Server Timeout. Please try again later.");

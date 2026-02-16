@@ -19,6 +19,7 @@ import 'package:cybeat_music_player/features/playlist/new_playlist/bindings/new_
 import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
 import 'package:cybeat_music_player/features/setting_app/bindings/setting_app_binding.dart';
 import 'package:cybeat_music_player/features/setting_app/screens/setting_app_screen.dart';
+import 'package:cybeat_music_player/features/splash_page/splash_page.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/root_page/root_page.dart';
@@ -39,15 +40,15 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-  // 1. Pastikan semua binding framework siap
+  // Pastikan semua binding framework siap
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // 2. Inisialisasi Firebase
+  // Inisialisasi Firebase
   await Firebase.initializeApp(
     // Untuk mendapatkan firebase options, jalankan perintah:
     // flutterfire configure
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // 3. Atur handler error
+  // Atur handler error
   // Menangkap error dari Flutter framework (error saat build widget, dll.)
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
@@ -63,17 +64,7 @@ Future<void> main() async {
   }
   // Tampilkan splash screen sampai app siap
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  // Inisialisasi Just Audio Background
-  // await AudioService.init(
-  //   builder: () => MyAudioHandler(),
-  //   config: const AudioServiceConfig(
-  //     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-  //     androidNotificationChannelName: 'Audio playback',
-  //     androidNotificationOngoing: true,
-  //     androidNotificationIcon: 'mipmap/ic_launcher',
-  //     androidShowNotificationBadge: true,
-  //   ),
-  // );
+  // Inisialisasi JustAudioBackground untuk kontrol pemutaran musik di background
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'Audio playback',
@@ -112,6 +103,8 @@ class InitialBinding extends Bindings {
     /// - Sumber Kebenaran Tunggal (Single Source of Truth)
     /// - Siklus Hidup (Lifecycle) yang Panjang
     /// - Efisiensi
+    Get.put(SecureStorageService());
+    await Get.putAsync(() => AuthService().init());
     Get.put(AlbumService());
     // Gunakan Get.put() untuk controller yang harus langsung ada
     // dan hidup selamanya selama aplikasi berjalan.
@@ -119,9 +112,6 @@ class InitialBinding extends Bindings {
     Get.put(MusicPlayerController());
     Get.put(AudioStateController());
     Get.put(MusicDownloadController());
-
-    Get.put(SecureStorageService());
-    await Get.putAsync(() => AuthService().init());
   }
 }
 
@@ -161,9 +151,14 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             initialBinding: InitialBinding(),
             getPages: [
-              // Rute utama aplikasi sekarang adalah RootPage
+              // Rute utama aplikasi sekarang adalah SpashScreen,
+              // yang akan memutuskan apakah pengguna perlu login atau langsung ke RootPage.
               GetPage(
                 name: '/',
+                page: () => SplashPage(),
+              ),
+              GetPage(
+                name: '/root',
                 page: () => RootPage(),
               ),
               // Halaman yang butuh layar penuh (tanpa floating button player)

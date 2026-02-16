@@ -12,7 +12,6 @@ import 'package:cybeat_music_player/features/search_album/bindings/search_album_
 import 'package:cybeat_music_player/features/search_album/screens/search_album_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 
 class RootPage extends StatelessWidget {
@@ -22,10 +21,9 @@ class RootPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterNativeSplash.remove();
     final musicPlayerController = Get.find<MusicPlayerController>();
 
-    // 1. Daftarkan controller agar bisa di-find oleh Observer
+    // Daftarkan controller agar bisa di-find oleh Observer
     final historyController = Get.put(NavigationHistoryController());
 
     return Scaffold(
@@ -35,7 +33,7 @@ class RootPage extends StatelessWidget {
         canPop: false,
         onPopInvokedWithResult: (bool didPop, result) {
           if (didPop) return;
-          // 3. LOGIKA BARU: Cek panjang riwayat, BUKAN canPop()
+          // LOGIKA BARU: Cek panjang riwayat, BUKAN canPop()
           // Jika riwayat lebih dari 1, berarti kita bisa kembali.
           if (historyController.routeHistory.length > 1) {
             Get.nestedKey(1)?.currentState?.pop();
@@ -50,13 +48,13 @@ class RootPage extends StatelessWidget {
             Navigator(
               key: Get.nestedKey(1),
               initialRoute: '/home',
-              // 2. Tambahkan observer ke navigator
+              // Tambahkan observer ke navigator
               observers: [RootNavigatorObserver()],
               onGenerateRoute: (settings) {
                 return onGenerateNestedRoute(settings);
               },
             ),
-            // BAGIAN 2: "CANGKANG" YANG PERSISTEN
+            // "CANGKANG" YANG PERSISTEN
             // Floating player Anda akan selalu ada di atas halaman apa pun.
             Positioned(
               bottom: 0,
