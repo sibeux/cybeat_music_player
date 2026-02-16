@@ -4,6 +4,7 @@ import 'package:cybeat_music_player/common/widgets/floating_bar/floating_playing
 import 'package:cybeat_music_player/features/album_music/screens/album_music_screen_search.dart';
 import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
 import 'package:cybeat_music_player/features/home/screens/home_screen.dart';
+import 'package:cybeat_music_player/features/root_page/controllers/root_controller.dart';
 import 'package:cybeat_music_player/features/root_page/widgets/root_navigation_drawer.dart';
 import 'package:cybeat_music_player/features/recent_music/screens/recents_music_screen.dart';
 import 'package:cybeat_music_player/features/root_page/controllers/navigation_history_controller.dart';
@@ -27,6 +28,7 @@ class RootPage extends StatelessWidget {
 
     // Daftarkan controller agar bisa di-find oleh Observer
     final historyController = Get.put(NavigationHistoryController());
+    Get.lazyPut(() => RootController());
 
     return Scaffold(
       drawerBarrierDismissible: true,

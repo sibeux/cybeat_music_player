@@ -12,6 +12,7 @@ class AuthService extends GetxService {
   final AuthRepository _authRepo = AuthRepository();
 
   String userId = "";
+  String fullName = "";
 
   var accessToken = "".obs;
   DateTime? expiry;
@@ -19,7 +20,7 @@ class AuthService extends GetxService {
 
   // Derived getter - KISS principle
   // KISS: Keep It Simple, Stupid
-  bool get isAuthenticated => accessToken.value.isNotEmpty;
+  bool get isAuthenticated => isTokenValid.value;
 
   Future<AuthService> init() async {
     try {
@@ -100,8 +101,10 @@ class AuthService extends GetxService {
       if (isValid) {
         logSuccess('JWT token is valid. User authenticated.');
         isTokenValid.value = true;
-        final Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken.value);
+        final Map<String, dynamic> decodedToken =
+            JwtDecoder.decode(accessToken.value);
         userId = decodedToken['data']['user_id'];
+        fullName = decodedToken['data']['fullname'];
       } else {
         logInfo('JWT token is invalid or expired. Logging out.');
         logout();

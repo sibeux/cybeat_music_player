@@ -61,8 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       margin: EdgeInsets.only(left: 10.w),
                       child: Text(
-                        'Your Library',
+                        _homeController.fullName.isNotEmpty
+                            ? 'Hi, ${_homeController.fullName}'
+                            : 'Welcome',
+                        maxLines: 1,
                         style: TextStyle(
+                          overflow: TextOverflow.ellipsis,
                           fontSize: 22.sp,
                           fontWeight: FontWeight.bold,
                         ),

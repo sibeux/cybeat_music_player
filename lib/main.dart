@@ -224,6 +224,14 @@ class MyApp extends StatelessWidget {
                 fullscreenDialog: true,
                 popGesture: false,
               ),
+              GetPage(
+                name: '/email_check',
+                page: () => EmailCheckScreen(),
+                binding: UserRegisterBinding(),
+                transition: Transition.native,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
             ],
           ),
         );

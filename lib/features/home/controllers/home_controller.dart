@@ -3,12 +3,14 @@ import 'package:cybeat_music_player/core/controllers/music_player_controller.dar
 import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:cybeat_music_player/core/models/playlist.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeController extends GetxController {
   final AlbumService albumService = Get.find<AlbumService>();
+  final AuthService authService = Get.find<AuthService>();
   final MusicPlayerController musicPlayerController = Get.find();
   final RefreshController refreshController =
       RefreshController(initialRefresh: false);
@@ -30,6 +32,7 @@ class HomeController extends GetxController {
   dynamic get sortValue => albumService.sortValue;
   RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
   bool get isLoading => albumService.isHomeLoading.value;
+  String get fullName => authService.fullName;
 
   MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
 
