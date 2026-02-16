@@ -18,7 +18,8 @@ class UserRegisterController extends AuthFormControllerContract {
 
   final _currentType = ''.obs;
 
-  final _formData = RxMap(
+  final _formData = RxMap<String, Object?>(
+    // Pakai Object? untuk memungkinkan assign dynamic value + tidak terjadi error.
     {
       'emailRegister': {
         'text': '',

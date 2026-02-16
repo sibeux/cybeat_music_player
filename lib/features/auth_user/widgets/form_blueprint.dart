@@ -117,7 +117,7 @@ OutlineInputBorder outlineInputBorder(
   final userRegisterController = Get.find<UserRegisterController>();
   final userLoginController = Get.find<UserLoginController>();
 
-  final bool emailBool = (!userRegisterController.getIsEmailValid(formType) &&
+  final bool isEmailInvalid = (!userRegisterController.getIsEmailValid(formType) &&
           textValue!.isNotEmpty) ||
       userRegisterController.isEmailRegistered.value ||
       (formType.toLowerCase().contains('login') &&
@@ -127,7 +127,7 @@ OutlineInputBorder outlineInputBorder(
     borderSide: BorderSide(
       color: (isCurrentType || textValue!.isNotEmpty)
           ? formType.toLowerCase().contains('email')
-              ? emailBool
+              ? isEmailInvalid
                   ? HexColor('#ff0000').withValues(alpha: 0.5)
                   : ColorPalette().primary.withValues(alpha: 0.5)
               : formType.toLowerCase().contains('name')
