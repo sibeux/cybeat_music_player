@@ -113,4 +113,29 @@ class AuthService extends GetxService {
       logError('Error checking JWT token: $e');
     }
   }
+
+  Future<bool> registerUser(
+    String name,
+    String email,
+    String password,
+  ) async {
+    try {
+      final result = await _authRepo.createUser(
+        name: name,
+        email: email,
+        password: password,
+      );
+
+      // Logika bisnis: Cek status dari response API
+      if (result['status'] == 'success') {
+        return true;
+      } else {
+        // Lempar pesan error spesifik dari API
+        throw result['message'] ?? 'Registration failed';
+      }
+    } catch (e) {
+      // Lempar kembali error agar ditangkap Controller
+      rethrow;
+    }
+  }
 }

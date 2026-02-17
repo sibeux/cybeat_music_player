@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/features/auth_user/interfaces/auth_form_controller_contract.dart';
 import 'package:cybeat_music_player/features/auth_user/repositories/register_repository.dart';
 import 'package:email_validator/email_validator.dart';
@@ -111,12 +112,14 @@ class UserRegisterController extends AuthFormControllerContract {
   bool isFieldValid(String formType) {
     final textValue = formData[formType]?['text']?.toString();
 
-    bool isEmailValid =
-        !(!getIsEmailValid('emailRegister') && textValue!.isNotEmpty);
+    bool isEmailValid = textValue!.isEmpty
+        ? true
+        : (!(!getIsEmailValid('emailRegister') && textValue.isNotEmpty) &&
+            (!isEmailRegistered.value && textValue.isNotEmpty));
 
     return (formType == 'emailRegister'
         ? isEmailValid
-        : formType == 'nameRegister' && textValue!.isNotEmpty
+        : formType == 'nameRegister' && textValue.isNotEmpty
             ? !getIsNameInvalid()
             : true);
   }
@@ -148,11 +151,6 @@ class UserRegisterController extends AuthFormControllerContract {
     );
   }
 
-  Future<void> register() async {
-    logSuccess(
-        'Registering user with email: ${formData['emailRegister']!['text'].toString()}');
-  }
-
   Future<void> checkEmail({required String email}) async {
     isLoading.value = true;
 
@@ -174,6 +172,31 @@ class UserRegisterController extends AuthFormControllerContract {
     } catch (e, st) {
       logError('error: $e $st');
       showRemoveAlbumToast("Network error.");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> register() async {
+    // Ambil data dari form
+    final name = formData['nameRegister']!['text'].toString();
+    final email = formData['emailRegister']!['text'].toString();
+    final password = formData['passwordRegister']!['text'].toString();
+
+    isLoading.value = true;
+
+    try {
+      final AuthService authService = AuthService();
+      // Panggil Service
+      bool isSuccess = await authService.registerUser(name, email, password);
+
+      if (isSuccess) {
+        logSuccess('Register berhasil untuk $email');
+      }
+    } catch (e) {
+      // Handle error (Timeout, Network, atau Pesan dari API)
+      logError('Register Error: $e');
+      showRemoveAlbumToast(e.toString());
     } finally {
       isLoading.value = false;
     }
