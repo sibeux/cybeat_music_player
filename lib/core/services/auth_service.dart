@@ -128,6 +128,7 @@ class AuthService extends GetxService {
 
       // Logika bisnis: Cek status dari response API
       if (result['status'] == 'success') {
+        logInfo(result.toString());
         return true;
       } else {
         // Lempar pesan error spesifik dari API
