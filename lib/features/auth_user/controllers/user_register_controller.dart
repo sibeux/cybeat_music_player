@@ -15,6 +15,7 @@ class UserRegisterController extends AuthFormControllerContract {
   var isEmailRegistered = false.obs;
   var isRedirecting = false.obs;
   var isObscure = true.obs;
+  bool isProceedingToNextStep = false;
 
   final _currentType = ''.obs;
 
@@ -125,6 +126,11 @@ class UserRegisterController extends AuthFormControllerContract {
     );
   }
 
+  Future<void> register() async {
+    logSuccess(
+        'Registering user with email: ${formData['emailRegister']!['text'].toString()}');
+  }
+
   Future<void> checkEmail({required String email}) async {
     isLoading.value = true;
 
@@ -134,19 +140,12 @@ class UserRegisterController extends AuthFormControllerContract {
 
       if (emailExists) {
         isEmailRegistered.value = true;
+        logInfo('Email \'$email\' is already registered!');
       } else {
         isEmailRegistered.value = false;
-
-        // Logika navigasi dipindah ke sini (Controller)
-        // Get.off(
-        //   () => const RegisterDataScreen(),
-        //   transition: Transition.rightToLeftWithFade,
-        //   fullscreenDialog: true,
-        //   popGesture: false,
-        //   arguments: {
-        //     'email': email,
-        //   },
-        // );
+        logInfo('Email \'$email\' is available for registration.');
+        isProceedingToNextStep = true;
+        Get.offAndToNamed('/data_registration');
       }
     } on TimeoutException {
       showRemoveAlbumToast("Server Timeout. Please try again later.");

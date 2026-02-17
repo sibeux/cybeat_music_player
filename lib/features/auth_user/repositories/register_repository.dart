@@ -1,11 +1,16 @@
 import 'dart:convert';
 
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class RegisterRepository {
   Future<bool> checkEmail({required String email}) async {
-    const String url =
-        'https://cybeat.sibeux.my.id/cloud-music-player/api/auth/register';
+    String url = dotenv.env['REGISTER_AUTH_API_URL'] ?? 'not_found';
+
+    if (url == 'not_found') {
+      logError('API URL for registration not found in environment variables.');
+    }
 
     try {
       final response = await http.post(
