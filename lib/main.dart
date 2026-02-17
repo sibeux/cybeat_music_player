@@ -6,7 +6,9 @@ import 'package:cybeat_music_player/core/controllers/music_player_controller.dar
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/core/services/secure_storage_service.dart';
+import 'package:cybeat_music_player/features/auth_user/bindings/user_login_binding.dart';
 import 'package:cybeat_music_player/features/auth_user/bindings/user_register_binding.dart';
+import 'package:cybeat_music_player/features/auth_user/screens/login/login_screen.dart';
 import 'package:cybeat_music_player/features/auth_user/screens/register/data_registration_screen.dart';
 import 'package:cybeat_music_player/features/auth_user/screens/register/email_check_screen.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
@@ -229,7 +231,7 @@ class MyApp extends StatelessWidget {
                 name: '/email_check',
                 page: () => EmailCheckScreen(),
                 binding: UserRegisterBinding(),
-                transition: Transition.native,
+                transition: Transition.downToUp,
                 fullscreenDialog: true,
                 popGesture: false,
               ),
@@ -237,7 +239,15 @@ class MyApp extends StatelessWidget {
                 name: '/data_registration',
                 page: () => DataRegistrationScreen(),
                 binding: UserRegisterBinding(),
-                transition: Transition.rightToLeft,
+                transition: Transition.rightToLeftWithFade,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/login',
+                page: () => LoginScreen(),
+                binding: UserLoginBinding(),
+                transition: Transition.native,
                 fullscreenDialog: true,
                 popGesture: false,
               ),

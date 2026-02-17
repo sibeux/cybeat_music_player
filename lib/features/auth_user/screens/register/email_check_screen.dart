@@ -105,13 +105,7 @@ class EmailCheckScreen extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    userRegisterController.onClearController('emailRegister');
-                    // Get.off(
-                    //   () => const LoginScreen(),
-                    //   transition: Transition.native,
-                    //   fullscreenDialog: true,
-                    //   popGesture: false,
-                    // );
+                    userRegisterController.moveToLogin();
                   },
                   child: Text(
                     'Sign In',

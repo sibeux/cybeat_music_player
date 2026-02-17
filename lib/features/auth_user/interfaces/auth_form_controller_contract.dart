@@ -9,4 +9,7 @@ abstract class AuthFormControllerContract extends GetxController {
   void onClearController(String type);
   void onChanged(String value, String type);
   void onTap(String type, bool isFocus);
+
+  bool isFieldValid(String formType);
+  bool getIsEmailValid(String formType);
 }

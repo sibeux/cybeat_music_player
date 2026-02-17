@@ -1,6 +1,4 @@
 import 'package:cybeat_music_player/common/utils/color_theme.dart';
-import 'package:cybeat_music_player/features/auth_user/controllers/user_login_controller.dart';
-import 'package:cybeat_music_player/features/auth_user/controllers/user_register_controller.dart';
 import 'package:cybeat_music_player/features/auth_user/interfaces/auth_form_controller_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -101,8 +99,22 @@ class FormBlueprint extends StatelessWidget {
               minWidth: 40.w,
               minHeight: 45.h,
             ),
-            enabledBorder: outlineInputBorder(controller, formType),
-            focusedBorder: outlineInputBorder(controller, formType),
+            enabledBorder: outlineInputBorder(
+              hasContent: controller.formData[formType]?['text']
+                      .toString()
+                      .isNotEmpty ??
+                  false,
+              isFocused: controller.currentType.value == formType,
+              isValid: controller.isFieldValid(formType),
+            ),
+            focusedBorder: outlineInputBorder(
+              hasContent: controller.formData[formType]?['text']
+                      .toString()
+                      .isNotEmpty ??
+                  false,
+              isFocused: controller.currentType.value == formType,
+              isValid: controller.isFieldValid(formType),
+            ),
           ),
         ),
       ),
@@ -110,40 +122,24 @@ class FormBlueprint extends StatelessWidget {
   }
 }
 
-OutlineInputBorder outlineInputBorder(
-    AuthFormControllerContract controller, String formType) {
-  final textValue = controller.formData[formType]?['text'].toString();
-  final isCurrentType = controller.currentType.value == formType;
-  final userRegisterController = Get.find<UserRegisterController>();
-  final userLoginController = Get.find<UserLoginController>();
+OutlineInputBorder outlineInputBorder({
+  required bool hasContent,
+  required bool isFocused,
+  required bool isValid,
+}) {
+  final Color borderColor;
 
-  final bool isEmailInvalid = (!userRegisterController.getIsEmailValid(formType) &&
-          textValue!.isNotEmpty) ||
-      userRegisterController.isEmailRegistered.value ||
-      (formType.toLowerCase().contains('login') &&
-          !userLoginController.isLoginSuccess.value);
+  if (!hasContent && !isFocused) {
+    borderColor = HexColor('#575757');
+  } else {
+    borderColor = isValid ? ColorPalette().primary : HexColor('#ff0000');
+  }
 
   return OutlineInputBorder(
     borderSide: BorderSide(
-      color: (isCurrentType || textValue!.isNotEmpty)
-          ? formType.toLowerCase().contains('email')
-              ? isEmailInvalid
-                  ? HexColor('#ff0000').withValues(alpha: 0.5)
-                  : ColorPalette().primary.withValues(alpha: 0.5)
-              : formType.toLowerCase().contains('name')
-                  ? userRegisterController.getIsNameValid() &&
-                          textValue!.isNotEmpty
-                      ? HexColor('#ff0000').withValues(alpha: 0.5)
-                      : ColorPalette().primary.withValues(alpha: 0.5)
-                  : formType.toLowerCase().contains('login') &&
-                          !userLoginController.isLoginSuccess.value
-                      ? HexColor('#ff0000').withValues(alpha: 0.5)
-                      : ColorPalette().primary.withValues(alpha: 0.5)
-          : HexColor('#575757').withValues(alpha: 0.5),
+      color: borderColor.withValues(alpha: hasContent || isFocused ? 0.5 : 0.5),
       width: 2.w,
     ),
-    borderRadius: BorderRadius.all(
-      Radius.circular(7.r),
-    ),
+    borderRadius: BorderRadius.all(Radius.circular(7.r)),
   );
 }

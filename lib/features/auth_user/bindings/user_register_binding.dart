@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/features/auth_user/controllers/user_login_controller.dart';
+// import 'package:cybeat_music_player/features/auth_user/controllers/user_login_controller.dart';
 import 'package:cybeat_music_player/features/auth_user/controllers/user_register_controller.dart';
 import 'package:get/get.dart';
 
@@ -18,6 +18,6 @@ class UserRegisterBinding extends Bindings {
     /// masalah jika instance-nya terhapus & dibuat ulang (resurrect).
     /// Jika Screen 1 ditutup, instance ini dihapus dari RAM untuk efisiensi,
     /// tapi GetX tetap ingat cara membuatnya kembali jika Screen 2 memanggilnya.
-    Get.lazyPut<UserLoginController>(() => UserLoginController(), fenix: true);
+    // Get.lazyPut<UserLoginController>(() => UserLoginController(), fenix: true);
   }
 }

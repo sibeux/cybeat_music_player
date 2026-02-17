@@ -5,6 +5,6 @@ class RootController extends GetxController {
   void clickLogin(BuildContext context) async {
     Navigator.of(context).pop();
     await Future.delayed(const Duration(milliseconds: 200));
-    Get.toNamed("/email_check");
+    Get.toNamed("/login");
   }
 }

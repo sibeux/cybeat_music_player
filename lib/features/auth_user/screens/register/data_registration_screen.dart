@@ -68,7 +68,7 @@ class DataRegistrationScreen extends StatelessWidget {
                 NameRegisterForm(controller: userRegisterController),
                 SizedBox(height: 5.h),
                 Obx(
-                  () => userRegisterController.getIsNameValid()
+                  () => userRegisterController.getIsNameInvalid()
                       ? Container(
                           alignment: Alignment.centerLeft,
                           padding: EdgeInsets.symmetric(horizontal: 40.w),
@@ -88,7 +88,7 @@ class DataRegistrationScreen extends StatelessWidget {
                 SizedBox(height: 20.h),
                 Obx(
                   () => userRegisterController.getIsDataRegisterValid() &&
-                          !userRegisterController.getIsNameValid()
+                          !userRegisterController.getIsNameInvalid()
                       ? userRegisterController.isLoading.value
                           ? const AbsorbPointer(child: AuthButtonLoading())
                           : RegisterSubmitButtonEnable()
@@ -109,13 +109,7 @@ class DataRegistrationScreen extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        userRegisterController
-                            .onClearController('emailRegister');
-                        // Get.off(
-                        //   () => const LoginScreen(),
-                        //   fullscreenDialog: true,
-                        //   popGesture: false,
-                        // );
+                        userRegisterController.moveToLogin();
                       },
                       child: Text(
                         'Sign In',

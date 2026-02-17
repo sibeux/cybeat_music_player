@@ -95,6 +95,7 @@ class UserRegisterController extends AuthFormControllerContract {
     update();
   }
 
+  @override
   bool getIsEmailValid(String type) {
     final emailValue = formData[type]!['text'].toString();
     return EmailValidator.validate(emailValue);
@@ -106,16 +107,37 @@ class UserRegisterController extends AuthFormControllerContract {
     update();
   }
 
+  @override
+  bool isFieldValid(String formType) {
+    final textValue = formData[formType]?['text']?.toString();
+
+    bool isEmailValid =
+        !(!getIsEmailValid('emailRegister') && textValue!.isNotEmpty);
+
+    return (formType == 'emailRegister'
+        ? isEmailValid
+        : formType == 'nameRegister' && textValue!.isNotEmpty
+            ? !getIsNameInvalid()
+            : true);
+  }
+
   bool getIsDataRegisterValid() {
     return formData['nameRegister']!['text'].toString().isNotEmpty &&
         formData['passwordRegister']!['text'].toString().isNotEmpty;
   }
 
-  bool getIsNameValid() {
+  bool getIsNameInvalid() {
     final nameValue = formData['nameRegister']!['text'].toString();
     final nameRegExp = RegExp(r'^[a-zA-Z\s]+$');
 
     return !nameRegExp.hasMatch(nameValue) && nameValue.isNotEmpty;
+  }
+
+  void moveToLogin() {
+    onClearController('emailRegister');
+    onClearController('nameRegister');
+    onClearController('passwordRegister');
+    Get.offAndToNamed('/login');
   }
 
   Future<void> next() async {
