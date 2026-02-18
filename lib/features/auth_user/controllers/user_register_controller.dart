@@ -186,19 +186,23 @@ class UserRegisterController extends AuthFormControllerContract {
     isLoading.value = true;
 
     try {
-      final AuthService authService = AuthService();
+      final AuthService authService = Get.find<AuthService>();
       // Panggil Service
       bool isSuccess = await authService.registerUser(name, email, password);
 
       if (isSuccess) {
         logSuccess('Register berhasil untuk $email');
       }
-    } catch (e) {
+    } catch (e, st) {
       // Handle error (Timeout, Network, atau Pesan dari API)
-      logError('Register Error: $e');
+      logError('Register Error: $e, $st');
       showRemoveAlbumToast(e.toString());
     } finally {
       isLoading.value = false;
+      isRedirecting.value = true;
+      await Future.delayed(const Duration(milliseconds: 200));
+      isRedirecting.value = false;
+      Get.back();
     }
   }
 }

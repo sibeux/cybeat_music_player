@@ -7,8 +7,12 @@ class SecureStorageService {
     required String accessToken,
     required String refreshToken,
   }) async {
+    // Simpan access token terlebih dahulu
     await _storage.write(key: 'access_token', value: accessToken);
-    await _storage.write(key: 'refresh_token', value: refreshToken);
+    // Hanya simpan refresh token kalau memang ada isinya
+    if (refreshToken.isNotEmpty) {
+      await _storage.write(key: 'refresh_token', value: refreshToken);
+    }
   }
 
   Future<String?> getAccessToken() => _storage.read(key: 'access_token');

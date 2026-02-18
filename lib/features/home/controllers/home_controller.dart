@@ -32,7 +32,7 @@ class HomeController extends GetxController {
   dynamic get sortValue => albumService.sortValue;
   RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
   bool get isLoading => albumService.isHomeLoading.value;
-  String get fullName => authService.fullName;
+  RxString get fullName => authService.fullName;
 
   MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
 

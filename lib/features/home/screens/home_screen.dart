@@ -60,15 +60,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 10.w),
-                      child: Text(
-                        _homeController.fullName.isNotEmpty
-                            ? 'Hi, ${_homeController.fullName}'
-                            : 'Welcome',
-                        maxLines: 1,
-                        style: TextStyle(
-                          overflow: TextOverflow.ellipsis,
-                          fontSize: 22.sp,
-                          fontWeight: FontWeight.bold,
+                      child: Obx(
+                        () => Text(
+                          _homeController.fullName.isNotEmpty
+                              ? 'Hi, ${_homeController.fullName}'
+                              : 'Welcome',
+                          maxLines: 1,
+                          style: TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

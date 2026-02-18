@@ -11,8 +11,8 @@ class AuthService extends GetxService {
   final _storage = Get.find<SecureStorageService>();
   final AuthRepository _authRepo = AuthRepository();
 
-  String userId = "";
-  String fullName = "";
+  RxInt userId = 0.obs;
+  RxString fullName = "".obs;
 
   var accessToken = "".obs;
   DateTime? expiry;
@@ -21,6 +21,7 @@ class AuthService extends GetxService {
   // Derived getter - KISS principle
   // KISS: Keep It Simple, Stupid
   bool get isAuthenticated => isTokenValid.value;
+  RxString get getAccessToken => accessToken;
 
   Future<AuthService> init() async {
     try {
@@ -95,16 +96,34 @@ class AuthService extends GetxService {
     _storage.clear();
   }
 
+  void updateCredentials({
+    required String newAccessToken,
+    required String newRefreshToken,
+  }) {
+    isTokenValid.value = true;
+    accessToken.value = newAccessToken;
+    expiry = _decodeExpiry(newAccessToken);
+    // Simpan token baru ke secure storage
+    _storage.saveTokens(
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    );
+    final Map<String, dynamic> decodedToken = JwtDecoder.decode(newAccessToken);
+    userId.value = decodedToken['data']['id'];
+    fullName.value = decodedToken['data']['name'];
+  }
+
   Future<void> checkJwtToken() async {
     try {
       final isValid = await _authRepo.checkJwtToken(accessToken.value);
       if (isValid) {
         logSuccess('JWT token is valid. User authenticated.');
-        isTokenValid.value = true;
-        final Map<String, dynamic> decodedToken =
-            JwtDecoder.decode(accessToken.value);
-        userId = decodedToken['data']['user_id'];
-        fullName = decodedToken['data']['fullname'];
+        updateCredentials(
+          newAccessToken: accessToken.value,
+          // Sengaja dikosongkan agar refresh token tidak ter-overwrite saat validasi token,
+          // karena biasanya refresh token tidak berubah kecuali saat refresh token itu sendiri digunakan.
+          newRefreshToken: "",
+        );
       } else {
         logInfo('JWT token is invalid or expired. Logging out.');
         logout();
@@ -128,7 +147,13 @@ class AuthService extends GetxService {
 
       // Logika bisnis: Cek status dari response API
       if (result['status'] == 'success') {
-        logInfo(result.toString());
+        final newAccess = result['token'].toString();
+        final newRefresh =
+            ""; // API belum mengembalikan refresh token, jadi kosongkan dulu
+        updateCredentials(
+          newAccessToken: newAccess,
+          newRefreshToken: newRefresh,
+        );
         return true;
       } else {
         // Lempar pesan error spesifik dari API

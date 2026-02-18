@@ -24,32 +24,34 @@ class RootNavigationDrawer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 40.h),
-              !authService.isAuthenticated
-                  ? LoginButton(navDrawerContext: context)
-                  : Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(100.r),
-                          child: Image(
-                            image:
-                                AssetImage('assets/images/cybeat_splash.png'),
-                            width: 50.w,
-                            height: 50.h,
+              Obx(
+                () => !authService.isAuthenticated
+                    ? LoginButton(navDrawerContext: context)
+                    : Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(100.r),
+                            child: Image(
+                              image:
+                                  AssetImage('assets/images/cybeat_splash.png'),
+                              width: 50.w,
+                              height: 50.h,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 15.w),
-                        Text(
-                          authService.fullName,
-                          maxLines: 1,
-                          style: TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black.withValues(alpha: 0.9),
+                          SizedBox(width: 15.w),
+                          Text(
+                            authService.fullName.value,
+                            maxLines: 1,
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black.withValues(alpha: 0.9),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+              ),
               SizedBox(height: 10.h),
               RootDrawerListtile(
                 icon: Icons.cloud_download_outlined,
