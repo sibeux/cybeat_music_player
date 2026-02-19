@@ -1,5 +1,6 @@
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/services/auth_service.dart';
+import 'package:cybeat_music_player/features/root_page/controllers/root_controller.dart';
 import 'package:cybeat_music_player/features/root_page/widgets/login_button.dart';
 import 'package:cybeat_music_player/features/root_page/widgets/root_drawer_listtile.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class RootNavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthService authService = Get.find<AuthService>();
+    final RootController rootController = Get.find<RootController>();
     return Drawer(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -87,6 +89,18 @@ class RootNavigationDrawer extends StatelessWidget {
                     '/setting_app',
                   );
                 },
+              ),
+              Spacer(),
+              Obx(
+                () => authService.isAuthenticated
+                    ? RootDrawerListtile(
+                        icon: Icons.logout_outlined,
+                        title: "Logout",
+                        onTap: () async {
+                          rootController.logout(context);
+                        },
+                      )
+                    : const SizedBox(),
               ),
             ],
           ),

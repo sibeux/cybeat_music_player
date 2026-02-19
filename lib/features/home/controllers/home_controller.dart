@@ -12,8 +12,6 @@ class HomeController extends GetxController {
   final AlbumService albumService = Get.find<AlbumService>();
   final AuthService authService = Get.find<AuthService>();
   final MusicPlayerController musicPlayerController = Get.find();
-  final RefreshController refreshController =
-      RefreshController(initialRefresh: false);
 
   var filterIsTapped = false.obs;
   var jumlahAlbumDitampilkan = 15.obs;
@@ -52,14 +50,14 @@ class HomeController extends GetxController {
     await albumService.initializeAlbum();
   }
 
-  void onLoading() async {
+  void onLoading(RefreshController refreshController) async {
     // monitor network fetch
     jumlahAlbumDitampilkan.value = jumlahAlbumDitampilkan.value + 18;
     // if failed,use loadFailed(),if no data return,use LoadNodata()
     refreshController.loadComplete();
   }
 
-  void onRefresh() async {
+  void onRefresh(RefreshController refreshController) async {
     // monitor network fetch
     await Future.delayed(const Duration(milliseconds: 500));
     initializeAlbum();

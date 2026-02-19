@@ -12,8 +12,6 @@ class AlbumMusicController extends GetxController {
   final AudioStateController audioStateController = Get.find();
   final musicPlayerController = Get.find<MusicPlayerController>();
   final AlbumService albumService = Get.find();
-  final RefreshController refreshController =
-      RefreshController(initialRefresh: false);
   final textController = TextEditingController();
 
   var flexibleSpaceMachineHeight = 0.0.obs;
@@ -150,7 +148,7 @@ class AlbumMusicController extends GetxController {
     }
   }
 
-  void onLoading() {
+  void onLoading(RefreshController refreshController) {
     if (!underLoadingFetchMusic && sisaJumlahMusicTersedia == 0) {
       refreshController.loadNoData();
     } else {

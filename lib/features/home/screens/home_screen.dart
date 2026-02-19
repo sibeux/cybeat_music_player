@@ -25,6 +25,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final _gridViewKey = GlobalKey();
   final _homeController = Get.find<HomeController>();
   final _scrollController = ScrollController();
+  final _refreshController = RefreshController(initialRefresh: false);
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,10 +155,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 thumbColor: HexColor('#ac8bc9').withValues(alpha: 0.7),
                 trackVisibility: false,
                 child: SmartRefresher(
-                  controller: _homeController.refreshController,
+                  // FIX [CYBEAT-ERR-002]: Use local RefreshController to avoid shared controller bugs
+                  controller: _refreshController,
                   scrollController: _scrollController,
-                  onRefresh: _homeController.onRefresh,
-                  onLoading: _homeController.onLoading,
+                  onRefresh: () =>
+                      _homeController.onRefresh(_refreshController),
+                  onLoading: () =>
+                      _homeController.onLoading(_refreshController),
                   enablePullDown: true,
                   enablePullUp: true,
                   header: const ClassicHeader(

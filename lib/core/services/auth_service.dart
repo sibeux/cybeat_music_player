@@ -106,6 +106,9 @@ class AuthService extends GetxService {
 
   void logout() {
     accessToken.value = "";
+    isAccessTokenValid.value = false;
+    fullName.value = "";
+    userId.value = 0;
     expiry = null;
     _storage.clear();
   }
