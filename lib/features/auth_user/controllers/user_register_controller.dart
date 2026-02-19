@@ -196,7 +196,8 @@ class UserRegisterController extends AuthFormControllerContract {
     } catch (e, st) {
       // Handle error (Timeout, Network, atau Pesan dari API)
       logError('Register Error: $e, $st');
-      showRemoveAlbumToast(e.toString());
+      showRemoveAlbumToast(
+          "Registration failed. Please check your connection and try again.");
     } finally {
       isLoading.value = false;
       isRedirecting.value = true;
