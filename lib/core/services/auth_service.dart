@@ -109,7 +109,7 @@ class AuthService extends GetxService {
       refreshToken: newRefreshToken,
     );
     final Map<String, dynamic> decodedToken = JwtDecoder.decode(newAccessToken);
-    userId.value = decodedToken['data']['id'];
+    userId.value = decodedToken['sub']; // 'sub' biasanya digunakan untuk menyimpan user ID dalam JWT
     fullName.value = decodedToken['data']['name'];
   }
 
@@ -147,9 +147,8 @@ class AuthService extends GetxService {
 
       // Logika bisnis: Cek status dari response API
       if (result['status'] == 'success') {
-        final newAccess = result['token'].toString();
-        final newRefresh =
-            ""; // API belum mengembalikan refresh token, jadi kosongkan dulu
+        final newAccess = result['access_token'].toString();
+        final newRefresh = result['refresh_token'] != null ? result['refresh_token'].toString() : "";
         updateCredentials(
           newAccessToken: newAccess,
           newRefreshToken: newRefresh,
