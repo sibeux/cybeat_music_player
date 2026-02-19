@@ -1,0 +1,14 @@
+original source: https://gemini.google.com/app/ab172bd41ea0d1c0
+
+Meliputi:
+1. Cara save refresh token ke DB pakai jti.
+2. cara melakukan refresh sebuah token jika akses token exp.
+
+alur setiap kali user launch app:
+- User buka app.
+- Di native splash, app check di secure storage apakah ada akses token.
+- if ada akses token -> check apakah sudah exp.
+- belum exp? langsung login.
+- tidak ada token/sudah exp -> hit api refresh token.
+- refresh_token valid? gak exp? -> refresh pakai refresh_token - langsung generate akses_token dan renew refresh_token.
+- sudah exp/gak valid? login ulang.

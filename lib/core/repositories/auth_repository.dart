@@ -5,33 +5,26 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class AuthRepository {
-  Future<bool> checkJwtToken(String token) async {
-    final url = dotenv.env['VERIFY_JWT_API_URL'] ?? 'not_found';
+  Future<Map<String, Object?>> refreshJwtToken(
+      {required String refreshToken}) async {
+    final url = dotenv.env['REFRESH_JWT_API_URL'] ?? 'not_found';
 
     if (url == 'not_found') {
-      logError('VERIFY_JWT_API_URL not found in environment variables');
+      logError('REFRESH_JWT_API_URL not found in environment variables');
     }
 
     try {
       final response = await http.post(
         Uri.parse(url),
         headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer $refreshToken',
           'Content-Type': 'application/json',
         },
       ).timeout(const Duration(seconds: 10));
 
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-
-        return (jsonResponse['valid'] == 'true') &&
-            (jsonResponse['exp'] == 'false');
-      } else {
-        // Melempar error agar ditangkap Controller
-        throw Exception('Failed checking. Error: ${response.statusCode}');
-      }
+      return jsonDecode(response.body);
     } catch (e) {
-      rethrow; // Meneruskan error (Timeout/Network) ke Controller
+      rethrow; 
     }
   }
 
@@ -64,10 +57,11 @@ class AuthRepository {
         final jsonResponse = jsonDecode(response.body);
         return jsonResponse;
       } else {
+        // Melempar error ke service agar bisa ditangkap di Controller untuk ditampilkan ke user.
         throw Exception('Failed checking. Error: ${response.statusCode}');
       }
     } catch (e) {
-      rethrow;
+      rethrow; // Meneruskan error (Timeout/Network) ke service
     }
   }
 }

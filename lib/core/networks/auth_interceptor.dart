@@ -25,24 +25,24 @@ class AuthInterceptor extends Interceptor {
     if (err.response?.statusCode == 401) {
       queue.add(err.requestOptions);
 
-      if (!isRefreshing) {
-        isRefreshing = true;
-        final ok = await auth.refreshToken();
-        isRefreshing = false;
+      // if (!isRefreshing) {
+      //   isRefreshing = true;
+      //   final ok = await auth.refreshJwtToken();
+      //   isRefreshing = false;
 
-        if (!ok) {
-          auth.logout();
-          handler.reject(err);
-          return;
-        }
+      //   if (!ok) {
+      //     auth.logout();
+      //     handler.reject(err);
+      //     return;
+      //   }
 
-        for (final req in queue) {
-          final res = await dio.fetch(req);
-          handler.resolve(res);
-        }
-        queue.clear();
-        return;
-      }
+      //   for (final req in queue) {
+      //     final res = await dio.fetch(req);
+      //     handler.resolve(res);
+      //   }
+      //   queue.clear();
+      //   return;
+      // }
     }
     handler.reject(err);
   }

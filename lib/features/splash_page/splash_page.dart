@@ -11,9 +11,6 @@ class SplashPage extends GetView<SplashController> {
 
   @override
   Widget build(BuildContext context) {
-    // Trigger controller initialization, agar lazyput di binding dijalankan.
-    controller.isLoading;
-
     // Membuat status bar menjadi transparan agar warna background terlihat penuh
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Untuk Android
@@ -21,6 +18,8 @@ class SplashPage extends GetView<SplashController> {
     ));
     // Remove the native splash screen
     FlutterNativeSplash.remove();
+    // Trigger controller initialization, agar lazyput di binding dijalankan.
+    controller.isLoading;
     return Scaffold(
       // Properti ini opsional jika tidak pakai AppBar,
       // tapi berguna untuk memastikan konten benar-benar full.

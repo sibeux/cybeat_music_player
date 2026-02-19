@@ -16,15 +16,23 @@ class SplashController extends GetxController {
   Future<void> checkAuthentication() async {
     logInfo('Checking JWT token for authentication...');
     try {
-      await _authService.checkJwtToken();
+      if (_authService.isAuthenticated) {
+        logSuccess('Current JWT Access token is valid. User is authenticated.');
+      } else {
+        logWarning('Access token expired. Attempting to refresh...');
+        await _authService.refreshJwtToken();
+      }
     } catch (e) {
       // Log error but continue to navigate to root
       logError('Error during JWT check: $e');
     } finally {
-      isLoading.value = false;
-      Get.offAndToNamed('/home', id: 1);
-      // Force delete SplashController as automatic disposal in nested nav can be unreliable
-      Get.delete<SplashController>();
+      // * FIX [CYBEAT-ERR-001]: Use microtask to prevent "setState() called during build" error
+      Future.microtask(() {
+        Get.offAndToNamed('/home', id: 1);
+        // Force delete SplashController as automatic disposal in nested nav can be unreliable
+        Get.delete<SplashController>();
+        isLoading.value = false;
+      });
     }
   }
 }
