@@ -1,0 +1,209 @@
+import 'dart:async';
+
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
+import 'package:cybeat_music_player/features/auth_user/interfaces/auth_form_controller_contract.dart';
+import 'package:cybeat_music_player/features/auth_user/repositories/register_repository.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class UserRegisterController extends AuthFormControllerContract {
+  final RegisterRepository _authRepo = RegisterRepository();
+
+  var isLoading = false.obs;
+  var isEmailRegistered = false.obs;
+  var isRedirecting = false.obs;
+  var isObscure = true.obs;
+  bool isProceedingToNextStep = false;
+
+  final _currentType = ''.obs;
+
+  final _formData = RxMap<String, Object?>(
+    // Pakai Object? untuk memungkinkan assign dynamic value + tidak terjadi error.
+    {
+      'emailRegister': {
+        'text': '',
+        'type': 'emailRegister',
+        'controller': TextEditingController(),
+      },
+      'nameRegister': {
+        'text': '',
+        'type': 'nameRegister',
+        'controller': TextEditingController(),
+      },
+      'passwordRegister': {
+        'text': '',
+        'type': 'passwordRegister',
+        'controller': TextEditingController(),
+      },
+    },
+  );
+
+  @override
+  void onInit() {
+    super.onInit();
+    isLoading.value = false;
+    isEmailRegistered.value = false;
+    isRedirecting.value = false;
+  }
+
+  @override
+  RxString get currentType => _currentType;
+
+  @override
+  RxMap get formData => _formData;
+
+  @override
+  bool get isObscureValue => isObscure.value;
+
+  @override
+  void onClearController(String type) {
+    final currentController =
+        formData[type]?['controller'] as TextEditingController;
+    currentController.clear();
+    formData[type] = {
+      'text': '',
+      'type': type,
+      'controller': currentController,
+    };
+    update();
+  }
+
+  @override
+  void onChanged(String value, String type) {
+    final currentController = formData[type]?['controller'];
+    // Memperbarui referensi map
+    formData[type] = {
+      'text': value,
+      'type': type,
+      'controller': currentController!,
+    };
+    update();
+  }
+
+  @override
+  void onTap(String type, bool isFocus) {
+    final currentController = formData[type]?['controller'];
+    final currentText = formData[type]?['text'];
+    formData[type] = {
+      'text': currentText!,
+      'type': type,
+      'controller': currentController!,
+    };
+    currentType.value = isFocus ? type : '';
+    update();
+  }
+
+  @override
+  bool getIsEmailValid(String type) {
+    final emailValue = formData[type]!['text'].toString();
+    return EmailValidator.validate(emailValue);
+  }
+
+  @override
+  void toggleObscure() {
+    isObscure.value = !isObscure.value;
+    update();
+  }
+
+  @override
+  bool isFieldValid(String formType) {
+    final textValue = formData[formType]?['text']?.toString();
+
+    bool isEmailValid = textValue!.isEmpty
+        ? true
+        : (!(!getIsEmailValid('emailRegister') && textValue.isNotEmpty) &&
+            (!isEmailRegistered.value && textValue.isNotEmpty));
+
+    return (formType == 'emailRegister'
+        ? isEmailValid
+        : formType == 'nameRegister' && textValue.isNotEmpty
+            ? !getIsNameInvalid()
+            : true);
+  }
+
+  bool getIsDataRegisterValid() {
+    return formData['nameRegister']!['text'].toString().isNotEmpty &&
+        formData['passwordRegister']!['text'].toString().isNotEmpty;
+  }
+
+  bool getIsNameInvalid() {
+    final nameValue = formData['nameRegister']!['text'].toString();
+    final nameRegExp = RegExp(r'^[a-zA-Z\s]+$');
+
+    return !nameRegExp.hasMatch(nameValue) && nameValue.isNotEmpty;
+  }
+
+  void moveToLogin() {
+    onClearController('emailRegister');
+    onClearController('nameRegister');
+    onClearController('passwordRegister');
+    Get.offAndToNamed('/login');
+  }
+
+  Future<void> next() async {
+    onClearController('nameRegister');
+    onClearController('passwordRegister');
+    await checkEmail(
+      email: formData['emailRegister']!['text'].toString(),
+    );
+  }
+
+  Future<void> checkEmail({required String email}) async {
+    isLoading.value = true;
+
+    try {
+      // Memanggil fungsi dari repository
+      bool emailExists = await _authRepo.checkEmail(email: email);
+
+      if (emailExists) {
+        isEmailRegistered.value = true;
+        logInfo('Email \'$email\' is already registered!');
+      } else {
+        isEmailRegistered.value = false;
+        logInfo('Email \'$email\' is available for registration.');
+        isProceedingToNextStep = true;
+        Get.offAndToNamed('/data_registration');
+      }
+    } on TimeoutException {
+      showRemoveAlbumToast("Server Timeout. Please try again later.");
+    } catch (e, st) {
+      logError('error: $e $st');
+      showRemoveAlbumToast("Network error.");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> register() async {
+    // Ambil data dari form
+    final name = formData['nameRegister']!['text'].toString();
+    final email = formData['emailRegister']!['text'].toString();
+    final password = formData['passwordRegister']!['text'].toString();
+
+    isLoading.value = true;
+
+    try {
+      final AuthService authService = Get.find<AuthService>();
+      // Panggil Service
+      bool isSuccess = await authService.registerUser(name, email, password);
+
+      if (isSuccess) {
+        logSuccess('Register berhasil untuk $email');
+      }
+    } catch (e, st) {
+      // Handle error (Timeout, Network, atau Pesan dari API)
+      logError('Register Error: $e, $st');
+      showRemoveAlbumToast(
+          "Registration failed. Please check your connection and try again.");
+    } finally {
+      isLoading.value = false;
+      isRedirecting.value = true;
+      await Future.delayed(const Duration(milliseconds: 200));
+      isRedirecting.value = false;
+      Get.back();
+    }
+  }
+}
