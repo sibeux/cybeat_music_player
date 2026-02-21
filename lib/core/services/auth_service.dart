@@ -55,7 +55,7 @@ class AuthService extends GetxService {
         setCredentials(
           aksesToken: accessToken.value,
           // Tidak perlu update refresh token saat init, karena belum ada perubahan token.
-          newRefreshToken: "", 
+          newRefreshToken: "",
         );
       }
     } catch (e, stack) {
@@ -160,6 +160,54 @@ class AuthService extends GetxService {
       }
     } catch (e) {
       // Lempar kembali error agar ditangkap Controller
+      rethrow;
+    }
+  }
+
+  Future<bool> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final result = await _authRepo.loginUser(
+        email: email,
+        password: password,
+      );
+
+      if (result['status'] == 'success') {
+        final newAccess = result['access_token'].toString();
+        final newRefresh = result['refresh_token'] != null
+            ? result['refresh_token'].toString()
+            : "";
+        setCredentials(
+          aksesToken: newAccess,
+          newRefreshToken: newRefresh,
+        );
+        return true;
+      } else if (result['status'] == 'error' &&
+          result['error'] == 'credentials_mismatch') {
+        final errorMessage = result['message'] ?? 'Login failed';
+        logWarning('Login failed for $email. Reason: $errorMessage');
+        return false;
+      } else {
+        // Lempar pesan error spesifik dari API
+        throw result['message'] ?? 'login failed';
+      }
+    } catch (e) {
+      // Lempar kembali error agar ditangkap Controller
+      rethrow;
+    }
+  }
+
+  Future<bool> logoutUser({required String refreshToken}) async {
+    try {
+      final result = await _authRepo.logoutUser(refreshToken: refreshToken);
+      if (result['status'] == 'success') {
+        return true;
+      } else {
+        throw result['message'] ?? 'Logout failed';
+      }
+    } catch (e) {
       rethrow;
     }
   }

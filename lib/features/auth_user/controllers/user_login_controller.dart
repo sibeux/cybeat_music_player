@@ -1,3 +1,6 @@
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/features/auth_user/interfaces/auth_form_controller_contract.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +104,8 @@ class UserLoginController extends AuthFormControllerContract {
     bool isEmailValid =
         !(!getIsEmailValid('emailLogin') && textValue!.isNotEmpty);
 
-    return (formType == 'emailLogin' ? isEmailValid : true);
+    return ((formType == 'emailLogin' ? isEmailValid : true) &&
+        isLoginSuccess.value);
   }
 
   bool getIsDataLoginValid() {
@@ -117,5 +121,35 @@ class UserLoginController extends AuthFormControllerContract {
     Get.offAndToNamed('/email_check');
   }
 
-  Future<void> login() async {}
+  Future<void> login() async {
+    // Ambil data dari form
+    final email = formData['emailLogin']!['text'].toString();
+    final password = formData['passwordLogin']!['text'].toString();
+
+    isLoading.value = true;
+
+    try {
+      final AuthService authService = Get.find<AuthService>();
+      // Panggil Service
+      bool isSuccess =
+          await authService.loginUser(email: email, password: password);
+
+      if (isSuccess) {
+        logSuccess('Login success for $email');
+        isRedirecting.value = true;
+        await Future.delayed(const Duration(milliseconds: 200));
+        Get.back();
+      } else {
+        isLoginSuccess.value = false;
+      }
+    } catch (e, st) {
+      // Handle error (Timeout, Network, atau Pesan dari API)
+      logError('Login Error: $e, $st');
+      showRemoveAlbumToast(
+          "Login failed. Please check your connection and try again.");
+    } finally {
+      isLoading.value = false;
+      isRedirecting.value = false;
+    }
+  }
 }

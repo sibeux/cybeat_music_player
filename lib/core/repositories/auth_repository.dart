@@ -10,7 +10,8 @@ class AuthRepository {
     final url = dotenv.env['REFRESH_JWT_API_URL'] ?? 'not_found';
 
     if (url == 'not_found') {
-      logError('REFRESH_JWT_API_URL not found in environment variables');
+      logError(
+          'REFRESH_JWT_API_URL key-value pair not found in environment variables');
     }
 
     try {
@@ -24,7 +25,7 @@ class AuthRepository {
 
       return jsonDecode(response.body);
     } catch (e) {
-      rethrow; 
+      rethrow;
     }
   }
 
@@ -36,7 +37,8 @@ class AuthRepository {
     String url = dotenv.env['REGISTER_AUTH_API_URL'] ?? 'not_found';
 
     if (url == 'not_found') {
-      logError('API URL for registration not found in environment variables.');
+      logError(
+          'REGISTER_AUTH_API_URL key-value pair not found in environment variables.');
     }
 
     try {
@@ -59,6 +61,74 @@ class AuthRepository {
       } else {
         // Melempar error ke service agar bisa ditangkap di Controller untuk ditampilkan ke user.
         throw Exception('Failed checking. Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      rethrow; // Meneruskan error (Timeout/Network) ke service
+    }
+  }
+
+  Future<Map<String, Object?>> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    String url = dotenv.env['LOGIN_AUTH_API_URL'] ?? 'not_found';
+
+    if (url == 'not_found') {
+      logError(
+          'LOGIN_AUTH_API_URL key-value pair not found in environment variables.');
+    }
+
+    try {
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              'email': email,
+              'password': password,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200 || response.statusCode == 401) {
+        final jsonResponse = jsonDecode(response.body);
+        return jsonResponse;
+      } else {
+        throw Exception(
+            'Failed login. Error: ${response.statusCode}. Message: ${response.body}');
+      }
+    } catch (e) {
+      rethrow; // Meneruskan error (Timeout/Network) ke service
+    }
+  }
+
+  Future<Map<String, Object?>> logoutUser({required String refreshToken,}) async {
+    String url = dotenv.env['LOGOUT_AUTH_API_URL'] ?? 'not_found';
+
+    if (url == 'not_found') {
+      logError(
+          'LOGOUT_AUTH_API_URL key-value pair not found in environment variables.');
+    }
+
+    try {
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({'refresh_token': refreshToken}),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return jsonResponse;
+      } else {
+        throw Exception(
+            'Failed logout. Error: ${response.statusCode}. Message: ${response.body}');
       }
     } catch (e) {
       rethrow; // Meneruskan error (Timeout/Network) ke service
