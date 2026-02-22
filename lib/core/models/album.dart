@@ -1,4 +1,4 @@
-class Playlist {
+class Album {
   String uid;
   String title;
   String image;
@@ -9,7 +9,7 @@ class Playlist {
   String date;
   String editable;
 
-  Playlist({
+  Album({
     required this.uid,
     required this.title,
     required this.image,

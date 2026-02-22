@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_grid.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_modal_bottom.dart';
@@ -17,7 +17,7 @@ class HomeListScaleTap extends StatefulWidget {
     required this.audioState,
   });
 
-  final Playlist playlist;
+  final Album playlist;
   final AudioStateController audioState;
 
   @override

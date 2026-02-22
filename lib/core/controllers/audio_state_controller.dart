@@ -8,7 +8,7 @@ import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -110,7 +110,7 @@ class AudioStateController extends GetxController {
     );
   }
 
-  Future<void> init(Playlist list) async {
+  Future<void> init(Album list) async {
     initAlbumLoading.value = true;
     isAlbumEmpty.value = false;
     final AlbumService albumService = Get.find();

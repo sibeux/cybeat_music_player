@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_four_cover.dart';
 import 'package:cybeat_music_player/features/playlist/delete_playlist/widgets/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:marquee/marquee.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
+Future<dynamic> homeListModalBottom(BuildContext context, Album playlist) {
   final homeAlbumGridController = Get.find<HomeController>();
 
   return showMaterialModalBottomSheet(
@@ -137,7 +137,8 @@ Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
                 onTap: playlist.editable == 'true'
                     ? () {
                         Get.back();
-                        Get.toNamed('/edit_playlist',
+                        Get.toNamed(
+                          '/edit_playlist',
                           arguments: {
                             'uid': playlist.uid,
                             'playlistName': playlist.title,

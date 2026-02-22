@@ -6,14 +6,14 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 
 class MusicPlayerController extends GetxController {
-  var currentActivePlaylist = Rx<Playlist?>(null);
+  var currentActivePlaylist = Rx<Album?>(null);
   final _currentMediaItem = Rx<MediaItem?>(null);
 
   var isMusicActiveNow = false.obs;
@@ -185,7 +185,7 @@ class MusicPlayerController extends GetxController {
     isMusicActiveNow.value = false;
   }
 
-  void setActivePlaylist(Playlist playlist) {
+  void setActivePlaylist(Album playlist) {
     // Setiap album/playlist yang di-play akan disimpan di currentPlaylistPlay.
     // Isinya hanya 1, yaitu album/playlist yang sedang di-play.
     currentActivePlaylist.value = playlist;
@@ -217,8 +217,7 @@ class MusicPlayerController extends GetxController {
       } else if (source == 'cloudflare') {
         String endpoint =
             dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-        api =
-            "$endpoint?path=$url&music_id=$musicId";
+        api = "$endpoint?path=$url&music_id=$musicId";
       }
       final response = await http.get(Uri.parse(api));
       if (response.body.isEmpty) {
@@ -262,8 +261,8 @@ class MusicPlayerController extends GetxController {
     numberOfError = 0;
 
     final String initialUrl = mediaItem.extras!['url'];
-    final bool isGdriveStream = initialUrl
-        .contains('sibeux.my.id/cloud-music-player/api/stream');
+    final bool isGdriveStream =
+        initialUrl.contains('sibeux.my.id/cloud-music-player/api/stream');
     final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
 
     try {
@@ -291,8 +290,7 @@ class MusicPlayerController extends GetxController {
         String path = initialUrl.replaceFirst("cdncloudflare", '');
         String endpoint =
             dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-        url =
-            "$endpoint?path=$path&music_id=${mediaItem.id}";
+        url = "$endpoint?path=$path&music_id=${mediaItem.id}";
         musicId = mediaItem.id;
       } else {
         url = initialUrl;

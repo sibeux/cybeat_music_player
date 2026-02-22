@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/filter_item.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +17,8 @@ class HomeController extends GetxController {
   var jumlahAlbumDitampilkan = 15.obs;
   var isTapped = false.obs;
 
-  RxList<Playlist?> get selectedAlbum => albumService.selectedAlbum;
-  RxList<Playlist> get initiateAlbum => albumService.initiateAlbum;
+  RxList<Album?> get selectedAlbum => albumService.selectedAlbum;
+  RxList<Album> get initiateAlbum => albumService.initiateAlbum;
   RxList<int> get filterChildren => albumService.filterChildren;
   RxList<FilterItem> get generateFilter => albumService.generateFilter;
   RxString get selectedFilter => albumService.homeSelectedFilter;
@@ -28,7 +28,7 @@ class HomeController extends GetxController {
   RxList get fourCoverPlaylist => albumService.fourCoverPlaylist;
   RxList get fourCoverCategory => albumService.fourCoverCategory;
   dynamic get sortValue => albumService.sortValue;
-  RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
+  RxList<Album> get playlistCreatedList => albumService.playlistCreatedList;
   bool get isLoading => albumService.isHomeLoading.value;
   RxString get fullName => authService.fullName;
 
@@ -104,7 +104,7 @@ class HomeController extends GetxController {
     initializeAlbum();
   }
 
-  void updateChildren(List<Playlist> playlist) {
+  void updateChildren(List<Album> playlist) {
     albumService.updateAllAlbumChildren(playlist);
     isTapped.value = !isTapped.value;
   }
@@ -117,7 +117,7 @@ class HomeController extends GetxController {
     musicPlayerController.updateCurrentMediaItem(mediaItem);
   }
 
-  void getDominantColorAlbum({required Playlist playlist}) {
+  void getDominantColorAlbum({required Album playlist}) {
     albumService.defaultAlbumColor.value = 'ffffff';
     String albumCover = '';
     if (playlist.image == "") {

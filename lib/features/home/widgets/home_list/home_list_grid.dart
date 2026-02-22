@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_grid/home_one_grid_layout.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_grid/home_three_grid_layout.dart';
@@ -14,7 +14,7 @@ class HomeListGrid extends StatelessWidget {
     required this.audioStateController,
   });
 
-  final Playlist playlist;
+  final Album playlist;
   final AudioStateController audioStateController;
 
   @override

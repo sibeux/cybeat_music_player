@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +14,7 @@ class HomeListFourCover extends StatelessWidget {
 
   final double size;
   final String type;
-  final Playlist playlist;
+  final Album playlist;
 
   @override
   Widget build(BuildContext context) {
