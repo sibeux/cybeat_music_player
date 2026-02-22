@@ -1,5 +1,5 @@
 class Music {
-  final String musicId;
+  final int musicId;
   final String linkDrive;
   final String title;
   final String artist;

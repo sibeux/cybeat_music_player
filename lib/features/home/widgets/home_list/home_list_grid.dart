@@ -24,9 +24,13 @@ class HomeListGrid extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        if (musicPlayerController.currentActivePlaylist.value?.title !=
-                playlist.title ||
-            musicPlayerController.currentActivePlaylist.value?.title == "") {
+        final String albumId =
+            musicPlayerController.currentActivePlaylist.value?.uid ?? "";
+        final String albumType =
+            musicPlayerController.currentActivePlaylist.value?.type ?? "";
+            // 1 - album
+            // 1 - playlist
+        if ((albumId != playlist.uid) || (albumType != playlist.type)) {
           homeController.getDominantColorAlbum(playlist: playlist);
           audioStateController.clear();
           musicPlayerController.killMusic();
@@ -48,7 +52,7 @@ class HomeListGrid extends StatelessWidget {
                   musicPlayerController: musicPlayerController,
                 )
               : ThreeGridLayout(
-                  playlist: playlist,
+                  album: playlist,
                   musicPlayerController: musicPlayerController,
                 ),
         ),

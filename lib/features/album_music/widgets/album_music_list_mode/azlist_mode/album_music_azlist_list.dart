@@ -30,7 +30,7 @@ class AlbumMusicAzlistList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaItem = MediaItem(
-      id: music.musicId,
+      id: music.musicId.toString(),
       title: music.title,
       album: music.album,
       artUri: Uri.parse(music.cover),

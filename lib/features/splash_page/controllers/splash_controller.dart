@@ -24,7 +24,7 @@ class SplashController extends GetxController {
       }
     } catch (e) {
       // Log error but continue to navigate to root
-      logError('Error during JWT check: $e');
+      logWarning('Error during JWT check: $e');
     } finally {
       // * FIX [CYBEAT-ERR-001]: Use microtask to prevent "setState() called during build" error
       Future.microtask(() {

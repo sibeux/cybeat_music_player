@@ -120,7 +120,7 @@ class HomeController extends GetxController {
   void getDominantColorAlbum({required Album playlist}) {
     albumService.defaultAlbumColor.value = 'ffffff';
     String albumCover = '';
-    if (playlist.image == "") {
+    if (playlist.image.toString() == "") {
       // Ini sebenarnya bisa diambilkan dari home screen, tapi perlu oper-oper data.
       final List<dynamic> list = playlist.type.toLowerCase() == 'playlist'
           ? fourCoverPlaylist

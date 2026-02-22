@@ -9,11 +9,11 @@ import 'package:hexcolor/hexcolor.dart';
 class ThreeGridLayout extends StatelessWidget {
   const ThreeGridLayout({
     super.key,
-    required this.playlist,
+    required this.album,
     required this.musicPlayerController,
   });
 
-  final Album playlist;
+  final Album album;
   final MusicPlayerController musicPlayerController;
 
   @override
@@ -22,8 +22,8 @@ class ThreeGridLayout extends StatelessWidget {
       children: [
         HomeListFourCover(
           size: 108,
-          type: playlist.type,
-          album: playlist,
+          type: album.type,
+          album: album,
         ),
         const SizedBox(
           height: 10,
@@ -34,15 +34,18 @@ class ThreeGridLayout extends StatelessWidget {
               Container(
                 alignment: Alignment.centerLeft,
                 child: Obx(() => AutoSizeText(
-                      playlist.title,
+                      album.title,
                       textAlign: TextAlign.left,
                       maxFontSize: 14,
                       minFontSize: 14,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: HexColor(musicPlayerController
-                                    .currentActivePlaylist.value?.uid ==
-                                playlist.uid
+                                        .currentActivePlaylist.value?.uid ==
+                                    album.uid &&
+                                musicPlayerController
+                                        .currentActivePlaylist.value?.type ==
+                                    album.type
                             ? '#8238be'
                             : '#313031'),
                         fontWeight: FontWeight.bold,
@@ -55,7 +58,7 @@ class ThreeGridLayout extends StatelessWidget {
               ),
               Row(
                 children: [
-                  if (playlist.pin == "true")
+                  if (album.pin == "true")
                     Icon(
                       Icons.push_pin,
                       size: 16,
@@ -64,7 +67,7 @@ class ThreeGridLayout extends StatelessWidget {
                   Flexible(
                     fit: FlexFit.tight,
                     child: Text(
-                      "${playlist.type} ● ${playlist.author}",
+                      "${album.type} ● ${album.author}",
                       style: const TextStyle(
                         fontSize: 12,
                         overflow: TextOverflow.ellipsis,

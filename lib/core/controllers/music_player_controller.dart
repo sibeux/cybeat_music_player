@@ -339,7 +339,7 @@ class MusicPlayerController extends GetxController {
         playlistLength < originalCurrentIndexSong + 1)) {
       final music = Get.find<AudioStateController>().playlist[index];
       final mediaItem = MediaItem(
-        id: music.musicId,
+        id: music.musicId.toString(),
         title: music.title,
         album: music.album,
         artUri: Uri.parse(music.cover),
@@ -360,7 +360,7 @@ class MusicPlayerController extends GetxController {
       currentIndex -= 1;
       final music = Get.find<AudioStateController>().playlist[currentIndex];
       final mediaItem = MediaItem(
-        id: music.musicId,
+        id: music.musicId.toString(),
         title: music.title,
         album: music.album,
         artUri: Uri.parse(music.cover),

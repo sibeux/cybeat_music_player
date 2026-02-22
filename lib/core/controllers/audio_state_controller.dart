@@ -9,6 +9,7 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:cybeat_music_player/core/repositories/audio_repository.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -22,6 +23,7 @@ class AudioStateController extends GetxController {
   /// Sekarang soal late → kamu perlu hati-hati:
   /// late dipakai kalau kamu mau deklarasi variabel tanpa langsung inisialisasi, tapi janji bakal diisi sebelum dipakai.
   /// obs atau Rx di GetX butuh nilai awal (meskipun null). Jadi kalau mau reaktif, biasanya nggak perlu late, cukup kasih default.
+  final AudioRepository audioRepository = AudioRepository();
   final activePlayer = Rx<AudioPlayer?>(null);
   final playlist = RxList<Music>([]);
   static int _nextMediaId = 1;
@@ -116,9 +118,7 @@ class AudioStateController extends GetxController {
     final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
-    String endpoint =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = "$endpoint?uid=${list.uid}&type=$type";
+
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
     try {
@@ -136,13 +136,22 @@ class AudioStateController extends GetxController {
         }
         listData = musicDownloadController.musicOfflineList;
       } else {
-        final response = await http.get(Uri.parse(url));
-        final responseBody = json.decode(response.body);
+        final responseBody = await audioRepository.getSongs(
+          albumType: type,
+          albumId: list.uid,
+        );
         if (responseBody.isNotEmpty && type != 'offline') {
           final prefs = await SharedPreferences.getInstance();
           uidDownloadedSongs = prefs.getStringList('uidDownloadedSongs') ?? [];
+          List<dynamic> data = responseBody['data'] as List<dynamic>;
+          if (data.isEmpty) {
+            isAlbumEmpty.value = true;
+            playlist.value = <Music>[];
+            await activePlayer.value?.setAudioSources([]);
+            return;
+          }
           listData = [].obs; // inisialisasi dulu
-          listData.assignAll(responseBody); // assign dari List biasa
+          listData.assignAll(data); // assign dari List biasa
         } else {
           listData = RxList<dynamic>([]);
         }
@@ -163,7 +172,7 @@ class AudioStateController extends GetxController {
           final String musicUrl = regexGdriveHostUrl(
             url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
             listApiKey: albumService.gdriveApiKeyList,
-            musicId: item['id_music'],
+            musicId: item['id_music'].toString(),
             isAudioCached: item['cache_music_id'] != null ? true : false,
             isSuspicious: item['is_suspicious'] == 'true' ? true : false,
             uploader: uploader,
@@ -182,7 +191,7 @@ class AudioStateController extends GetxController {
             title: capitalizeEachWord(item['title']),
             extras: {
               'index': '${_nextMediaId++}',
-              'music_id': item['id_music'],
+              'music_id': item['id_music'].toString(),
               'file_drive_id': '',
               'disc_number': item['disc_number'],
               'url': musicUrl,
@@ -226,7 +235,7 @@ class AudioStateController extends GetxController {
       queue = playlist
           .map(
             (e) => MediaItem(
-              id: e.musicId,
+              id: e.musicId.toString(),
               title: e.title,
               album: e.album,
               artUri: Uri.parse(e.cover),

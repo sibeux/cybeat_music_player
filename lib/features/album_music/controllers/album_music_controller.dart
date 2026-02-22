@@ -128,7 +128,7 @@ class AlbumMusicController extends GetxController {
   }) {
     FocusManager.instance.primaryFocus?.unfocus();
     final mediaItem = MediaItem(
-      id: music.musicId,
+      id: music.musicId.toString(),
       title: music.title,
       album: music.album,
       artUri: Uri.parse(music.cover),
@@ -140,7 +140,7 @@ class AlbumMusicController extends GetxController {
     Get.toNamed('/detail');
     if (musicPlayerController.getCurrentMediaItem?.id == "" ||
         musicPlayerController.getCurrentMediaItem?.id !=
-            musicList[index].musicId) {
+            musicList[index].musicId.toString()) {
       musicPlayerController.playMusicNow(
         mediaItem: mediaItem,
         audioStateController: audioStateController,
