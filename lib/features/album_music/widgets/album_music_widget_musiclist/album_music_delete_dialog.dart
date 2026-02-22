@@ -80,7 +80,7 @@ void albumMusicdeleteDialog({
                         musicPlayerController.clearCurrentMediaItem();
                         deleteMusic(
                           musicPlayerController
-                                  .currentActivePlaylist.value?.editable ??
+                                  .currentActivePlaylist.value?.isEditable ??
                               '',
                           musicPlayerController
                                   .currentActivePlaylist.value?.type ??

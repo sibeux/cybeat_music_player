@@ -70,7 +70,7 @@ class ListTileBottomModal extends StatelessWidget {
             Get.back();
           case 'delete':
             // delete music
-            if (musicPlayerController.currentActivePlaylist.value?.editable ==
+            if (musicPlayerController.currentActivePlaylist.value?.isEditable ==
                 'true') {
               albumMusicdeleteDialog(
                 context: context,

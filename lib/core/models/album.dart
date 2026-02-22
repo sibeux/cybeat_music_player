@@ -5,9 +5,9 @@ class Album {
   String type;
   String author;
   String pin;
-  String datePin;
-  String date;
-  String editable;
+  String pinAt;
+  String playedAt;
+  String isEditable;
 
   Album({
     required this.uid,
@@ -16,9 +16,9 @@ class Album {
     required this.type,
     required this.author,
     required this.pin,
-    required this.datePin,
-    required this.date,
-    required this.editable,
+    required this.pinAt,
+    required this.playedAt,
+    required this.isEditable,
   });
 
   set setPin(String pin) {

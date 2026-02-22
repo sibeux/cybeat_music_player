@@ -134,7 +134,7 @@ Future<dynamic> homeListModalBottom(BuildContext context, Album playlist) {
                 title: 'Edit ${playlist.type.toLowerCase()}',
                 icon: Icons.edit_outlined,
                 changeColor: false,
-                onTap: playlist.editable == 'true'
+                onTap: playlist.isEditable == 'true'
                     ? () {
                         Get.back();
                         Get.toNamed(
@@ -154,7 +154,7 @@ Future<dynamic> homeListModalBottom(BuildContext context, Album playlist) {
                   title: 'Remove from Your Library',
                   icon: Icons.check_circle_rounded,
                   changeColor: true,
-                  onTap: playlist.editable == 'true'
+                  onTap: playlist.isEditable == 'true'
                       ? () {
                           Get.back();
                           showModalDeletePlaylist(

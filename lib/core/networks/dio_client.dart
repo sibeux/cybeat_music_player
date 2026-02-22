@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/core/services/secure_storage_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
@@ -32,12 +32,24 @@ class DioClient {
 
           return handler.next(options);
         },
-        onError: (error, handler) {
+        onError: (error, handler) async {
           // misal handle 401
           if (error.response?.statusCode == 401) {
-            logWarning("Unauthorized - mungkin token expired");
-            return handler.next(error);
+            try {
+              final newToken = await Get.find<AuthService>().refreshJwtToken();
+
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer $newToken';
+
+              final response = await dio.fetch(error.requestOptions);
+
+              return handler.resolve(response);
+            } catch (e) {
+              return handler.next(error);
+            }
           }
+
+          return handler.next(error);
         },
       ),
     );

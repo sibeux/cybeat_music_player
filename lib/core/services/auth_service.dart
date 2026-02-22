@@ -67,27 +67,28 @@ class AuthService extends GetxService {
   // Fungsinya untuk melakukan validasi token ke API, apakah refresh_token masih valid atau sudah expired.
   // Jika valid, maka generate access_token baru dan renew refresh_token.
   // Jika refresh_token expired, maka token dihapus dan user harus login ulang.
-  Future<void> refreshJwtToken() async {
-    try {
-      final refreshToken = await _storage.getRefreshToken();
-      final Map<String, Object?> data =
-          await _authRepo.refreshJwtToken(refreshToken: refreshToken ?? '');
-      if (data['status'] == 'success') {
-        logSuccess(
-            'Access token has been successfully Refreshed. Message: ${data['message']}');
-        setCredentials(
-          aksesToken: data['access_token'].toString(),
-          newRefreshToken: data['refresh_token'] != null
-              ? data['refresh_token'].toString()
-              : "",
-        );
-      } else {
-        logWarning(
-            'JWT token is invalid or expired. Logging out. Message: ${data['message']}');
-        logout();
-      }
-    } catch (e) {
-      logError('Error checking JWT token: $e');
+  Future<String> refreshJwtToken() async {
+    final refreshToken = await _storage.getRefreshToken();
+
+    if (refreshToken == null || refreshToken.isEmpty) {
+      logout();
+      throw Exception("No refresh token available");
+    }
+
+    final data = await _authRepo.refreshJwtToken(refreshToken: refreshToken);
+
+    if (data['status'] == 'success') {
+      final newAccessToken = data['access_token'].toString();
+
+      setCredentials(
+        aksesToken: newAccessToken,
+        newRefreshToken: data['refresh_token']?.toString() ?? refreshToken,
+      );
+
+      return newAccessToken;
+    } else {
+      logout();
+      throw Exception("Refresh token invalid");
     }
   }
 
