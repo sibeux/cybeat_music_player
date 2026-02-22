@@ -127,7 +127,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                             child: HomeListFourCover(
                               size: 60,
                               type: widget.playlist.type,
-                              playlist: widget.playlist,
+                              album: widget.playlist,
                             ),
                           ),
                         ),

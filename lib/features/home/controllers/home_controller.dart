@@ -138,7 +138,7 @@ class HomeController extends GetxController {
           .toList();
       albumCover = data[0]['cover_1'] ?? '';
     } else {
-      albumCover = playlist.image;
+      // albumCover = playlist.image;
     }
     if (albumCover != '') {
       albumService.getDominantColorAlbum(albumCover: albumCover);

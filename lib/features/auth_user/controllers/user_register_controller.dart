@@ -179,8 +179,8 @@ class UserRegisterController extends AuthFormControllerContract {
 
   Future<void> register() async {
     // Ambil data dari form
-    final name = formData['nameRegister']!['text'].toString();
-    final email = formData['emailRegister']!['text'].toString();
+    final name = formData['nameRegister']!['text'].toString().trim();
+    final email = formData['emailRegister']!['text'].toString().trim();
     final password = formData['passwordRegister']!['text'].toString();
 
     isLoading.value = true;

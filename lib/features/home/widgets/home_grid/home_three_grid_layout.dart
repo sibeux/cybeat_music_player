@@ -23,7 +23,7 @@ class ThreeGridLayout extends StatelessWidget {
         HomeListFourCover(
           size: 108,
           type: playlist.type,
-          playlist: playlist,
+          album: playlist,
         ),
         const SizedBox(
           height: 10,

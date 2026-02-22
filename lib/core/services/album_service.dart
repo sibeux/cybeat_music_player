@@ -10,6 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:string_validator/string_validator.dart';
 
 class AlbumService extends GetxService {
   final AlbumRepository _albumRepository = AlbumRepository();
@@ -74,11 +75,11 @@ class AlbumService extends GetxService {
     // String sort = sortValue;
     // String filter = getSelectedFilter;
 
-    // String api = dotenv.env['GDRIVE_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    String api = dotenv.env['GDRIVE_API_URL'] ?? 'Kunci API Tidak Ditemukan';
 
     try {
-      // final apiResponse = await http.get(Uri.parse(api));
-      // gdriveApiKeyList.value = json.decode(apiResponse.body);
+      final apiResponse = await http.get(Uri.parse(api));
+      gdriveApiKeyList.value = json.decode(apiResponse.body);
       // final jumlahFavorite = await getSumFavoriteSong();
       // final listJumlahCategory = await getSumCategorySong();
       // await getFourCoverAlbum(method: 'four_cover_category', type: 'category');
@@ -117,8 +118,11 @@ class AlbumService extends GetxService {
 
       // Map semuanya sekaligus
       final List<Album> list = allRawData.map((item) {
-        final album =
-            AlbumMapper.fromMap(item, currentPinCount: jumlahPin.value);
+        final album = AlbumMapper.fromMap(
+          item,
+          currentPinCount: jumlahPin.value,
+          gdriveApiKeyList: gdriveApiKeyList,
+        );
 
         // Update jumlah pin secara reaktif jika perlu
         if (album.pin == 'true') jumlahPin.value++;
@@ -160,10 +164,15 @@ class AlbumService extends GetxService {
      * list aslinya tidak ikut berubah (karena di Dart, list adalah reference).
      * ***/
     album.sort((a, b) {
+      // Prioritaskan Pin
       if (a.pin == 'true' && b.pin == 'false') return -1;
       if (a.pin == 'false' && b.pin == 'true') return 1;
-      // Jika sama-sama pin atau sama-sama tidak, urutkan berdasarkan waktu putar
-      return b.playedAt.compareTo(a.playedAt);
+
+      // Bandingkan mana yang lebih baru antara playedAt atau createdAt untuk tiap album
+      String timeA = a.playedAt.isAfter(a.createdAt) ? a.playedAt : a.createdAt;
+      String timeB = b.playedAt.isAfter(b.createdAt) ? b.playedAt : b.createdAt;
+
+      return timeB.compareTo(timeA); // Terbaru di atas
     });
 
     // Baru masukkan ke view-view spesifik

@@ -34,7 +34,7 @@ class ListPlaylistContainer extends StatelessWidget {
               child: HomeListFourCover(
                 size: 100,
                 type: 'playlist',
-                playlist: listPlaylist[index],
+                album: listPlaylist[index],
               ),
             ),
           ),

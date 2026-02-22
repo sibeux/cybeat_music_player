@@ -1,12 +1,13 @@
 class Album {
   String uid;
   String title;
-  String image;
+  Map<String, Object?> image;
   String type;
   String author;
   String pin;
   String pinAt;
   String playedAt;
+  String createdAt;
   String isEditable;
 
   Album({
@@ -18,6 +19,7 @@ class Album {
     required this.pin,
     required this.pinAt,
     required this.playedAt,
+    required this.createdAt,
     required this.isEditable,
   });
 

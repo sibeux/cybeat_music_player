@@ -26,9 +26,10 @@ class MusicDownloadController extends GetxController {
       title: 'Offline Music',
       author: 'Nasrul Wahabi',
       playedAt: 'no date',
+      createdAt: 'no date',
       pinAt: 'no date',
       isEditable: 'true',
-      image: 'no image',
+      image: {},
       pin: 'false',
       type: 'offline',
     );

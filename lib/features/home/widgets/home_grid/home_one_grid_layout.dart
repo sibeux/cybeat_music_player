@@ -25,7 +25,7 @@ class OneGridLayout extends StatelessWidget {
         HomeListFourCover(
           size: 80,
           type: playlist.type,
-          playlist: playlist,
+          album: playlist,
         ),
         SizedBox(
           width: 10.w,

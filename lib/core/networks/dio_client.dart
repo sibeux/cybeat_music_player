@@ -48,7 +48,6 @@ class DioClient {
               return handler.next(error);
             }
           }
-
           return handler.next(error);
         },
       ),

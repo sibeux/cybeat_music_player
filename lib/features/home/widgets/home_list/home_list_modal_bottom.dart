@@ -46,7 +46,7 @@ Future<dynamic> homeListModalBottom(BuildContext context, Album playlist) {
                 HomeListFourCover(
                   size: 50,
                   type: playlist.type,
-                  playlist: playlist,
+                  album: playlist,
                 ),
                 const SizedBox(width: 10),
                 Flexible(
