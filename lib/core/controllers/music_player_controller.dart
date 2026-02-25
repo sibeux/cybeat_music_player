@@ -261,41 +261,22 @@ class MusicPlayerController extends GetxController {
     numberOfError = 0;
 
     final String initialUrl = mediaItem.extras!['url'];
-    final bool isGdriveStream =
-        initialUrl.contains('sibeux.my.id/cloud-music-player/api/stream');
-    final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
+    logError(initialUrl);
 
     try {
       if (isFromButton) {
         // player.stop();
         // player.seek(Duration.zero, index: 0);
       }
-      var url = "";
-      var musicId = "0";
-      if (isGdriveStream) {
-        // final responseBody =
-        //     await getStreamDirectUrl(url: initialUrl, source: 'gdrive');
-        // url = responseBody['stream_url'] ?? '';
-        // musicId = responseBody['music_id'] ?? '0';
-        url = initialUrl;
-        musicId = mediaItem.id;
-      } else if (isCloudflareStream) {
-        // final responseBody = (await getStreamDirectUrl(
-        //   url: initialUrl.replaceFirst("cdncloudflare", ''),
-        //   source: 'cloudflare',
-        //   musicId: mediaItem.id,
-        // ));
-        // url = responseBody['stream_url'] ?? '';
-        // musicId = responseBody['music_id'] ?? '0';
-        String path = initialUrl.replaceFirst("cdncloudflare", '');
-        String endpoint =
-            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-        url = "$endpoint?path=$path&music_id=${mediaItem.id}";
-        musicId = mediaItem.id;
-      } else {
-        url = initialUrl;
-        musicId = mediaItem.id;
-      }
+
+      // } else if (isCloudflareStream) {
+      //   String path = initialUrl.replaceFirst("cdncloudflare", '');
+      //   String endpoint =
+      //       dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+      //   url = "$endpoint?path=$path&music_id=${mediaItem.id}";
+
+      var url = initialUrl;
+      var musicId = mediaItem.id;
 
       // cek apakah ini request terakhir
       if (musicId != _currentMediaItem.value!.id) return; // dibatalkan

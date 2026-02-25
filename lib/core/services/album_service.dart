@@ -349,28 +349,31 @@ class AlbumService extends GetxService {
               ? null
               : regexGdriveHostUrl(
                   url: item['cover_1'],
-                  listApiKey: gdriveApiKeyList,
                   isAudio: false,
+                  
+                  musicId: '',
                 ),
           'cover_2': item['cover_2'] == null
               ? null
               : regexGdriveHostUrl(
                   url: item['cover_2'],
-                  listApiKey: gdriveApiKeyList,
+                  
+                  musicId: '',
                   isAudio: false,
                 ),
           'cover_3': item['cover_3'] == null
               ? null
               : regexGdriveHostUrl(
                   url: item['cover_3'],
-                  listApiKey: gdriveApiKeyList,
+                  
+                  musicId: '',
                   isAudio: false,
                 ),
           'cover_4': item['cover_4'] == null
               ? null
               : regexGdriveHostUrl(
                   url: item['cover_4'],
-                  listApiKey: gdriveApiKeyList,
+                  musicId: '',
                   isAudio: false,
                 ),
           'total_non_null_cover': item['total_non_null_cover']

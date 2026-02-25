@@ -10,7 +10,6 @@ import 'package:cybeat_music_player/core/controllers/music_player_controller.dar
 import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/repositories/audio_repository.dart';
-import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -115,7 +114,6 @@ class AudioStateController extends GetxController {
   Future<void> init(Album list) async {
     initAlbumLoading.value = true;
     isAlbumEmpty.value = false;
-    final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
 
@@ -170,13 +168,11 @@ class AudioStateController extends GetxController {
                   ? "Cybeat"
                   : item['uploader'];
           final String musicUrl = regexGdriveHostUrl(
-            url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
-            listApiKey: albumService.gdriveApiKeyList,
+            url: type == 'offline' ? item['filePath'] : "",
             musicId: item['id_music'].toString(),
             isAudioCached: item['cache_music_id'] != null ? true : false,
-            isSuspicious: item['is_suspicious'] == 'true' ? true : false,
-            uploader: uploader,
             isOffline: type == 'offline' ? true : false,
+            isAudio: true
           );
           return Music(
             musicId: item['id_music'],
@@ -184,7 +180,7 @@ class AudioStateController extends GetxController {
             artist: capitalizeEachWord(item['artist']),
             cover: regexGdriveHostUrl(
               url: item['cover'],
-              listApiKey: albumService.gdriveApiKeyList,
+              musicId: "0",
               isAudio: false,
             ),
             linkDrive: musicUrl,
@@ -198,9 +194,8 @@ class AudioStateController extends GetxController {
               'favorite': item['favorite'],
               'id_playlist_music': item['id_playlist_music'] ?? '',
               'original_source': type != 'offline'
-                  ? item['link_gdrive'].toString().contains('cdncloudflare/')
-                      ? "Backblaze B2"
-                      : item['link_gdrive']
+                  // ? "Cloud Storage"
+                  ? item['cover']
                   : item['filePath'],
               'is_cached': item['cache_music_id'] != null ||
                       item['link_gdrive'].toString().contains('cdncloudflare/')

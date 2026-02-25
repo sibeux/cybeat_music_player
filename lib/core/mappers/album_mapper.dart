@@ -14,11 +14,11 @@ class AlbumMapper {
     final coverData = item['cover'];
 
     final finalCover = (coverData is String)
-        ? {'default_cover': _formatImageUrl(coverData, gdriveApiKeyList)}
+        ? {'default_cover': _formatImageUrl(coverData, '0')}
         : {
             ...{ for (var i in [1, 2, 3, 4]) 'cover_$i' : coverData['cover_$i'] != null
-                  ? _formatImageUrl(coverData['cover_$i'], gdriveApiKeyList)
-                  : "" },
+                  ? _formatImageUrl(coverData['cover_$i'], '')
+                  : "0" },
             'total_non_null_cover': coverData['total_non_null_cover'],
           };
 
@@ -44,10 +44,10 @@ class AlbumMapper {
     return capitalizeEachWord(item['author'] ?? 'Unknown Artist');
   }
 
-  static String _formatImageUrl(String url, List<dynamic> gdriveApiKeyList) {
+  static String _formatImageUrl(String url, String musicId) {
     return regexGdriveHostUrl(
       url: url,
-      listApiKey: gdriveApiKeyList,
+      musicId: musicId,
       isAudio: false,
     );
   }
