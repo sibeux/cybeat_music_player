@@ -192,12 +192,12 @@ class MusicPlayerController extends GetxController {
   }
 
   Future<void> setLastPlayingPlaylist() async {
-    String endpoint = dotenv.env['PLAYLIST_API_URL'] ?? '';
-    String api = '$endpoint?play_playlist=${currentActivePlaylist.value?.uid}';
+    // String endpoint = dotenv.env['PLAYLIST_API_URL'] ?? '';
+    // String api = '$endpoint?play_playlist=${currentActivePlaylist.value?.uid}';
     try {
-      await http.post(
-        Uri.parse(api),
-      );
+      // await http.post(
+      //   Uri.parse(api),
+      // );
       isNeedRebuildLastPlaylist.value = true;
     } catch (e) {
       logError('Error setLastPlayingPlaylist: $e');
@@ -261,19 +261,12 @@ class MusicPlayerController extends GetxController {
     numberOfError = 0;
 
     final String initialUrl = mediaItem.extras!['url'];
-    logError(initialUrl);
 
     try {
       if (isFromButton) {
         // player.stop();
         // player.seek(Duration.zero, index: 0);
       }
-
-      // } else if (isCloudflareStream) {
-      //   String path = initialUrl.replaceFirst("cdncloudflare", '');
-      //   String endpoint =
-      //       dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-      //   url = "$endpoint?path=$path&music_id=${mediaItem.id}";
 
       var url = initialUrl;
       var musicId = mediaItem.id;
