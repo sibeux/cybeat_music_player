@@ -25,28 +25,19 @@ class AlbumRepository {
           'sort': sort,
           'filter': filter,
         },
-        // Konfigurasi ini HANYA berlaku untuk request ini saja
-        options: Options(
-          validateStatus: (status) {
-            // Izinkan status 200 (Success) DAN 401 (Unauthorized)
-            // agar tidak langsung masuk ke catch block
-            return status == 200 || status == 401;
-          },
-        ),
       ).timeout(const Duration(seconds: 60));
-
-      // Cek manual status code-nya
-      if (response.statusCode == 401) {
-        logWarning('User is guest/free, returning limited album data.');
-        // Di sini kita bisa return data album "seadanya" dari response.data
-        return response.data;
-      }
-
       // Dio otomatis mengonversi JSON menjadi Map, jadi tidak perlu jsonDecode manual
       return response.data;
-    } catch (e) {
-      // Error selain 401 (seperti 500 atau No Internet) tetap masuk ke sini
-      logError('Critical error fetching albums: ${e.toString()}');
+    } on DioException catch (e) {
+      // Jika Interceptor gagal refresh (misal refresh token habis),
+      // dia akan melempar DioException 401 ke sini.
+      if (e.response?.statusCode == 401) {
+        logWarning(
+            'Refresh gagal atau User memang Guest. Menampilkan data terbatas.');
+        return e.response?.data; // Return data limited jika ada
+      }
+
+      logError('Critical error: ${e.toString()}');
       rethrow;
     }
   }

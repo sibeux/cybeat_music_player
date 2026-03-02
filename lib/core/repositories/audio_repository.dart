@@ -17,7 +17,6 @@ class AudioRepository {
       logError('GET_SONG_API_URL not found');
       return {};
     }
-
     try {
       final response = await dio.get(
         endpoint,
@@ -25,25 +24,20 @@ class AudioRepository {
           'uid': albumId,
           'type': albumType,
         },
-        options: Options(
-          validateStatus: (status) {
-            return status == 200 || status == 401 || status == 403;
-          },
-        ),
       ).timeout(const Duration(seconds: 30));
-
-      if (response.statusCode == 200) {
-        return response.data;
-      } else if (response.statusCode == 401 || response.statusCode == 403) {
-        logWarning("You have no authority to access this $albumType");
-        return {};
-      } else {
-        throw Exception('Failed to get songs. Error: ${response.statusCode}');
-      }
+      return response.data;
     } on TimeoutException {
       logError('getSongs timed out for albumId=$albumId, type=$albumType');
       return {};
-    } catch (e) {
+    } on DioException catch (e) {
+      // Jika Interceptor gagal refresh (misal refresh token habis),
+      // dia akan melempar DioException 401 ke sini.
+      if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+        logWarning('User is not authorized. Showing limited data.');
+        return e.response?.data; // Return data limited jika ada
+      }
+
+      logError('Critical error: ${e.toString()}');
       rethrow;
     }
   }
@@ -66,55 +60,60 @@ class AudioRepository {
       return {};
     }
     try {
-      final response = await dio.post(
-        endpoint,
-        // [CYBEAT-FLOW-001-E] WAJIB pakai FormData.fromMap(), BUKAN plain Map.
-        // PHP $_POST hanya bisa baca multipart/form-data atau x-www-form-urlencoded.
-        // Kalau dikirim sebagai JSON (Map biasa), $_POST di PHP akan kosong → 400 Bad Request.
-        // Lihat BUG-002 di docs/CYBEAT-FLOW-001_recent_codec_dominant_color.md
-        data: FormData.fromMap({
-          'music_id': musicId,
-          'album_id': albumId,
-          'album_type': albumType,
-          // Jika codec sudah ada ATAU berasal dari stream drive,
-          // maka tidak perlu dicek lewat backend recent music.
-          'codec_exist': (isCodecExist || isFromGdrive) ? "true" : "false",
-          // Dominant color tidak perlu cek isFromGdrive karena hanya lewat recent.
-          'dominant_color_exist': isDominantColorExist ? "true" : "false",
-          'music_url': musicUrl,
-          'image_url': imageUrl,
-        }),
-        options: Options(
-          validateStatus: (status) {
-            return status == 200 ||
-                status == 400 ||
-                status == 401 ||
-                status == 403 ||
-                status == 500;
-          },
-        ),
-      ).timeout(const Duration(seconds: 30));
+      final response = await dio
+          .post(
+            endpoint,
+            // [CYBEAT-FLOW-001-E] WAJIB pakai FormData.fromMap(), BUKAN plain Map.
+            // PHP $_POST hanya bisa baca multipart/form-data atau x-www-form-urlencoded.
+            // Kalau dikirim sebagai JSON (Map biasa), $_POST di PHP akan kosong → 400 Bad Request.
+            // Lihat BUG-002 di docs/CYBEAT-FLOW-001_recent_codec_dominant_color.md
+            data: FormData.fromMap({
+              'music_id': musicId,
+              'album_id': albumId,
+              'album_type': albumType,
+              // Jika codec sudah ada ATAU berasal dari stream drive,
+              // maka tidak perlu dicek lewat backend recent music.
+              'codec_exist': (isCodecExist || isFromGdrive) ? "true" : "false",
+              // Dominant color tidak perlu cek isFromGdrive karena hanya lewat recent.
+              'dominant_color_exist': isDominantColorExist ? "true" : "false",
+              'music_url': musicUrl,
+              'image_url': imageUrl,
+            }),
+            // // Konfigurasi ini HANYA berlaku untuk request ini saja
+            // options: Options(
+            //   validateStatus: (status) {
+            //     // Izinkan status 200 (Success) DAN 401 (Unauthorized) atau status lain
+            //     // agar tidak langsung masuk ke catch block.
+            //     return status == 200 ||
+            //         status == 400 ||
+            //         status == 401 ||
+            //         status == 403 ||
+            //         status == 500;
+            //   },
+            // ),
+          )
+          .timeout(const Duration(seconds: 30));
 
-      if (response.statusCode == 200) {
-        return response.data;
-      } else if (response.statusCode == 400) {
-        logError(
-            'setRecentCodecDominantColor: 400 Bad Request. Check POST fields. Response: ${response.data}');
-        return {};
-      } else if (response.statusCode == 500) {
-        throw Exception(
-            'Failed to setRecentCodecDominantColor. Error: ${response.data}. Status code: ${response.statusCode}');
-      } else {
-        throw Exception(
-            'Failed to setRecentCodecDominantColor. Error: ${response.data}. Status code: ${response.statusCode}');
-      }
+      return response.data;
     } on TimeoutException {
       throw Exception(
           'Failed to setRecentCodecDominantColor. Error: TimeoutException');
     } on DioException catch (e) {
-      throw Exception(
-          'Failed to setRecentCodecDominantColor. Error: DioException ${e.message}');
-    } catch (e) {
+      if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+        logWarning('User is not authorized. Showing limited data.');
+        return e.response?.data; // Return data limited jika ada
+      } else if (e.response?.statusCode == 400) {
+        logError(
+            'setRecentCodecDominantColor: 400 Bad Request. Check POST fields. Response: ${e.response?.data}');
+        return {};
+      } else if (e.response?.statusCode == 500) {
+        logError(
+            'Failed to setRecentCodecDominantColor. Error: ${e.response?.data}. Status code: ${e.response?.statusCode}');
+        return {};
+      } else {
+        logError(
+            'Critical error in setRecentCodecDominantColor. Error: ${e.response?.data}. Status code: ${e.response?.statusCode}');
+      }
       rethrow;
     }
   }

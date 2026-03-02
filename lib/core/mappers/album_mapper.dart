@@ -3,6 +3,7 @@ import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
+import 'package:intl/intl.dart';
 
 class AlbumMapper {
   static Album fromMap(Map<String, dynamic> item,
@@ -40,7 +41,7 @@ class AlbumMapper {
     final type = item['type'];
     if (type == 'album') return capitalizeEachWord(item['author']);
     if (type == 'favorite') return 'jumlahFavorite Songs';
-    if (type == 'category') return item['uid'] == '5' ? 'Total Songs' : 'ok';
+    if (type == 'category') return "${addDotNumb(item['author'])} Songs";
     return capitalizeEachWord(item['author'] ?? 'Unknown Artist');
   }
 
@@ -50,5 +51,9 @@ class AlbumMapper {
       musicId: musicId,
       isAudio: false,
     );
+  }
+
+  static String addDotNumb(int number) {
+    return NumberFormat("#,###", "id_ID").format(number);
   }
 }

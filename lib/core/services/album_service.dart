@@ -82,26 +82,12 @@ class AlbumService extends GetxService {
       gdriveApiKeyList.value = json.decode(apiResponse.body);
       // final jumlahFavorite = await getSumFavoriteSong();
       // final listJumlahCategory = await getSumCategorySong();
-      // await getFourCoverAlbum(method: 'four_cover_category', type: 'category');
-      // await getFourCoverAlbum(method: 'four_cover_playlist', type: 'playlist');
 
       // List jumlahCategory(String uid) {
       //   return listJumlahCategory
       //       .where((element) => element['uid'] == uid)
       //       .map((e) => e['type_count'])
       //       .toList();
-      // }
-
-      // String sumAllsong() {
-      //   var sum = 0;
-      //   for (var i = 0; i < listJumlahCategory.length; i++) {
-      //     sum += int.parse(listJumlahCategory[i]['type_count']);
-      //   }
-      //   return NumberFormat("#,###", "id_ID").format(sum).toString();
-      // }
-
-      // String addDotNumb(int number) {
-      //   return NumberFormat("#,###", "id_ID").format(number);
       // }
 
       // Access the 'album' key inside the 'data' map
@@ -135,6 +121,7 @@ class AlbumService extends GetxService {
 
       logSuccess('Successfully initialized album with ${list.length} items');
     } catch (e, st) {
+      _updateLists([]); // Kosongkan jika gagal
       logError('Error initializeAlbum: $e. Stacktrace: $st');
     } finally {
       isHomeLoading.value = false;
