@@ -25,7 +25,7 @@ class AuthService extends GetxService {
   // * TICKET-20260216-01: Fix Null Check Operator Error
   // * Problem: `expiry!` was called even when `expiry` could be null, causing runtime crash.
   // * Solution: Use null-aware operator `?.` and specific boolean logic `?? true`.
-  bool _isExpired() => expiry?.isBefore(DateTime.now()) ?? true;
+  bool isExpired() => expiry?.isBefore(DateTime.now()) ?? true;
 
   // Fungsinya saat app launch pertama kali, untuk cek apakah ada token di devic,
   // dan apakah token tersebut masih valid atau sudah expired.
@@ -48,7 +48,7 @@ class AuthService extends GetxService {
       // * Solution: Wrap initialization logic in try-catch and log errors
       // Jika token sudah expired, maka langsung refresh token.
       // Jika refresh token juga expired, maka user harus login ulang.
-      if (_isExpired()) {
+      if (isExpired()) {
         isAccessTokenValid.value = false;
       } else {
         isAccessTokenValid.value = true;
