@@ -54,13 +54,12 @@ class MusicDownloadController extends GetxController {
     final directory = await getApplicationDocumentsDirectory();
     final appDirPath = directory.path;
 
-    // Mendapatkan daftar file yang ada di direktori sementara
+    // Mendapatkan daftar file yang ada di direktori.
     final appDir = Directory(appDirPath);
     final files = appDir.listSync();
 
     // Mencetak nama file yang ada di dalamnya
     for (var file in files) {
-      // logger.d('File found: ${file.path}');
       logInfo('File found: ${file.path}');
     }
   }

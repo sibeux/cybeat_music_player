@@ -257,7 +257,6 @@ class MusicPlayerController extends GetxController {
     if (currentActivePlaylist.value!.type != 'offline') {
       setLastPlayingPlaylist();
     }
-    // reset number of error saat ganti lagu.
     numberOfError = 0;
 
     final String initialUrl = mediaItem.extras!['url'];
@@ -288,7 +287,7 @@ class MusicPlayerController extends GetxController {
         initialIndex: 0,
       );
 
-      player.play(); // user langsung dengar musik
+      player.play();
     } catch (e, st) {
       logError("Error playMusicNow: $e. ST: $st");
     }

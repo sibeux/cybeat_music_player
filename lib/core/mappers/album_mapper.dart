@@ -10,7 +10,6 @@ class AlbumMapper {
       {required int currentPinCount, required List<dynamic> gdriveApiKeyList}) {
     final String type = (item['type'] ?? '').toString();
 
-    // Logika penentuan author yang sebelumnya berantakan
     String authorText = _resolveAuthor(item);
     final coverData = item['cover'];
 

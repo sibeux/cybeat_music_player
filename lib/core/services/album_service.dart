@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
-import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/mappers/album_mapper.dart';
 import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
@@ -80,17 +79,6 @@ class AlbumService extends GetxService {
     try {
       final apiResponse = await http.get(Uri.parse(api));
       gdriveApiKeyList.value = json.decode(apiResponse.body);
-      // final jumlahFavorite = await getSumFavoriteSong();
-      // final listJumlahCategory = await getSumCategorySong();
-
-      // List jumlahCategory(String uid) {
-      //   return listJumlahCategory
-      //       .where((element) => element['uid'] == uid)
-      //       .map((e) => e['type_count'])
-      //       .toList();
-      // }
-
-      // Access the 'album' key inside the 'data' map
       final response = await _albumRepository.fetchAlbums();
       final dataMap = response['data'] as Map<String, dynamic>?;
 
@@ -151,15 +139,23 @@ class AlbumService extends GetxService {
      * list aslinya tidak ikut berubah (karena di Dart, list adalah reference).
      * ***/
     album.sort((a, b) {
-      // Prioritaskan Pin
-      if (a.pin == 'true' && b.pin == 'false') return -1;
-      if (a.pin == 'false' && b.pin == 'true') return 1;
+      final aPinned = a.pin == 'true';
+      final bPinned = b.pin == 'true';
 
-      // Bandingkan mana yang lebih baru antara playedAt atau createdAt untuk tiap album
-      String timeA = a.playedAt.isAfter(a.createdAt) ? a.playedAt : a.createdAt;
-      String timeB = b.playedAt.isAfter(b.createdAt) ? b.playedAt : b.createdAt;
+      // Grup: pinned duluan
+      if (aPinned != bPinned) return aPinned ? -1 : 1;
 
-      return timeB.compareTo(timeA); // Terbaru di atas
+      if (aPinned && bPinned) {
+        // Keduanya pinned → urutkan datePinned terlama dulu (ascending)
+        return a.pinAt.compareTo(b.pinAt);
+      } else {
+        // Keduanya tidak pinned → urutkan terbaru dulu (descending)
+        final String timeA =
+            a.playedAt.isAfter(a.createdAt) ? a.playedAt : a.createdAt;
+        final String timeB =
+            b.playedAt.isAfter(b.createdAt) ? b.playedAt : b.createdAt;
+        return timeB.compareTo(timeA);
+      }
     });
 
     // Baru masukkan ke view-view spesifik
@@ -194,7 +190,7 @@ class AlbumService extends GetxService {
     selectedAlbum.insert(
         indexPin, currentAlbum); // Sisipkan kembali elemen ke indeks pin
 
-    setPinData(action: 'pin', uid: uid);
+    setPinData(action: 'pin', albumId: uid, albumType: currentAlbum!.type);
     jumlahPin.value++;
   }
 
@@ -225,36 +221,32 @@ class AlbumService extends GetxService {
     allAlbumChildren.insert(normalIndex, currentChild);
     selectedAlbum.insert(normalIndex, currentAlbum);
 
-    setPinData(action: 'unpin', uid: uid);
+    setPinData(action: 'unpin', albumId: uid, albumType: currentAlbum!.type);
     jumlahPin.value--;
   }
 
-  Future<bool> setPinData({required String action, required String uid}) async {
-    String playlistApi =
-        dotenv.env['PIN_PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '';
-
-    switch (action) {
-      case 'pin':
-        url = '$playlistApi?action=pin&uid=$uid';
-        break;
-      case 'unpin':
-        url = '$playlistApi?action=unpin&uid=$uid';
-        break;
-      default:
-        break;
-    }
-
+  Future<bool> setPinData({
+    required String action,
+    required String albumId,
+    required String albumType,
+  }) async {
     try {
-      final response = await http.post(Uri.parse(url));
-      if (response.body.isEmpty) {
-        logError('Error: Response body is empty');
+      final result = await _albumRepository.setPinData(
+        action: action,
+        albumId: albumId,
+        albumType: albumType,
+      );
+
+      if (result['status'] == 'success') {
+        logInfo('Successfully ${action}ned $albumType with id $albumId');
+        return true;
+      } else {
+        logWarning(
+            'Failed to $action album with id $albumId. Message: ${result['message']}');
         return false;
       }
-      logInfo('Success set pin response: ${response.body}');
-      return true;
-    } catch (e, st) {
-      logError('Error set pin: $e,$st');
+    } catch (e) {
+      logError('Error in setPinData for album with id $albumId: $e');
       return false;
     }
   }
@@ -277,103 +269,6 @@ class AlbumService extends GetxService {
       return true;
     } else {
       return false;
-    }
-  }
-
-  Future<String> getSumFavoriteSong() async {
-    String playlistApi =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '$playlistApi?count_favorite=true';
-
-    List<dynamic> listData = [];
-
-    try {
-      final response = await http.post(Uri.parse(url));
-      listData = json.decode(response.body);
-    } catch (e) {
-      logError('Error getSumFavoriteSong: $e');
-    }
-
-    return listData[0]['count_favorite'];
-  }
-
-  Future<List> getSumCategorySong() async {
-    String playlistApi =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '$playlistApi?count_category=uid';
-
-    List<dynamic> listData = [];
-
-    try {
-      final response = await http.post(Uri.parse(url));
-      listData = json.decode(response.body);
-    } catch (e) {
-      logError('Error getSumCategorySong: $e');
-    }
-
-    return listData;
-  }
-
-  Future<void> getFourCoverAlbum(
-      {required String method, required String type}) async {
-    List<dynamic> responseBody = [];
-    String api = dotenv.env['FOURCOVER_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '$api?method=$method';
-
-    try {
-      final response = await http.post(Uri.parse(url));
-      responseBody = json.decode(response.body);
-
-      if (responseBody.isEmpty) {
-        logError('No data found for four cover album of type: $type');
-        return;
-      }
-
-      final List<dynamic> formattedImageUrl = responseBody.map((item) {
-        return {
-          'playlist_uid': item['playlist_uid'],
-          'cover_1': item['cover_1'] == null
-              ? null
-              : regexGdriveHostUrl(
-                  url: item['cover_1'],
-                  isAudio: false,
-                  
-                  musicId: '',
-                ),
-          'cover_2': item['cover_2'] == null
-              ? null
-              : regexGdriveHostUrl(
-                  url: item['cover_2'],
-                  
-                  musicId: '',
-                  isAudio: false,
-                ),
-          'cover_3': item['cover_3'] == null
-              ? null
-              : regexGdriveHostUrl(
-                  url: item['cover_3'],
-                  
-                  musicId: '',
-                  isAudio: false,
-                ),
-          'cover_4': item['cover_4'] == null
-              ? null
-              : regexGdriveHostUrl(
-                  url: item['cover_4'],
-                  musicId: '',
-                  isAudio: false,
-                ),
-          'total_non_null_cover': item['total_non_null_cover']
-        };
-      }).toList();
-
-      if (type == 'category') {
-        fourCoverCategory.value = formattedImageUrl;
-      } else if (type == 'playlist') {
-        fourCoverPlaylist.value = formattedImageUrl;
-      }
-    } catch (e) {
-      logError('Error getFourCoverAlbum: $e');
     }
   }
 

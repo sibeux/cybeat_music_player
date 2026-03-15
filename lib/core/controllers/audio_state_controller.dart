@@ -296,7 +296,6 @@ class AudioStateController extends GetxController {
       );
 
       if (response.body.isEmpty) {
-        // LAPORKAN sebagai error non-fatal agar mudah dilacak
         final reason =
             'Error in deleteMusicFromPlaylist: Response body is empty: ${response.statusCode}';
         logError(reason);
@@ -325,7 +324,6 @@ class AudioStateController extends GetxController {
         init(musicPlayerController.currentActivePlaylist.value!);
         musicPlayerController.setActivePlaylist(
             musicPlayerController.currentActivePlaylist.value!);
-        // Tampilkan toast.
         showRemoveAlbumToast('Music has been deleted from the playlist');
         Get.back();
       } else {
@@ -408,7 +406,6 @@ class AudioStateController extends GetxController {
   Future<bool> checkCodecAudio({
     required MediaItem mediaItem,
   }) async {
-    // Ini berfungsi sebagai placeholder laoding saat fetch.
     bitsPerRawSample.value = '--';
     sampleRate.value = '--';
     bitRate.value = '--';
