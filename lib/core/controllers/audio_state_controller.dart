@@ -195,7 +195,7 @@ class AudioStateController extends GetxController {
               isOffline: type == 'offline' ? true : false,
               isAudio: true);
           return Music(
-            musicId: item['id_music'],
+            musicId: int.tryParse(item['id_music'].toString()) ?? 0,
             album: capitalizeEachWord(item['album'] ?? "Unknown Album"),
             artist: capitalizeEachWord(item['artist']),
             cover: regexGdriveHostUrl(
@@ -236,7 +236,9 @@ class AudioStateController extends GetxController {
                 'text_color': item['text_color'] ?? '',
               },
               'is_downloaded': type != 'offline'
-                  ? uidDownloadedSongs.contains(item['id_music'])
+              // List uidDownloadedSongs itu save value String. 
+              // Karena item['id_music'] itu int, jadi harus di-convert dulu ke String sebelum cek contains.
+                  ? uidDownloadedSongs.contains(item['id_music'].toString())
                       ? true
                       : false
                   : false,
