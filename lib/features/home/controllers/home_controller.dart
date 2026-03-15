@@ -31,6 +31,7 @@ class HomeController extends GetxController {
   RxList<Album> get playlistCreatedList => albumService.playlistCreatedList;
   bool get isLoading => albumService.isHomeLoading.value;
   RxString get fullName => authService.fullName;
+  bool get isAuthenticated => authService.isAuthenticated;
 
   MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
 

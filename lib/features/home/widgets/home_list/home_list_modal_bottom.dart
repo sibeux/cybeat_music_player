@@ -85,16 +85,6 @@ Future<dynamic> homeListModalBottom(BuildContext context, Album playlist) {
                           ),
                         ),
                       ),
-                      // SizedBox(
-                      //   child: Text(
-                      //     playlist.title,
-                      //     style: const TextStyle(
-                      //       overflow: TextOverflow.ellipsis,
-                      //       fontSize: 16,
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
                       const SizedBox(
                         height: 3,
                       ),
@@ -176,25 +166,27 @@ Future<dynamic> homeListModalBottom(BuildContext context, Album playlist) {
                     showRemoveAlbumToast(
                         'Sorry, this feature is not available yet');
                   }),
-              ListTileBottomModal(
-                title: playlist.pin == 'false'
-                    ? 'Pin ${playlist.type.toLowerCase()}'
-                    : 'Unpin ${playlist.type.toLowerCase()}',
-                icon: playlist.pin == 'false'
-                    ? Icons.push_pin_outlined
-                    : Icons.push_pin_rounded,
-                changeColor: playlist.pin == 'true' ? true : false,
-                onTap: () {
-                  Get.back();
-                  if (playlist.pin == 'false') {
-                    homeAlbumGridController.pinAlbum(playlist.uid);
-                    playlist.setPin = 'true';
-                  } else {
-                    homeAlbumGridController.unpinAlbum(playlist.uid);
-                    playlist.setPin = 'false';
-                  }
-                },
-              ),
+              if (homeAlbumGridController.isAuthenticated)
+                ListTileBottomModal(
+                  title: playlist.pin == 'false'
+                      ? 'Pin ${playlist.type.toLowerCase()}'
+                      : 'Unpin ${playlist.type.toLowerCase()}',
+                  icon: playlist.pin == 'false'
+                      ? Icons.push_pin_outlined
+                      : Icons.push_pin_rounded,
+                  changeColor: playlist.pin == 'true' ? true : false,
+                  onTap: () {
+                    Get.back();
+
+                    if (playlist.pin == 'false') {
+                      homeAlbumGridController.pinAlbum(playlist.uid);
+                      playlist.setPin = 'true';
+                    } else {
+                      homeAlbumGridController.unpinAlbum(playlist.uid);
+                      playlist.setPin = 'false';
+                    }
+                  },
+                ),
               ListTileBottomModal(
                 title: 'Share',
                 icon: Icons.share_outlined,
