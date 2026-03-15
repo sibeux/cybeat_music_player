@@ -41,6 +41,8 @@ class AudioStateController extends GetxController {
   var initAlbumLoading = false.obs;
   var isAlbumEmpty = false.obs;
 
+  RxList<Music> get getPlaylist => playlist;
+
   // Jadikan 'uid' sebagai variabel di luar listener agar nilainya tidak di-reset.
   // Sebaiknya ini menjadi variabel instance di dalam class Anda.
   String? lastProcessedMusicId;

@@ -31,6 +31,7 @@ class AlbumMusicController extends GetxController {
   RxBool get initAlbumLoading => audioStateController.initAlbumLoading;
   RxString get defaultAlbumColor => albumService.defaultAlbumColor;
   bool get isSimpleMode => albumService.isSimpleMode.value;
+  RxList<Music> get getPlaylist => audioStateController.getPlaylist;
 
   // logic untuk shuffle music.
   void shuffleMusic() {
