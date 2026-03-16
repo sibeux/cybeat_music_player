@@ -1,5 +1,6 @@
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/features/auth_user/interfaces/auth_form_controller_contract.dart';
 import 'package:email_validator/email_validator.dart';
@@ -138,6 +139,8 @@ class UserLoginController extends AuthFormControllerContract {
         logSuccess('Login success for $email');
         isRedirecting.value = true;
         await Future.delayed(const Duration(milliseconds: 200));
+        final albumService = Get.find<AlbumService>();
+        albumService.initializeAlbum();
         Get.back();
       } else {
         isLoginSuccess.value = false;

@@ -5,7 +5,6 @@ Backslash dipakai agar di github secret terbaca sebagai json. Kalau langsung jso
 {
     "\"PLAYLIST_API_URL\"": "\"playlist\"",
     "\"GDRIVE_API_URL\"": "\"gdrive_api\"",
-    "\"FOURCOVER_API_URL\"": "\"four_cover_album\"",
     "\"CRUD_PLAYLIST_API_URL\"": "\"crud_new_playlist\"",
     "\"MUSIC_PLAYLIST_API_URL\"": "\"music_playlist\"",
     "\"MUSIC_STREAM_API_URL\"": "\"stream\"",

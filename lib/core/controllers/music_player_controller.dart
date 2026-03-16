@@ -6,14 +6,14 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 
 class MusicPlayerController extends GetxController {
-  var currentActivePlaylist = Rx<Playlist?>(null);
+  var currentActivePlaylist = Rx<Album?>(null);
   final _currentMediaItem = Rx<MediaItem?>(null);
 
   var isMusicActiveNow = false.obs;
@@ -185,19 +185,19 @@ class MusicPlayerController extends GetxController {
     isMusicActiveNow.value = false;
   }
 
-  void setActivePlaylist(Playlist playlist) {
+  void setActivePlaylist(Album playlist) {
     // Setiap album/playlist yang di-play akan disimpan di currentPlaylistPlay.
     // Isinya hanya 1, yaitu album/playlist yang sedang di-play.
     currentActivePlaylist.value = playlist;
   }
 
   Future<void> setLastPlayingPlaylist() async {
-    String endpoint = dotenv.env['PLAYLIST_API_URL'] ?? '';
-    String api = '$endpoint?play_playlist=${currentActivePlaylist.value?.uid}';
+    // String endpoint = dotenv.env['PLAYLIST_API_URL'] ?? '';
+    // String api = '$endpoint?play_playlist=${currentActivePlaylist.value?.uid}';
     try {
-      await http.post(
-        Uri.parse(api),
-      );
+      // await http.post(
+      //   Uri.parse(api),
+      // );
       isNeedRebuildLastPlaylist.value = true;
     } catch (e) {
       logError('Error setLastPlayingPlaylist: $e');
@@ -217,8 +217,7 @@ class MusicPlayerController extends GetxController {
       } else if (source == 'cloudflare') {
         String endpoint =
             dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-        api =
-            "$endpoint?path=$url&music_id=$musicId";
+        api = "$endpoint?path=$url&music_id=$musicId";
       }
       final response = await http.get(Uri.parse(api));
       if (response.body.isEmpty) {
@@ -258,46 +257,18 @@ class MusicPlayerController extends GetxController {
     if (currentActivePlaylist.value!.type != 'offline') {
       setLastPlayingPlaylist();
     }
-    // reset number of error saat ganti lagu.
     numberOfError = 0;
 
     final String initialUrl = mediaItem.extras!['url'];
-    final bool isGdriveStream = initialUrl
-        .contains('sibeux.my.id/cloud-music-player/api/stream');
-    final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
 
     try {
       if (isFromButton) {
         // player.stop();
         // player.seek(Duration.zero, index: 0);
       }
-      var url = "";
-      var musicId = "0";
-      if (isGdriveStream) {
-        // final responseBody =
-        //     await getStreamDirectUrl(url: initialUrl, source: 'gdrive');
-        // url = responseBody['stream_url'] ?? '';
-        // musicId = responseBody['music_id'] ?? '0';
-        url = initialUrl;
-        musicId = mediaItem.id;
-      } else if (isCloudflareStream) {
-        // final responseBody = (await getStreamDirectUrl(
-        //   url: initialUrl.replaceFirst("cdncloudflare", ''),
-        //   source: 'cloudflare',
-        //   musicId: mediaItem.id,
-        // ));
-        // url = responseBody['stream_url'] ?? '';
-        // musicId = responseBody['music_id'] ?? '0';
-        String path = initialUrl.replaceFirst("cdncloudflare", '');
-        String endpoint =
-            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-        url =
-            "$endpoint?path=$path&music_id=${mediaItem.id}";
-        musicId = mediaItem.id;
-      } else {
-        url = initialUrl;
-        musicId = mediaItem.id;
-      }
+
+      var url = initialUrl;
+      var musicId = mediaItem.id;
 
       // cek apakah ini request terakhir
       if (musicId != _currentMediaItem.value!.id) return; // dibatalkan
@@ -316,7 +287,7 @@ class MusicPlayerController extends GetxController {
         initialIndex: 0,
       );
 
-      player.play(); // user langsung dengar musik
+      player.play();
     } catch (e, st) {
       logError("Error playMusicNow: $e. ST: $st");
     }
@@ -341,7 +312,7 @@ class MusicPlayerController extends GetxController {
         playlistLength < originalCurrentIndexSong + 1)) {
       final music = Get.find<AudioStateController>().playlist[index];
       final mediaItem = MediaItem(
-        id: music.musicId,
+        id: music.musicId.toString(),
         title: music.title,
         album: music.album,
         artUri: Uri.parse(music.cover),
@@ -362,7 +333,7 @@ class MusicPlayerController extends GetxController {
       currentIndex -= 1;
       final music = Get.find<AudioStateController>().playlist[currentIndex];
       final mediaItem = MediaItem(
-        id: music.musicId,
+        id: music.musicId.toString(),
         title: music.title,
         album: music.album,
         artUri: Uri.parse(music.cover),

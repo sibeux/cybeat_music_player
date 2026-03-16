@@ -8,8 +8,8 @@ import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
-import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:cybeat_music_player/core/repositories/audio_repository.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -22,6 +22,7 @@ class AudioStateController extends GetxController {
   /// Sekarang soal late → kamu perlu hati-hati:
   /// late dipakai kalau kamu mau deklarasi variabel tanpa langsung inisialisasi, tapi janji bakal diisi sebelum dipakai.
   /// obs atau Rx di GetX butuh nilai awal (meskipun null). Jadi kalau mau reaktif, biasanya nggak perlu late, cukup kasih default.
+  final AudioRepository audioRepository = AudioRepository();
   final activePlayer = Rx<AudioPlayer?>(null);
   final playlist = RxList<Music>([]);
   static int _nextMediaId = 1;
@@ -39,6 +40,8 @@ class AudioStateController extends GetxController {
 
   var initAlbumLoading = false.obs;
   var isAlbumEmpty = false.obs;
+
+  RxList<Music> get getPlaylist => playlist;
 
   // Jadikan 'uid' sebagai variabel di luar listener agar nilainya tidak di-reset.
   // Sebaiknya ini menjadi variabel instance di dalam class Anda.
@@ -74,32 +77,53 @@ class AudioStateController extends GetxController {
         if (currentIndex != null) {
           final String currentMusicId =
               musicPlayerController.getCurrentMediaItem!.id;
-          // KONDISI UTAMA:
-          // ** 1. Player dalam state 'ready' event.processingState == ProcessingState.ready
-          // ** (artinya lagu baru sudah di-load).
-          // 2. ID musik saat ini BERBEDA dengan ID yang terakhir kita proses-
-          // dan tidak dari album offline.
+
+          // [CYBEAT-FLOW-001-A] Guard: cek apakah musik ini sudah pernah diproses.
+          // sequenceStateStream bisa emit berkali-kali (buffering, seeking, dll) untuk lagu
+          // yang sama. Tanpa guard ini, API akan dipanggil berulang-ulang.
+          // lastProcessedMusicId di-set SEBELUM proses dimulai untuk mencegah race condition.
+          // Lihat: docs/CYBEAT-FLOW-001_recent_codec_dominant_color.md
           if (currentMusicId != lastProcessedMusicId &&
               !musicPlayerController
                   .getCurrentMediaItem!.extras!['is_offline']) {
             // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
             lastProcessedMusicId = currentMusicId;
-            // Baru panggil fungsi-fungsi Anda.
+
+            // [CYBEAT-FLOW-001-B] Cek metadata codec dari data lokal (extras MediaItem).
+            // Tidak hit API. Hasilnya dikirim ke backend sebagai flag 'codec_exist'.
             final isCodecExist = await checkCodecAudio(
               mediaItem: musicPlayerController.getCurrentMediaItem!,
             );
+
+            // [CYBEAT-FLOW-001-C] Cek dominant color dari data lokal (extras MediaItem).
+            // Tidak hit API. Hasilnya dikirim ke backend sebagai flag 'dominant_color_exist'.
             final isDominantColorExist = await checkDominantColor(
               mediaItem: musicPlayerController.getCurrentMediaItem!,
             );
-            // Panggil method set recents music.
+
+            // Cek apakah ini url untuk stream drive.
+            final bool isFromGdrive = musicPlayerController
+                .getCurrentMediaItem!.extras!['original_source']
+                .contains("drive.google.com");
+
+            // [CYBEAT-FLOW-001-D] Fire & forget — sengaja tanpa await.
+            // Agar stream listener tidak terblokir menunggu HTTP request selesai.
+            // Error ditangani di dalam setRecentsCodecDominantColor itu sendiri.
             setRecentsCodecDominantColor(
-              musicId: currentMusicId,
+              musicId: int.tryParse(currentMusicId),
               isCodecExist: isCodecExist,
               isDominantColorExist: isDominantColorExist,
               musicUrl:
                   musicPlayerController.getCurrentMediaItem!.extras!['url'],
               imageUrl:
                   musicPlayerController.getCurrentMediaItem!.artUri.toString(),
+              isFromGdrive: isFromGdrive,
+              albumId: int.tryParse(
+                      musicPlayerController.currentActivePlaylist.value?.uid ??
+                          "0") ??
+                  0,
+              albumType:
+                  musicPlayerController.currentActivePlaylist.value?.type ?? "",
             );
           }
         }
@@ -110,15 +134,12 @@ class AudioStateController extends GetxController {
     );
   }
 
-  Future<void> init(Playlist list) async {
+  Future<void> init(Album list) async {
     initAlbumLoading.value = true;
     isAlbumEmpty.value = false;
-    final AlbumService albumService = Get.find();
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
-    String endpoint =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = "$endpoint?uid=${list.uid}&type=$type";
+
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
     try {
@@ -136,13 +157,22 @@ class AudioStateController extends GetxController {
         }
         listData = musicDownloadController.musicOfflineList;
       } else {
-        final response = await http.get(Uri.parse(url));
-        final responseBody = json.decode(response.body);
+        final responseBody = await audioRepository.getSongs(
+          albumType: type,
+          albumId: list.uid,
+        );
         if (responseBody.isNotEmpty && type != 'offline') {
           final prefs = await SharedPreferences.getInstance();
           uidDownloadedSongs = prefs.getStringList('uidDownloadedSongs') ?? [];
+          List<dynamic> data = responseBody['data'] as List<dynamic>;
+          if (data.isEmpty) {
+            isAlbumEmpty.value = true;
+            playlist.value = <Music>[];
+            await activePlayer.value?.setAudioSources([]);
+            return;
+          }
           listData = [].obs; // inisialisasi dulu
-          listData.assignAll(responseBody); // assign dari List biasa
+          listData.assignAll(data); // assign dari List biasa
         } else {
           listData = RxList<dynamic>([]);
         }
@@ -161,37 +191,33 @@ class AudioStateController extends GetxController {
                   ? "Cybeat"
                   : item['uploader'];
           final String musicUrl = regexGdriveHostUrl(
-            url: type != 'offline' ? item['link_gdrive'] : item['filePath'],
-            listApiKey: albumService.gdriveApiKeyList,
-            musicId: item['id_music'],
-            isAudioCached: item['cache_music_id'] != null ? true : false,
-            isSuspicious: item['is_suspicious'] == 'true' ? true : false,
-            uploader: uploader,
-            isOffline: type == 'offline' ? true : false,
-          );
+              url: type == 'offline' ? item['filePath'] : "",
+              musicId: item['id_music'].toString(),
+              isAudioCached: item['cache_music_id'] != null ? true : false,
+              isOffline: type == 'offline' ? true : false,
+              isAudio: true);
           return Music(
-            musicId: item['id_music'],
+            musicId: int.tryParse(item['id_music'].toString()) ?? 0,
             album: capitalizeEachWord(item['album'] ?? "Unknown Album"),
             artist: capitalizeEachWord(item['artist']),
             cover: regexGdriveHostUrl(
               url: item['cover'],
-              listApiKey: albumService.gdriveApiKeyList,
+              musicId: "0",
               isAudio: false,
             ),
             linkDrive: musicUrl,
             title: capitalizeEachWord(item['title']),
             extras: {
               'index': '${_nextMediaId++}',
-              'music_id': item['id_music'],
+              'music_id': item['id_music'].toString(),
               'file_drive_id': '',
               'disc_number': item['disc_number'],
               'url': musicUrl,
               'favorite': item['favorite'],
               'id_playlist_music': item['id_playlist_music'] ?? '',
               'original_source': type != 'offline'
-                  ? item['link_gdrive'].toString().contains('cdncloudflare/')
-                      ? "Backblaze B2"
-                      : item['link_gdrive']
+                  // ? "Cloud Storage"
+                  ? item['cover']
                   : item['filePath'],
               'is_cached': item['cache_music_id'] != null ||
                       item['link_gdrive'].toString().contains('cdncloudflare/')
@@ -212,7 +238,9 @@ class AudioStateController extends GetxController {
                 'text_color': item['text_color'] ?? '',
               },
               'is_downloaded': type != 'offline'
-                  ? uidDownloadedSongs.contains(item['id_music'])
+              // List uidDownloadedSongs itu save value String. 
+              // Karena item['id_music'] itu int, jadi harus di-convert dulu ke String sebelum cek contains.
+                  ? uidDownloadedSongs.contains(item['id_music'].toString())
                       ? true
                       : false
                   : false,
@@ -226,7 +254,7 @@ class AudioStateController extends GetxController {
       queue = playlist
           .map(
             (e) => MediaItem(
-              id: e.musicId,
+              id: e.musicId.toString(),
               title: e.title,
               album: e.album,
               artUri: Uri.parse(e.cover),
@@ -238,6 +266,9 @@ class AudioStateController extends GetxController {
     } catch (e, st) {
       logError('Error loading audio source: $e, st:$st');
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
+      isAlbumEmpty.value = true;
+      playlist.value = <Music>[];
+      await activePlayer.value?.setAudioSources([]);
     } finally {
       initAlbumLoading.value = false;
     }
@@ -265,7 +296,6 @@ class AudioStateController extends GetxController {
       );
 
       if (response.body.isEmpty) {
-        // LAPORKAN sebagai error non-fatal agar mudah dilacak
         final reason =
             'Error in deleteMusicFromPlaylist: Response body is empty: ${response.statusCode}';
         logError(reason);
@@ -294,7 +324,6 @@ class AudioStateController extends GetxController {
         init(musicPlayerController.currentActivePlaylist.value!);
         musicPlayerController.setActivePlaylist(
             musicPlayerController.currentActivePlaylist.value!);
-        // Tampilkan toast.
         showRemoveAlbumToast('Music has been deleted from the playlist');
         Get.back();
       } else {
@@ -314,68 +343,69 @@ class AudioStateController extends GetxController {
     }
   }
 
+  // [CYBEAT-FLOW-001-D] Fungsi ini dipanggil fire & forget (tanpa await) dari stream listener.
+  // Memanggil repository untuk kirim data ke backend, lalu update state UI dari response.
+  // Lihat: docs/CYBEAT-FLOW-001_recent_codec_dominant_color.md
   void setRecentsCodecDominantColor({
-    required String? musicId,
-    required bool isCodecExist,
-    required bool isDominantColorExist,
+    required int? musicId,
     required String musicUrl,
     required String imageUrl,
+    required bool isCodecExist,
+    required bool isDominantColorExist,
+    required bool isFromGdrive,
+    required int albumId,
+    required String albumType,
   }) async {
-    const String methodName = "setRecentsCodecMusic";
-    String url = dotenv.env['RECENT_MUSIC_API_URL'] ?? '';
-    String musicStreamApi = dotenv.env['MUSIC_STREAM_API_URL'] ?? '';
     try {
-      // Cek apakah ini url untuk stream drive.
-      final bool checkFromStreamDrive = musicUrl.contains(musicStreamApi);
-      final response = await http.post(
-        Uri.parse(url),
-        body: {
-          'music_id': musicId,
-          'codec_exist':
-              // Jika codec sudah ada ATAU berasal dari stream drive-
-              // maka tidak perlu dicek lewat backend recent music.
-              (isCodecExist || checkFromStreamDrive) ? "true" : "false",
-          // Dominant color tidak perlu checkFromStreamDrive karena hanya lewat recents.
-          'dominant_color_exist': isDominantColorExist ? "true" : "false",
-          'music_url': musicUrl,
-          'image_url': imageUrl,
-        },
-      );
-      final body = jsonDecode(response.body);
-      if (body.isEmpty) {
-        logError('Body response $methodName is null: $body');
-        return;
-      }
-      if (response.statusCode != 200) {
-        logError("Failed $methodName: $body");
-        return;
-      }
-      if (body['success'] == true &&
-          (body['codec'] != null || body['dominant_color'] != null)) {
-        logSuccess('$methodName success: $body');
-        // Cek apakah codec ada isinya.
-        if (body['codec'] != null) {
-          bitsPerRawSample.value = body["codec"]["bits_per_raw_sample"];
-          sampleRate.value = body["codec"]["sample_rate"];
-          bitRate.value = body["codec"]["bit_rate"];
+      final body = await audioRepository.setRecentCodecDominantColor(
+          musicId: musicId,
+          albumId: albumId,
+          albumType: albumType,
+          musicUrl: musicUrl,
+          imageUrl: imageUrl,
+          isCodecExist: isCodecExist,
+          isDominantColorExist: isDominantColorExist,
+          isFromGdrive: isFromGdrive);
+
+      // [CYBEAT-FLOW-001-F] Update reactive state dari response backend.
+      // body['codec'] null berarti server tidak perlu proses (isCodecExist sudah true).
+      // body['dominant_color'] null berarti server tidak perlu proses dominant color.
+      // PENTING: cek masing-masing secara terpisah karena salah satu bisa null
+      // sementara yang lain tidak — OR condition sebelumnya akan tetap masuk blok
+      // dan cast yang null akan crash: 'Null is not a subtype of Map<String, dynamic>'.
+      if (body['status'] == "success") {
+        logSuccess('Success: $body');
+
+        // Cek codec secara individual sebelum cast.
+        final Map<String, dynamic>? codec =
+            body['codec'] as Map<String, dynamic>?;
+        if (codec != null && codec.isNotEmpty) {
+          bitsPerRawSample.value = codec["bits_per_raw_sample"];
+          sampleRate.value = codec["sample_rate"];
+          bitRate.value = codec["bit_rate"];
         }
-        // Cek apakah dominant_color ada isinya.
-        if (body['dominant_color'] != null) {
-          bgColor.value = body["dominant_color"]["bg_color"];
-          textColor.value = body["dominant_color"]["text_color"];
+
+        // Cek dominant_color secara individual sebelum cast.
+        final Map<String, dynamic>? dominantColor =
+            body['dominant_color'] as Map<String, dynamic>?;
+        if (dominantColor != null && dominantColor.isNotEmpty) {
+          bgColor.value = dominantColor["bg_color"];
+          textColor.value = dominantColor["text_color"];
         }
-      } else {
-        logInfo('$methodName: Codec sudah diset sebelumnya. Response: $body');
+
+        if (codec == null && dominantColor == null) {
+          logInfo(
+              'Codec & dominant_color sudah diset sebelumnya. Response: $body');
+        }
       }
     } catch (e, st) {
-      logError('Error $methodName: $e, st: $st');
+      logError('Error setRecentsCodecDominantColor: $e, st: $st');
     }
   }
 
   Future<bool> checkCodecAudio({
     required MediaItem mediaItem,
   }) async {
-    // Ini berfungsi sebagai placeholder laoding saat fetch.
     bitsPerRawSample.value = '--';
     sampleRate.value = '--';
     bitRate.value = '--';

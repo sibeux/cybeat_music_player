@@ -1,61 +1,35 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class HomeListFourCover extends StatelessWidget {
   const HomeListFourCover({
     super.key,
     required this.size,
     required this.type,
-    required this.playlist,
+    required this.album,
   });
 
   final double size;
   final String type;
-  final Playlist playlist;
+  final Album album;
 
   @override
   Widget build(BuildContext context) {
-    final homeController = Get.find<HomeController>();
-
-    List listCover(String uid, String type) {
-      final List<dynamic> list = type.toLowerCase() == 'playlist'
-          ? homeController.fourCoverPlaylist
-          : homeController.fourCoverCategory;
-
-      final data = list
-          .where((element) => element['playlist_uid'] == uid)
-          .map((e) => {
-                'cover_1': e['cover_1'],
-                'cover_2': e['cover_2'],
-                'cover_3': e['cover_3'],
-                'cover_4': e['cover_4'],
-                'total_non_null_cover': e['total_non_null_cover']
-              })
-          .toList();
-
-      /***
-       * awalnya return langsung di atas, tapi karena ada error,
-       * akhirnya dipisah. belum tau kenapa errornya
-       */
-      return data;
-    }
-
-    if (playlist.image != "") {
-      return CoverFullGrid(size: size, image: playlist.image);
+    if (album.image['default_cover'] != null) {
+      return CoverFullGrid(
+        size: size,
+        image: album.image['default_cover'].toString(),
+      );
     } else {
-      if (listCover(playlist.uid, playlist.type)[0]['total_non_null_cover'] !=
-          '4') {
-        if (listCover(playlist.uid, playlist.type)[0]['cover_1'] == null) {
+      if (album.image['total_non_null_cover'].toString() != '4') {
+        if (album.image['cover_1'] == null) {
           return CoverFullGrid(size: size, image: '');
         } else {
-          final index =
-              listCover(playlist.uid, playlist.type)[0]['total_non_null_cover'];
+          final index = album.image['total_non_null_cover'].toString();
           return CoverFullGrid(
             size: size,
-            image: listCover(playlist.uid, playlist.type)[0]['cover_$index'],
+            image: album.image['cover_$index'].toString(),
           );
         }
       } else {
@@ -73,8 +47,7 @@ class HomeListFourCover extends StatelessWidget {
                 delegate: SliverChildBuilderDelegate(
                   childCount: 4,
                   (context, index) => CachedNetworkImage(
-                    imageUrl: listCover(playlist.uid, playlist.type)[0]
-                        ['cover_${index + 1}'],
+                    imageUrl: album.image['cover_${index + 1}'].toString(),
                     fit: BoxFit.cover,
                     maxHeightDiskCache: 150,
                     maxWidthDiskCache: 150,

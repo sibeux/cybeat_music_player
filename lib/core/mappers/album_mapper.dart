@@ -1,0 +1,58 @@
+import 'package:cybeat_music_player/common/utils/capitalize.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:get/get.dart';
+import 'package:get/get_utils/src/extensions/string_extensions.dart';
+import 'package:intl/intl.dart';
+
+class AlbumMapper {
+  static Album fromMap(Map<String, dynamic> item,
+      {required int currentPinCount, required List<dynamic> gdriveApiKeyList}) {
+    final String type = (item['type'] ?? '').toString();
+
+    String authorText = _resolveAuthor(item);
+    final coverData = item['cover'];
+
+    final finalCover = (coverData is String)
+        ? {'default_cover': _formatImageUrl(coverData, '0')}
+        : {
+            ...{ for (var i in [1, 2, 3, 4]) 'cover_$i' : coverData['cover_$i'] != null
+                  ? _formatImageUrl(coverData['cover_$i'], '')
+                  : "0" },
+            'total_non_null_cover': coverData['total_non_null_cover'],
+          };
+
+    return Album(
+      uid: item['id'].toString(),
+      title: capitalizeEachWord(item['title'] ?? ''),
+      image: finalCover,
+      type: type.capitalizeFirst ?? '',
+      author: authorText,
+      pin: item['pin_at'] != null ? 'true' : 'false',
+      pinAt: item['pin_at'] ?? '',
+      playedAt: item['played_at'] ?? '',
+      createdAt: item['created_at'] ?? '',
+      isEditable: type == 'playlist' ? "true" : 'false',
+    );
+  }
+
+  static String _resolveAuthor(Map<String, dynamic> item) {
+    final type = item['type'];
+    if (type == 'album') return capitalizeEachWord(item['author']);
+    if (type == 'favorite') return 'jumlahFavorite Songs';
+    if (type == 'category') return "${addDotNumb(item['author'])} Songs";
+    return capitalizeEachWord(item['author'] ?? 'Unknown Artist');
+  }
+
+  static String _formatImageUrl(String url, String musicId) {
+    return regexGdriveHostUrl(
+      url: url,
+      musicId: musicId,
+      isAudio: false,
+    );
+  }
+
+  static String addDotNumb(int number) {
+    return NumberFormat("#,###", "id_ID").format(number);
+  }
+}

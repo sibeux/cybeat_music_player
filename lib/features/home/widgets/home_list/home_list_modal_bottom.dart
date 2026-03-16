@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_four_cover.dart';
 import 'package:cybeat_music_player/features/playlist/delete_playlist/widgets/modal_delete_playlist.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:marquee/marquee.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
+Future<dynamic> homeListModalBottom(BuildContext context, Album playlist) {
   final homeAlbumGridController = Get.find<HomeController>();
 
   return showMaterialModalBottomSheet(
@@ -46,7 +46,7 @@ Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
                 HomeListFourCover(
                   size: 50,
                   type: playlist.type,
-                  playlist: playlist,
+                  album: playlist,
                 ),
                 const SizedBox(width: 10),
                 Flexible(
@@ -85,16 +85,6 @@ Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
                           ),
                         ),
                       ),
-                      // SizedBox(
-                      //   child: Text(
-                      //     playlist.title,
-                      //     style: const TextStyle(
-                      //       overflow: TextOverflow.ellipsis,
-                      //       fontSize: 16,
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
                       const SizedBox(
                         height: 3,
                       ),
@@ -134,10 +124,11 @@ Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
                 title: 'Edit ${playlist.type.toLowerCase()}',
                 icon: Icons.edit_outlined,
                 changeColor: false,
-                onTap: playlist.editable == 'true'
+                onTap: playlist.isEditable == 'true'
                     ? () {
                         Get.back();
-                        Get.toNamed('/edit_playlist',
+                        Get.toNamed(
+                          '/edit_playlist',
                           arguments: {
                             'uid': playlist.uid,
                             'playlistName': playlist.title,
@@ -153,7 +144,7 @@ Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
                   title: 'Remove from Your Library',
                   icon: Icons.check_circle_rounded,
                   changeColor: true,
-                  onTap: playlist.editable == 'true'
+                  onTap: playlist.isEditable == 'true'
                       ? () {
                           Get.back();
                           showModalDeletePlaylist(
@@ -175,25 +166,27 @@ Future<dynamic> homeListModalBottom(BuildContext context, Playlist playlist) {
                     showRemoveAlbumToast(
                         'Sorry, this feature is not available yet');
                   }),
-              ListTileBottomModal(
-                title: playlist.pin == 'false'
-                    ? 'Pin ${playlist.type.toLowerCase()}'
-                    : 'Unpin ${playlist.type.toLowerCase()}',
-                icon: playlist.pin == 'false'
-                    ? Icons.push_pin_outlined
-                    : Icons.push_pin_rounded,
-                changeColor: playlist.pin == 'true' ? true : false,
-                onTap: () {
-                  Get.back();
-                  if (playlist.pin == 'false') {
-                    homeAlbumGridController.pinAlbum(playlist.uid);
-                    playlist.setPin = 'true';
-                  } else {
-                    homeAlbumGridController.unpinAlbum(playlist.uid);
-                    playlist.setPin = 'false';
-                  }
-                },
-              ),
+              if (homeAlbumGridController.isAuthenticated)
+                ListTileBottomModal(
+                  title: playlist.pin == 'false'
+                      ? 'Pin ${playlist.type.toLowerCase()}'
+                      : 'Unpin ${playlist.type.toLowerCase()}',
+                  icon: playlist.pin == 'false'
+                      ? Icons.push_pin_outlined
+                      : Icons.push_pin_rounded,
+                  changeColor: playlist.pin == 'true' ? true : false,
+                  onTap: () {
+                    Get.back();
+
+                    if (playlist.pin == 'false') {
+                      homeAlbumGridController.pinAlbum(playlist.uid);
+                      playlist.setPin = 'true';
+                    } else {
+                      homeAlbumGridController.unpinAlbum(playlist.uid);
+                      playlist.setPin = 'false';
+                    }
+                  },
+                ),
               ListTileBottomModal(
                 title: 'Share',
                 icon: Icons.share_outlined,

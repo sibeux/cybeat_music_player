@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
-import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/features/recent_music/widgets/recents_music_list.dart';
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
@@ -33,9 +33,9 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
   }
 
   void getMusicData() async {
-    final AlbumService albumService = Get.find();
+    String userId = Get.find<AuthService>().userId.value.toString();
     String api = dotenv.env['PLAYLIST_API_URL'] ?? '';
-    String url = '$api?recents_music';
+    String url = '$api?recents_music=$userId';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -59,14 +59,14 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
       for (final item in listData) {
         loadedItems.add(
           Music(
-            musicId: item['id_music'],
+            musicId: int.tryParse(item['id_music']) ?? 0,
             title: item['title'],
             artist: item['artist'],
             album: item['album'] ?? "Unknown Album",
             cover: regexGdriveHostUrl(
               url: item['cover'],
+              musicId: "0",
               isAudio: false,
-              listApiKey: albumService.gdriveApiKeyList,
             ),
             linkDrive: '',
             extras: {

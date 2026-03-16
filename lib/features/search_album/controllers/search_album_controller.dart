@@ -1,5 +1,5 @@
 import 'package:cybeat_music_player/core/services/album_service.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +9,7 @@ class SearchAlbumController extends GetxController {
   var isTyping = false.obs;
   var textValue = ''.obs;
   var isKeybordFocus = false.obs;
-  var filteredAlbum = RxList<Playlist?>([]);
+  var filteredAlbum = RxList<Album?>([]);
   var isSearch = false.obs;
 
   void onTyping(String value) {

@@ -1,6 +1,7 @@
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
+import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/features/album_music/controllers/album_music_controller.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/azlist_mode/album_music_azlist_list.dart';
 import 'package:cybeat_music_player/features/album_music/widgets/album_music_list_mode/simple_mode/album_music_simple_list.dart';
@@ -22,12 +23,24 @@ class AlbumMusicListMusic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    RxList<Music> musicList = albumMusicController.getPlaylist;
+    /**
+     * Pakai ever untuk listen perubahan pada getPlaylist.
+     * Karena getPlaylist itu RxList yang bisa berubah-ubah isinya. 
+     * Jadi, setiap kali getPlaylist/playlist dari audioState berubah, jumlahMusicDitampilkan akan di-update sesuai dengan panjang musicList yang baru.
+     */
+    ever(albumMusicController.getPlaylist, (value) {
+      albumMusicController.jumlahMusicDitampilkan.value =
+          musicList.length >= 100 ? 100 : musicList.length;
+      albumMusicController.sisaJumlahMusicTersedia =
+          musicList.length - albumMusicController.jumlahMusicDitampilkan.value;
+    });
     return Obx(
       () {
         if (albumMusicController.initAlbumLoading.value) {
           return SliverToBoxAdapter(child: ShimmerMusicList());
         }
-        if (audioStateController.playlist.isEmpty) {
+        if (musicList.isEmpty) {
           if (audioStateController.isAlbumEmpty.value) {
             albumMusicController.underLoadingFetchMusic = false;
             albumMusicController.sisaJumlahMusicTersedia = 0;
@@ -56,7 +69,6 @@ class AlbumMusicListMusic extends StatelessWidget {
         }
 
         albumMusicController.underLoadingFetchMusic = false;
-        final musicList = audioStateController.playlist;
         if (albumMusicController.countMusicAlbum == 0) {
           albumMusicController.countMusicAlbum = musicList.length;
           albumMusicController.jumlahMusicDitampilkan.value =

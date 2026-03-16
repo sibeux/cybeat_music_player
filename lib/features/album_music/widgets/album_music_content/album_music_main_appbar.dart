@@ -111,8 +111,7 @@ class AlbumMusicMainAppbar extends StatelessWidget {
                     size: 150,
                     type:
                         musicPlayerController.currentActivePlaylist.value!.type,
-                    playlist:
-                        musicPlayerController.currentActivePlaylist.value!)
+                    album: musicPlayerController.currentActivePlaylist.value!)
               ],
             ),
           ),

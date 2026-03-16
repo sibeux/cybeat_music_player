@@ -1,4 +1,4 @@
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_four_cover.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_modal_bottom.dart';
@@ -16,7 +16,7 @@ class ScaleTapSearchAlbum extends StatefulWidget {
     required this.playlist,
   });
 
-  final Playlist playlist;
+  final Album playlist;
   final AudioStateController audioState;
 
   @override
@@ -127,7 +127,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                             child: HomeListFourCover(
                               size: 60,
                               type: widget.playlist.type,
-                              playlist: widget.playlist,
+                              album: widget.playlist,
                             ),
                           ),
                         ),

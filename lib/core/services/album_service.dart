@@ -1,34 +1,34 @@
 import 'dart:convert';
 
-import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
-import 'package:cybeat_music_player/common/utils/url_formatter.dart';
+import 'package:cybeat_music_player/core/mappers/album_mapper.dart';
 import 'package:cybeat_music_player/core/models/filter_item.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:cybeat_music_player/core/repositories/album_repository.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:string_validator/string_validator.dart';
 
 class AlbumService extends GetxService {
+  final AlbumRepository _albumRepository = AlbumRepository();
   // Ini adalah daftar list yang akan ditampilkan di home screen.
-  var initiateAlbum = RxList<Playlist>([]); // diakses oleh home_screen.dart
-  var allAlbumList = RxList<Playlist>([]); // Semua album yang ada
+  var initiateAlbum = RxList<Album>([]); // diakses oleh home_screen.dart
+  var allAlbumList = RxList<Album>([]); // Semua album yang ada
   var alphabeticalList =
-      RxList<Playlist>([]); // Semua album diurutkan berdasarkan judul
+      RxList<Album>([]); // Semua album diurutkan berdasarkan judul
   var recentsList =
-      RxList<Playlist>([]); // Semua album diurutkan berdasarkan tanggal terbaru
-  var onlyCategoryList =
-      RxList<Playlist>([]); // Hanya album yang bertipe category
-  var onlyAlbumList = RxList<Playlist>([]); // Hanya album yang bertipe 'album'
+      RxList<Album>([]); // Semua album diurutkan berdasarkan tanggal terbaru
+  var onlyCategoryList = RxList<Album>([]); // Hanya album yang bertipe category
+  var onlyAlbumList = RxList<Album>([]); // Hanya album yang bertipe 'album'
   // Ini adalah daftar playlist yang dibuat oleh user.
   var playlistCreatedList =
-      RxList<Playlist>([]); // diakses oleh music_playlist_screen.dart
+      RxList<Album>([]); // diakses oleh music_playlist_screen.dart
   var gdriveApiKeyList = RxList<dynamic>([]);
 
   var allAlbumChildren = RxList([]);
-  var selectedAlbum = RxList<Playlist?>([]);
+  var selectedAlbum = RxList<Album?>([]);
 
   var defaultAlbumColor = "ffffff".obs;
 
@@ -71,127 +71,107 @@ class AlbumService extends GetxService {
     isHomeLoading.value = true;
     jumlahPin.value = 0;
 
-    String sort = sortValue;
-    String filter = getSelectedFilter;
+    // String sort = sortValue;
+    // String filter = getSelectedFilter;
 
-    String endpoint =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '$endpoint?sort=$sort&filter=$filter';
     String api = dotenv.env['GDRIVE_API_URL'] ?? 'Kunci API Tidak Ditemukan';
 
     try {
-      final response = await http.post(Uri.parse(url));
       final apiResponse = await http.get(Uri.parse(api));
       gdriveApiKeyList.value = json.decode(apiResponse.body);
-      final jumlahFavorite = await getSumFavoriteSong();
-      final listJumlahCategory = await getSumCategorySong();
-      await getFourCoverAlbum(method: 'four_cover_category', type: 'category');
-      await getFourCoverAlbum(method: 'four_cover_playlist', type: 'playlist');
+      final response = await _albumRepository.fetchAlbums();
+      final dataMap = response['data'] as Map<String, dynamic>?;
 
-      List jumlahCategory(String uid) {
-        return listJumlahCategory
-            .where((element) => element['uid'] == uid)
-            .map((e) => e['type_count'])
-            .toList();
-      }
+      // Kumpulkan semua list menjadi satu.
+      // pakai Spread Operator.
+      final allRawData = [
+        ...(dataMap?['album'] ?? []),
+        ...(dataMap?['category'] ?? []),
+        ...(dataMap?['playlist'] ?? []),
+      ];
 
-      String sumAllsong() {
-        var sum = 0;
-        for (var i = 0; i < listJumlahCategory.length; i++) {
-          sum += int.parse(listJumlahCategory[i]['type_count']);
-        }
-        return NumberFormat("#,###", "id_ID").format(sum).toString();
-      }
-
-      String addDotNumb(int number) {
-        return NumberFormat("#,###", "id_ID").format(number);
-      }
-
-      final List<dynamic> listData = json.decode(response.body);
-
-      final list = listData.map((item) {
-        jumlahPin.value =
-            item['pin'] == 'true' ? jumlahPin.value + 1 : jumlahPin.value;
-
-        return Playlist(
-          uid: item['uid'],
-          title: capitalizeEachWord(item['name']),
-          image: item['image'] == null
-              ? ''
-              : regexGdriveHostUrl(
-                  url: item['image'],
-                  listApiKey: gdriveApiKeyList,
-                  isAudio: false,
-                ),
-          type: (item['type']).toString().capitalizeFirst!,
-          author: item['type'] == 'album'
-              ? capitalizeEachWord(item['author'])
-              : item['type'] == 'favorite'
-                  ? '$jumlahFavorite Songs'
-                  : item['type'] == 'category'
-                      ? item['uid'] == '481'
-                          ? '${sumAllsong()} Songs'
-                          : '${addDotNumb(int.parse(jumlahCategory(item['uid'])[0]))} ${int.parse(jumlahCategory(item['uid'])[0]) <= 1 ? 'Song' : 'Songs'}'
-                      : capitalizeEachWord(item['author']),
-          pin: item['pin'],
-          datePin: item['date_pin'] ?? '',
-          date: item['date'],
-          editable: item['editable'],
+      // Map semuanya sekaligus
+      final List<Album> list = allRawData.map((item) {
+        final album = AlbumMapper.fromMap(
+          item,
+          currentPinCount: jumlahPin.value,
+          gdriveApiKeyList: gdriveApiKeyList,
         );
+
+        // Update jumlah pin secara reaktif jika perlu
+        if (album.pin == 'true') jumlahPin.value++;
+
+        return album;
       }).toList();
 
-      // ini mesti harus ada
-      updateAllAlbumChildren(list);
-      onlyAlbumList.value = list
-          .where((playlist) => playlist.type.toLowerCase() == 'album')
-          .toList();
-      onlyCategoryList.value = list
-          .where((playlist) => playlist.type.toLowerCase() == 'category')
-          .toList();
-      playlistCreatedList.value = list
-          .where((playlist) => playlist.type.toLowerCase() == 'playlist')
-          .toList();
+      // Distribusikan ke UI/State
+      _updateLists(list);
 
-      // Semua album yang ada dimasukkan ke dalam sini.
-      initiateAlbum.value = list;
-      allAlbumList.value = list;
       logSuccess('Successfully initialized album with ${list.length} items');
     } catch (e, st) {
-      logError(
-          'Error initializeAlbum home album grid controller: $e. Stacktrace: $st');
+      _updateLists([]); // Kosongkan jika gagal
+      logError('Error initializeAlbum: $e. Stacktrace: $st');
     } finally {
       isHomeLoading.value = false;
     }
   }
 
-  void updateAllAlbumChildren(List<Playlist> playlist) {
-    allAlbumChildren.value = List.generate(
-      playlist.length,
-      (index) => index,
-    );
+  void _updateLists(List<Album> list) {
+    updateAllAlbumChildren(list);
+    initiateAlbum.value = list;
+    allAlbumList.value = list;
 
-    selectedAlbum.value = List.generate(
-      playlist.length,
-      (index) => playlist[index],
-    );
+    // Filtering dilakukan di sini agar lebih sentralistik
+    onlyAlbumList.value =
+        list.where((p) => p.type.toLowerCase() == 'album').toList();
+    onlyCategoryList.value =
+        list.where((p) => p.type.toLowerCase() == 'category').toList();
+    playlistCreatedList.value =
+        list.where((p) => p.type.toLowerCase() == 'playlist').toList();
+  }
 
-    alphabeticalList.value = List.generate(
-      playlist.length,
-      (index) => playlist[index],
-    );
+  void updateAllAlbumChildren(List<Album> album) {
+    // Sort Master List berdasarkan Pin & Recents dulu
+    // Supaya view default (selectedAlbum) itu yang paling relevan
+    /***
+     * Gunakan List.from(album): Daripada pakai List.generate, lebih singkat dan bersih menggunakan List.from(). 
+     * Fungsinya sama, yaitu membuat salinan list baru agar saat alphabeticalList di-sort, 
+     * list aslinya tidak ikut berubah (karena di Dart, list adalah reference).
+     * ***/
+    album.sort((a, b) {
+      final aPinned = a.pin == 'true';
+      final bPinned = b.pin == 'true';
 
-    alphabeticalList.sort((a, b) {
-      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      // Grup: pinned duluan
+      if (aPinned != bPinned) return aPinned ? -1 : 1;
+
+      if (aPinned && bPinned) {
+        // Keduanya pinned → urutkan pinAt terlama dulu (ascending)
+        return a.pinAt.compareTo(b.pinAt);
+      } else {
+        // Keduanya tidak pinned → urutkan terbaru dulu (descending)
+        final String timeA =
+            a.playedAt.isAfter(a.createdAt) ? a.playedAt : a.createdAt;
+        final String timeB =
+            b.playedAt.isAfter(b.createdAt) ? b.playedAt : b.createdAt;
+        return timeB.compareTo(timeA);
+      }
     });
 
-    recentsList.value = List.generate(
-      playlist.length,
-      (index) => playlist[index],
-    );
+    // Baru masukkan ke view-view spesifik
+    allAlbumChildren.value = List.generate(album.length, (i) => i);
 
-    recentsList.sort((a, b) {
-      return b.date.compareTo(a.date);
-    });
+    // selectedAlbum sekarang otomatis punya urutan Pin di atas
+    selectedAlbum.value = List.from(album);
+
+    // View Alphabetical (Sort mandiri)
+    alphabeticalList.value = List.from(album);
+    alphabeticalList
+        .sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+
+    // View Recents (Sort mandiri)
+    recentsList.value = List.from(album);
+    recentsList.sort((a, b) => b.playedAt.compareTo(a.playedAt));
   }
 
   void pinAlbum(String uid) {
@@ -210,7 +190,7 @@ class AlbumService extends GetxService {
     selectedAlbum.insert(
         indexPin, currentAlbum); // Sisipkan kembali elemen ke indeks pin
 
-    setPinData(action: 'pin', uid: uid);
+    setPinData(action: 'pin', albumId: uid, albumType: currentAlbum!.type);
     jumlahPin.value++;
   }
 
@@ -241,36 +221,32 @@ class AlbumService extends GetxService {
     allAlbumChildren.insert(normalIndex, currentChild);
     selectedAlbum.insert(normalIndex, currentAlbum);
 
-    setPinData(action: 'unpin', uid: uid);
+    setPinData(action: 'unpin', albumId: uid, albumType: currentAlbum!.type);
     jumlahPin.value--;
   }
 
-  Future<bool> setPinData({required String action, required String uid}) async {
-    String playlistApi =
-        dotenv.env['PIN_PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '';
-
-    switch (action) {
-      case 'pin':
-        url = '$playlistApi?action=pin&uid=$uid';
-        break;
-      case 'unpin':
-        url = '$playlistApi?action=unpin&uid=$uid';
-        break;
-      default:
-        break;
-    }
-
+  Future<bool> setPinData({
+    required String action,
+    required String albumId,
+    required String albumType,
+  }) async {
     try {
-      final response = await http.post(Uri.parse(url));
-      if (response.body.isEmpty) {
-        logError('Error: Response body is empty');
+      final result = await _albumRepository.setPinData(
+        action: action,
+        albumId: albumId,
+        albumType: albumType,
+      );
+
+      if (result['status'] == 'success') {
+        logInfo('Successfully ${action}ned $albumType with id $albumId');
+        return true;
+      } else {
+        logWarning(
+            'Failed to $action album with id $albumId. Message: ${result['message']}');
         return false;
       }
-      logInfo('Success set pin response: ${response.body}');
-      return true;
-    } catch (e, st) {
-      logError('Error set pin: $e,$st');
+    } catch (e) {
+      logError('Error in setPinData for album with id $albumId: $e');
       return false;
     }
   }
@@ -293,100 +269,6 @@ class AlbumService extends GetxService {
       return true;
     } else {
       return false;
-    }
-  }
-
-  Future<String> getSumFavoriteSong() async {
-    String playlistApi =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '$playlistApi?count_favorite=true';
-
-    List<dynamic> listData = [];
-
-    try {
-      final response = await http.post(Uri.parse(url));
-      listData = json.decode(response.body);
-    } catch (e) {
-      logError('Error getSumFavoriteSong: $e');
-    }
-
-    return listData[0]['count_favorite'];
-  }
-
-  Future<List> getSumCategorySong() async {
-    String playlistApi =
-        dotenv.env['PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '$playlistApi?count_category=uid';
-
-    List<dynamic> listData = [];
-
-    try {
-      final response = await http.post(Uri.parse(url));
-      listData = json.decode(response.body);
-    } catch (e) {
-      logError('Error getSumCategorySong: $e');
-    }
-
-    return listData;
-  }
-
-  Future<void> getFourCoverAlbum(
-      {required String method, required String type}) async {
-    List<dynamic> responseBody = [];
-    String api = dotenv.env['FOURCOVER_API_URL'] ?? 'Kunci API Tidak Ditemukan';
-    String url = '$api?method=$method';
-
-    try {
-      final response = await http.post(Uri.parse(url));
-      responseBody = json.decode(response.body);
-
-      if (responseBody.isEmpty) {
-        logError('No data found for four cover album of type: $type');
-        return;
-      }
-
-      final List<dynamic> formattedImageUrl = responseBody.map((item) {
-        return {
-          'playlist_uid': item['playlist_uid'],
-          'cover_1': item['cover_1'] == null
-              ? null
-              : regexGdriveHostUrl(
-                  url: item['cover_1'],
-                  listApiKey: gdriveApiKeyList,
-                  isAudio: false,
-                ),
-          'cover_2': item['cover_2'] == null
-              ? null
-              : regexGdriveHostUrl(
-                  url: item['cover_2'],
-                  listApiKey: gdriveApiKeyList,
-                  isAudio: false,
-                ),
-          'cover_3': item['cover_3'] == null
-              ? null
-              : regexGdriveHostUrl(
-                  url: item['cover_3'],
-                  listApiKey: gdriveApiKeyList,
-                  isAudio: false,
-                ),
-          'cover_4': item['cover_4'] == null
-              ? null
-              : regexGdriveHostUrl(
-                  url: item['cover_4'],
-                  listApiKey: gdriveApiKeyList,
-                  isAudio: false,
-                ),
-          'total_non_null_cover': item['total_non_null_cover']
-        };
-      }).toList();
-
-      if (type == 'category') {
-        fourCoverCategory.value = formattedImageUrl;
-      } else if (type == 'playlist') {
-        fourCoverPlaylist.value = formattedImageUrl;
-      }
-    } catch (e) {
-      logError('Error getFourCoverAlbum: $e');
     }
   }
 

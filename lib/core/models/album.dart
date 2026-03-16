@@ -1,24 +1,26 @@
-class Playlist {
+class Album {
   String uid;
   String title;
-  String image;
+  Map<String, Object?> image;
   String type;
   String author;
   String pin;
-  String datePin;
-  String date;
-  String editable;
+  String pinAt;
+  String playedAt;
+  String createdAt;
+  String isEditable;
 
-  Playlist({
+  Album({
     required this.uid,
     required this.title,
     required this.image,
     required this.type,
     required this.author,
     required this.pin,
-    required this.datePin,
-    required this.date,
-    required this.editable,
+    required this.pinAt,
+    required this.playedAt,
+    required this.createdAt,
+    required this.isEditable,
   });
 
   set setPin(String pin) {

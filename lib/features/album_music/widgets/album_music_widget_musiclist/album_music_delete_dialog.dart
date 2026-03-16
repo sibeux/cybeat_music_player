@@ -3,6 +3,7 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -23,29 +24,29 @@ void albumMusicdeleteDialog({
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(0),
       ),
-      actionsPadding: const EdgeInsets.only(top: 10),
-      contentPadding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: 10,
+      actionsPadding: EdgeInsets.only(top: 10.h),
+      contentPadding: EdgeInsets.only(
+        left: 20.w,
+        right: 20.w,
+        top: 20.h,
+        bottom: 10.h,
       ),
       content: Text(
         'Are you sure you want to delete this music?',
         style: TextStyle(
-          fontSize: 13,
+          fontSize: 13.sp,
           color: Colors.black.withValues(alpha: 0.6),
         ),
       ),
       actions: <Widget>[
         Column(
           children: [
-            const Divider(
-              height: 0.4,
-              thickness: 0.4,
+             Divider(
+              height: 0.4.h,
+              thickness: 0.4.h,
             ),
             SizedBox(
-              height: 45,
+              height: 45.h,
               child: Row(
                 children: [
                   Expanded(
@@ -54,13 +55,13 @@ void albumMusicdeleteDialog({
                         Get.back();
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding:  EdgeInsets.symmetric(horizontal: 20.w),
                         alignment: Alignment.center,
                         child: Text(
                           'Cancel',
                           style: TextStyle(
                             color: Colors.black.withValues(alpha: 0.7),
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -69,8 +70,8 @@ void albumMusicdeleteDialog({
                   ),
                   // *** verticalDivider baru muncul jika row di-wrap sizebox + height
                   // Intinya tinggi harus diatur
-                  const VerticalDivider(
-                    width: 0.9,
+                   VerticalDivider(
+                    width: 0.9.w,
                     thickness: 0.9,
                   ),
                   Expanded(
@@ -80,7 +81,7 @@ void albumMusicdeleteDialog({
                         musicPlayerController.clearCurrentMediaItem();
                         deleteMusic(
                           musicPlayerController
-                                  .currentActivePlaylist.value?.editable ??
+                                  .currentActivePlaylist.value?.isEditable ??
                               '',
                           musicPlayerController
                                   .currentActivePlaylist.value?.type ??
@@ -90,13 +91,13 @@ void albumMusicdeleteDialog({
                         );
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding:  EdgeInsets.symmetric(horizontal: 20.w),
                         alignment: Alignment.center,
                         child: Text(
                           'Confirm',
                           style: TextStyle(
                             color: HexColor('#8238be'),
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
