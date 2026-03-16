@@ -146,7 +146,7 @@ class AlbumService extends GetxService {
       if (aPinned != bPinned) return aPinned ? -1 : 1;
 
       if (aPinned && bPinned) {
-        // Keduanya pinned → urutkan datePinned terlama dulu (ascending)
+        // Keduanya pinned → urutkan pinAt terlama dulu (ascending)
         return a.pinAt.compareTo(b.pinAt);
       } else {
         // Keduanya tidak pinned → urutkan terbaru dulu (descending)
