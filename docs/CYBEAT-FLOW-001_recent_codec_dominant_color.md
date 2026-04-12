@@ -5,6 +5,7 @@
 **ID:** `CYBEAT-FLOW-001`  
 **Last Updated:** 2026-03-01  
 **Files Involved:**
+
 - `lib/core/controllers/audio_state_controller.dart`
 - `lib/core/repositories/audio_repository.dart`
 - `api/recent-music/set_recent.php` (backend)
@@ -16,6 +17,7 @@
 ## Overview
 
 Setiap kali lagu baru mulai diputar, aplikasi melakukan tiga hal sekaligus lewat satu API call:
+
 1. **Menyimpan riwayat (recents)** — mencatat musik yang baru diputar ke database
 2. **Membaca codec audio** — ffprobe dijalankan di server untuk mendapatkan metadata teknis (sample rate, bit rate, dll)
 3. **Mendapatkan dominant color** — warna dominan dari cover art diproses di server untuk dipakai sebagai warna tema UI
@@ -115,6 +117,7 @@ data: FormData.fromMap({ ... })
 
 > **WAJIB pakai `FormData.fromMap()`**, bukan plain `Map`.  
 > PHP hanya bisa membaca `$_POST` dari request dengan Content-Type:
+>
 > - `multipart/form-data` ✅
 > - `application/x-www-form-urlencoded` ✅
 >
@@ -156,10 +159,12 @@ Body responsenya null-safe: jika `codec_exist = true` maka server return `"codec
 ## Bug yang Pernah Terjadi
 
 ### BUG-001: `TimeoutException` tidak tertangani
+
 - **Penyebab:** `catch (e) { rethrow; }` meneruskan `TimeoutException` ke atas
 - **Fix:** Tambahkan `on TimeoutException` sebelum `catch` umum, return `{}`
 
 ### BUG-002: HTTP 400 Bad Request
+
 - **Penyebab:** Dio mengirim data sebagai JSON (`application/json`), PHP tidak bisa baca lewat `$_POST`
 - **Fix:** Ganti `data: { ... }` dengan `data: FormData.fromMap({ ... })`
 
