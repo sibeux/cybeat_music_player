@@ -41,7 +41,7 @@ void albumMusicdeleteDialog({
       actions: <Widget>[
         Column(
           children: [
-             Divider(
+            Divider(
               height: 0.4.h,
               thickness: 0.4.h,
             ),
@@ -55,7 +55,7 @@ void albumMusicdeleteDialog({
                         Get.back();
                       },
                       child: Container(
-                        padding:  EdgeInsets.symmetric(horizontal: 20.w),
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
                         alignment: Alignment.center,
                         child: Text(
                           'Cancel',
@@ -70,7 +70,7 @@ void albumMusicdeleteDialog({
                   ),
                   // *** verticalDivider baru muncul jika row di-wrap sizebox + height
                   // Intinya tinggi harus diatur
-                   VerticalDivider(
+                  VerticalDivider(
                     width: 0.9.w,
                     thickness: 0.9,
                   ),
@@ -91,7 +91,7 @@ void albumMusicdeleteDialog({
                         );
                       },
                       child: Container(
-                        padding:  EdgeInsets.symmetric(horizontal: 20.w),
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
                         alignment: Alignment.center,
                         child: Text(
                           'Confirm',

@@ -18,9 +18,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AudioStateController extends GetxController {
-  /// Kalau kamu mau pakai AudioPlayer (misalnya dari just_audio) bareng GetX, biasanya kita bikin dia reactive supaya gampang di-observe.
-  /// Sekarang soal late → kamu perlu hati-hati:
-  /// late dipakai kalau kamu mau deklarasi variabel tanpa langsung inisialisasi, tapi janji bakal diisi sebelum dipakai.
+  /// Kalau mau pakai AudioPlayer (misalnya dari just_audio) bareng GetX, biasanya kita bikin dia reactive supaya gampang di-observe.
+  /// Sekarang soal late → perlu hati-hati:
+  /// late dipakai kalau mau deklarasi variabel tanpa langsung inisialisasi, tapi janji bakal diisi sebelum dipakai.
   /// obs atau Rx di GetX butuh nilai awal (meskipun null). Jadi kalau mau reaktif, biasanya nggak perlu late, cukup kasih default.
   final AudioRepository audioRepository = AudioRepository();
   final activePlayer = Rx<AudioPlayer?>(null);
@@ -101,7 +101,6 @@ class AudioStateController extends GetxController {
               mediaItem: musicPlayerController.getCurrentMediaItem!,
             );
 
-            // Cek apakah ini url untuk stream drive.
             final bool isFromGdrive = musicPlayerController
                 .getCurrentMediaItem!.extras!['original_source']
                 .contains("drive.google.com");

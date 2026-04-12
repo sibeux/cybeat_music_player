@@ -15,13 +15,11 @@ class AlbumService extends GetxService {
   final AlbumRepository _albumRepository = AlbumRepository();
   // Ini adalah daftar list yang akan ditampilkan di home screen.
   var initiateAlbum = RxList<Album>([]); // diakses oleh home_screen.dart
-  var allAlbumList = RxList<Album>([]); // Semua album yang ada
-  var alphabeticalList =
-      RxList<Album>([]); // Semua album diurutkan berdasarkan judul
-  var recentsList =
-      RxList<Album>([]); // Semua album diurutkan berdasarkan tanggal terbaru
-  var onlyCategoryList = RxList<Album>([]); // Hanya album yang bertipe category
-  var onlyAlbumList = RxList<Album>([]); // Hanya album yang bertipe 'album'
+  var allAlbumList = RxList<Album>([]);
+  var alphabeticalList = RxList<Album>([]);
+  var recentsList = RxList<Album>([]);
+  var onlyCategoryList = RxList<Album>([]);
+  var onlyAlbumList = RxList<Album>([]);
   // Ini adalah daftar playlist yang dibuat oleh user.
   var playlistCreatedList =
       RxList<Album>([]); // diakses oleh music_playlist_screen.dart
@@ -109,7 +107,7 @@ class AlbumService extends GetxService {
 
       logSuccess('Successfully initialized album with ${list.length} items');
     } catch (e, st) {
-      _updateLists([]); // Kosongkan jika gagal
+      _updateLists([]);
       logError('Error initializeAlbum: $e. Stacktrace: $st');
     } finally {
       isHomeLoading.value = false;
@@ -252,7 +250,6 @@ class AlbumService extends GetxService {
   }
 
   Future<bool> updateLastPlayedAlbum(String uid) async {
-    // Method untuk update playlist terakhir yang diputar.
     String sort = sortValue;
     final indexPin = jumlahPin.value;
     final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
@@ -416,22 +413,29 @@ class AlbumService extends GetxService {
     }
   }
 
-  Future<void> getDominantColorAlbum({required String albumCover}) async {
-    final String api =
-        dotenv.env['DOMINANT_COLOR_ALBUM_URL'] ?? 'Kunci API Tidak Ditemukan';
+  Future<void> getDominantColorAlbum({
+    required String albumCover,
+    required String albumId,
+  }) async {
+    const func = 'getDominantColorAlbum';
+    defaultAlbumColor.value = 'ffffff';
     try {
-      final response = await http.post(Uri.parse(api), body: {
-        'image_url': albumCover,
-      });
-      final body = jsonDecode(response.body);
-      if (response.statusCode == 200 && body['success'] == true) {
-        defaultAlbumColor.value = body["dominant_color"]["bg_color"];
-        logInfo('Dominant color album: $body');
+      final Map<String, dynamic> result =
+          await _albumRepository.getDominantColorAlbum(
+        albumCover: albumCover,
+        albumId: albumId,
+      );
+      if (result['status'] == 'success') {
+        // if (albumId == selectedAlbum.first?.uid) {
+        //   defaultAlbumColor.value = result["dominant_color"]["bg_color"];
+        // }
+        logInfo('Successfully $func with albumId $albumId');
       } else {
-        logError("Error on getDominantColorAlbum: ${body['reason']}");
+        logWarning(
+            'Failed to $func album with id $albumId. Message: ${result['message']}');
       }
-    } catch (e, st) {
-      logError("Error on getDominantColorAlbum: $e, stackTrace: $st");
+    } catch (e) {
+      logError('Error in $func for album with id $albumId: $e');
     }
   }
 

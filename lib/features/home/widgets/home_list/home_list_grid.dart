@@ -28,10 +28,10 @@ class HomeListGrid extends StatelessWidget {
             musicPlayerController.currentActivePlaylist.value?.uid ?? "";
         final String albumType =
             musicPlayerController.currentActivePlaylist.value?.type ?? "";
-            // 1 - album
-            // 1 - playlist
+        // 1 - album
+        // 1 - playlist
         if ((albumId != playlist.uid) || (albumType != playlist.type)) {
-          homeController.getDominantColorAlbum(playlist: playlist);
+          homeController.getDominantColorAlbum(album: playlist);
           audioStateController.clear();
           musicPlayerController.killMusic();
           musicPlayerController.clearCurrentMediaItem();

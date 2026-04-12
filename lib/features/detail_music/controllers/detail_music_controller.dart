@@ -62,7 +62,6 @@ class DetailMusicController extends GetxController {
   bool get isAlbumMusicScreenActive =>
       musicPlayerController.isAzlistviewScreenActive.value;
 
-  // Codec
   String get sampleRate => audioStateController.sampleRate.value;
   String get bitsPerRawSample => audioStateController.bitsPerRawSample.value;
   String get bitRate => audioStateController.bitRate.value;

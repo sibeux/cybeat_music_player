@@ -121,7 +121,6 @@ class AuthService extends GetxService {
     isAccessTokenValid.value = true;
     accessToken.value = aksesToken;
     expiry = _decodeExpiry(aksesToken);
-    // Simpan token baru ke secure storage
     _storage.saveTokens(
       accessToken: aksesToken,
       refreshToken: newRefreshToken,
@@ -144,7 +143,6 @@ class AuthService extends GetxService {
         password: password,
       );
 
-      // Logika bisnis: Cek status dari response API
       if (result['status'] == 'success') {
         final newAccess = result['access_token'].toString();
         final newRefresh = result['refresh_token'] != null
@@ -156,7 +154,6 @@ class AuthService extends GetxService {
         );
         return true;
       } else {
-        // Lempar pesan error spesifik dari API
         throw result['message'] ?? 'Registration failed';
       }
     } catch (e) {

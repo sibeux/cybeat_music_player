@@ -123,7 +123,6 @@ class UserLoginController extends AuthFormControllerContract {
   }
 
   Future<void> login() async {
-    // Ambil data dari form
     final email = formData['emailLogin']!['text'].toString();
     final password = formData['passwordLogin']!['text'].toString();
 
@@ -131,7 +130,6 @@ class UserLoginController extends AuthFormControllerContract {
 
     try {
       final AuthService authService = Get.find<AuthService>();
-      // Panggil Service
       bool isSuccess =
           await authService.loginUser(email: email, password: password);
 
@@ -146,7 +144,6 @@ class UserLoginController extends AuthFormControllerContract {
         isLoginSuccess.value = false;
       }
     } catch (e, st) {
-      // Handle error (Timeout, Network, atau Pesan dari API)
       logError('Login Error: $e, $st');
       showRemoveAlbumToast(
           "Login failed. Please check your connection and try again.");

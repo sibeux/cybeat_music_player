@@ -155,7 +155,6 @@ class UserRegisterController extends AuthFormControllerContract {
     isLoading.value = true;
 
     try {
-      // Memanggil fungsi dari repository
       bool emailExists = await _authRepo.checkEmail(email: email);
 
       if (emailExists) {
@@ -178,7 +177,6 @@ class UserRegisterController extends AuthFormControllerContract {
   }
 
   Future<void> register() async {
-    // Ambil data dari form
     final name = formData['nameRegister']!['text'].toString().trim();
     final email = formData['emailRegister']!['text'].toString().trim();
     final password = formData['passwordRegister']!['text'].toString();
@@ -187,14 +185,12 @@ class UserRegisterController extends AuthFormControllerContract {
 
     try {
       final AuthService authService = Get.find<AuthService>();
-      // Panggil Service
       bool isSuccess = await authService.registerUser(name, email, password);
 
       if (isSuccess) {
         logSuccess('Register berhasil untuk $email');
       }
     } catch (e, st) {
-      // Handle error (Timeout, Network, atau Pesan dari API)
       logError('Register Error: $e, $st');
       showRemoveAlbumToast(
           "Registration failed. Please check your connection and try again.");

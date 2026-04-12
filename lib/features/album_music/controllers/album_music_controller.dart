@@ -33,7 +33,6 @@ class AlbumMusicController extends GetxController {
   bool get isSimpleMode => albumService.isSimpleMode.value;
   RxList<Music> get getPlaylist => audioStateController.getPlaylist;
 
-  // logic untuk shuffle music.
   void shuffleMusic() {
     if (initAlbumLoading.value) {
       showRemoveAlbumToast('Wait a moment...');
@@ -41,7 +40,6 @@ class AlbumMusicController extends GetxController {
       showRemoveAlbumToast('Album is empty');
     } else {
       musicPlayerController.seekNextButton(isFromShuffleButton: true);
-      // Langsung buka detail screen.
       Get.toNamed('/detail');
     }
   }

@@ -74,4 +74,26 @@ class AlbumRepository {
       rethrow;
     }
   }
+
+  Future<Map<String, Object?>> getDominantColorAlbum({
+    required String albumCover,
+    required String albumId,
+  }) async {
+    final String url = dotenv.env['DOMINANT_COLOR_ALBUM_URL'] ?? 'not_found';
+    if (url == 'not_found') {
+      throw Exception(
+          'DOMINANT_COLOR_ALBUM_URL key-value pair not found in environment variables.');
+    }
+    try {
+      final response = await dio.post(url, data: {
+        'albumCover': albumCover,
+        'albumId': albumId,
+      }).timeout(const Duration(seconds: 10));
+      return response.data;
+    } on DioException catch (e, st) {
+      logError(
+          'Critical error getDominantColorAlbum: ${e.toString()}, stackTrace: $st, ${e.response?.data}');
+      rethrow;
+    }
+  }
 }

@@ -118,31 +118,16 @@ class HomeController extends GetxController {
     musicPlayerController.updateCurrentMediaItem(mediaItem);
   }
 
-  void getDominantColorAlbum({required Album playlist}) {
-    albumService.defaultAlbumColor.value = 'ffffff';
+  void getDominantColorAlbum({required Album album}) {
     String albumCover = '';
-    if (playlist.image.toString() == "") {
-      // Ini sebenarnya bisa diambilkan dari home screen, tapi perlu oper-oper data.
-      final List<dynamic> list = playlist.type.toLowerCase() == 'playlist'
-          ? fourCoverPlaylist
-          : fourCoverCategory;
-
-      final data = list
-          .where((element) => element['playlist_uid'] == playlist.uid)
-          .map((e) => {
-                'cover_1': e['cover_1'],
-                'cover_2': e['cover_2'],
-                'cover_3': e['cover_3'],
-                'cover_4': e['cover_4'],
-                'total_non_null_cover': e['total_non_null_cover']
-              })
-          .toList();
-      albumCover = data[0]['cover_1'] ?? '';
+    if (album.image['default_cover'] != null) {
+      albumCover = album.image['default_cover'].toString();
     } else {
-      // albumCover = playlist.image;
+      albumCover = album.image['cover_1'].toString();
     }
     if (albumCover != '') {
-      albumService.getDominantColorAlbum(albumCover: albumCover);
+      albumService.getDominantColorAlbum(
+          albumCover: albumCover, albumId: album.uid);
     }
   }
 
