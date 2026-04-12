@@ -20,7 +20,6 @@ class AlbumMusicMainAppbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => SliverAppBar(
-        // backgroundColor: Colors.transparent,
         backgroundColor: HexColor('#fefffe'),
         surfaceTintColor: HexColor(albumMusicController.defaultAlbumColor.value)
             .withValues(alpha: 1),

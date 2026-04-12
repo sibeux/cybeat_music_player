@@ -426,9 +426,9 @@ class AlbumService extends GetxService {
         albumId: albumId,
       );
       if (result['status'] == 'success') {
-        // if (albumId == selectedAlbum.first?.uid) {
-        //   defaultAlbumColor.value = result["dominant_color"]["bg_color"];
-        // }
+        if (albumId == result['albumId']) {
+          defaultAlbumColor.value = result["dominant_color"]["bg_color"];
+        }
         logInfo('Successfully $func with albumId $albumId');
       } else {
         logWarning(
