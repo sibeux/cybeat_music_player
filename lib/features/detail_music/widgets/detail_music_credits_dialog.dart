@@ -133,8 +133,7 @@ void detailMusicCreditsDialog({
           ),
           Obx(() => Text(
                 detailMusicController
-                        .currentMediaItem!.extras!['disc_number'] ??
-                    '--',
+                        .currentMediaItem!.extras!['disc_number'].toString(),
                 maxLines: 3,
                 style: TextStyle(
                   overflow: TextOverflow.ellipsis,

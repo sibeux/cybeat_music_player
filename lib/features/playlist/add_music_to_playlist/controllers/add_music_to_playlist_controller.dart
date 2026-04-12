@@ -7,7 +7,7 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music_playlist.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -34,7 +34,7 @@ class AddMusicToPlaylistController extends GetxController {
   var isSelectAll = false.obs;
 
   bool get isHomeLoading => albumService.isHomeLoading.value;
-  RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
+  RxList<Album> get playlistCreatedList => albumService.playlistCreatedList;
   List<MediaItem> get currentQueue => audioStateController.queue;
   bool get isTypingValue => isTyping.value;
 
@@ -215,7 +215,6 @@ class AddMusicToPlaylistController extends GetxController {
   }
 
   Future<void> addAllMusicToPlaylist({required String idPlaylist}) async {
-
     // String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
     // try {
     //   final response = await http.post(
@@ -231,7 +230,7 @@ class AddMusicToPlaylistController extends GetxController {
     // } catch (e) {
     //   logError('Error addAllMusicToPlaylist: $e');
     // } finally{
-      
+
     // }
   }
 }

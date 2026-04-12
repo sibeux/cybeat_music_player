@@ -55,7 +55,6 @@ class ListTileBottomModal extends StatelessWidget {
               Get.back();
             }
           case 'add to playlist':
-            // add music to playlist
             Get.back();
             Get.toNamed(
               '/add_music_to_playlist',
@@ -64,13 +63,11 @@ class ListTileBottomModal extends StatelessWidget {
               },
             );
           case 'download':
-            // download music
             showRemoveAlbumToast('Downloading music');
             musicDownloadController.downloadOfflineMusic(mediaItem);
             Get.back();
           case 'delete':
-            // delete music
-            if (musicPlayerController.currentActivePlaylist.value?.editable ==
+            if (musicPlayerController.currentActivePlaylist.value?.isEditable ==
                 'true') {
               albumMusicdeleteDialog(
                 context: context,

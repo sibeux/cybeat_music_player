@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_grid/home_one_grid_layout.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_grid/home_three_grid_layout.dart';
@@ -14,7 +14,7 @@ class HomeListGrid extends StatelessWidget {
     required this.audioStateController,
   });
 
-  final Playlist playlist;
+  final Album playlist;
   final AudioStateController audioStateController;
 
   @override
@@ -24,10 +24,14 @@ class HomeListGrid extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        if (musicPlayerController.currentActivePlaylist.value?.title !=
-                playlist.title ||
-            musicPlayerController.currentActivePlaylist.value?.title == "") {
-          homeController.getDominantColorAlbum(playlist: playlist);
+        final String albumId =
+            musicPlayerController.currentActivePlaylist.value?.uid ?? "";
+        final String albumType =
+            musicPlayerController.currentActivePlaylist.value?.type ?? "";
+        // 1 - album
+        // 1 - playlist
+        if ((albumId != playlist.uid) || (albumType != playlist.type)) {
+          homeController.getDominantColorAlbum(album: playlist);
           audioStateController.clear();
           musicPlayerController.killMusic();
           musicPlayerController.clearCurrentMediaItem();
@@ -48,7 +52,7 @@ class HomeListGrid extends StatelessWidget {
                   musicPlayerController: musicPlayerController,
                 )
               : ThreeGridLayout(
-                  playlist: playlist,
+                  album: playlist,
                   musicPlayerController: musicPlayerController,
                 ),
         ),

@@ -1,23 +1,24 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/filter_item.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeController extends GetxController {
   final AlbumService albumService = Get.find<AlbumService>();
+  final AuthService authService = Get.find<AuthService>();
   final MusicPlayerController musicPlayerController = Get.find();
-  final RefreshController refreshController =
-      RefreshController(initialRefresh: false);
 
   var filterIsTapped = false.obs;
   var jumlahAlbumDitampilkan = 15.obs;
   var isTapped = false.obs;
 
-  RxList<Playlist?> get selectedAlbum => albumService.selectedAlbum;
-  RxList<Playlist> get initiateAlbum => albumService.initiateAlbum;
+  RxList<Album?> get selectedAlbum => albumService.selectedAlbum;
+  RxList<Album> get initiateAlbum => albumService.initiateAlbum;
   RxList<int> get filterChildren => albumService.filterChildren;
   RxList<FilterItem> get generateFilter => albumService.generateFilter;
   RxString get selectedFilter => albumService.homeSelectedFilter;
@@ -27,8 +28,10 @@ class HomeController extends GetxController {
   RxList get fourCoverPlaylist => albumService.fourCoverPlaylist;
   RxList get fourCoverCategory => albumService.fourCoverCategory;
   dynamic get sortValue => albumService.sortValue;
-  RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
+  RxList<Album> get playlistCreatedList => albumService.playlistCreatedList;
   bool get isLoading => albumService.isHomeLoading.value;
+  RxString get fullName => authService.fullName;
+  bool get isAuthenticated => authService.isAuthenticated;
 
   MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
 
@@ -48,14 +51,14 @@ class HomeController extends GetxController {
     await albumService.initializeAlbum();
   }
 
-  void onLoading() async {
+  void onLoading(RefreshController refreshController) async {
     // monitor network fetch
     jumlahAlbumDitampilkan.value = jumlahAlbumDitampilkan.value + 18;
     // if failed,use loadFailed(),if no data return,use LoadNodata()
     refreshController.loadComplete();
   }
 
-  void onRefresh() async {
+  void onRefresh(RefreshController refreshController) async {
     // monitor network fetch
     await Future.delayed(const Duration(milliseconds: 500));
     initializeAlbum();
@@ -102,7 +105,7 @@ class HomeController extends GetxController {
     initializeAlbum();
   }
 
-  void updateChildren(List<Playlist> playlist) {
+  void updateChildren(List<Album> playlist) {
     albumService.updateAllAlbumChildren(playlist);
     isTapped.value = !isTapped.value;
   }
@@ -115,31 +118,20 @@ class HomeController extends GetxController {
     musicPlayerController.updateCurrentMediaItem(mediaItem);
   }
 
-  void getDominantColorAlbum({required Playlist playlist}) {
-    albumService.defaultAlbumColor.value = 'ffffff';
+  void getDominantColorAlbum({required Album album}) {
     String albumCover = '';
-    if (playlist.image == "") {
-      // Ini sebenarnya bisa diambilkan dari home screen, tapi perlu oper-oper data.
-      final List<dynamic> list = playlist.type.toLowerCase() == 'playlist'
-          ? fourCoverPlaylist
-          : fourCoverCategory;
-
-      final data = list
-          .where((element) => element['playlist_uid'] == playlist.uid)
-          .map((e) => {
-                'cover_1': e['cover_1'],
-                'cover_2': e['cover_2'],
-                'cover_3': e['cover_3'],
-                'cover_4': e['cover_4'],
-                'total_non_null_cover': e['total_non_null_cover']
-              })
-          .toList();
-      albumCover = data[0]['cover_1'] ?? '';
+    if (album.image['default_cover'] != null) {
+      albumCover = album.image['default_cover'].toString();
     } else {
-      albumCover = playlist.image;
+      albumCover = album.image['cover_1'].toString();
     }
     if (albumCover != '') {
-      albumService.getDominantColorAlbum(albumCover: albumCover);
+      albumService.getDominantColorAlbum(
+          albumCover: albumCover, albumId: album.uid);
     }
+  }
+
+  void openDrawer(BuildContext context) {
+    Scaffold.of(context).openDrawer();
   }
 }

@@ -12,8 +12,6 @@ class AlbumMusicController extends GetxController {
   final AudioStateController audioStateController = Get.find();
   final musicPlayerController = Get.find<MusicPlayerController>();
   final AlbumService albumService = Get.find();
-  final RefreshController refreshController =
-      RefreshController(initialRefresh: false);
   final textController = TextEditingController();
 
   var flexibleSpaceMachineHeight = 0.0.obs;
@@ -33,8 +31,8 @@ class AlbumMusicController extends GetxController {
   RxBool get initAlbumLoading => audioStateController.initAlbumLoading;
   RxString get defaultAlbumColor => albumService.defaultAlbumColor;
   bool get isSimpleMode => albumService.isSimpleMode.value;
+  RxList<Music> get getPlaylist => audioStateController.getPlaylist;
 
-  // logic untuk shuffle music.
   void shuffleMusic() {
     if (initAlbumLoading.value) {
       showRemoveAlbumToast('Wait a moment...');
@@ -42,7 +40,6 @@ class AlbumMusicController extends GetxController {
       showRemoveAlbumToast('Album is empty');
     } else {
       musicPlayerController.seekNextButton(isFromShuffleButton: true);
-      // Langsung buka detail screen.
       Get.toNamed('/detail');
     }
   }
@@ -130,7 +127,7 @@ class AlbumMusicController extends GetxController {
   }) {
     FocusManager.instance.primaryFocus?.unfocus();
     final mediaItem = MediaItem(
-      id: music.musicId,
+      id: music.musicId.toString(),
       title: music.title,
       album: music.album,
       artUri: Uri.parse(music.cover),
@@ -142,7 +139,7 @@ class AlbumMusicController extends GetxController {
     Get.toNamed('/detail');
     if (musicPlayerController.getCurrentMediaItem?.id == "" ||
         musicPlayerController.getCurrentMediaItem?.id !=
-            musicList[index].musicId) {
+            musicList[index].musicId.toString()) {
       musicPlayerController.playMusicNow(
         mediaItem: mediaItem,
         audioStateController: audioStateController,
@@ -150,7 +147,7 @@ class AlbumMusicController extends GetxController {
     }
   }
 
-  void onLoading() {
+  void onLoading(RefreshController refreshController) {
     if (!underLoadingFetchMusic && sisaJumlahMusicTersedia == 0) {
       refreshController.loadNoData();
     } else {

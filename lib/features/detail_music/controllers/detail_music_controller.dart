@@ -2,7 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
@@ -57,12 +57,11 @@ class DetailMusicController extends GetxController {
       formatDuration(isSeeking.value ? dragValue.value : position);
 
   MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
-  Playlist? get currentActivePlaylist =>
+  Album? get currentActivePlaylist =>
       musicPlayerController.currentActivePlaylist.value;
   bool get isAlbumMusicScreenActive =>
       musicPlayerController.isAzlistviewScreenActive.value;
 
-  // Codec
   String get sampleRate => audioStateController.sampleRate.value;
   String get bitsPerRawSample => audioStateController.bitsPerRawSample.value;
   String get bitRate => audioStateController.bitRate.value;

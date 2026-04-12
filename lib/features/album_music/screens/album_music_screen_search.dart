@@ -36,6 +36,7 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
   final musicPlayerController = Get.find<MusicPlayerController>();
   final audioStateController = Get.find<AudioStateController>();
   final AlbumMusicController albumMusicController = Get.find();
+  final _refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
 
   @override
   void dispose() {
+    _refreshController.dispose();
     super.dispose();
     musicPlayerController.isAzlistviewScreenActive.value = false;
   }
@@ -84,8 +86,9 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
         body: ScrollConfiguration(
           behavior: NoGlowScrollBehavior(),
           child: SmartRefresher(
-            controller: albumMusicController.refreshController,
-            onLoading: albumMusicController.onLoading,
+            // * FIX [CYBEAT-ERR-002]: Use local RefreshController to avoid shared controller bugs
+            controller: _refreshController,
+            onLoading: () => albumMusicController.onLoading(_refreshController),
             enablePullDown: false,
             enablePullUp: true,
             footer: ClassicFooter(

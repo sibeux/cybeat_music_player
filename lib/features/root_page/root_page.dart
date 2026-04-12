@@ -4,15 +4,17 @@ import 'package:cybeat_music_player/common/widgets/floating_bar/floating_playing
 import 'package:cybeat_music_player/features/album_music/screens/album_music_screen_search.dart';
 import 'package:cybeat_music_player/features/home/bindings/home_binding.dart';
 import 'package:cybeat_music_player/features/home/screens/home_screen.dart';
+import 'package:cybeat_music_player/features/root_page/controllers/root_controller.dart';
 import 'package:cybeat_music_player/features/root_page/widgets/root_navigation_drawer.dart';
 import 'package:cybeat_music_player/features/recent_music/screens/recents_music_screen.dart';
 import 'package:cybeat_music_player/features/root_page/controllers/navigation_history_controller.dart';
 import 'package:cybeat_music_player/features/root_page/controllers/root_navigator_observer.dart';
 import 'package:cybeat_music_player/features/search_album/bindings/search_album_binding.dart';
 import 'package:cybeat_music_player/features/search_album/screens/search_album_screen.dart';
+import 'package:cybeat_music_player/features/splash_page/bindings/splash_binding.dart';
+import 'package:cybeat_music_player/features/splash_page/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 
 class RootPage extends StatelessWidget {
@@ -22,11 +24,11 @@ class RootPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterNativeSplash.remove();
     final musicPlayerController = Get.find<MusicPlayerController>();
 
-    // 1. Daftarkan controller agar bisa di-find oleh Observer
+    // Daftarkan controller agar bisa di-find oleh Observer
     final historyController = Get.put(NavigationHistoryController());
+    Get.lazyPut(() => RootController());
 
     return Scaffold(
       drawerBarrierDismissible: true,
@@ -35,7 +37,7 @@ class RootPage extends StatelessWidget {
         canPop: false,
         onPopInvokedWithResult: (bool didPop, result) {
           if (didPop) return;
-          // 3. LOGIKA BARU: Cek panjang riwayat, BUKAN canPop()
+          // LOGIKA BARU: Cek panjang riwayat, BUKAN canPop()
           // Jika riwayat lebih dari 1, berarti kita bisa kembali.
           if (historyController.routeHistory.length > 1) {
             Get.nestedKey(1)?.currentState?.pop();
@@ -49,14 +51,14 @@ class RootPage extends StatelessWidget {
           children: [
             Navigator(
               key: Get.nestedKey(1),
-              initialRoute: '/home',
-              // 2. Tambahkan observer ke navigator
+              initialRoute: '/splash',
+              // Tambahkan observer ke navigator
               observers: [RootNavigatorObserver()],
               onGenerateRoute: (settings) {
                 return onGenerateNestedRoute(settings);
               },
             ),
-            // BAGIAN 2: "CANGKANG" YANG PERSISTEN
+            // "CANGKANG" YANG PERSISTEN
             // Floating player Anda akan selalu ada di atas halaman apa pun.
             Positioned(
               bottom: 0,
@@ -80,6 +82,14 @@ class RootPage extends StatelessWidget {
 // Ini adalah anak route dari screen/navigator rootpage.
 Route<dynamic>? onGenerateNestedRoute(RouteSettings settings) {
   switch (settings.name) {
+    case '/splash':
+      return GetPageRoute(
+        settings: settings,
+        page: () => SplashPage(),
+        binding: SplashBinding(),
+        fullscreenDialog: true,
+        popGesture: false,
+      );
     case '/home':
       return GetPageRoute(
         settings: settings,
