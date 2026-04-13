@@ -26,6 +26,7 @@ class AlbumMapper {
       uid: item['id'].toString(),
       title: capitalizeEachWord(item['title'] ?? ''),
       image: finalCover,
+      bgColor: item['bg_color'] ?? 'ffffff',
       type: type.capitalizeFirst ?? '',
       author: authorText,
       pin: item['pin_at'] != null ? 'true' : 'false',
