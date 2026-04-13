@@ -123,7 +123,7 @@ class HomeListScaleTapState extends State<HomeListScaleTap>
           child: Opacity(
             opacity: colorOnTap,
             child: HomeListGrid(
-              playlist: widget.playlist,
+              album: widget.playlist,
               audioStateController: widget.audioState,
             ),
           ),

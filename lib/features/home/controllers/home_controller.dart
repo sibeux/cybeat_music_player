@@ -118,19 +118,10 @@ class HomeController extends GetxController {
     musicPlayerController.updateCurrentMediaItem(mediaItem);
   }
 
-  void getDominantColorAlbum({required Album album}) {
-    String albumCover = '';
-    if (album.image['default_cover'] != null) {
-      albumCover = album.image['default_cover'].toString();
-    } else {
-      albumCover = album.image['cover_1'].toString();
-    }
-    if (albumCover != '' && album.bgColor == 'ffffff') {
-      albumService.getDominantColorAlbum(
-          albumCover: albumCover, albumId: album.uid);
-    } else {
-      albumService.setDominantColorAlbum(color: album.bgColor);
-    }
+  void openAlbum(
+      {required Album album,
+      required MusicPlayerController musicPlayerController}) {
+    musicPlayerController.openAlbum(album: album);
   }
 
   void openDrawer(BuildContext context) {
