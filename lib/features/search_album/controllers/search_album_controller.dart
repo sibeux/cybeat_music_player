@@ -1,3 +1,4 @@
+import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,12 @@ class SearchAlbumController extends GetxController {
     filteredAlbum.value = results;
     isSearch.value = !isSearch.value;
     update();
+  }
+
+  void openAlbum(
+      {required Album album,
+      required MusicPlayerController musicPlayerController}) {
+    musicPlayerController.openAlbum(album: album);
   }
 
   String get getTextValue => textValue.value;

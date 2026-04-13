@@ -7,6 +7,7 @@ import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -291,6 +292,42 @@ class MusicPlayerController extends GetxController {
     } catch (e, st) {
       logError("Error playMusicNow: $e. ST: $st");
     }
+  }
+
+  void getDominantColorAlbum({required Album album}) {
+    String albumCover = '';
+    if (album.image['default_cover'] != null) {
+      albumCover = album.image['default_cover'].toString();
+    } else {
+      albumCover = album.image['cover_1'].toString();
+    }
+    final AlbumService albumService = Get.find<AlbumService>();
+    if (albumCover != '' && album.bgColor == 'ffffff') {
+      albumService.getDominantColorAlbum(
+          albumCover: albumCover, albumId: album.uid);
+    } else {
+      albumService.setDominantColorAlbum(color: album.bgColor);
+    }
+  }
+
+  void openAlbum({required Album album}) {
+    final String albumId = currentActivePlaylist.value?.uid ?? "";
+    final String albumType = currentActivePlaylist.value?.type ?? "";
+    final audioStateController = Get.find<AudioStateController>();
+    // 1 - album
+    // 1 - playlist
+    if ((albumId != album.uid) || (albumType != album.type)) {
+      getDominantColorAlbum(album: album);
+      audioStateController.clear();
+      killMusic();
+      clearCurrentMediaItem();
+      audioStateController.init(album);
+      setActivePlaylist(album);
+    }
+    Get.toNamed(
+      '/album_music',
+      id: 1,
+    );
   }
 
   void seekNextButton(
