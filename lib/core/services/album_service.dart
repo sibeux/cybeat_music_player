@@ -413,6 +413,10 @@ class AlbumService extends GetxService {
     }
   }
 
+  void setDominantColorAlbum({required String color}) {
+    defaultAlbumColor.value = color;
+  }
+
   Future<void> getDominantColorAlbum({
     required String albumCover,
     required String albumId,
@@ -427,7 +431,7 @@ class AlbumService extends GetxService {
       );
       if (result['status'] == 'success') {
         if (albumId == result['albumId']) {
-          defaultAlbumColor.value = result["dominant_color"]["bg_color"];
+          setDominantColorAlbum(color: result["dominant_color"]["bg_color"]);
         }
         logInfo('Successfully $func with albumId $albumId');
       } else {

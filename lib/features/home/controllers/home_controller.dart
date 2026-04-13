@@ -125,9 +125,11 @@ class HomeController extends GetxController {
     } else {
       albumCover = album.image['cover_1'].toString();
     }
-    if (albumCover != '') {
+    if (albumCover != '' && album.bgColor == 'ffffff') {
       albumService.getDominantColorAlbum(
           albumCover: albumCover, albumId: album.uid);
+    } else {
+      albumService.setDominantColorAlbum(color: album.bgColor);
     }
   }
 

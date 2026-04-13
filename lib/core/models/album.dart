@@ -2,6 +2,7 @@ class Album {
   String uid;
   String title;
   Map<String, Object?> image;
+  String bgColor;
   String type;
   String author;
   String pin;
@@ -14,6 +15,7 @@ class Album {
     required this.uid,
     required this.title,
     required this.image,
+    required this.bgColor,
     required this.type,
     required this.author,
     required this.pin,

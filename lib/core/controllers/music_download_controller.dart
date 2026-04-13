@@ -30,6 +30,7 @@ class MusicDownloadController extends GetxController {
       pinAt: 'no date',
       isEditable: 'true',
       image: {},
+      bgColor: 'ffffff',
       pin: 'false',
       type: 'offline',
     );
