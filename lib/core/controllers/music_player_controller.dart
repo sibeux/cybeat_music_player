@@ -5,10 +5,10 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
@@ -216,8 +216,7 @@ class MusicPlayerController extends GetxController {
       if (source == 'gdrive') {
         api = url;
       } else if (source == 'cloudflare') {
-        String endpoint =
-            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+        String endpoint = getEndpoint('HMAC_TOKEN_API_URL');
         api = "$endpoint?path=$url&music_id=$musicId";
       }
       final response = await http.get(Uri.parse(api));

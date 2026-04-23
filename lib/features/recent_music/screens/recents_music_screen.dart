@@ -7,7 +7,6 @@ import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/features/recent_music/widgets/recents_music_list.dart';
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart' as http;
@@ -34,7 +33,7 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
 
   void getMusicData() async {
     String userId = Get.find<AuthService>().userId.value.toString();
-    String api = dotenv.env['PLAYLIST_API_URL'] ?? '';
+    String api = getEndpoint('PLAYLIST_API_URL');
     String url = '$api?recents_music=$userId';
 
     try {

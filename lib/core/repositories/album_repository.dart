@@ -1,19 +1,13 @@
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/networks/dio_client.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AlbumRepository {
   final dio = DioClient().dio;
 
   Future<Map<String, Object?>> fetchAlbums() async {
-    String musicAlbumEndpoint =
-        dotenv.env['MUSIC_ALBUM_API_URL'] ?? 'not_found';
-
-    if (musicAlbumEndpoint == 'not_found') {
-      throw Exception(
-          'MUSIC_ALBUM_API_URL key-value pair not found in environment variables.');
-    }
+    String musicAlbumEndpoint = getEndpoint('MUSIC_ALBUM_API_URL');
 
     String sort = "";
     String filter = "";
@@ -46,11 +40,7 @@ class AlbumRepository {
     required String albumId,
     required String albumType,
   }) async {
-    String url = dotenv.env['PIN_ALBUM_API_URL'] ?? 'not_found';
-    if (url == 'not_found') {
-      throw Exception(
-          'PIN_ALBUM_API_URL key-value pair not found in environment variables.');
-    }
+    String url = getEndpoint('PIN_ALBUM_API_URL');
 
     try {
       late Response<dynamic> response;
@@ -79,11 +69,7 @@ class AlbumRepository {
     required String albumCover,
     required String albumId,
   }) async {
-    final String url = dotenv.env['DOMINANT_COLOR_ALBUM_URL'] ?? 'not_found';
-    if (url == 'not_found') {
-      throw Exception(
-          'DOMINANT_COLOR_ALBUM_URL key-value pair not found in environment variables.');
-    }
+    final String url = getEndpoint('DOMINANT_COLOR_ALBUM_URL');
     try {
       final response = await dio.post(url, data: {
         'albumCover': albumCover,

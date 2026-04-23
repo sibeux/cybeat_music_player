@@ -1,18 +1,12 @@
 import 'dart:convert';
 
-import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:http/http.dart' as http;
 
 class AuthRepository {
   Future<Map<String, Object?>> refreshJwtToken(
       {required String refreshToken}) async {
-    final url = dotenv.env['REFRESH_JWT_API_URL'] ?? 'not_found';
-
-    if (url == 'not_found') {
-      logError(
-          'REFRESH_JWT_API_URL key-value pair not found in environment variables');
-    }
+    final url = getEndpoint('REFRESH_JWT_API_URL');
 
     try {
       final response = await http.post(
@@ -34,12 +28,7 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    String url = dotenv.env['REGISTER_AUTH_API_URL'] ?? 'not_found';
-
-    if (url == 'not_found') {
-      logError(
-          'REGISTER_AUTH_API_URL key-value pair not found in environment variables.');
-    }
+    String url = getEndpoint('REGISTER_AUTH_API_URL');
 
     try {
       final response = await http.post(
@@ -71,12 +60,7 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    String url = dotenv.env['LOGIN_AUTH_API_URL'] ?? 'not_found';
-
-    if (url == 'not_found') {
-      logError(
-          'LOGIN_AUTH_API_URL key-value pair not found in environment variables.');
-    }
+    String url = getEndpoint('LOGIN_AUTH_API_URL');
 
     try {
       final response = await http
@@ -104,13 +88,10 @@ class AuthRepository {
     }
   }
 
-  Future<Map<String, Object?>> logoutUser({required String refreshToken,}) async {
-    String url = dotenv.env['LOGOUT_AUTH_API_URL'] ?? 'not_found';
-
-    if (url == 'not_found') {
-      logError(
-          'LOGOUT_AUTH_API_URL key-value pair not found in environment variables.');
-    }
+  Future<Map<String, Object?>> logoutUser({
+    required String refreshToken,
+  }) async {
+    String url = getEndpoint('LOGOUT_AUTH_API_URL');
 
     try {
       final response = await http

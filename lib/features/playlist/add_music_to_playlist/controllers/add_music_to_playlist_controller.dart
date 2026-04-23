@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music_playlist.dart';
@@ -10,7 +11,6 @@ import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -91,7 +91,7 @@ class AddMusicToPlaylistController extends GetxController {
   Future<void> getMusicOnPlaylist({required String idMusic}) async {
     isLoadingGetMusicOnPlaylist.value = true;
 
-    String endpoint = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
+    String endpoint = getEndpoint('MUSIC_PLAYLIST_API_URL');
     String url = '$endpoint?id_music=$idMusic&method=get_music_on_playlist';
     try {
       final response = await http.get(Uri.parse(url));
@@ -125,7 +125,7 @@ class AddMusicToPlaylistController extends GetxController {
   }) async {
     isLoadingUpdateMusicOnPlaylist.value = true;
 
-    String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
+    String url = getEndpoint('MUSIC_PLAYLIST_API_URL');
     // Ini adalah ID playlist, bukan ID music.
     // Menghitung perbedaan.
     Set<String> setStrSaved = savedInMusicList.toSet();

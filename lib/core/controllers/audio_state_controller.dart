@@ -11,7 +11,6 @@ import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/repositories/audio_repository.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
@@ -237,8 +236,8 @@ class AudioStateController extends GetxController {
                 'text_color': item['text_color'] ?? '',
               },
               'is_downloaded': type != 'offline'
-              // List uidDownloadedSongs itu save value String. 
-              // Karena item['id_music'] itu int, jadi harus di-convert dulu ke String sebelum cek contains.
+                  // List uidDownloadedSongs itu save value String.
+                  // Karena item['id_music'] itu int, jadi harus di-convert dulu ke String sebelum cek contains.
                   ? uidDownloadedSongs.contains(item['id_music'].toString())
                       ? true
                       : false
@@ -276,11 +275,7 @@ class AudioStateController extends GetxController {
   Future<void> deleteMusicFromPlaylist({
     required String idPlaylistMusic,
   }) async {
-    String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
-    if (url.isEmpty) {
-      logError('Url API is empty');
-      return;
-    }
+    String url = getEndpoint('MUSIC_PLAYLIST_API_URL');
     try {
       final response = await http.post(
         Uri.parse(url),

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/mappers/album_mapper.dart';
 import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/repositories/album_repository.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,7 +72,7 @@ class AlbumService extends GetxService {
     // String sort = sortValue;
     // String filter = getSelectedFilter;
 
-    String api = dotenv.env['GDRIVE_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    String api = getEndpoint('GDRIVE_API_URL');
 
     try {
       final apiResponse = await http.get(Uri.parse(api));
@@ -385,8 +385,7 @@ class AlbumService extends GetxService {
   String get sortValue => homeSortPreferences.value;
 
   Future<void> editPlaylist(String id, String name) async {
-    String url =
-        dotenv.env['CRUD_PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    String url = getEndpoint('CRUD_PLAYLIST_API_URL');
 
     try {
       final response = await http.post(

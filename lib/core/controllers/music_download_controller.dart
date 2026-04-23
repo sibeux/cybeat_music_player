@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -82,8 +82,7 @@ class MusicDownloadController extends GetxController {
       final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
       if (isCloudflareStream) {
         String path = initialUrl.replaceFirst("cdncloudflare", '');
-        String endpoint =
-            dotenv.env['HMAC_TOKEN_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+        String endpoint = getEndpoint('HMAC_TOKEN_API_URL');
         initialUrl = "$endpoint?path=$path&music_id=${mediaItem.id}";
       }
       // Unduh file dari URL dan simpan di path cache
