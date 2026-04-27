@@ -25,6 +25,7 @@ class AudioStateController extends GetxController {
   final activePlayer = Rx<AudioPlayer?>(null);
   final playlist = RxList<Music>([]);
   static int _nextMediaId = 1;
+  int _currentFetchSession = 0;
   // qeueu untuk testing screen
   List<MediaItem> queue = [];
 
@@ -137,6 +138,8 @@ class AudioStateController extends GetxController {
     isAlbumEmpty.value = false;
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
+    _currentFetchSession++;
+    final int currentSession = _currentFetchSession;
 
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
@@ -146,6 +149,7 @@ class AudioStateController extends GetxController {
       if (type == 'offline') {
         final musicDownloadController = Get.find<MusicDownloadController>();
         await musicDownloadController.getDownloadedSongs();
+        if (currentSession != _currentFetchSession) return;
         if (musicDownloadController.musicOfflineList.isEmpty) {
           listData = RxList<dynamic>([]);
           isAlbumEmpty.value = true;
@@ -159,8 +163,10 @@ class AudioStateController extends GetxController {
           albumType: type,
           albumId: list.uid,
         );
+        if (currentSession != _currentFetchSession) return;
         if (responseBody.isNotEmpty && type != 'offline') {
           final prefs = await SharedPreferences.getInstance();
+          if (currentSession != _currentFetchSession) return;
           uidDownloadedSongs = prefs.getStringList('uidDownloadedSongs') ?? [];
           List<dynamic> data = responseBody['data'] as List<dynamic>;
           if (data.isEmpty) {
@@ -262,13 +268,16 @@ class AudioStateController extends GetxController {
           )
           .toList();
     } catch (e, st) {
+      if (currentSession != _currentFetchSession) return;
       logError('Error loading audio source: $e, st:$st');
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
       isAlbumEmpty.value = true;
       playlist.value = <Music>[];
       await activePlayer.value?.setAudioSources([]);
     } finally {
-      initAlbumLoading.value = false;
+      if (currentSession == _currentFetchSession) {
+        initAlbumLoading.value = false;
+      }
     }
   }
 
