@@ -33,7 +33,7 @@ class AlbumMusicSimpleList extends StatelessWidget {
       album: music.album,
       artUri: Uri.parse(music.cover),
       artist: music.artist,
-      extras: music.extras,
+      extras: music.extras?.toMap() ?? {},
     );
     final musikDimainkan =
         Get.find<MusicPlayerController>().getCurrentMediaItem;

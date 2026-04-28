@@ -68,10 +68,6 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
               isAudio: false,
             ),
             linkDrive: '',
-            extras: {
-              'key1': 'value1',
-              'key2': 'value2',
-            },
           ),
         );
       }
