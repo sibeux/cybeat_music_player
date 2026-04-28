@@ -132,7 +132,7 @@ class AlbumMusicController extends GetxController {
       album: music.album,
       artUri: Uri.parse(music.cover),
       artist: music.artist,
-      extras: music.extras,
+      extras: music.extras?.toMap() ?? {},
     );
     final musicList =
         isTapSearch.value ? filteredMusic : audioStateController.playlist;

@@ -35,7 +35,7 @@ class AlbumMusicAzlistList extends StatelessWidget {
       album: music.album,
       artUri: Uri.parse(music.cover),
       artist: music.artist,
-      extras: music.extras,
+      extras: music.extras?.toMap() ?? {},
     );
     final musicDownloadController = Get.find<MusicDownloadController>();
 

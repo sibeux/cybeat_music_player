@@ -353,7 +353,7 @@ class MusicPlayerController extends GetxController {
         album: music.album,
         artUri: Uri.parse(music.cover),
         artist: music.artist,
-        extras: music.extras,
+        extras: music.extras?.toMap() ?? {},
       );
       playMusicNow(
         audioStateController: Get.find<AudioStateController>(),
@@ -374,7 +374,7 @@ class MusicPlayerController extends GetxController {
         album: music.album,
         artUri: Uri.parse(music.cover),
         artist: music.artist,
-        extras: music.extras,
+        extras: music.extras?.toMap() ?? {},
       );
       playMusicNow(
         audioStateController: Get.find<AudioStateController>(),

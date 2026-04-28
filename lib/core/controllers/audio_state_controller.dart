@@ -9,6 +9,7 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:cybeat_music_player/core/models/music_extras.dart';
 import 'package:cybeat_music_player/core/repositories/audio_repository.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
@@ -194,6 +195,11 @@ class AudioStateController extends GetxController {
               : item['uploader'].toString().trim() == ''
                   ? "Cybeat"
                   : item['uploader'];
+          final coverUrl = regexGdriveHostUrl(
+            url: item['cover'],
+            musicId: "0",
+            isAudio: false,
+          );
           final String musicUrl = regexGdriveHostUrl(
               url: type == 'offline' ? item['filePath'] : "",
               musicId: item['id_music'].toString(),
@@ -201,69 +207,63 @@ class AudioStateController extends GetxController {
               isOffline: type == 'offline' ? true : false,
               isAudio: true);
           return Music(
-            musicId: int.tryParse(item['id_music'].toString()) ?? 0,
-            album: capitalizeEachWord(item['album'] ?? "Unknown Album"),
-            artist: capitalizeEachWord(item['artist']),
-            cover: regexGdriveHostUrl(
-              url: item['cover'],
-              musicId: "0",
-              isAudio: false,
-            ),
-            linkDrive: musicUrl,
-            title: capitalizeEachWord(item['title']),
-            extras: {
-              'index': '${_nextMediaId++}',
-              'music_id': item['id_music'].toString(),
-              'file_drive_id': '',
-              'disc_number': item['disc_number'],
-              'url': musicUrl,
-              'favorite': item['favorite'],
-              'id_playlist_music': item['id_playlist_music'] ?? '',
-              'original_source': type != 'offline'
-                  // ? "Cloud Storage"
-                  ? item['cover']
-                  : item['filePath'],
-              'is_cached': item['cache_music_id'] != null ||
-                      item['link_gdrive'].toString().contains('cdncloudflare/')
-                  ? true
-                  : false,
-              'is_lossless': item['music_quality'] == 'lossless' ? true : false,
-              'metadata': {
-                // metadata_id_music dibiarkan null gpp kalo kosong.
-                // Buat cek di onReadCodec.
-                'metadata_id_music': item['metadata_id_music'] ?? '',
-                'codec_name': item['codec_name'] ?? '--',
-                'sample_rate': item['sample_rate'] ?? '--',
-                'bit_rate': item['bit_rate'] ?? '--',
-                'bits_per_raw_sample': item['bits_per_raw_sample'] ?? '--',
-              },
-              'dominant_color': {
-                'bg_color': item['bg_color'] ?? '',
-                'text_color': item['text_color'] ?? '',
-              },
-              'is_downloaded': type != 'offline'
-                  // List uidDownloadedSongs itu save value String.
-                  // Karena item['id_music'] itu int, jadi harus di-convert dulu ke String sebelum cek contains.
-                  ? uidDownloadedSongs.contains(item['id_music'].toString())
-                      ? true
-                      : false
-                  : false,
-              'uploader': uploader,
-              'is_suspicious': item['is_suspicious'] == 'true' ? true : false,
-              'is_offline': type == 'offline' ? true : false,
-            },
-          );
+              musicId: int.tryParse(item['id_music'].toString()) ?? 0,
+              album: capitalizeEachWord(item['album'] ?? "Unknown Album"),
+              artist: capitalizeEachWord(item['artist']),
+              cover: coverUrl,
+              linkDrive: musicUrl,
+              title: capitalizeEachWord(item['title']),
+              extras: MusicExtras(
+                index: '${_nextMediaId++}',
+                musicId: item['id_music'].toString(),
+                discNumber: item['disc_number'],
+                musicUrl: musicUrl,
+                isFavorite: item['favorite'] == 'true' ? true : false,
+                musicPlaylistId: item['id_playlist_music'] ?? '',
+                originalSource: type != 'offline'
+                    // ? "Cloud Storage"
+                    ? item['cover']
+                    : item['filePath'],
+                isCached: item['cache_music_id'] != null ||
+                        coverUrl.toString().contains('cdncloudflare/')
+                    ? true
+                    : false,
+                isLossless: item['music_quality'] == 'lossless' ? true : false,
+                metadata: MusicMetadata(
+                  // metadata_id_music dibiarkan null gpp kalo kosong.
+                  // Buat cek di onReadCodec.
+                  musicMetadataId: item['metadata_id_music'].toString(),
+                  codecName: item['codec_name'] ?? '--',
+                  sampleRate: item['sample_rate'] ?? '--',
+                  bitRate: item['bit_rate'] ?? '--',
+                  bitsPerSampleRaw: item['bits_per_raw_sample'] ?? '--',
+                ),
+                dominantColor: MusicDominantColor(
+                  backgroundColor: item['bg_color'] ?? '',
+                  textColor: item['text_color'] ?? '',
+                ),
+                uploader: uploader,
+                isDownloaded: type != 'offline'
+                    // List uidDownloadedSongs itu save value String.
+                    // Karena item['id_music'] itu int, jadi harus di-convert dulu ke String sebelum cek contains.
+                    ? uidDownloadedSongs.contains(item['id_music'].toString())
+                        ? true
+                        : false
+                    : false,
+                isSuspicious: item['is_suspicious'] == 'true' ? true : false,
+                isOffline: type == 'offline' ? true : false,
+              ));
         },
       ).toList();
       queue = playlist
           .map(
-            (e) => MediaItem(
-              id: e.musicId.toString(),
-              title: e.title,
-              album: e.album,
-              artUri: Uri.parse(e.cover),
-              artist: e.artist,
-              extras: e.extras,
+            (music) => MediaItem(
+              id: music.musicId.toString(),
+              title: music.title,
+              album: music.album,
+              artUri: Uri.parse(music.cover),
+              artist: music.artist,
+              extras: music.extras?.toMap() ?? {},
             ),
           )
           .toList();
