@@ -5,6 +5,7 @@ import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
+import 'package:cybeat_music_player/core/audio/cybeat_audio_handler.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
@@ -30,6 +31,9 @@ class AudioStateController extends GetxController {
   // qeueu untuk testing screen
   List<MediaItem> queue = [];
 
+  /// Handler AudioService untuk notifikasi. Di-init di [onInit].
+  late CybeatAudioHandler audioHandler;
+
   var sampleRate = '--'.obs;
   var bitsPerRawSample = '--'.obs;
   var bitRate = '--'.obs;
@@ -52,8 +56,25 @@ class AudioStateController extends GetxController {
 
   @override
   void onInit() {
-    activePlayer.value = AudioPlayer();
+    _initAudioService();
     super.onInit();
+  }
+
+  /// Menginisialisasi AudioPlayer dan mendaftarkan [CybeatAudioHandler] ke AudioService.
+  /// Harus async karena [AudioService.init] adalah operasi async.
+  /// Dipanggil dari [onInit] secara fire & forget agar tidak memblokir controller init.
+  Future<void> _initAudioService() async {
+    final player = AudioPlayer();
+    activePlayer.value = player;
+
+    // Daftarkan handler kustom ke AudioService.
+    // Handler ini yang mengontrol tombol di notifikasi dan lock screen.
+    // Lihat: lib/core/audio/cybeat_audio_handler.dart
+    audioHandler = await AudioService.init(
+      builder: () => CybeatAudioHandler(player),
+      config: cybeatAudioServiceConfig,
+    );
+    logInfo('[AudioService] CybeatAudioHandler berhasil diinisialisasi.');
   }
 
   @override
@@ -63,9 +84,13 @@ class AudioStateController extends GetxController {
   }
 
   Future<void> clear() async {
-    activePlayer.value?.stop();
-    activePlayer.value?.dispose();
-    activePlayer.value = AudioPlayer();
+    // PENTING: Jangan buat AudioPlayer baru di sini!
+    // CybeatAudioHandler sudah terikat ke instance player yang dibuat di _initAudioService().
+    // Membuat player baru akan memutus koneksi handler → notifikasi tidak ter-update.
+    // Cukup stop player dan clear source-nya saja.
+    await activePlayer.value?.stop();
+    // Reset source ke kosong agar player benar-benar bersih.
+    await activePlayer.value?.setAudioSources([]);
     // Reset ID saat player di-clear.
     lastProcessedMusicId = null;
 

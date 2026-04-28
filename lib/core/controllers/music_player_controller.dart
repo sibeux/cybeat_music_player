@@ -62,6 +62,15 @@ class MusicPlayerController extends GetxController {
     // 'ever' akan mendengarkan perubahan pada audioStateController.player
     // dan menjalankan _listenToPlayerStreams setiap kali nilainya berubah.
     ever(audioStateController.activePlayer, _listenToPlayerStreams);
+
+    // FIX: Race condition guard.
+    // _initAudioService() di AudioStateController bersifat async fire & forget.
+    // Jika ia selesai SEBELUM onReady() dipanggil, activePlayer sudah punya value
+    // tapi ever() belum terdaftar → ever tidak pernah menangkap perubahan awal itu.
+    // Solusi: panggil _listenToPlayerStreams secara manual jika player sudah ada.
+    if (audioStateController.activePlayer.value != null) {
+      _listenToPlayerStreams(audioStateController.activePlayer.value);
+    }
   }
 
   // Fungsi baru untuk menangani semua logika subscription

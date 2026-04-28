@@ -35,7 +35,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -66,16 +65,12 @@ Future<void> main() async {
   }
   // Tampilkan splash screen sampai app siap
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  // Inisialisasi JustAudioBackground untuk kontrol pemutaran musik di background
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-    androidNotificationIcon: 'mipmap/ic_launcher',
-    androidShowNotificationBadge: true,
-  );
+  // AudioService diinisialisasi di AudioStateController._initAudioService().
+  // JustAudioBackground tidak lagi digunakan secara langsung di sini.
+  // Konfigurasi notifikasi ada di: lib/core/audio/cybeat_audio_handler.dart
+  // await JustAudioBackground.init(...) ← dihapus, sudah dipindahkan.
   // Configuration Status Bar dan Navigation Bar
-  // Ini juga ditaruh di  route /home.
+  // Ini juga ditaruh di route /home.
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.white,
     statusBarBrightness: Brightness.dark,
