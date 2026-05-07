@@ -208,7 +208,7 @@ void showMusicCreditsDialog({
           ),
           Text(
                 currentMediaItem.extras?['is_cached']
-                    ? currentMediaItem.extras!['url']
+                    ? currentMediaItem.artUri
                             .toString()
                             .contains('cdncloudflare/')
                         ? "Cloudflare CDN"
