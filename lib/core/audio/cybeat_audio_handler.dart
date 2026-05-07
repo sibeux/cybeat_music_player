@@ -129,7 +129,7 @@ class CybeatAudioHandler extends BaseAudioHandler {
       controls: [
         MediaControl.skipToPrevious, // index 0
         // player.playing ? MediaControl.pause : MediaControl.play, // index 1
-        actionRepeat(),
+        actionRepeat(), // index 1
         MediaControl.skipToNext, // index 2
         MediaControl.stop, // index 3 — hanya muncul di expanded view
       ],
