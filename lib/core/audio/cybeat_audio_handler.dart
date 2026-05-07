@@ -63,6 +63,12 @@ class CybeatAudioHandler extends BaseAudioHandler {
   Future<void> stop() => player.stop();
 
   @override
+  Future<void> rewind() async {
+    await player.seek(Duration.zero, index: player.effectiveIndices.first);
+    player.play();
+  }
+
+  @override
   Future<void> seek(Duration position) => player.seek(position);
 
   // ---------------------------------------------------------------------------
@@ -103,18 +109,38 @@ class CybeatAudioHandler extends BaseAudioHandler {
       }
     }
 
+    MediaControl actionRepeat() {
+      if (player.processingState == ProcessingState.loading ||
+          player.processingState == ProcessingState.buffering) {
+        return MediaControl.play;
+      }
+      final controller = Get.find<MusicPlayerController>();
+      if (controller.isMusicPlayingNow.value != true) {
+        return MediaControl.play;
+      } else if (player.processingState != ProcessingState.completed ||
+          controller.isLastIndexMusic == false) {
+        return MediaControl.pause;
+      } else {
+        return MediaControl.rewind;
+      }
+    }
+
     return PlaybackState(
       controls: [
         MediaControl.skipToPrevious, // index 0
-        player.playing ? MediaControl.pause : MediaControl.play, // index 1
+        // player.playing ? MediaControl.pause : MediaControl.play, // index 1
+        actionRepeat(),
         MediaControl.skipToNext, // index 2
         MediaControl.stop, // index 3 — hanya muncul di expanded view
       ],
       systemActions: const {
         MediaAction.seek,
         MediaAction.stop,
+        MediaAction.play,
+        MediaAction.pause,
         MediaAction.skipToNext,
         MediaAction.skipToPrevious,
+        MediaAction.rewind,
       },
       // Compact view: prev | play/pause | next (stop tidak masuk compact)
       androidCompactActionIndices: const [0, 1, 2],
