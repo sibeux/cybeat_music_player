@@ -23,7 +23,8 @@ class MusicPlayerController extends GetxController {
   var isAzlistviewScreenActive = false.obs;
   var isWaitingGetMusicStreamUrl = false.obs;
   var isShuffleEnabled = false.obs;
-  var isRepeatEnabled = 'off'.obs; // off, all, one
+
+  var repeatMode = 'off'.obs; // off, all, one
 
   var numberOfError = 0;
   int currentIndexShuffle = 0;
@@ -39,6 +40,7 @@ class MusicPlayerController extends GetxController {
   StreamSubscription<SequenceState?>? sequenceStateStreamSubscription;
   StreamSubscription<PlayerState?>? playerStateStreamSubscription;
   StreamSubscription<PlayerException?>? playerErrorStreamSubscription;
+  StreamSubscription<LoopMode>? loopModeStreamSubscription;
 
   MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
   bool get isLastIndexMusic =>
@@ -73,7 +75,6 @@ class MusicPlayerController extends GetxController {
     }
   }
 
-  // Fungsi baru untuk menangani semua logika subscription
   void _listenToPlayerStreams(AudioPlayer? player) {
     // 1. Selalu batalkan subscription lama untuk mencegah kebocoran memori
     _cancelSubscriptions();
@@ -125,16 +126,26 @@ class MusicPlayerController extends GetxController {
           numberOfError = 0;
         }
       });
+
+      loopModeStreamSubscription = player.loopModeStream.listen((loopMode) {
+        if (loopMode == LoopMode.off) {
+          repeatMode.value = 'off';
+        } else if (loopMode == LoopMode.all) {
+          repeatMode.value = 'all';
+        } else if (loopMode == LoopMode.one) {
+          repeatMode.value = 'one';
+        }
+      });
     }
   }
 
-  // Fungsi helper untuk membatalkan semua subscription
   void _cancelSubscriptions() {
     durationStreamSubscription?.cancel();
     positionStreamSubscription?.cancel();
     bufferedStreamSubscription?.cancel();
     sequenceStateStreamSubscription?.cancel();
     playerErrorStreamSubscription?.cancel();
+    loopModeStreamSubscription?.cancel();
   }
 
   @override
@@ -340,21 +351,48 @@ class MusicPlayerController extends GetxController {
 
   void seekNextButton(
       {bool isFromButton = true, bool isFromShuffleButton = false}) {
-    int originalCurrentIndexSong = isFromShuffleButton
+    int originalCurrentSongSequence = isFromShuffleButton
         ? 0
         : int.parse(getCurrentMediaItem!.extras!['index']) - 1;
     final playlistLength = Get.find<AudioStateController>().playlist.length;
     final random = Random();
+
+    // if (isRepeatEnabled.value == 'one') {
+    //   int index = originalCurrentIndexSong;
+    //   final music = Get.find<AudioStateController>().playlist[index];
+    //   final mediaItem = MediaItem(
+    //     id: music.musicId.toString(),
+    //     title: music.title,
+    //     album: music.album,
+    //     artUri: Uri.parse(music.cover),
+    //     artist: music.artist,
+    //     extras: music.extras?.toMap() ?? {},
+    //   );
+    //   playMusicNow(
+    //     audioStateController: Get.find<AudioStateController>(),
+    //     mediaItem: mediaItem,
+    //     isFromButton: isFromButton,
+    //   );
+    //   return;
+    // }
+
     if (!isShuffleEnabled.value) {
-      originalCurrentIndexSong += 1;
+      originalCurrentSongSequence += 1;
     }
     int index = isShuffleEnabled.value || isFromShuffleButton
         ? random.nextInt(
             playlistLength) // 0 sampai 1000 (inklusif 0, eksklusif 1001)
-        : originalCurrentIndexSong;
+        : originalCurrentSongSequence;
+
+    if (!isShuffleEnabled.value && playlistLength < originalCurrentSongSequence + 1) {
+      if (repeatMode.value == 'all') {
+        originalCurrentSongSequence = 0;
+        index = 0;
+      }
+    }
 
     if (!(!isShuffleEnabled.value &&
-        playlistLength < originalCurrentIndexSong + 1)) {
+        playlistLength < originalCurrentSongSequence + 1)) {
       final music = Get.find<AudioStateController>().playlist[index];
       final mediaItem = MediaItem(
         id: music.musicId.toString(),
@@ -403,6 +441,6 @@ class MusicPlayerController extends GetxController {
   }
 
   void toggleRepeatButton(String repeat) {
-    isRepeatEnabled.value = repeat;
+    repeatMode.value = repeat;
   }
 }
