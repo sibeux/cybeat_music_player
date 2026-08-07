@@ -106,14 +106,11 @@ class MusicPlayerController extends GetxController {
 
       sequenceStateStreamSubscription =
           player.sequenceStateStream.listen((sequenceState) {
-        // PERBAIKAN: Tambahkan null check untuk menghindari error
-        final mediaItem = sequenceState.currentSource?.tag as MediaItem?;
-        // getCurrentMediaItem != null berfungsi untuk cek apakah ini pertama kali-
-        // buka album atau tidak.
-        // By default, audio player udah "siap" putar dari indeks pertama.
-        if (mediaItem != null && getCurrentMediaItem != null) {
-          updateCurrentMediaItem(mediaItem);
-        }
+        // PERBAIKAN: Listener ini awalnya mengupdate _currentMediaItem dari source lama
+        // saat player.stop() dipanggil, yang membuat metadata UI kembali ke lagu lama 
+        // selama menunggu API. Karena Cybeat mengatur antrean lagu secara manual 
+        // (1 lagu per setAudioSources) dan memanggil updateCurrentMediaItem secara manual 
+        // di playMusicNow, kita tidak perlu mengupdate UI dari sequenceStateStream.
       });
 
       playerErrorStreamSubscription = player.errorStream.listen((error) async {
@@ -294,12 +291,12 @@ class MusicPlayerController extends GetxController {
     final int requestId = ++_playRequestId;
 
     try {
-      if (isFromButton) {
-        // await player.stop();
-        // await player.seek(Duration.zero);
-      }
+      // Segera stop dan reset progress bar ke 0 agar UI tidak terlihat delay/stuck
+      // saat menunggu response API.
+      await player.stop();
+      await player.setAudioSources([]);
+      await player.seek(Duration.zero);
 
-      // Ambil URL stream dari API
       final response = await dio.get(
         mediaItem.extras!['url'],
         queryParameters: {
