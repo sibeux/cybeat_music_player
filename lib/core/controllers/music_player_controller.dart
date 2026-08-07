@@ -8,7 +8,9 @@ import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:cybeat_music_player/core/networks/dio_client.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
@@ -16,6 +18,8 @@ import 'package:just_audio/just_audio.dart';
 class MusicPlayerController extends GetxController {
   var currentActivePlaylist = Rx<Album?>(null);
   final _currentMediaItem = Rx<MediaItem?>(null);
+
+  final dio = DioClient().dio;
 
   var isMusicActiveNow = false.obs;
   var isMusicPlayingNow = false.obs;
@@ -28,6 +32,8 @@ class MusicPlayerController extends GetxController {
 
   var numberOfError = 0;
   int currentIndexShuffle = 0;
+  int _playRequestId = 0;
+  CancelToken? _streamCancelToken;
 
   var currentMusicDuration = Duration.zero.obs;
   var currentMusicPosition = Duration.zero.obs;
@@ -263,53 +269,69 @@ class MusicPlayerController extends GetxController {
     }
   }
 
-  void playMusicNow({
+  Future<void> playMusicNow({
     required AudioStateController audioStateController,
     required MediaItem mediaItem,
     bool isFromButton = true,
   }) async {
-    updateCurrentMediaItem(
-        mediaItem); // Ini dipakai saat pertama kali putar music.
-    // Gunakan variabel lokal untuk menghindari pengulangan dan null check
+    updateCurrentMediaItem(mediaItem);
+
     final player = audioStateController.activePlayer.value;
-    if (player == null) return; // Guard clause jika player tidak ada
+    if (player == null) return;
+
     activateMusic();
-    if (currentActivePlaylist.value!.type != 'offline') {
+
+    if (currentActivePlaylist.value?.type != 'offline') {
       setLastPlayingPlaylist();
     }
+
     numberOfError = 0;
 
-    final String initialUrl = mediaItem.extras!['url'];
+    _streamCancelToken?.cancel();
+
+    _streamCancelToken = CancelToken();
+
+    final int requestId = ++_playRequestId;
 
     try {
       if (isFromButton) {
-        // player.stop();
-        // player.seek(Duration.zero, index: 0);
+        // await player.stop();
+        // await player.seek(Duration.zero);
       }
 
-      var url = initialUrl;
-      var musicId = mediaItem.id;
+      // Ambil URL stream dari API
+      final response = await dio.get(
+        mediaItem.extras!['url'],
+        queryParameters: {
+          'music_id': mediaItem.id,
+        },
+        cancelToken: _streamCancelToken,
+      );
 
-      // cek apakah ini request terakhir
-      if (musicId != _currentMediaItem.value!.id) return; // dibatalkan
+      // Kalau ada request yang lebih baru, abaikan hasil ini
+      if (requestId != _playRequestId) return;
+
+      final String streamUrl = response.data['stream_url'];
 
       await player.setAudioSources(
         [
           AudioSource.uri(
-            Uri.parse(url),
+            Uri.parse(streamUrl),
             tag: mediaItem,
           ),
-          // AudioSource.uri(
-          //   Uri.parse(url),
-          //   tag: mediaItem,
-          // ),
         ],
         initialIndex: 0,
       );
 
-      player.play();
+      // Double check lagi setelah proses async
+      if (requestId != _playRequestId) return;
+
+      await player.play();
     } catch (e, st) {
-      logError("Error playMusicNow: $e. ST: $st");
+      // Kalau request sudah obsolete, tidak perlu dianggap error
+      if (requestId != _playRequestId) return;
+
+      logError("Error playMusicNow: $e\n$st");
     }
   }
 
@@ -384,7 +406,8 @@ class MusicPlayerController extends GetxController {
             playlistLength) // 0 sampai 1000 (inklusif 0, eksklusif 1001)
         : originalCurrentSongSequence;
 
-    if (!isShuffleEnabled.value && playlistLength < originalCurrentSongSequence + 1) {
+    if (!isShuffleEnabled.value &&
+        playlistLength < originalCurrentSongSequence + 1) {
       if (repeatMode.value == 'all') {
         originalCurrentSongSequence = 0;
         index = 0;
