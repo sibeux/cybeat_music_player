@@ -291,6 +291,8 @@ class MusicPlayerController extends GetxController {
     final int requestId = ++_playRequestId;
 
     try {
+      isWaitingGetMusicStreamUrl.value = true;
+
       // Segera stop dan reset progress bar ke 0 agar UI tidak terlihat delay/stuck
       // saat menunggu response API.
       await player.stop();
@@ -323,8 +325,14 @@ class MusicPlayerController extends GetxController {
       // Double check lagi setelah proses async
       if (requestId != _playRequestId) return;
 
+      isWaitingGetMusicStreamUrl.value = false;
+
       await player.play();
     } catch (e, st) {
+      if (requestId == _playRequestId) {
+        isWaitingGetMusicStreamUrl.value = false;
+      }
+
       // Kalau request sudah obsolete, tidak perlu dianggap error
       if (requestId != _playRequestId) return;
 
