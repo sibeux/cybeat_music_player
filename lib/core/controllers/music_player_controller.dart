@@ -1,18 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
-import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/networks/dio_client.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 
 class MusicPlayerController extends GetxController {
@@ -107,9 +104,9 @@ class MusicPlayerController extends GetxController {
       sequenceStateStreamSubscription =
           player.sequenceStateStream.listen((sequenceState) {
         // PERBAIKAN: Listener ini awalnya mengupdate _currentMediaItem dari source lama
-        // saat player.stop() dipanggil, yang membuat metadata UI kembali ke lagu lama 
-        // selama menunggu API. Karena Cybeat mengatur antrean lagu secara manual 
-        // (1 lagu per setAudioSources) dan memanggil updateCurrentMediaItem secara manual 
+        // saat player.stop() dipanggil, yang membuat metadata UI kembali ke lagu lama
+        // selama menunggu API. Karena Cybeat mengatur antrean lagu secara manual
+        // (1 lagu per setAudioSources) dan memanggil updateCurrentMediaItem secara manual
         // di playMusicNow, kita tidak perlu mengupdate UI dari sequenceStateStream.
       });
 
@@ -273,6 +270,9 @@ class MusicPlayerController extends GetxController {
       if (requestId != _playRequestId) return;
 
       final String streamUrl = response.data['stream_url'];
+
+      logSuccess(
+          'Streaming ${mediaItem.id} -> ${Uri.parse(streamUrl).path} (exp=${Uri.parse(streamUrl).queryParameters['expires']})');
 
       await player.setAudioSources(
         [
