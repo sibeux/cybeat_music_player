@@ -228,44 +228,6 @@ class MusicPlayerController extends GetxController {
     }
   }
 
-  Future<Map<String, dynamic>> getStreamDirectUrl(
-      {required String url,
-      required String source,
-      String musicId = '0'}) async {
-    isWaitingGetMusicStreamUrl.value = true;
-    final methodName = "getStreamDirectUrl $source";
-    try {
-      String api = '';
-      if (source == 'gdrive') {
-        api = url;
-      } else if (source == 'cloudflare') {
-        String endpoint = getEndpoint('HMAC_TOKEN_API_URL');
-        api = "$endpoint?path=$url&music_id=$musicId";
-      }
-      final response = await http.get(Uri.parse(api));
-      if (response.body.isEmpty) {
-        final reason =
-            'Error in $methodName: Response body is empty: ${response.statusCode}';
-        logError(reason);
-        return {};
-      }
-      final responseBody = json.decode(response.body);
-      if (responseBody['success'] == true) {
-        logSuccess('$methodName success: $responseBody');
-        return responseBody;
-      } else {
-        final e = 'Error in $methodName: $responseBody';
-        logError(e);
-        return {};
-      }
-    } catch (e, st) {
-      logError('Error in $methodName: $e stacktrace: $st');
-      return {};
-    } finally {
-      isWaitingGetMusicStreamUrl.value = false;
-    }
-  }
-
   Future<void> playMusicNow({
     required AudioStateController audioStateController,
     required MediaItem mediaItem,
