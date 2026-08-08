@@ -43,7 +43,6 @@ class MusicPlayerController extends GetxController {
   StreamSubscription<SequenceState?>? sequenceStateStreamSubscription;
   StreamSubscription<PlayerState?>? playerStateStreamSubscription;
   StreamSubscription<PlayerException?>? playerErrorStreamSubscription;
-  StreamSubscription<LoopMode>? loopModeStreamSubscription;
 
   MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
   bool get isLastIndexMusic =>
@@ -84,6 +83,12 @@ class MusicPlayerController extends GetxController {
 
     // 2. Jika player baru tidak null, buat subscription baru
     if (player != null) {
+      if (repeatMode.value == 'one') {
+        player.setLoopMode(LoopMode.one);
+      } else {
+        player.setLoopMode(LoopMode.off);
+      }
+
       durationStreamSubscription = player.durationStream.listen((duration) {
         updateCurrentMusicDuration(duration);
       });
@@ -126,16 +131,6 @@ class MusicPlayerController extends GetxController {
           numberOfError = 0;
         }
       });
-
-      loopModeStreamSubscription = player.loopModeStream.listen((loopMode) {
-        if (loopMode == LoopMode.off) {
-          repeatMode.value = 'off';
-        } else if (loopMode == LoopMode.all) {
-          repeatMode.value = 'all';
-        } else if (loopMode == LoopMode.one) {
-          repeatMode.value = 'one';
-        }
-      });
     }
   }
 
@@ -145,7 +140,6 @@ class MusicPlayerController extends GetxController {
     bufferedStreamSubscription?.cancel();
     sequenceStateStreamSubscription?.cancel();
     playerErrorStreamSubscription?.cancel();
-    loopModeStreamSubscription?.cancel();
   }
 
   @override
@@ -181,12 +175,20 @@ class MusicPlayerController extends GetxController {
   Future<void> updateCurrentMusicPlayerState(
       PlayerState? state, AudioPlayer player) async {
     final processingState = state?.processingState;
+    final wasNotCompleted =
+        currentMusicPlayerState.value != ProcessingState.completed;
+
     currentMusicPlayerState.value = processingState ?? ProcessingState.idle;
     isMusicPlayingNow.value = state!.playing;
+    
     // Saat music telah selesai diputar, tunggu 0.5 detik dan ganti lagu berikutnya.
-    if (state.processingState == ProcessingState.completed) {
-      await Future.delayed(Duration(milliseconds: 500));
-      seekNextButton(isFromButton: false);
+    if (processingState == ProcessingState.completed && wasNotCompleted) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      // Cek ulang apakah state masih completed. 
+      // Jika user menekan Next/Prev saat jeda 500ms, state sudah berubah (idle/loading)
+      if (currentMusicPlayerState.value == ProcessingState.completed) {
+        seekNextButton(isFromButton: false);
+      }
     }
   }
 
@@ -432,5 +434,13 @@ class MusicPlayerController extends GetxController {
 
   void toggleRepeatButton(String repeat) {
     repeatMode.value = repeat;
+    final player = Get.find<AudioStateController>().activePlayer.value;
+    if (player != null) {
+      if (repeat == 'one') {
+        player.setLoopMode(LoopMode.one);
+      } else {
+        player.setLoopMode(LoopMode.off);
+      }
+    }
   }
 }
