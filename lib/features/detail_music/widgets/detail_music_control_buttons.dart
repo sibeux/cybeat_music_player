@@ -19,12 +19,10 @@ class DetailMusicControlButtons extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        StreamBuilder<LoopMode>(
-          stream: audioPlayer.loopModeStream,
-          builder: (context, snapshot) {
-            return _repeatButton(context, snapshot.data ?? LoopMode.off);
-          },
-        ),
+        Obx(() {
+          return _repeatButton(context,
+              detailMusicController.musicPlayerController.repeatMode.value);
+        }),
         IconButton(
           icon: Icon(
             Icons.skip_previous,
@@ -118,7 +116,7 @@ class DetailMusicControlButtons extends StatelessWidget {
     });
   }
 
-  Widget _repeatButton(BuildContext context, LoopMode loopMode) {
+  Widget _repeatButton(BuildContext context, String repeatModeStr) {
     final icons = [
       Icon(Icons.repeat, color: Colors.white, size: 30.sp),
       Icon(Icons.repeat, color: Colors.amber, size: 30.sp),
@@ -132,17 +130,19 @@ class DetailMusicControlButtons extends StatelessWidget {
     ];
 
     const cycleModes = [
-      LoopMode.off,
-      LoopMode.all,
-      LoopMode.one,
+      'off',
+      'all',
+      'one',
     ];
-    final index = cycleModes.indexOf(loopMode);
+    final index = cycleModes.indexOf(repeatModeStr);
     return IconButton(
       icon: icons[index],
       onPressed: () {
+        final nextMode = cycleModes[(index + 1) % cycleModes.length];
         showToast(msg[(index + 1) % msg.length]);
-        audioPlayer.setLoopMode(
-            cycleModes[(cycleModes.indexOf(loopMode) + 1) % cycleModes.length]);
+        Get.find<DetailMusicController>()
+            .musicPlayerController
+            .toggleRepeatButton(nextMode);
       },
     );
   }

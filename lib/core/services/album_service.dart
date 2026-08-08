@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/mappers/album_mapper.dart';
 import 'package:cybeat_music_player/core/models/filter_item.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/repositories/album_repository.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,7 +72,7 @@ class AlbumService extends GetxService {
     // String sort = sortValue;
     // String filter = getSelectedFilter;
 
-    String api = dotenv.env['GDRIVE_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    String api = getEndpoint('GDRIVE_API_URL');
 
     try {
       final apiResponse = await http.get(Uri.parse(api));
@@ -172,9 +172,9 @@ class AlbumService extends GetxService {
     recentsList.sort((a, b) => b.playedAt.compareTo(a.playedAt));
   }
 
-  void pinAlbum(String uid) {
+  void pinAlbum(String uid, String type) {
     final indexPin = jumlahPin.value;
-    final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+    final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid && playlist?.type == type);
     final currentChild =
         allAlbumChildren[index]; // Simpan elemen dari indeks index
     final currentAlbum =
@@ -192,13 +192,13 @@ class AlbumService extends GetxService {
     jumlahPin.value++;
   }
 
-  void unpinAlbum(String uid) {
+  void unpinAlbum(String uid, String type) {
     final currentIndex =
-        selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+        selectedAlbum.indexWhere((playlist) => playlist?.uid == uid && playlist?.type == type);
     final alphabeticalIndex =
-        alphabeticalList.indexWhere((playlist) => playlist.uid == uid);
+        alphabeticalList.indexWhere((playlist) => playlist.uid == uid && playlist.type == type);
     final recentsIndex =
-        recentsList.indexWhere((playlist) => playlist.uid == uid);
+        recentsList.indexWhere((playlist) => playlist.uid == uid && playlist.type == type);
     int normalIndex = 0;
 
     if (sortValue == 'title') {
@@ -249,10 +249,10 @@ class AlbumService extends GetxService {
     }
   }
 
-  Future<bool> updateLastPlayedAlbum(String uid) async {
+  Future<bool> updateLastPlayedAlbum(String uid, String type) async {
     String sort = sortValue;
     final indexPin = jumlahPin.value;
-    final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+    final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid && playlist?.type == type);
     final currentChild = allAlbumChildren[index];
     final currentAlbum = selectedAlbum[index];
 
@@ -278,7 +278,7 @@ class AlbumService extends GetxService {
     for (var i = numPin; i < selectedAlbum.length; i++) {
       if (filter == 'title') {
         final replacementIndex = alphabeticalList
-            .indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid);
+            .indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid && playlist.type == selectedAlbum[i]?.type);
         if ((replacementIndex - filterIndex).abs() < selisih) {
           selisih = (replacementIndex - filterIndex).abs();
           isNegative = filterIndex - replacementIndex < 0;
@@ -286,7 +286,7 @@ class AlbumService extends GetxService {
         }
       } else if (filter == 'uid') {
         final replacementIndex = recentsList
-            .indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid);
+            .indexWhere((playlist) => playlist.uid == selectedAlbum[i]?.uid && playlist.type == selectedAlbum[i]?.type);
         if ((replacementIndex - filterIndex).abs() < selisih) {
           selisih = (replacementIndex - filterIndex).abs();
           isNegative = filterIndex - replacementIndex < 0;
@@ -297,12 +297,12 @@ class AlbumService extends GetxService {
     return isNegative ? index - 1 : index;
   }
 
-  void removePlaylist(String uid) {
+  void removePlaylist(String uid, String type) {
     // Cari index dari playlist yang akan dihapus di dalam seluruh album/playlist.
-    final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid);
+    final index = selectedAlbum.indexWhere((playlist) => playlist?.uid == uid && playlist?.type == type);
     // Cari index dari playlist yang akan dihapus di dalam list playlist.
     final indexPlaylist =
-        playlistCreatedList.indexWhere((playlist) => playlist.uid == uid);
+        playlistCreatedList.indexWhere((playlist) => playlist.uid == uid && playlist.type == type);
 
     allAlbumChildren.removeAt(index);
     selectedAlbum.removeAt(index);
@@ -385,8 +385,7 @@ class AlbumService extends GetxService {
   String get sortValue => homeSortPreferences.value;
 
   Future<void> editPlaylist(String id, String name) async {
-    String url =
-        dotenv.env['CRUD_PLAYLIST_API_URL'] ?? 'Kunci API Tidak Ditemukan';
+    String url = getEndpoint('CRUD_PLAYLIST_API_URL');
 
     try {
       final response = await http.post(

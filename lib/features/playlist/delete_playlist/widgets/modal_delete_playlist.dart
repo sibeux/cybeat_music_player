@@ -32,7 +32,7 @@ void showModalDeletePlaylist(
           isDestructiveAction: true,
           onPressed: () {
             Get.back();
-            Get.put(DeletePlaylistController()).deletePlaylist(uid);
+            Get.put(DeletePlaylistController()).deletePlaylist(uid, type);
             showRemoveAlbumToast(
               '${type.capitalizeFirst!} removed from your library',
             );

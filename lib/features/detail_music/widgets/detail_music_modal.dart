@@ -160,6 +160,7 @@ Future<dynamic> detailMusicModal(
                     Get.back();
                     detailMusicCreditsDialog(
                       context: context,
+                      currentMediaItem: detailMusicController.currentMediaItem!,
                     );
                   }),
             ],

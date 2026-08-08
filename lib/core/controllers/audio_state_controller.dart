@@ -5,13 +5,14 @@ import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
+import 'package:cybeat_music_player/core/audio/cybeat_audio_handler.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:cybeat_music_player/core/models/music_extras.dart';
 import 'package:cybeat_music_player/core/repositories/audio_repository.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
@@ -26,8 +27,12 @@ class AudioStateController extends GetxController {
   final activePlayer = Rx<AudioPlayer?>(null);
   final playlist = RxList<Music>([]);
   static int _nextMediaId = 1;
+  int _currentFetchSession = 0;
   // qeueu untuk testing screen
   List<MediaItem> queue = [];
+
+  /// Handler AudioService untuk notifikasi. Di-init di [onInit].
+  late CybeatAudioHandler audioHandler;
 
   var sampleRate = '--'.obs;
   var bitsPerRawSample = '--'.obs;
@@ -51,8 +56,25 @@ class AudioStateController extends GetxController {
 
   @override
   void onInit() {
-    activePlayer.value = AudioPlayer();
+    _initAudioService();
     super.onInit();
+  }
+
+  /// Menginisialisasi AudioPlayer dan mendaftarkan [CybeatAudioHandler] ke AudioService.
+  /// Harus async karena [AudioService.init] adalah operasi async.
+  /// Dipanggil dari [onInit] secara fire & forget agar tidak memblokir controller init.
+  Future<void> _initAudioService() async {
+    final player = AudioPlayer();
+    activePlayer.value = player;
+
+    // Daftarkan handler kustom ke AudioService.
+    // Handler ini yang mengontrol tombol di notifikasi dan lock screen.
+    // Lihat: lib/core/audio/cybeat_audio_handler.dart
+    audioHandler = await AudioService.init(
+      builder: () => CybeatAudioHandler(player),
+      config: cybeatAudioServiceConfig,
+    );
+    logInfo('[AudioService] CybeatAudioHandler berhasil diinisialisasi.');
   }
 
   @override
@@ -62,9 +84,13 @@ class AudioStateController extends GetxController {
   }
 
   Future<void> clear() async {
-    activePlayer.value?.stop();
-    activePlayer.value?.dispose();
-    activePlayer.value = AudioPlayer();
+    // PENTING: Jangan buat AudioPlayer baru di sini!
+    // CybeatAudioHandler sudah terikat ke instance player yang dibuat di _initAudioService().
+    // Membuat player baru akan memutus koneksi handler → notifikasi tidak ter-update.
+    // Cukup stop player dan clear source-nya saja.
+    await activePlayer.value?.stop();
+    // Reset source ke kosong agar player benar-benar bersih.
+    await activePlayer.value?.setAudioSources([]);
     // Reset ID saat player di-clear.
     lastProcessedMusicId = null;
 
@@ -138,6 +164,8 @@ class AudioStateController extends GetxController {
     isAlbumEmpty.value = false;
     String type = list.type.toLowerCase();
     _nextMediaId = 1;
+    _currentFetchSession++;
+    final int currentSession = _currentFetchSession;
 
     FirebaseCrashlytics.instance
         .log("Fetch music started for uid=${list.uid}&type=$type");
@@ -147,6 +175,7 @@ class AudioStateController extends GetxController {
       if (type == 'offline') {
         final musicDownloadController = Get.find<MusicDownloadController>();
         await musicDownloadController.getDownloadedSongs();
+        if (currentSession != _currentFetchSession) return;
         if (musicDownloadController.musicOfflineList.isEmpty) {
           listData = RxList<dynamic>([]);
           isAlbumEmpty.value = true;
@@ -160,8 +189,10 @@ class AudioStateController extends GetxController {
           albumType: type,
           albumId: list.uid,
         );
+        if (currentSession != _currentFetchSession) return;
         if (responseBody.isNotEmpty && type != 'offline') {
           final prefs = await SharedPreferences.getInstance();
+          if (currentSession != _currentFetchSession) return;
           uidDownloadedSongs = prefs.getStringList('uidDownloadedSongs') ?? [];
           List<dynamic> data = responseBody['data'] as List<dynamic>;
           if (data.isEmpty) {
@@ -189,6 +220,11 @@ class AudioStateController extends GetxController {
               : item['uploader'].toString().trim() == ''
                   ? "Cybeat"
                   : item['uploader'];
+          final coverUrl = regexGdriveHostUrl(
+            url: item['cover'],
+            musicId: "0",
+            isAudio: false,
+          );
           final String musicUrl = regexGdriveHostUrl(
               url: type == 'offline' ? item['filePath'] : "",
               musicId: item['id_music'].toString(),
@@ -196,91 +232,84 @@ class AudioStateController extends GetxController {
               isOffline: type == 'offline' ? true : false,
               isAudio: true);
           return Music(
-            musicId: int.tryParse(item['id_music'].toString()) ?? 0,
-            album: capitalizeEachWord(item['album'] ?? "Unknown Album"),
-            artist: capitalizeEachWord(item['artist']),
-            cover: regexGdriveHostUrl(
-              url: item['cover'],
-              musicId: "0",
-              isAudio: false,
-            ),
-            linkDrive: musicUrl,
-            title: capitalizeEachWord(item['title']),
-            extras: {
-              'index': '${_nextMediaId++}',
-              'music_id': item['id_music'].toString(),
-              'file_drive_id': '',
-              'disc_number': item['disc_number'],
-              'url': musicUrl,
-              'favorite': item['favorite'],
-              'id_playlist_music': item['id_playlist_music'] ?? '',
-              'original_source': type != 'offline'
-                  // ? "Cloud Storage"
-                  ? item['cover']
-                  : item['filePath'],
-              'is_cached': item['cache_music_id'] != null ||
-                      item['link_gdrive'].toString().contains('cdncloudflare/')
-                  ? true
-                  : false,
-              'is_lossless': item['music_quality'] == 'lossless' ? true : false,
-              'metadata': {
-                // metadata_id_music dibiarkan null gpp kalo kosong.
-                // Buat cek di onReadCodec.
-                'metadata_id_music': item['metadata_id_music'] ?? '',
-                'codec_name': item['codec_name'] ?? '--',
-                'sample_rate': item['sample_rate'] ?? '--',
-                'bit_rate': item['bit_rate'] ?? '--',
-                'bits_per_raw_sample': item['bits_per_raw_sample'] ?? '--',
-              },
-              'dominant_color': {
-                'bg_color': item['bg_color'] ?? '',
-                'text_color': item['text_color'] ?? '',
-              },
-              'is_downloaded': type != 'offline'
-              // List uidDownloadedSongs itu save value String. 
-              // Karena item['id_music'] itu int, jadi harus di-convert dulu ke String sebelum cek contains.
-                  ? uidDownloadedSongs.contains(item['id_music'].toString())
-                      ? true
-                      : false
-                  : false,
-              'uploader': uploader,
-              'is_suspicious': item['is_suspicious'] == 'true' ? true : false,
-              'is_offline': type == 'offline' ? true : false,
-            },
-          );
+              musicId: int.tryParse(item['id_music'].toString()) ?? 0,
+              album: capitalizeEachWord(item['album'] ?? "Unknown Album"),
+              artist: capitalizeEachWord(item['artist']),
+              cover: coverUrl,
+              linkDrive: musicUrl,
+              title: capitalizeEachWord(item['title']),
+              extras: MusicExtras(
+                index: '${_nextMediaId++}',
+                musicId: item['id_music'].toString(),
+                discNumber: item['disc_number'],
+                musicUrl: musicUrl,
+                isFavorite: item['favorite'] == 'true' ? true : false,
+                musicPlaylistId: item['id_playlist_music'] ?? '',
+                originalSource: type != 'offline'
+                    // ? "Cloud Storage"
+                    ? item['cover']
+                    : item['filePath'],
+                isCached: item['cache_music_id'] != null ||
+                        coverUrl.toString().contains('cdncloudflare/')
+                    ? true
+                    : false,
+                isLossless: item['music_quality'] == 'lossless' ? true : false,
+                metadata: MusicMetadata(
+                  // metadata_id_music dibiarkan null gpp kalo kosong.
+                  // Buat cek di onReadCodec.
+                  musicMetadataId: item['metadata_id_music'].toString(),
+                  codecName: item['codec_name'] ?? '--',
+                  sampleRate: item['sample_rate'] ?? '--',
+                  bitRate: item['bit_rate'] ?? '--',
+                  bitsPerSampleRaw: item['bits_per_raw_sample'] ?? '--',
+                ),
+                dominantColor: MusicDominantColor(
+                  backgroundColor: item['bg_color'] ?? '',
+                  textColor: item['text_color'] ?? '',
+                ),
+                uploader: uploader,
+                isDownloaded: type != 'offline'
+                    // List uidDownloadedSongs itu save value String.
+                    // Karena item['id_music'] itu int, jadi harus di-convert dulu ke String sebelum cek contains.
+                    ? uidDownloadedSongs.contains(item['id_music'].toString())
+                        ? true
+                        : false
+                    : false,
+                isSuspicious: item['is_suspicious'] == 'true' ? true : false,
+                isOffline: type == 'offline' ? true : false,
+              ));
         },
       ).toList();
       queue = playlist
           .map(
-            (e) => MediaItem(
-              id: e.musicId.toString(),
-              title: e.title,
-              album: e.album,
-              artUri: Uri.parse(e.cover),
-              artist: e.artist,
-              extras: e.extras,
+            (music) => MediaItem(
+              id: music.musicId.toString(),
+              title: music.title,
+              album: music.album,
+              artUri: Uri.parse(music.cover),
+              artist: music.artist,
+              extras: music.extras?.toMap() ?? {},
             ),
           )
           .toList();
     } catch (e, st) {
+      if (currentSession != _currentFetchSession) return;
       logError('Error loading audio source: $e, st:$st');
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
       isAlbumEmpty.value = true;
       playlist.value = <Music>[];
       await activePlayer.value?.setAudioSources([]);
     } finally {
-      initAlbumLoading.value = false;
+      if (currentSession == _currentFetchSession) {
+        initAlbumLoading.value = false;
+      }
     }
   }
 
   Future<void> deleteMusicFromPlaylist({
     required String idPlaylistMusic,
   }) async {
-    String url = dotenv.env['MUSIC_PLAYLIST_API_URL'] ?? '';
-    if (url.isEmpty) {
-      logError('Url API is empty');
-      return;
-    }
+    String url = getEndpoint('MUSIC_PLAYLIST_API_URL');
     try {
       final response = await http.post(
         Uri.parse(url),
