@@ -97,8 +97,8 @@ class AlbumMusicController extends GetxController {
     isSearch.value = !isSearch.value;
   }
 
-  void updateLastPlayedAlbum(String uid) async {
-    await albumService.updateLastPlayedAlbum(uid);
+  void updateLastPlayedAlbum(String uid, String type) async {
+    await albumService.updateLastPlayedAlbum(uid, type);
   }
 
   void rebuildPlaylist() {
@@ -107,7 +107,8 @@ class AlbumMusicController extends GetxController {
       musicPlayerController.isNeedRebuildLastPlaylist.value = false;
       // Method untuk update playlsit terakhir yang diputar.
       updateLastPlayedAlbum(
-          musicPlayerController.currentActivePlaylist.value!.uid);
+          musicPlayerController.currentActivePlaylist.value!.uid,
+          musicPlayerController.currentActivePlaylist.value!.type);
     }
   }
 
