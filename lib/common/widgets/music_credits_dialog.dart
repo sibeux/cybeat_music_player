@@ -62,13 +62,13 @@ void showMusicCreditsDialog({
             height: 15.h,
           ),
           Text(
-                currentMediaItem.title,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
+            currentMediaItem.title,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
           SizedBox(
             height: 15.h,
           ),
@@ -108,15 +108,15 @@ void showMusicCreditsDialog({
             height: 3.h,
           ),
           Text(
-                currentMediaItem.album ?? '--',
-                maxLines: 3,
-                style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
-              ),
+            currentMediaItem.album ?? '--',
+            maxLines: 3,
+            style: TextStyle(
+              overflow: TextOverflow.ellipsis,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+              color: Colors.black.withValues(alpha: 0.6),
+            ),
+          ),
           SizedBox(
             height: 15.h,
           ),
@@ -132,15 +132,15 @@ void showMusicCreditsDialog({
             height: 3.h,
           ),
           Text(
-                currentMediaItem.extras!['disc_number'].toString(),
-                maxLines: 3,
-                style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
-              ),
+            currentMediaItem.extras!['disc_number'].toString(),
+            maxLines: 3,
+            style: TextStyle(
+              overflow: TextOverflow.ellipsis,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+              color: Colors.black.withValues(alpha: 0.6),
+            ),
+          ),
           SizedBox(
             height: 15.h,
           ),
@@ -155,19 +155,19 @@ void showMusicCreditsDialog({
           SizedBox(
             height: 3.h,
           ),
-        Text(
-                currentMediaItem.extras?['uploader']
-                        .toString()
-                        .split('@')
-                        .first
-                        .capitalize ??
-                    'Cybeat',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
-              ),
+          Text(
+            currentMediaItem.extras?['uploader']
+                    .toString()
+                    .split('@')
+                    .first
+                    .capitalize ??
+                'Cybeat',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+              color: Colors.black.withValues(alpha: 0.6),
+            ),
+          ),
           SizedBox(
             height: 15.h,
           ),
@@ -183,45 +183,15 @@ void showMusicCreditsDialog({
             height: 3.h,
           ),
           Text(
-                currentMediaItem.extras?['original_source'],
-                maxLines: 1,
-                style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
-              ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Text(
-            "Cached From",
+            currentMediaItem.extras?['original_source'],
+            maxLines: 1,
             style: TextStyle(
+              overflow: TextOverflow.ellipsis,
               fontSize: 14.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+              fontWeight: FontWeight.w400,
+              color: Colors.black.withValues(alpha: 0.6),
             ),
           ),
-          SizedBox(
-            height: 3.h,
-          ),
-          Text(
-                currentMediaItem.extras?['is_cached']
-                    ? currentMediaItem.artUri
-                            .toString()
-                            .contains('cdncloudflare/')
-                        ? "Cloudflare CDN"
-                        : currentMediaItem.extras!['url']
-                    : '—',
-                maxLines: 1,
-                style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
-              ),
           SizedBox(
             height: 10.h,
           ),
