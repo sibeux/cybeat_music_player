@@ -1,6 +1,6 @@
 import 'package:cybeat_music_player/features/home/controllers/home_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_grid/home_one_grid_layout.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_grid/home_three_grid_layout.dart';
@@ -10,11 +10,11 @@ import 'package:get/get.dart';
 class HomeListGrid extends StatelessWidget {
   const HomeListGrid({
     super.key,
-    required this.playlist,
+    required this.album,
     required this.audioStateController,
   });
 
-  final Playlist playlist;
+  final Album album;
   final AudioStateController audioStateController;
 
   @override
@@ -24,27 +24,19 @@ class HomeListGrid extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        if (musicPlayerController.currentActivePlaylist.value?.title !=
-                playlist.title ||
-            musicPlayerController.currentActivePlaylist.value?.title == "") {
-          audioStateController.clear();
-          musicPlayerController.killMusic();
-          musicPlayerController.clearCurrentMediaItem();
-          audioStateController.init(playlist);
-          musicPlayerController.setActivePlaylist(playlist);
-        }
-        Get.toNamed('/album_music', id: 1);
+        homeController.openAlbum(
+            album: album, musicPlayerController: musicPlayerController);
       },
       child: Container(
         alignment: Alignment.centerLeft,
         child: Obx(
           () => homeController.albumCountGrid.value == 1
               ? OneGridLayout(
-                  playlist: playlist,
+                  playlist: album,
                   musicPlayerController: musicPlayerController,
                 )
               : ThreeGridLayout(
-                  playlist: playlist,
+                  album: album,
                   musicPlayerController: musicPlayerController,
                 ),
         ),

@@ -4,51 +4,49 @@ import 'package:cybeat_music_player/core/controllers/music_download_controller.d
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/common/utils/capitalize.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/features/album_music/widgets/album_music_modal.dart';
+import 'package:cybeat_music_player/core/models/music.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_widget_musiclist/album_music_index_number_list.dart';
+import 'package:cybeat_music_player/features/album_music/widgets/album_music_widget_musiclist/album_music_modal.dart';
 import 'package:cybeat_music_player/common/widgets/spectrum_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
-class AlbumMusicList extends StatelessWidget {
-  const AlbumMusicList({
+class AlbumMusicAzlistList extends StatelessWidget {
+  const AlbumMusicAzlistList({
     super.key,
-    required this.mediaItem,
+    required this.music,
     required this.audioPlayer,
     required this.index,
     required this.audioState,
   });
-
-  final MediaItem mediaItem;
+  final Music music;
   final AudioPlayer audioPlayer;
   final int index;
   final AudioStateController audioState;
 
   @override
   Widget build(BuildContext context) {
-    final musikDimainkan =
-        Get.find<MusicPlayerController>().getCurrentMediaItem;
+    final mediaItem = MediaItem(
+      id: music.musicId.toString(),
+      title: music.title,
+      album: music.album,
+      artUri: Uri.parse(music.cover),
+      artist: music.artist,
+      extras: music.extras?.toMap() ?? {},
+    );
     final musicDownloadController = Get.find<MusicDownloadController>();
-    String colorTitle = "#313031";
-    double marginList = 18;
 
     Widget indexIcon = Text(
-      mediaItem.id.toString().padLeft(2, '0'),
+      mediaItem.extras!['index'].toString().padLeft(2, '0'),
       style: TextStyle(
         fontSize: 12,
         color: HexColor('#8d8c8c'),
         fontWeight: FontWeight.bold,
       ),
     );
-
-    if (musikDimainkan?.extras!['music_id'] == mediaItem.extras!['music_id']) {
-      colorTitle = '#8238be';
-      marginList = 12;
-      indexIcon = const SpectrumAnimation();
-    }
 
     return SizedBox(
       height: 70.h,
@@ -58,13 +56,24 @@ class AlbumMusicList extends StatelessWidget {
         children: [
           Row(
             children: [
-              IndexNumberList(
-                marginList: marginList,
-                musicDownloadController: musicDownloadController,
-                mediaItem: mediaItem,
-                indexIcon: indexIcon,
-                musikDimainkan: musikDimainkan,
-              ),
+              Obx(() => AlbumMusicIndexNumberList(
+                    marginList: Get.find<MusicPlayerController>()
+                                .getCurrentMediaItem
+                                ?.extras!['music_id'] ==
+                            mediaItem.id
+                        ? 12
+                        : 18,
+                    musicDownloadController: musicDownloadController,
+                    mediaItem: mediaItem,
+                    indexIcon: Get.find<MusicPlayerController>()
+                                .getCurrentMediaItem
+                                ?.extras!['music_id'] ==
+                            mediaItem.id
+                        ? const SpectrumAnimation()
+                        : indexIcon,
+                    musikDimainkan:
+                        Get.find<MusicPlayerController>().getCurrentMediaItem,
+                  )),
               // cover image
               Container(
                 width: 45.w,
@@ -100,7 +109,14 @@ class AlbumMusicList extends StatelessWidget {
                         right: 0,
                         top: 0,
                         child: Image.asset(
-                          'assets/images/badge-en-lossless.png',
+                          mediaItem.extras?['metadata']['codec_name'] == 'alac'
+                              ? 'assets/images/badge-alac.png'
+                              : double.parse(mediaItem.extras?['metadata']
+                                              ['sample_rate'])
+                                          .toInt() >=
+                                      96
+                                  ? 'assets/images/badge-en-hires.png'
+                                  : 'assets/images/badge-en-lossless.png',
                           fit: BoxFit.cover,
                           width: 30.w,
                           height: 30.h,
@@ -119,15 +135,20 @@ class AlbumMusicList extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        capitalizeEachWord(mediaItem.title),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: HexColor(colorTitle),
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Obx(() => Text(
+                            capitalizeEachWord(mediaItem.title),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: HexColor(Get.find<MusicPlayerController>()
+                                          .getCurrentMediaItem
+                                          ?.extras!['music_id'] ==
+                                      mediaItem.id
+                                  ? '#8238be'
+                                  : "#313031"),
+                              overflow: TextOverflow.ellipsis,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
                       Row(
                         children: [
                           Container(
@@ -135,7 +156,7 @@ class AlbumMusicList extends StatelessWidget {
                             child: Icon(
                               Icons.audiotrack_outlined,
                               color: HexColor('#b4b5b4'),
-                              size: 15,
+                              size: 15.sp,
                             ),
                           ),
                           Expanded(
@@ -143,7 +164,7 @@ class AlbumMusicList extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   color: HexColor('#b4b5b4'),
                                   overflow: TextOverflow.ellipsis,
                                   fontWeight: FontWeight.values[4],
@@ -162,7 +183,7 @@ class AlbumMusicList extends StatelessWidget {
                 highlightColor: Colors.black.withValues(alpha: 0.02),
                 icon: Icon(
                   Icons.more_vert_sharp,
-                  size: 30,
+                  size: 30.sp,
                   color: HexColor('#b5b5b4'),
                 ),
                 onPressed: () {
@@ -175,13 +196,13 @@ class AlbumMusicList extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(
-                width: 15,
+              SizedBox(
+                width: 15.w,
               ),
             ],
           ),
-          const SizedBox(
-            height: 10,
+          SizedBox(
+            height: 10.h,
           ),
           Container(
             margin: EdgeInsets.only(left: 18.w, right: 10.w),
@@ -190,71 +211,6 @@ class AlbumMusicList extends StatelessWidget {
             color: HexColor('#e0e0e0').withValues(alpha: 0.7),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class IndexNumberList extends StatelessWidget {
-  const IndexNumberList({
-    super.key,
-    required this.marginList,
-    required this.musicDownloadController,
-    required this.mediaItem,
-    required this.indexIcon,
-    required this.musikDimainkan,
-  });
-
-  final double marginList;
-  final MusicDownloadController musicDownloadController;
-  final MediaItem mediaItem;
-  final Widget indexIcon;
-  final MediaItem? musikDimainkan;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40.w,
-      height: 40.h,
-      alignment: Alignment.center,
-      margin: EdgeInsets.only(
-        left: marginList,
-      ),
-      child: Obx(
-        () => musicDownloadController
-                    .dataProgressDownload[mediaItem.extras!['music_id']] !=
-                null
-            ? musicDownloadController.dataProgressDownload[
-                        mediaItem.extras!['music_id']]!['progress'] ==
-                    0.0
-                ? indexIcon
-                : Transform.scale(
-                    scale: 0.8,
-                    child: CircularPercentIndicator(
-                      radius: 20.r,
-                      lineWidth: 2.w,
-                      percent: musicDownloadController.dataProgressDownload[
-                          mediaItem.extras!['music_id']]!['progress'],
-                      center: Text(
-                        '${(musicDownloadController.dataProgressDownload[mediaItem.extras!['music_id']]!['progress'] * 100).toStringAsFixed(0)}%',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: HexColor('#8238be'),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      progressColor: HexColor('#8238be'),
-                      backgroundColor: HexColor('#8d8c8c'),
-                    ),
-                  )
-            : mediaItem.extras?['is_downloaded'] == true &&
-                    musikDimainkan?.id != mediaItem.id
-                ? Icon(
-                    Icons.download_done_rounded,
-                    color: Colors.green,
-                    size: 20.sp,
-                  )
-                : indexIcon,
       ),
     );
   }

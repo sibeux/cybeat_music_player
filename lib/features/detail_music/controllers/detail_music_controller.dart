@@ -1,8 +1,9 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:get/get.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,8 @@ import 'package:just_audio/just_audio.dart';
 class DetailMusicController extends GetxController {
   final MusicPlayerController musicPlayerController = Get.find();
   final AudioStateController audioStateController = Get.find();
+
+  final uiTrigger = 0.obs;
 
   // --- TAMBAHKAN STATE BARU ---
   var isSeeking = false.obs;
@@ -38,6 +41,10 @@ class DetailMusicController extends GetxController {
 
   AudioPlayer? get player => audioStateController.activePlayer.value;
   bool get isMusicPlayingNow => musicPlayerController.isMusicPlayingNow.value;
+  bool get isWaitingGetMusicStreamUrl =>
+      musicPlayerController.isWaitingGetMusicStreamUrl.value;
+  bool get isLastIndexMusic => musicPlayerController.isLastIndexMusic;
+  bool get isShuffleEnabled => musicPlayerController.isShuffleEnabled.value;
 
   Duration get duration => musicPlayerController.currentMusicDuration.value;
   Duration get position => musicPlayerController.currentMusicPosition.value;
@@ -50,12 +57,11 @@ class DetailMusicController extends GetxController {
       formatDuration(isSeeking.value ? dragValue.value : position);
 
   MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
-  Playlist? get currentActivePlaylist =>
+  Album? get currentActivePlaylist =>
       musicPlayerController.currentActivePlaylist.value;
   bool get isAlbumMusicScreenActive =>
       musicPlayerController.isAzlistviewScreenActive.value;
 
-  // Codec
   String get sampleRate => audioStateController.sampleRate.value;
   String get bitsPerRawSample => audioStateController.bitsPerRawSample.value;
   String get bitRate => audioStateController.bitRate.value;
@@ -67,8 +73,20 @@ class DetailMusicController extends GetxController {
     return '$minutes:$seconds';
   }
 
-  void setfavorite(String? id, String? isFavorite) async {
-    String api = dotenv.env['FAVORITE_API_URL'] ?? '';
+  void setfavorite() async {
+    uiTrigger.value++;
+    var isFavorite = '0';
+    final id = currentMediaItem!.extras?['music_id'];
+    if (currentMediaItem!.extras?['favorite'] == '1') {
+      isFavorite = '0';
+      currentMediaItem!.extras?['favorite'] = '0';
+      showToast('Removed from favorite');
+    } else {
+      isFavorite = '1';
+      currentMediaItem!.extras?['favorite'] = '1';
+      showToast('Added to favorite');
+    }
+    String api = getEndpoint('FAVORITE_API_URL');
     String url = '$api?_id=$id&_favorite=$isFavorite';
 
     try {
@@ -94,5 +112,17 @@ class DetailMusicController extends GetxController {
     player!.seek(Duration(milliseconds: position.round()));
     // Setelah selesai, baru update state
     isSeeking.value = false;
+  }
+
+  void seekNextButton() {
+    musicPlayerController.seekNextButton();
+  }
+
+  void seekPreviousButton() {
+    musicPlayerController.seekPreviousButton();
+  }
+
+  void toggleShuffleButton() {
+    musicPlayerController.toggleShuffleButton();
   }
 }

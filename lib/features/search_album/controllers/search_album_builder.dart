@@ -24,7 +24,7 @@ class SearchAlbumBuilder extends StatelessWidget {
                   height: 20,
                 )
               : ScaleTapSearchAlbum(
-                  playlist: searchAlbumController.filteredAlbum[index]!,
+                  album: searchAlbumController.filteredAlbum[index]!,
                   audioState: audioState,
                 );
         },

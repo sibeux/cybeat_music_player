@@ -1,23 +1,24 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/models/filter_item.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeController extends GetxController {
   final AlbumService albumService = Get.find<AlbumService>();
+  final AuthService authService = Get.find<AuthService>();
   final MusicPlayerController musicPlayerController = Get.find();
-  final RefreshController refreshController =
-      RefreshController(initialRefresh: false);
 
   var filterIsTapped = false.obs;
   var jumlahAlbumDitampilkan = 15.obs;
   var isTapped = false.obs;
 
-  RxList<Playlist?> get selectedAlbum => albumService.selectedAlbum;
-  RxList<Playlist> get initiateAlbum => albumService.initiateAlbum;
+  RxList<Album?> get selectedAlbum => albumService.selectedAlbum;
+  RxList<Album> get initiateAlbum => albumService.initiateAlbum;
   RxList<int> get filterChildren => albumService.filterChildren;
   RxList<FilterItem> get generateFilter => albumService.generateFilter;
   RxString get selectedFilter => albumService.homeSelectedFilter;
@@ -27,8 +28,10 @@ class HomeController extends GetxController {
   RxList get fourCoverPlaylist => albumService.fourCoverPlaylist;
   RxList get fourCoverCategory => albumService.fourCoverCategory;
   dynamic get sortValue => albumService.sortValue;
-  RxList<Playlist> get playlistCreatedList => albumService.playlistCreatedList;
+  RxList<Album> get playlistCreatedList => albumService.playlistCreatedList;
   bool get isLoading => albumService.isHomeLoading.value;
+  RxString get fullName => authService.fullName;
+  bool get isAuthenticated => authService.isAuthenticated;
 
   MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
 
@@ -36,6 +39,8 @@ class HomeController extends GetxController {
   void onInit() async {
     // Ambil data filter sort dari Shared Preferences
     await albumService.getSortBy();
+    // Dapatkan mode music listview.
+    await albumService.getSimpleMode();
     // Ambil data album dari database
     initializeAlbum();
     super.onInit();
@@ -46,14 +51,14 @@ class HomeController extends GetxController {
     await albumService.initializeAlbum();
   }
 
-  void onLoading() async {
+  void onLoading(RefreshController refreshController) async {
     // monitor network fetch
     jumlahAlbumDitampilkan.value = jumlahAlbumDitampilkan.value + 18;
     // if failed,use loadFailed(),if no data return,use LoadNodata()
     refreshController.loadComplete();
   }
 
-  void onRefresh() async {
+  void onRefresh(RefreshController refreshController) async {
     // monitor network fetch
     await Future.delayed(const Duration(milliseconds: 500));
     initializeAlbum();
@@ -61,18 +66,18 @@ class HomeController extends GetxController {
     refreshController.refreshCompleted();
   }
 
-  void pinAlbum(String uid) {
-    albumService.pinAlbum(uid);
+  void pinAlbum(String uid, String type) {
+    albumService.pinAlbum(uid, type);
     isTapped.value = !isTapped.value;
   }
 
-  void unpinAlbum(String uid) {
-    albumService.unpinAlbum(uid);
+  void unpinAlbum(String uid, String type) {
+    albumService.unpinAlbum(uid, type);
     isTapped.value = !isTapped.value;
   }
 
-  void removePlaylist(String uid) {
-    albumService.removePlaylist(uid);
+  void removePlaylist(String uid, String type) {
+    albumService.removePlaylist(uid, type);
     isTapped.value = !isTapped.value;
   }
 
@@ -88,8 +93,8 @@ class HomeController extends GetxController {
     initializeAlbum();
   }
 
-  void updateLastPlayedAlbum(String uid) async {
-    final needRebuild = await albumService.updateLastPlayedAlbum(uid);
+  void updateLastPlayedAlbum(String uid, String type) async {
+    final needRebuild = await albumService.updateLastPlayedAlbum(uid, type);
     if (needRebuild) {
       isTapped.value = !isTapped.value;
     }
@@ -100,7 +105,7 @@ class HomeController extends GetxController {
     initializeAlbum();
   }
 
-  void updateChildren(List<Playlist> playlist) {
+  void updateChildren(List<Album> playlist) {
     albumService.updateAllAlbumChildren(playlist);
     isTapped.value = !isTapped.value;
   }
@@ -111,5 +116,15 @@ class HomeController extends GetxController {
 
   void setCurrentMediaItem(MediaItem mediaItem) {
     musicPlayerController.updateCurrentMediaItem(mediaItem);
+  }
+
+  void openAlbum(
+      {required Album album,
+      required MusicPlayerController musicPlayerController}) {
+    musicPlayerController.openAlbum(album: album);
+  }
+
+  void openDrawer(BuildContext context) {
+    Scaffold.of(context).openDrawer();
   }
 }

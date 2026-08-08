@@ -8,4 +8,5 @@
         "comments": "#5c6a82"
     },
     "accessibility.underlineLinks": true,
+    "editor.wordWrap": "on"
 }

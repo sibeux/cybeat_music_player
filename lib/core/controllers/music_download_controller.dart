@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,19 +18,19 @@ class MusicDownloadController extends GetxController {
   var dataProgressDownload = <String, Map<String, dynamic>>{}.obs;
 
   final musicPlayerController = Get.find<MusicPlayerController>();
+  final audioStateController = Get.find<AudioStateController>();
 
-  void goOfflineScreen({
-    required AudioStateController audioState,
-    required BuildContext context,
-  }) {
-    Playlist playlist = Playlist(
+  void goOfflineScreen() {
+    Album playlist = Album(
       uid: 'offline',
       title: 'Offline Music',
       author: 'Nasrul Wahabi',
-      date: 'no date',
-      datePin: 'no date',
-      editable: 'true',
-      image: 'no image',
+      playedAt: 'no date',
+      createdAt: 'no date',
+      pinAt: 'no date',
+      isEditable: 'true',
+      image: {},
+      bgColor: 'ffffff',
       pin: 'false',
       type: 'offline',
     );
@@ -38,10 +38,10 @@ class MusicDownloadController extends GetxController {
     if (musicPlayerController.currentActivePlaylist.value?.title !=
             playlist.title ||
         musicPlayerController.currentActivePlaylist.value?.title == "") {
-      audioState.clear();
+      audioStateController.clear();
       musicPlayerController.killMusic();
       musicPlayerController.clearCurrentMediaItem();
-      audioState.init(playlist);
+      audioStateController.init(playlist);
       musicPlayerController.setActivePlaylist(playlist);
     }
 
@@ -55,13 +55,12 @@ class MusicDownloadController extends GetxController {
     final directory = await getApplicationDocumentsDirectory();
     final appDirPath = directory.path;
 
-    // Mendapatkan daftar file yang ada di direktori sementara
+    // Mendapatkan daftar file yang ada di direktori.
     final appDir = Directory(appDirPath);
     final files = appDir.listSync();
 
     // Mencetak nama file yang ada di dalamnya
     for (var file in files) {
-      // logger.d('File found: ${file.path}');
       logInfo('File found: ${file.path}');
     }
   }
@@ -78,11 +77,18 @@ class MusicDownloadController extends GetxController {
       dataProgressDownload[mediaItem.extras!['music_id']] = {
         'progress': 0.0,
       };
-
+      // buat url direct download
+      String initialUrl = mediaItem.extras!['url'];
+      final bool isCloudflareStream = initialUrl.contains('cdncloudflare/');
+      if (isCloudflareStream) {
+        String path = initialUrl.replaceFirst("cdncloudflare", '');
+        String endpoint = getEndpoint('HMAC_TOKEN_API_URL');
+        initialUrl = "$endpoint?path=$path&music_id=${mediaItem.id}";
+      }
       // Unduh file dari URL dan simpan di path cache
       final dio = Dio();
       await dio.download(
-        mediaItem.extras!['url'],
+        initialUrl,
         filePath,
         onReceiveProgress: (count, total) {
           if (total != -1) {
@@ -93,7 +99,6 @@ class MusicDownloadController extends GetxController {
           }
         },
       );
-
       // Setelah file diunduh, simpan metadata di SharedPreferences atau SQLite
       await saveDownloadedSong(mediaItem, filePath);
     } catch (e) {

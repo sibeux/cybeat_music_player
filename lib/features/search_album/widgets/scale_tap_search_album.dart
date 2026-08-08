@@ -1,7 +1,8 @@
-import 'package:cybeat_music_player/core/models/playlist.dart';
+import 'package:cybeat_music_player/core/models/album.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_four_cover.dart';
 import 'package:cybeat_music_player/features/home/widgets/home_list/home_list_modal_bottom.dart';
+import 'package:cybeat_music_player/features/search_album/controllers/search_album_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -13,10 +14,10 @@ class ScaleTapSearchAlbum extends StatefulWidget {
   const ScaleTapSearchAlbum({
     super.key,
     required this.audioState,
-    required this.playlist,
+    required this.album,
   });
 
-  final Playlist playlist;
+  final Album album;
   final AudioStateController audioState;
 
   @override
@@ -28,6 +29,8 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
   static const clickAnimationDurationMillis = 100;
   double _scaleTransformValue = 1;
   final musicPlayerController = Get.find<MusicPlayerController>();
+  final SearchAlbumController searchAlbumController =
+      Get.find<SearchAlbumController>();
 
   // needed for the "click" tap effect
   late final AnimationController animationController;
@@ -64,11 +67,10 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
 
   @override
   Widget build(BuildContext context) {
-    final audioState = widget.audioState;
     return GestureDetector(
       onLongPress: () {
         HapticFeedback.vibrate();
-        homeListModalBottom(context, widget.playlist);
+        homeListModalBottom(context, widget.album);
       },
       onPanDown: (details) {
         _shrinkButtonSize();
@@ -94,19 +96,9 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
               onTap: () {
                 // untuk menghilangkan keyboard
                 FocusManager.instance.primaryFocus?.unfocus();
-
-                if (musicPlayerController.currentActivePlaylist.value?.uid !=
-                        widget.playlist.uid ||
-                    musicPlayerController.currentActivePlaylist.value?.uid ==
-                        "") {
-                  audioState.clear();
-                  musicPlayerController.killMusic();
-                  musicPlayerController.clearCurrentMediaItem();
-                  audioState.init(widget.playlist);
-                  musicPlayerController.setActivePlaylist(widget.playlist);
-                }
-
-                Get.toNamed('/album_music', id: 1);
+                searchAlbumController.openAlbum(
+                    album: widget.album,
+                    musicPlayerController: musicPlayerController);
               },
               child: SizedBox(
                 height: 60,
@@ -126,8 +118,8 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                                 const BorderRadius.all(Radius.circular(3)),
                             child: HomeListFourCover(
                               size: 60,
-                              type: widget.playlist.type,
-                              playlist: widget.playlist,
+                              type: widget.album.type,
+                              album: widget.album,
                             ),
                           ),
                         ),
@@ -143,14 +135,14 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                                 height: 30,
                                 alignment: Alignment.centerLeft,
                                 child: Obx(() => Text(
-                                      widget.playlist.title,
+                                      widget.album.title,
                                       style: TextStyle(
                                           fontSize: 14,
                                           color: HexColor(musicPlayerController
                                                       .currentActivePlaylist
                                                       .value
                                                       ?.title ==
-                                                  widget.playlist.title
+                                                  widget.album.title
                                               ? '#8238be'
                                               : '#313031'),
                                           overflow: TextOverflow.ellipsis,
@@ -162,7 +154,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                                 height: 20,
                                 child: Row(
                                   children: [
-                                    if (widget.playlist.pin == "true")
+                                    if (widget.album.pin == "true")
                                       Icon(
                                         Icons.push_pin,
                                         size: 16,
@@ -180,7 +172,7 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                                           overflow: TextOverflow.ellipsis,
                                           fontWeight: FontWeight.values[4],
                                         ),
-                                        '${widget.playlist.type} • ${widget.playlist.author}',
+                                        '${widget.album.type} • ${widget.album.author}',
                                       ),
                                     )),
                                   ],

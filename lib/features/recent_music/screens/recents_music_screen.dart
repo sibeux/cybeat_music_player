@@ -1,12 +1,12 @@
 import 'dart:convert';
 
+import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/models/music.dart';
-import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/features/recent_music/widgets/recents_music_list.dart';
 import 'package:cybeat_music_player/common/widgets/shimmer_music_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart' as http;
@@ -32,9 +32,9 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
   }
 
   void getMusicData() async {
-    final AlbumService albumService = Get.find();
-    String api = dotenv.env['PLAYLIST_API_URL'] ?? '';
-    String url = '$api?recents_music';
+    String userId = Get.find<AuthService>().userId.value.toString();
+    String api = getEndpoint('PLAYLIST_API_URL');
+    String url = '$api?recents_music=$userId';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -58,20 +58,16 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
       for (final item in listData) {
         loadedItems.add(
           Music(
-            uid: item['id_music'],
+            musicId: int.tryParse(item['id_music']) ?? 0,
             title: item['title'],
             artist: item['artist'],
-            album: item['album'],
+            album: item['album'] ?? "Unknown Album",
             cover: regexGdriveHostUrl(
               url: item['cover'],
+              musicId: "0",
               isAudio: false,
-              listApiKey: albumService.gdriveApiKeyList,
             ),
-            linkDrive: item['link_gdrive'],
-            time: item['time'],
-            favorite: item['favorite'],
-            category: item['category'],
-            dateAdded: item['date_added'],
+            linkDrive: '',
           ),
         );
       }
@@ -114,8 +110,12 @@ class _RecentsMusicScreenState extends State<RecentsMusicScreen> {
     }
 
     if (_error != null) {
-      content = Center(
-        child: Text(_error!),
+      logError(_error!);
+      content = Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Center(
+          child: Text("Error occured. Try Again later."),
+        ),
       );
     }
 

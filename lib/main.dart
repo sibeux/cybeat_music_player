@@ -4,14 +4,24 @@ import 'dart:ui';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/services/auth_service.dart';
+import 'package:cybeat_music_player/core/services/secure_storage_service.dart';
+import 'package:cybeat_music_player/features/auth_user/bindings/user_login_binding.dart';
+import 'package:cybeat_music_player/features/auth_user/bindings/user_register_binding.dart';
+import 'package:cybeat_music_player/features/auth_user/screens/login/login_screen.dart';
+import 'package:cybeat_music_player/features/auth_user/screens/register/data_registration_screen.dart';
+import 'package:cybeat_music_player/features/auth_user/screens/register/email_check_screen.dart';
 import 'package:cybeat_music_player/features/detail_music/bindings/detail_music_binding.dart';
 import 'package:cybeat_music_player/features/detail_music/screens/detail_music_screen.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/bindings/add_music_to_playlist_binding.dart';
+import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_all_music_to_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/add_music_to_playlist/screens/add_music_to_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/edit_playlist/bindings/edit_playlist_binding.dart';
 import 'package:cybeat_music_player/features/playlist/edit_playlist/screens/edit_playlist_screen.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/bindings/new_playlist_binding.dart';
 import 'package:cybeat_music_player/features/playlist/new_playlist/screens/new_playlist_screen.dart';
+import 'package:cybeat_music_player/features/setting_app/bindings/setting_app_binding.dart';
+import 'package:cybeat_music_player/features/setting_app/screens/setting_app_screen.dart';
 import 'package:cybeat_music_player/firebase_options.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/features/root_page/root_page.dart';
@@ -25,22 +35,21 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cybeat_music_player/core/controllers/music_download_controller.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-  // 1. Pastikan semua binding framework siap
+  // Pastikan semua binding framework siap
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // 2. Inisialisasi Firebase
+  // Inisialisasi Firebase
   await Firebase.initializeApp(
     // Untuk mendapatkan firebase options, jalankan perintah:
     // flutterfire configure
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // 3. Atur handler error
+  // Atur handler error
   // Menangkap error dari Flutter framework (error saat build widget, dll.)
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
@@ -56,16 +65,12 @@ Future<void> main() async {
   }
   // Tampilkan splash screen sampai app siap
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  // Inisialisasi Just Audio Background
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-    androidNotificationIcon: 'mipmap/ic_launcher',
-    androidShowNotificationBadge: true,
-  );
+  // AudioService diinisialisasi di AudioStateController._initAudioService().
+  // JustAudioBackground tidak lagi digunakan secara langsung di sini.
+  // Konfigurasi notifikasi ada di: lib/core/audio/cybeat_audio_handler.dart
+  // await JustAudioBackground.init(...) ← dihapus, sudah dipindahkan.
   // Configuration Status Bar dan Navigation Bar
-  // Ini juga ditaruh di  route /home.
+  // Ini juga ditaruh di route /home.
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.white,
     statusBarBrightness: Brightness.dark,
@@ -83,6 +88,12 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env.default");
   await dotenv.load(fileName: ".env.$env");
   logInfo('Running application in $env mode');
+
+  // FIX-20260217-01: Load Service sebelum runApp agar siap digunakan di halaman awal
+  // Problem: Jika ditaruh di InitialBinding, bisa terjadi race condition dimana UI dimuat sebelum service selesai init.
+  Get.put(SecureStorageService());
+  await Get.putAsync(() => AuthService().init());
+
   runApp(MyApp());
 }
 
@@ -95,10 +106,15 @@ class InitialBinding extends Bindings {
     /// - Sumber Kebenaran Tunggal (Single Source of Truth)
     /// - Siklus Hidup (Lifecycle) yang Panjang
     /// - Efisiensi
+    // FIX-20260217-01: SecureStorageService & AuthService dipindahkan ke main() agar blocking
+    // InitialBinding harus synchronous agar Get.put selanjutnya (MusicPlayerController)
+    // tereksekusi duluan sebelum RootPage di-render yang membutuhkan controller tersebut.
+    // Get.put(SecureStorageService());
+    // await Get.putAsync(() => AuthService().init());
     Get.put(AlbumService());
     // Gunakan Get.put() untuk controller yang harus langsung ada
     // dan hidup selamanya selama aplikasi berjalan.
-    // Anda bisa mendaftarkan semua service/controller global di sini
+    // Juga bisa mendaftarkan semua service/controller global di sini
     Get.put(MusicPlayerController());
     Get.put(AudioStateController());
     Get.put(MusicDownloadController());
@@ -107,11 +123,11 @@ class InitialBinding extends Bindings {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(393, 804), // ukuran HP kamu
+      designSize: const Size(393, 804), // ukuran HP
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
@@ -141,13 +157,22 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             initialBinding: InitialBinding(),
             getPages: [
-              // Rute utama aplikasi sekarang adalah RootPage
+              // Rute utama aplikasi sekarang adalah RootPage.
               GetPage(
                 name: '/',
                 page: () => RootPage(),
               ),
               // Halaman yang butuh layar penuh (tanpa floating button player)
               // tetap berada di sini. Contoh: Halaman detail lagu, new playlist, dll.
+              GetPage(
+                name: '/email_check',
+                page: () => EmailCheckScreen(),
+                binding: UserRegisterBinding(),
+                transition: Transition.native,
+                transitionDuration: const Duration(milliseconds: 300),
+                popGesture: false,
+                fullscreenDialog: true,
+              ),
               GetPage(
                 name: '/detail',
                 page: () => DetailMusicScreen(),
@@ -166,6 +191,14 @@ class MyApp extends StatelessWidget {
                 popGesture: false,
               ),
               GetPage(
+                name: '/add_all_music_to_playlist',
+                page: () => AddAllMusicToPlaylistScreen(),
+                transition: Transition.rightToLeft,
+                binding: AddMusicToPlaylistBinding(),
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
                 name: '/new_playlist',
                 page: () => NewPlaylistScreen(),
                 binding: NewPlaylistBinding(),
@@ -178,6 +211,38 @@ class MyApp extends StatelessWidget {
                 page: () => EditPlaylistScreen(),
                 binding: EditPlaylistBinding(),
                 transition: Transition.downToUp,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/setting_app',
+                page: () => SettingAppScreen(),
+                binding: SettingAppBinding(),
+                transition: Transition.rightToLeftWithFade,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/email_check',
+                page: () => EmailCheckScreen(),
+                binding: UserRegisterBinding(),
+                transition: Transition.downToUp,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/data_registration',
+                page: () => DataRegistrationScreen(),
+                binding: UserRegisterBinding(),
+                transition: Transition.rightToLeftWithFade,
+                fullscreenDialog: true,
+                popGesture: false,
+              ),
+              GetPage(
+                name: '/login',
+                page: () => LoginScreen(),
+                binding: UserLoginBinding(),
+                transition: Transition.native,
                 fullscreenDialog: true,
                 popGesture: false,
               ),

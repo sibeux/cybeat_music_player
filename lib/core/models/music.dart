@@ -1,25 +1,21 @@
+import 'package:cybeat_music_player/core/models/music_extras.dart';
+
 class Music {
-  final String uid;
-  final String category;
+  final int musicId;
   final String linkDrive;
   final String title;
   final String artist;
   final String album;
-  final String time;
   final String cover;
-  final String favorite;
-  final String dateAdded;
+  final MusicExtras? extras;
 
   Music({
-    required this.uid,
-    required this.category,
+    required this.musicId,
     required this.linkDrive,
     required this.title,
     required this.artist,
     required this.album,
-    required this.time,
     required this.cover,
-    required this.favorite,
-    required this.dateAdded,
+    this.extras,
   });
 }
