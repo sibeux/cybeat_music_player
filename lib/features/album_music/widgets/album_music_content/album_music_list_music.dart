@@ -84,39 +84,43 @@ class AlbumMusicListMusic extends StatelessWidget {
                   ? albumMusicController.filteredMusic.length
                   : albumMusicController.jumlahMusicDitampilkan.value,
               (context, index) {
-                return Obx(
-                  () => InkWell(
-                    // Menghilangkan efek tap.
-                    splashFactory: NoSplash.splashFactory,
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    child: albumMusicController.isSimpleMode
-                        ? AlbumMusicSimpleList(
-                            index: index,
+                return Column(
+                  children: [
+                    Obx(
+                      () => InkWell(
+                        // Menghilangkan efek tap.
+                        splashFactory: NoSplash.splashFactory,
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        child: albumMusicController.isSimpleMode
+                            ? AlbumMusicSimpleList(
+                                index: index,
+                                music: albumMusicController.isTapSearch.value
+                                    ? albumMusicController.filteredMusic[index]
+                                    : musicList[index],
+                                audioStateController: audioStateController,
+                                albumMusicController: albumMusicController,
+                              )
+                            : AlbumMusicAzlistList(
+                                index: index,
+                                music: albumMusicController.isTapSearch.value
+                                    ? albumMusicController.filteredMusic[index]
+                                    : musicList[index],
+                                audioPlayer:
+                                    audioStateController.activePlayer.value!,
+                                audioState: audioStateController,
+                              ),
+                        onTap: () {
+                          albumMusicController.navigateToDetailMusicScreen(
                             music: albumMusicController.isTapSearch.value
                                 ? albumMusicController.filteredMusic[index]
                                 : musicList[index],
-                            audioStateController: audioStateController,
-                            albumMusicController: albumMusicController,
-                          )
-                        : AlbumMusicAzlistList(
                             index: index,
-                            music: albumMusicController.isTapSearch.value
-                                ? albumMusicController.filteredMusic[index]
-                                : musicList[index],
-                            audioPlayer:
-                                audioStateController.activePlayer.value!,
-                            audioState: audioStateController,
-                          ),
-                    onTap: () {
-                      albumMusicController.navigateToDetailMusicScreen(
-                        music: albumMusicController.isTapSearch.value
-                            ? albumMusicController.filteredMusic[index]
-                            : musicList[index],
-                        index: index,
-                      );
-                    },
-                  ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 );
               },
             ),

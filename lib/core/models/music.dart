@@ -1,3 +1,5 @@
+import 'package:cybeat_music_player/core/models/music_extras.dart';
+
 class Music {
   final int musicId;
   final String linkDrive;
@@ -5,7 +7,7 @@ class Music {
   final String artist;
   final String album;
   final String cover;
-  final Map<String, dynamic> extras;
+  final MusicExtras? extras;
 
   Music({
     required this.musicId,
@@ -14,6 +16,6 @@ class Music {
     required this.artist,
     required this.album,
     required this.cover,
-    required this.extras,
+    this.extras,
   });
 }

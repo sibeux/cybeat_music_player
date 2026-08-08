@@ -179,10 +179,10 @@ Future<dynamic> homeListModalBottom(BuildContext context, Album playlist) {
                     Get.back();
 
                     if (playlist.pin == 'false') {
-                      homeAlbumGridController.pinAlbum(playlist.uid);
+                      homeAlbumGridController.pinAlbum(playlist.uid, playlist.type);
                       playlist.setPin = 'true';
                     } else {
-                      homeAlbumGridController.unpinAlbum(playlist.uid);
+                      homeAlbumGridController.unpinAlbum(playlist.uid, playlist.type);
                       playlist.setPin = 'false';
                     }
                   },

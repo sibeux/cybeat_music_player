@@ -16,6 +16,7 @@ Future<dynamic> albumMusicModal(
   AudioStateController audioState,
 ) {
   final musicDownloadController = Get.find<MusicDownloadController>();
+
   return showMaterialModalBottomSheet(
     context: context,
     // Pakai {useRootNavigator: true} agar modal bottom sheet tidak terhalangi-
@@ -71,7 +72,7 @@ Future<dynamic> albumMusicModal(
                   audioStateController: audioState,
                 ),
               ),
-              if (mediaItem.extras?['url'].contains('http') || 
+              if (mediaItem.extras?['url'].contains('http') ||
                   mediaItem.extras?['url'].contains('cdncloudflare/'))
                 AbsorbPointer(
                   absorbing: mediaItem.extras?['is_downloaded'] ||
@@ -106,6 +107,15 @@ Future<dynamic> albumMusicModal(
               AlbumMusicEffectTapModal(
                 child: ListTileBottomModal(
                   title: 'Delete',
+                  player: audioPlayer,
+                  mediaItem: mediaItem,
+                  index: index,
+                  audioStateController: audioState,
+                ),
+              ),
+              AlbumMusicEffectTapModal(
+                child: ListTileBottomModal(
+                  title: 'View Credits',
                   player: audioPlayer,
                   mediaItem: mediaItem,
                   index: index,

@@ -24,3 +24,11 @@ String regexGdriveHostUrl({
     return "$musicStreamApi?file_type=image&cover_url=$url";
   }
 }
+
+String getEndpoint(String key) {
+  final url = dotenv.env[key];
+  if (url == null || url.isEmpty) {
+    throw Exception('$key not found in environment variables.');
+  }
+  return url;
+}

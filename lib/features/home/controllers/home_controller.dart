@@ -66,18 +66,18 @@ class HomeController extends GetxController {
     refreshController.refreshCompleted();
   }
 
-  void pinAlbum(String uid) {
-    albumService.pinAlbum(uid);
+  void pinAlbum(String uid, String type) {
+    albumService.pinAlbum(uid, type);
     isTapped.value = !isTapped.value;
   }
 
-  void unpinAlbum(String uid) {
-    albumService.unpinAlbum(uid);
+  void unpinAlbum(String uid, String type) {
+    albumService.unpinAlbum(uid, type);
     isTapped.value = !isTapped.value;
   }
 
-  void removePlaylist(String uid) {
-    albumService.removePlaylist(uid);
+  void removePlaylist(String uid, String type) {
+    albumService.removePlaylist(uid, type);
     isTapped.value = !isTapped.value;
   }
 
@@ -93,8 +93,8 @@ class HomeController extends GetxController {
     initializeAlbum();
   }
 
-  void updateLastPlayedAlbum(String uid) async {
-    final needRebuild = await albumService.updateLastPlayedAlbum(uid);
+  void updateLastPlayedAlbum(String uid, String type) async {
+    final needRebuild = await albumService.updateLastPlayedAlbum(uid, type);
     if (needRebuild) {
       isTapped.value = !isTapped.value;
     }

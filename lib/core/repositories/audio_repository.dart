@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/common/utils/url_formatter.dart';
 import 'package:cybeat_music_player/core/networks/dio_client.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AudioRepository {
   final dio = DioClient().dio;
@@ -12,11 +12,7 @@ class AudioRepository {
     required String albumType,
     required String albumId,
   }) async {
-    String endpoint = dotenv.env['GET_SONG_API_URL'] ?? 'not_found';
-    if (endpoint == 'not_found') {
-      logError('GET_SONG_API_URL not found');
-      return {};
-    }
+    String endpoint = getEndpoint('GET_SONG_API_URL');
     try {
       final response = await dio.get(
         endpoint,
@@ -54,11 +50,7 @@ class AudioRepository {
       required bool isCodecExist,
       required bool isDominantColorExist,
       required bool isFromGdrive}) async {
-    String endpoint = dotenv.env['RECENT_MUSIC_API_URL'] ?? 'not_found';
-    if (endpoint == 'not_found') {
-      logError('RECENT_MUSIC_API_URL not found');
-      return {};
-    }
+    String endpoint = getEndpoint('RECENT_MUSIC_API_URL');
     try {
       final response = await dio
           .post(
