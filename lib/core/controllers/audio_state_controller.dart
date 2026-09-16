@@ -111,9 +111,10 @@ class AudioStateController extends GetxController {
               mediaItem: currentMediaItem,
             );
 
-            final bool isFromGdrive = (currentMediaItem.extras?['original_source'] ?? '')
-                .toString()
-                .contains("drive.google.com");
+            final bool isFromGdrive =
+                (currentMediaItem.extras?['original_source'] ?? '')
+                    .toString()
+                    .contains("drive.google.com");
 
             // [CYBEAT-FLOW-001-D] Fire & forget — sengaja tanpa await.
             // Agar stream listener tidak terblokir menunggu HTTP request selesai.
@@ -122,10 +123,8 @@ class AudioStateController extends GetxController {
               musicId: int.tryParse(currentMusicId),
               isCodecExist: isCodecExist,
               isDominantColorExist: isDominantColorExist,
-              musicUrl:
-                  currentMediaItem.extras?['url'] ?? '',
-              imageUrl:
-                  currentMediaItem.artUri.toString(),
+              musicUrl: currentMediaItem.extras?['url'] ?? '',
+              imageUrl: currentMediaItem.artUri.toString(),
               isFromGdrive: isFromGdrive,
               albumId: int.tryParse(
                       musicPlayerController.currentActivePlaylist.value?.uid ??
@@ -219,11 +218,7 @@ class AudioStateController extends GetxController {
               : item['uploader'].toString().trim() == ''
                   ? "Cybeat"
                   : item['uploader'];
-          final coverUrl = regexGdriveHostUrl(
-            url: item['cover'],
-            musicId: "0",
-            isAudio: false,
-          );
+          final coverUrl = item['cover'];
           final String musicUrl = regexGdriveHostUrl(
               url: type == 'offline' ? item['filePath'] : "",
               musicId: item['id_music'].toString(),
@@ -246,7 +241,7 @@ class AudioStateController extends GetxController {
                 musicPlaylistId: item['id_playlist_music'] ?? '',
                 originalSource: type != 'offline'
                     // ? "Cloud Storage"
-                    ? item['cover']
+                    ? coverUrl
                     : item['filePath'],
                 isCached: item['cache_music_id'] != null ||
                         coverUrl.toString().contains('cdncloudflare/')

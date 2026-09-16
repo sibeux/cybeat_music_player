@@ -141,8 +141,8 @@ class ScaleTapSearchAlbumState extends State<ScaleTapSearchAlbum>
                                           color: HexColor(musicPlayerController
                                                       .currentActivePlaylist
                                                       .value
-                                                      ?.title ==
-                                                  widget.album.title
+                                                      ?.uid ==
+                                                  widget.album.uid
                                               ? '#8238be'
                                               : '#313031'),
                                           overflow: TextOverflow.ellipsis,
