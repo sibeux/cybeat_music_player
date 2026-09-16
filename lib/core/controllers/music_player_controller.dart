@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -299,6 +300,20 @@ class MusicPlayerController extends GetxController {
 
       // Kalau request sudah obsolete, tidak perlu dianggap error
       if (requestId != _playRequestId) return;
+
+      if (e is DioException) {
+        if (e.type == DioExceptionType.cancel) {
+          // Request dibatalkan (misal user ganti lagu lain sebelum selesai)
+          return;
+        }
+        if (e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.error is SocketException) {
+          logWarning("Gagal memutar lagu: Masalah koneksi internet/DNS ($e)");
+          showToast("Gagal memutar lagu. Periksa koneksi internet Anda.");
+          return;
+        }
+      }
 
       logError("Error playMusicNow: $e\n$st");
     }
