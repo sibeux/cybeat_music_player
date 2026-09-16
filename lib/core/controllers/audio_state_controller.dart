@@ -67,6 +67,8 @@ class AudioStateController extends GetxController {
     final player = AudioPlayer();
     activePlayer.value = player;
 
+    _listenToPlaybackEvents(player);
+
     // Daftarkan handler kustom ke AudioService.
     // Handler ini yang mengontrol tombol di notifikasi dan lock screen.
     // Lihat: lib/core/audio/cybeat_audio_handler.dart
@@ -75,6 +77,70 @@ class AudioStateController extends GetxController {
       config: cybeatAudioServiceConfig,
     );
     logInfo('[AudioService] CybeatAudioHandler berhasil diinisialisasi.');
+  }
+
+  void _listenToPlaybackEvents(AudioPlayer player) {
+    // PlaybackEventStream, dia berfungsi untuk listen-
+    // player sedang dalam kondisi apa? Makanya listen ini bekerja berulang-ulang.
+    player.sequenceStateStream.listen(
+      (event) async {
+        // Kita hanya peduli saat ada item yang sedang diproses dan player siap memainkannya.
+        final currentMediaItem = musicPlayerController.getCurrentMediaItem;
+        if (currentMediaItem != null) {
+          final String currentMusicId = currentMediaItem.id;
+
+          // [CYBEAT-FLOW-001-A] Guard: cek apakah musik ini sudah pernah diproses.
+          // sequenceStateStream bisa emit berkali-kali (buffering, seeking, dll) untuk lagu
+          // yang sama. Tanpa guard ini, API akan dipanggil berulang-ulang.
+          // lastProcessedMusicId di-set SEBELUM proses dimulai untuk mencegah race condition.
+          // Lihat: docs/CYBEAT-FLOW-001_recent_codec_dominant_color.md
+          if (currentMusicId != lastProcessedMusicId &&
+              !(currentMediaItem.extras?['is_offline'] ?? false)) {
+            // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
+            lastProcessedMusicId = currentMusicId;
+
+            // [CYBEAT-FLOW-001-B] Cek metadata codec dari data lokal (extras MediaItem).
+            // Tidak hit API. Hasilnya dikirim ke backend sebagai flag 'codec_exist'.
+            final isCodecExist = await checkCodecAudio(
+              mediaItem: currentMediaItem,
+            );
+
+            // [CYBEAT-FLOW-001-C] Cek dominant color dari data lokal (extras MediaItem).
+            // Tidak hit API. Hasilnya dikirim ke backend sebagai flag 'dominant_color_exist'.
+            final isDominantColorExist = await checkDominantColor(
+              mediaItem: currentMediaItem,
+            );
+
+            final bool isFromGdrive = (currentMediaItem.extras?['original_source'] ?? '')
+                .toString()
+                .contains("drive.google.com");
+
+            // [CYBEAT-FLOW-001-D] Fire & forget — sengaja tanpa await.
+            // Agar stream listener tidak terblokir menunggu HTTP request selesai.
+            // Error ditangani di dalam setRecentsCodecDominantColor itu sendiri.
+            setRecentsCodecDominantColor(
+              musicId: int.tryParse(currentMusicId),
+              isCodecExist: isCodecExist,
+              isDominantColorExist: isDominantColorExist,
+              musicUrl:
+                  currentMediaItem.extras?['url'] ?? '',
+              imageUrl:
+                  currentMediaItem.artUri.toString(),
+              isFromGdrive: isFromGdrive,
+              albumId: int.tryParse(
+                      musicPlayerController.currentActivePlaylist.value?.uid ??
+                          "0") ??
+                  0,
+              albumType:
+                  musicPlayerController.currentActivePlaylist.value?.type ?? "",
+            );
+          }
+        }
+      },
+      onError: (Object e, StackTrace stackTrace) {
+        logError('A stream error occurred: $e');
+      },
+    );
   }
 
   @override
@@ -93,70 +159,6 @@ class AudioStateController extends GetxController {
     await activePlayer.value?.setAudioSources([]);
     // Reset ID saat player di-clear.
     lastProcessedMusicId = null;
-
-    // PlaybackEventStream, dia berfungsi untuk listen-
-    // player sedang dalam kondisi apa? Makanya listen ini bekerja berulang-ulang.
-    activePlayer.value?.sequenceStateStream.listen(
-      (event) async {
-        // Kita hanya peduli saat ada item yang sedang diproses dan player siap memainkannya.
-        final currentIndex = musicPlayerController.getCurrentMediaItem?.id;
-        if (currentIndex != null) {
-          final String currentMusicId =
-              musicPlayerController.getCurrentMediaItem!.id;
-
-          // [CYBEAT-FLOW-001-A] Guard: cek apakah musik ini sudah pernah diproses.
-          // sequenceStateStream bisa emit berkali-kali (buffering, seeking, dll) untuk lagu
-          // yang sama. Tanpa guard ini, API akan dipanggil berulang-ulang.
-          // lastProcessedMusicId di-set SEBELUM proses dimulai untuk mencegah race condition.
-          // Lihat: docs/CYBEAT-FLOW-001_recent_codec_dominant_color.md
-          if (currentMusicId != lastProcessedMusicId &&
-              !musicPlayerController
-                  .getCurrentMediaItem!.extras!['is_offline']) {
-            // Set ID terakhir DULUAN untuk mencegah pemanggilan berulang.
-            lastProcessedMusicId = currentMusicId;
-
-            // [CYBEAT-FLOW-001-B] Cek metadata codec dari data lokal (extras MediaItem).
-            // Tidak hit API. Hasilnya dikirim ke backend sebagai flag 'codec_exist'.
-            final isCodecExist = await checkCodecAudio(
-              mediaItem: musicPlayerController.getCurrentMediaItem!,
-            );
-
-            // [CYBEAT-FLOW-001-C] Cek dominant color dari data lokal (extras MediaItem).
-            // Tidak hit API. Hasilnya dikirim ke backend sebagai flag 'dominant_color_exist'.
-            final isDominantColorExist = await checkDominantColor(
-              mediaItem: musicPlayerController.getCurrentMediaItem!,
-            );
-
-            final bool isFromGdrive = musicPlayerController
-                .getCurrentMediaItem!.extras!['original_source']
-                .contains("drive.google.com");
-
-            // [CYBEAT-FLOW-001-D] Fire & forget — sengaja tanpa await.
-            // Agar stream listener tidak terblokir menunggu HTTP request selesai.
-            // Error ditangani di dalam setRecentsCodecDominantColor itu sendiri.
-            setRecentsCodecDominantColor(
-              musicId: int.tryParse(currentMusicId),
-              isCodecExist: isCodecExist,
-              isDominantColorExist: isDominantColorExist,
-              musicUrl:
-                  musicPlayerController.getCurrentMediaItem!.extras!['url'],
-              imageUrl:
-                  musicPlayerController.getCurrentMediaItem!.artUri.toString(),
-              isFromGdrive: isFromGdrive,
-              albumId: int.tryParse(
-                      musicPlayerController.currentActivePlaylist.value?.uid ??
-                          "0") ??
-                  0,
-              albumType:
-                  musicPlayerController.currentActivePlaylist.value?.type ?? "",
-            );
-          }
-        }
-      },
-      onError: (Object e, StackTrace stackTrace) {
-        logError('A stream error occurred: $e');
-      },
-    );
   }
 
   Future<void> init(Album list) async {
@@ -180,7 +182,6 @@ class AudioStateController extends GetxController {
           listData = RxList<dynamic>([]);
           isAlbumEmpty.value = true;
           playlist.value = <Music>[];
-          await activePlayer.value?.setAudioSources([]);
           return;
         }
         listData = musicDownloadController.musicOfflineList;
@@ -198,7 +199,6 @@ class AudioStateController extends GetxController {
           if (data.isEmpty) {
             isAlbumEmpty.value = true;
             playlist.value = <Music>[];
-            await activePlayer.value?.setAudioSources([]);
             return;
           }
           listData = [].obs; // inisialisasi dulu
@@ -210,7 +210,6 @@ class AudioStateController extends GetxController {
       if (listData.isEmpty) {
         isAlbumEmpty.value = true;
         playlist.value = <Music>[];
-        await activePlayer.value?.setAudioSources([]);
         return;
       }
       playlist.value = listData.map(
@@ -298,7 +297,6 @@ class AudioStateController extends GetxController {
       FirebaseCrashlytics.instance.recordError(e, st, reason: e, fatal: false);
       isAlbumEmpty.value = true;
       playlist.value = <Music>[];
-      await activePlayer.value?.setAudioSources([]);
     } finally {
       if (currentSession == _currentFetchSession) {
         initAlbumLoading.value = false;

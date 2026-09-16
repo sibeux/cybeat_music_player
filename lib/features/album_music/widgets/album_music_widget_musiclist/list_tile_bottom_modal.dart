@@ -49,6 +49,12 @@ class ListTileBottomModal extends StatelessWidget {
           case 'play now':
             if (musicPlayerController.getCurrentMediaItem?.id == "" ||
                 musicPlayerController.getCurrentMediaItem?.id != mediaItem.id) {
+              if (musicPlayerController.currentViewedAlbum.value != null) {
+                musicPlayerController.setActivePlaylist(
+                    musicPlayerController.currentViewedAlbum.value!);
+              }
+              musicPlayerController
+                  .setPlayingPlaylist(audioStateController.playlist);
               musicPlayerController.playMusicNow(
                 audioStateController: audioStateController,
                 mediaItem: mediaItem,
@@ -68,8 +74,10 @@ class ListTileBottomModal extends StatelessWidget {
             musicDownloadController.downloadOfflineMusic(mediaItem);
             Get.back();
           case 'delete':
-            if (musicPlayerController.currentActivePlaylist.value?.isEditable ==
-                'true') {
+            final currentAlbum =
+                musicPlayerController.currentViewedAlbum.value ??
+                    musicPlayerController.currentActivePlaylist.value;
+            if (currentAlbum?.isEditable == 'true') {
               albumMusicdeleteDialog(
                 context: context,
                 musicPlayerController: musicPlayerController,
