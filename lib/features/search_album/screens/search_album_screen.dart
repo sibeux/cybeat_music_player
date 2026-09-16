@@ -100,21 +100,27 @@ class SearchAlbumScreen extends StatelessWidget {
             child: Stack(
               children: [
                 Obx(
-                  () => searchAlbumController.isTypingValue
-                      ? searchAlbumController.textValue.value.trim().isEmpty
-                          ? albumEmpty(searchAlbumController.textValue.value)
-                          : searchAlbumController.isSearch.value
-                              ? searchAlbumController.filteredAlbum.isEmpty
-                                  ? albumEmpty(
-                                      searchAlbumController.textValue.value)
-                                  : SearchAlbumBuilder(
-                                      audioState: audioStateController)
-                              : searchAlbumController.filteredAlbum.isEmpty
-                                  ? albumEmpty(
-                                      searchAlbumController.textValue.value)
-                                  : SearchAlbumBuilder(
-                                      audioState: audioStateController)
-                      : initialChild(),
+                  () {
+                    if (!searchAlbumController.isTypingValue) {
+                      return initialChild();
+                    }
+                    if (searchAlbumController.textValue.value.trim().isEmpty) {
+                      return albumEmpty(searchAlbumController.textValue.value);
+                    }
+                    if (searchAlbumController.isLoading.value) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: HexColor('#575757'),
+                        ),
+                      );
+                    }
+                    if (searchAlbumController.filteredAlbum.isEmpty) {
+                      return albumEmpty(searchAlbumController.textValue.value);
+                    }
+                    return SearchAlbumBuilder(
+                      audioState: audioStateController,
+                    );
+                  },
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 1),
