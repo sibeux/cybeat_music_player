@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 class AlbumRepository {
   final dio = DioClient().dio;
 
-  Future<Map<String, Object?>> fetchAlbums() async {
+  Future<Map<String, Object?>> fetchAlbums({String? search}) async {
     String musicAlbumEndpoint = getEndpoint('MUSIC_ALBUM_API_URL');
 
     String sort = "";
@@ -18,6 +18,7 @@ class AlbumRepository {
         queryParameters: {
           'sort': sort,
           'filter': filter,
+          if (search != null && search.isNotEmpty) 'search': search,
         },
       ).timeout(const Duration(seconds: 60));
       // Dio otomatis mengonversi JSON menjadi Map, jadi tidak perlu jsonDecode manual
