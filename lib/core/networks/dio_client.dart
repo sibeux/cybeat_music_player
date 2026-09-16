@@ -1,4 +1,5 @@
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
+import 'package:cybeat_music_player/core/networks/retry_interceptor.dart';
 import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,15 @@ class DioClient {
         connectTimeout: const Duration(seconds: 60),
         receiveTimeout: const Duration(seconds: 60),
         headers: {'Content-Type': 'application/json'},
+      ),
+    );
+
+    // Auto-Retry Interceptor untuk masalah DNS, timeout, dan network failure
+    dio.interceptors.add(
+      RetryInterceptor(
+        dio: dio,
+        maxRetries: 3,
+        retryInterval: const Duration(seconds: 1),
       ),
     );
 
