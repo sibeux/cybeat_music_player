@@ -53,12 +53,11 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
 
   @override
   Widget build(BuildContext context) {
+    final currentAlbum = musicPlayerController.currentViewedAlbum.value ??
+        musicPlayerController.currentActivePlaylist.value;
     // Untuk menampilkan ulang list musik saat ada yang dihapus.
-    if (musicPlayerController.currentActivePlaylist.value?.title
-                .toLowerCase() ==
-            "offline music" ||
-        musicPlayerController.currentActivePlaylist.value?.type.toLowerCase() ==
-            "playlist") {
+    if (currentAlbum?.title.toLowerCase() == "offline music" ||
+        currentAlbum?.type.toLowerCase() == "playlist") {
       final musicDownloadController = Get.find<MusicDownloadController>();
       ever(musicDownloadController.rebuildDelete, (callback) {
         if (!context.mounted) return;
@@ -73,9 +72,7 @@ class _AlbumMusicScreenSearchState extends State<AlbumMusicScreenSearch> {
       // Logic saat back button bawaan hp ditekan.
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
-          if (musicPlayerController.currentActivePlaylist.value!.type
-                  .toLowerCase() ==
-              'offline') {
+          if (currentAlbum?.type.toLowerCase() == 'offline') {
             return;
           }
           albumMusicController.rebuildPlaylist();

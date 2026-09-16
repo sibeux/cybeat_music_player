@@ -35,17 +35,7 @@ class MusicDownloadController extends GetxController {
       type: 'offline',
     );
 
-    if (musicPlayerController.currentActivePlaylist.value?.title !=
-            playlist.title ||
-        musicPlayerController.currentActivePlaylist.value?.title == "") {
-      audioStateController.clear();
-      musicPlayerController.killMusic();
-      musicPlayerController.clearCurrentMediaItem();
-      audioStateController.init(playlist);
-      musicPlayerController.setActivePlaylist(playlist);
-    }
-
-    Get.toNamed('/album_music', id: 1);
+    musicPlayerController.openAlbum(album: playlist);
   }
 
   Future<void> checkListTempDir() async {

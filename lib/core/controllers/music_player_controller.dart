@@ -7,6 +7,7 @@ import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/common/utils/toast.dart';
 import 'package:cybeat_music_player/core/controllers/audio_state_controller.dart';
 import 'package:cybeat_music_player/core/models/album.dart';
+import 'package:cybeat_music_player/core/models/music.dart';
 import 'package:cybeat_music_player/core/networks/dio_client.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:dio/dio.dart';
@@ -15,6 +16,8 @@ import 'package:just_audio/just_audio.dart';
 
 class MusicPlayerController extends GetxController {
   var currentActivePlaylist = Rx<Album?>(null);
+  var currentViewedAlbum = Rx<Album?>(null);
+  var currentPlayingPlaylist = RxList<Music>([]);
   final _currentMediaItem = Rx<MediaItem?>(null);
 
   final dio = DioClient().dio;
@@ -46,9 +49,17 @@ class MusicPlayerController extends GetxController {
   StreamSubscription<PlayerException?>? playerErrorStreamSubscription;
 
   MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
-  bool get isLastIndexMusic =>
-      Get.find<AudioStateController>().playlist.length ==
-      int.parse(getCurrentMediaItem!.extras!['index']) - 1 + 1;
+  bool get isLastIndexMusic {
+    final list = currentPlayingPlaylist.isNotEmpty
+        ? currentPlayingPlaylist
+        : Get.find<AudioStateController>().playlist;
+    if (getCurrentMediaItem == null ||
+        getCurrentMediaItem!.extras?['index'] == null) {
+      return false;
+    }
+    return list.length ==
+        int.parse(getCurrentMediaItem!.extras!['index']) - 1 + 1;
+  }
 
   // Dipakai di floating widget.
   double get sliderValue {
@@ -234,6 +245,8 @@ class MusicPlayerController extends GetxController {
     bool isFromButton = true,
   }) async {
     updateCurrentMediaItem(mediaItem);
+    audioStateController.checkCodecAudio(mediaItem: mediaItem);
+    audioStateController.checkDominantColor(mediaItem: mediaItem);
 
     final player = audioStateController.activePlayer.value;
     if (player == null) return;
@@ -319,6 +332,10 @@ class MusicPlayerController extends GetxController {
     }
   }
 
+  void setPlayingPlaylist(List<Music> list) {
+    currentPlayingPlaylist.assignAll(list);
+  }
+
   void getDominantColorAlbum({required Album album}) {
     String albumCover = '';
     if (album.image['default_cover'] != null) {
@@ -336,19 +353,33 @@ class MusicPlayerController extends GetxController {
   }
 
   void openAlbum({required Album album}) {
-    final String albumId = currentActivePlaylist.value?.uid ?? "";
-    final String albumType = currentActivePlaylist.value?.type ?? "";
     final audioStateController = Get.find<AudioStateController>();
-    // 1 - album
-    // 1 - playlist
-    if ((albumId != album.uid) || (albumType != album.type)) {
-      getDominantColorAlbum(album: album);
-      audioStateController.clear();
-      killMusic();
-      clearCurrentMediaItem();
+    final bool isPlayingAlbum = currentActivePlaylist.value?.uid == album.uid &&
+        currentActivePlaylist.value?.type == album.type &&
+        currentPlayingPlaylist.isNotEmpty;
+    final bool isAlreadyLoadedViewedAlbum =
+        currentViewedAlbum.value?.uid == album.uid &&
+            currentViewedAlbum.value?.type == album.type &&
+            audioStateController.playlist.isNotEmpty;
+
+    currentViewedAlbum.value = album;
+    getDominantColorAlbum(album: album);
+
+    if (isPlayingAlbum) {
+      // Jika album yang dibuka sedang aktif diputar, gunakan list yang sudah ada di memory
+      audioStateController.playlist.assignAll(currentPlayingPlaylist);
+      audioStateController.isAlbumEmpty.value = currentPlayingPlaylist.isEmpty;
+      audioStateController.initAlbumLoading.value = false;
+    } else if (isAlreadyLoadedViewedAlbum) {
+      // Jika album sama persis dengan yang terakhir dilihat dan datanya sudah ada di memory
+      audioStateController.isAlbumEmpty.value =
+          audioStateController.playlist.isEmpty;
+      audioStateController.initAlbumLoading.value = false;
+    } else {
+      // Hanya fetch dari API jika membuka album baru yang belum ada di memory
       audioStateController.init(album);
-      setActivePlaylist(album);
     }
+
     Get.toNamed(
       '/album_music',
       id: 1,
@@ -360,12 +391,16 @@ class MusicPlayerController extends GetxController {
     int originalCurrentSongSequence = isFromShuffleButton
         ? 0
         : int.parse(getCurrentMediaItem!.extras!['index']) - 1;
-    final playlistLength = Get.find<AudioStateController>().playlist.length;
+    final playlist = currentPlayingPlaylist.isNotEmpty
+        ? currentPlayingPlaylist
+        : Get.find<AudioStateController>().playlist;
+    final playlistLength = playlist.length;
+    if (playlistLength == 0) return;
     final random = Random();
 
     // if (isRepeatEnabled.value == 'one') {
     //   int index = originalCurrentIndexSong;
-    //   final music = Get.find<AudioStateController>().playlist[index];
+    //   final music = playlist[index];
     //   final mediaItem = MediaItem(
     //     id: music.musicId.toString(),
     //     title: music.title,
@@ -400,7 +435,7 @@ class MusicPlayerController extends GetxController {
 
     if (!(!isShuffleEnabled.value &&
         playlistLength < originalCurrentSongSequence + 1)) {
-      final music = Get.find<AudioStateController>().playlist[index];
+      final music = playlist[index];
       final mediaItem = MediaItem(
         id: music.musicId.toString(),
         title: music.title,
@@ -419,9 +454,12 @@ class MusicPlayerController extends GetxController {
 
   void seekPreviousButton() {
     int currentIndex = int.parse(getCurrentMediaItem!.extras!['index']) - 1;
-    if (1 != currentIndex + 1) {
+    final playlist = currentPlayingPlaylist.isNotEmpty
+        ? currentPlayingPlaylist
+        : Get.find<AudioStateController>().playlist;
+    if (1 != currentIndex + 1 && playlist.isNotEmpty && currentIndex > 0) {
       currentIndex -= 1;
-      final music = Get.find<AudioStateController>().playlist[currentIndex];
+      final music = playlist[currentIndex];
       final mediaItem = MediaItem(
         id: music.musicId.toString(),
         title: music.title,

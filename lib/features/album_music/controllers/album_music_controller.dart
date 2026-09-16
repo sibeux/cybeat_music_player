@@ -39,6 +39,12 @@ class AlbumMusicController extends GetxController {
     } else if (audioStateController.isAlbumEmpty.value) {
       showRemoveAlbumToast('Album is empty');
     } else {
+      if (musicPlayerController.currentViewedAlbum.value != null) {
+        musicPlayerController.setActivePlaylist(
+            musicPlayerController.currentViewedAlbum.value!);
+      }
+      musicPlayerController.setPlayingPlaylist(
+          isTapSearch.value ? filteredMusic : audioStateController.playlist);
       musicPlayerController.seekNextButton(isFromShuffleButton: true);
       Get.toNamed('/detail');
     }
@@ -106,9 +112,11 @@ class AlbumMusicController extends GetxController {
     if (musicPlayerController.isNeedRebuildLastPlaylist.value) {
       musicPlayerController.isNeedRebuildLastPlaylist.value = false;
       // Method untuk update playlsit terakhir yang diputar.
-      updateLastPlayedAlbum(
-          musicPlayerController.currentActivePlaylist.value!.uid,
-          musicPlayerController.currentActivePlaylist.value!.type);
+      final album = musicPlayerController.currentActivePlaylist.value ??
+          musicPlayerController.currentViewedAlbum.value;
+      if (album != null) {
+        updateLastPlayedAlbum(album.uid, album.type);
+      }
     }
   }
 
@@ -141,6 +149,11 @@ class AlbumMusicController extends GetxController {
     if (musicPlayerController.getCurrentMediaItem?.id == "" ||
         musicPlayerController.getCurrentMediaItem?.id !=
             musicList[index].musicId.toString()) {
+      if (musicPlayerController.currentViewedAlbum.value != null) {
+        musicPlayerController.setActivePlaylist(
+            musicPlayerController.currentViewedAlbum.value!);
+      }
+      musicPlayerController.setPlayingPlaylist(musicList);
       musicPlayerController.playMusicNow(
         mediaItem: mediaItem,
         audioStateController: audioStateController,

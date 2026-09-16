@@ -48,7 +48,7 @@ class AlbumMusicListMusic extends StatelessWidget {
               hasScrollBody: false,
               child: Center(
                 child: Text(
-                  'No songs available in this ${musicPlayerController.currentActivePlaylist.value!.type.toLowerCase()}',
+                  'No songs available in this ${(musicPlayerController.currentViewedAlbum.value?.type ?? musicPlayerController.currentActivePlaylist.value?.type ?? 'album').toLowerCase()}',
                   style: TextStyle(
                     color: Colors.black.withValues(alpha: 0.7),
                     fontSize: 16.sp,
