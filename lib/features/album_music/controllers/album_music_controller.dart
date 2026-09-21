@@ -43,8 +43,7 @@ class AlbumMusicController extends GetxController {
         musicPlayerController.setActivePlaylist(
             musicPlayerController.currentViewedAlbum.value!);
       }
-      musicPlayerController.setPlayingPlaylist(
-          isTapSearch.value ? filteredMusic : audioStateController.playlist);
+      musicPlayerController.setPlayingPlaylist(audioStateController.playlist);
       musicPlayerController.seekNextButton(isFromShuffleButton: true);
       Get.toNamed('/detail');
     }
@@ -143,12 +142,11 @@ class AlbumMusicController extends GetxController {
       artist: music.artist,
       extras: music.extras?.toMap() ?? {},
     );
-    final musicList =
-        isTapSearch.value ? filteredMusic : audioStateController.playlist;
+    final musicList = audioStateController.playlist;
     Get.toNamed('/detail');
     if (musicPlayerController.getCurrentMediaItem?.id == "" ||
         musicPlayerController.getCurrentMediaItem?.id !=
-            musicList[index].musicId.toString()) {
+            music.musicId.toString()) {
       if (musicPlayerController.currentViewedAlbum.value != null) {
         musicPlayerController.setActivePlaylist(
             musicPlayerController.currentViewedAlbum.value!);
