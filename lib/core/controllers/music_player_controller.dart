@@ -127,20 +127,16 @@ class MusicPlayerController extends GetxController {
         // di playMusicNow, kita tidak perlu mengupdate UI dari sequenceStateStream.
       });
 
-      playerErrorStreamSubscription = player.errorStream.listen((error) async {
+      playerErrorStreamSubscription = player.errorStream.listen((error) {
         logError(
-            'Player Error code: ${error.code}. Error message: ${error.message}. AudioSource index: ${error.index}');
-        if (error.index != null) {
-          numberOfError += 1;
-          logInfo('Trying to reload the audio source...');
-          await player.pause();
-          await Future.delayed(const Duration(milliseconds: 500));
-          await player.play();
-        }
-        if (numberOfError >= 5) {
-          logError('Too many errors, skipping playback.');
-          seekNextButton();
+          'Player Error code: ${error.code}. Error message: ${error.message}. AudioSource index: ${error.index}',
+          error: error,
+        );
+        numberOfError += 1;
+        if (numberOfError >= 3) {
+          logError('Too many errors on stream, skipping to next track.', error: error);
           numberOfError = 0;
+          seekNextButton(isFromButton: false);
         }
       });
     }
@@ -290,15 +286,43 @@ class MusicPlayerController extends GetxController {
       logSuccess(
           'Streaming ${mediaItem.id} -> ${Uri.parse(streamUrl).path} (exp=${Uri.parse(streamUrl).queryParameters['expires']})');
 
-      await player.setAudioSources(
-        [
-          AudioSource.uri(
-            Uri.parse(streamUrl),
-            tag: mediaItem,
-          ),
-        ],
-        initialIndex: 0,
-      );
+      const int maxPlayerRetries = 3;
+      int playerRetryCount = 0;
+      bool isAudioLoaded = false;
+
+      while (!isAudioLoaded && playerRetryCount < maxPlayerRetries) {
+        if (requestId != _playRequestId) return;
+
+        try {
+          playerRetryCount++;
+          await player.setAudioSources(
+            [
+              AudioSource.uri(
+                Uri.parse(streamUrl),
+                tag: mediaItem,
+              ),
+            ],
+            initialIndex: 0,
+          );
+          isAudioLoaded = true;
+        } catch (playerErr, playerSt) {
+          logWarning(
+            'Gagal memuat audio source ($playerRetryCount/$maxPlayerRetries): $playerErr -> $streamUrl',
+          );
+
+          if (playerRetryCount >= maxPlayerRetries) {
+            logError(
+              'Gagal setAudioSources setelah $maxPlayerRetries percobaan: $playerErr',
+              error: playerErr,
+              stack: playerSt,
+            );
+            rethrow;
+          }
+
+          // Backoff: 1s, 2s sebelum mencoba lagi
+          await Future.delayed(Duration(milliseconds: 1000 * playerRetryCount));
+        }
+      }
 
       // Double check lagi setelah proses async
       if (requestId != _playRequestId) return;
@@ -324,11 +348,19 @@ class MusicPlayerController extends GetxController {
             e.error is SocketException) {
           logWarning("Gagal memutar lagu: Masalah koneksi internet/DNS ($e)");
           showToast("Gagal memutar lagu. Periksa koneksi internet Anda.");
+          logError("Dio connection error playMusicNow: $e", error: e, stack: st);
           return;
         }
       }
 
-      logError("Error playMusicNow: $e\n$st");
+      if (e is PlayerException || e is SocketException || e is HttpException) {
+        logWarning("Gagal memuat/memutar audio player: $e");
+        showToast("Gagal memutar lagu karena masalah koneksi/audio.");
+        logError("Audio Player error playMusicNow: $e", error: e, stack: st);
+        return;
+      }
+
+      logError("Error playMusicNow: $e", error: e, stack: st);
     }
   }
 
