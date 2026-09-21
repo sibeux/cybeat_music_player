@@ -1,3 +1,4 @@
+import 'package:cybeat_music_player/core/services/log_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart'; // Untuk kDebugMode
 
@@ -11,6 +12,7 @@ void _printColor(String text, String colorCode) {
 void logSuccess(String text) {
   _printColor(text, '\x1B[32m'); // Hijau
   FirebaseCrashlytics.instance.log('SUCCESS: $text');
+  LogService.instance.writeLog('SUCCESS', text);
 }
 
 void logError(String text, {dynamic error, StackTrace? stack}) {
@@ -23,14 +25,25 @@ void logError(String text, {dynamic error, StackTrace? stack}) {
     reason: text,
     fatal: false,
   );
+
+  // Simpan ke offline log file
+  LogService.instance.writeLog(
+    'ERROR',
+    text,
+    error: error,
+    stackTrace: stack,
+  );
 }
 
 void logWarning(String text) {
   _printColor('WARNING: $text', '\x1B[35m'); // Ungu
   FirebaseCrashlytics.instance.log('WARN: $text');
+  LogService.instance.writeLog('WARN', text);
 }
 
 void logInfo(String text) {
   _printColor('INFO: $text', '\x1B[37m'); // Putih/Abu
   FirebaseCrashlytics.instance.log('INFO: $text');
+  LogService.instance.writeLog('INFO', text);
 }
+

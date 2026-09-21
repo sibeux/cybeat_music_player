@@ -5,6 +5,7 @@ import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
 import 'package:cybeat_music_player/core/services/auth_service.dart';
+import 'package:cybeat_music_player/core/services/log_service.dart';
 import 'package:cybeat_music_player/core/services/secure_storage_service.dart';
 import 'package:cybeat_music_player/features/auth_user/bindings/user_login_binding.dart';
 import 'package:cybeat_music_player/features/auth_user/bindings/user_register_binding.dart';
@@ -43,6 +44,11 @@ GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   // Pastikan semua binding framework siap
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi Offline LogService (dengan 30 hari retention cleanup)
+  await LogService.instance.init();
+  Get.put(LogService.instance);
+
   // Inisialisasi Firebase
   await Firebase.initializeApp(
     // Untuk mendapatkan firebase options, jalankan perintah:
@@ -53,10 +59,20 @@ Future<void> main() async {
   // Menangkap error dari Flutter framework (error saat build widget, dll.)
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
+    logError(
+      'FlutterError: ${errorDetails.exceptionAsString()}',
+      error: errorDetails.exception,
+      stack: errorDetails.stack,
+    );
   };
   // Menangkap error yang tidak ditangani oleh Flutter (error async, di luar build method)
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    logError(
+      'Uncaught Platform Error: $error',
+      error: error,
+      stack: stack,
+    );
     return true; // Menandakan bahwa error sudah ditangani
   };
   // TAMBAHKAN INI untuk memaksa pengiriman data di mode debug
