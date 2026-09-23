@@ -55,7 +55,14 @@ class RetryInterceptor extends Interceptor {
         }
 
         try {
-          final response = await dio.fetch(requestOptions);
+          // Jika request menggunakan FormData, clone FormData agar tidak terjadi
+          // 'Bad state: The FormData has already been finalized' saat retry
+          dynamic requestData = requestOptions.data;
+          if (requestData is FormData) {
+            requestData = requestData.clone();
+          }
+
+          final response = await dio.fetch(requestOptions.copyWith(data: requestData));
           return handler.resolve(response);
         } on DioException catch (retryErr) {
           // onError akan terpanggil lagi untuk iterasi berikutnya (sampai maxRetries tercapai)

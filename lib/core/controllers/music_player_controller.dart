@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -253,7 +252,9 @@ class MusicPlayerController extends GetxController {
       setLastPlayingPlaylist();
     }
 
-    numberOfError = 0;
+    if (isFromButton) {
+      numberOfError = 0; // Hanya reset jika user berinteraksi manual (klik lagu / next manual)
+    }
 
     _streamCancelToken?.cancel();
 
@@ -327,6 +328,7 @@ class MusicPlayerController extends GetxController {
       // Double check lagi setelah proses async
       if (requestId != _playRequestId) return;
 
+      numberOfError = 0; // Reset counter saat pemutaran berhasil
       isWaitingGetMusicStreamUrl.value = false;
 
       await player.play();
@@ -338,29 +340,29 @@ class MusicPlayerController extends GetxController {
       // Kalau request sudah obsolete, tidak perlu dianggap error
       if (requestId != _playRequestId) return;
 
-      if (e is DioException) {
-        if (e.type == DioExceptionType.cancel) {
-          // Request dibatalkan (misal user ganti lagu lain sebelum selesai)
-          return;
-        }
-        if (e.type == DioExceptionType.connectionError ||
-            e.type == DioExceptionType.connectionTimeout ||
-            e.error is SocketException) {
-          logWarning("Gagal memutar lagu: Masalah koneksi internet/DNS ($e)");
-          showToast("Gagal memutar lagu. Periksa koneksi internet Anda.");
-          logError("Dio connection error playMusicNow: $e", error: e, stack: st);
-          return;
-        }
-      }
-
-      if (e is PlayerException || e is SocketException || e is HttpException) {
-        logWarning("Gagal memuat/memutar audio player: $e");
-        showToast("Gagal memutar lagu karena masalah koneksi/audio.");
-        logError("Audio Player error playMusicNow: $e", error: e, stack: st);
+      if (e is DioException && e.type == DioExceptionType.cancel) {
+        // Request dibatalkan (misal user ganti lagu lain sebelum selesai)
         return;
       }
 
-      logError("Error playMusicNow: $e", error: e, stack: st);
+      numberOfError++;
+      logError("Gagal memutar lagu (${mediaItem.title}): $e", error: e, stack: st);
+
+      const int maxConsecutiveErrors = 3;
+      if (numberOfError < maxConsecutiveErrors) {
+        logWarning(
+            "Lagu gagal setelah 3x retry. Beralih ke lagu berikutnya (Lagu gagal berurutan: $numberOfError/$maxConsecutiveErrors)...");
+        showToast("Lagu bermasalah, memutar lagu berikutnya...");
+        await Future.delayed(const Duration(milliseconds: 1000));
+        if (requestId == _playRequestId) {
+          seekNextButton(isFromButton: false);
+        }
+      } else {
+        logError(
+            "Sudah $maxConsecutiveErrors lagu berturut-turut gagal. Koneksi internet/server terputus. Menghentikan player.");
+        showToast("Gagal memutar $maxConsecutiveErrors lagu berturut-turut. Periksa koneksi internet Anda.");
+        numberOfError = 0; // Reset agar pemutaran manual berikutnya bisa dicoba lagi
+      }
     }
   }
 
