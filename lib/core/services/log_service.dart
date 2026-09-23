@@ -193,6 +193,49 @@ class LogService {
     }
   }
 
+  /// Menyimpan file log langsung ke direktori Download / Penyimpanan lokal perangkat
+  Future<String?> saveLogToDownloads(DateTime date) async {
+    try {
+      final sourceFile = getFileForDate(date);
+      if (sourceFile == null || !await sourceFile.exists()) {
+        return null;
+      }
+
+      final dateStr = _fileDateFormat.format(date);
+      final fileName = 'cybeat_log_$dateStr.txt';
+
+      Directory? targetDir;
+
+      if (Platform.isAndroid) {
+        // Coba akses folder Download publik Android (/storage/emulated/0/Download)
+        final publicDownloadDir = Directory('/storage/emulated/0/Download');
+        if (await publicDownloadDir.exists()) {
+          targetDir = publicDownloadDir;
+        } else {
+          // Fallback ke downloads/external directory dari path_provider
+          targetDir = await getDownloadsDirectory() ?? await getExternalStorageDirectory();
+        }
+      } else if (Platform.isIOS || Platform.isMacOS) {
+        targetDir = await getApplicationDocumentsDirectory();
+      } else {
+        targetDir = await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
+      }
+
+      if (targetDir == null) {
+        return null;
+      }
+
+      final destinationPath = p.join(targetDir.path, fileName);
+      final destFile = File(destinationPath);
+      await sourceFile.copy(destFile.path);
+
+      return destinationPath;
+    } catch (e) {
+      debugPrint('LogService saveLogToDownloads error: $e');
+      return null;
+    }
+  }
+
   /// Export / Share file log untuk tanggal tertentu
   Future<bool> shareLogFile(DateTime date, {Rect? sharePositionOrigin}) async {
     try {
@@ -211,8 +254,6 @@ class LogService {
       final result = await SharePlus.instance.share(
         ShareParams(
           files: [xFile],
-          subject: 'Cybeat Music Player Log - $dateStr',
-          text: 'Log aktivitas Cybeat Music Player untuk tanggal $dateStr',
           sharePositionOrigin: sharePositionOrigin,
         ),
       );

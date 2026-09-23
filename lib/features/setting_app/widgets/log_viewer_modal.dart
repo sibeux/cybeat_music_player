@@ -24,7 +24,9 @@ class _LogViewerModalState extends State<LogViewerModal> {
   @override
   void initState() {
     super.initState();
-    controller.loadAvailableLogs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadAvailableLogs();
+    });
   }
 
   @override

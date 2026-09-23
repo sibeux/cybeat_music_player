@@ -57,7 +57,7 @@ class SettingAppController extends GetxController {
     }
   }
 
-  /// Download / Share file log untuk tanggal yang dipilih
+  /// Download file log langsung ke penyimpanan lokal perangkat
   Future<void> downloadOrShareLog({Rect? sharePositionOrigin}) async {
     final file = logService.getFileForDate(selectedDate.value);
     if (file == null || !await file.exists()) {
@@ -69,17 +69,29 @@ class SettingAppController extends GetxController {
       return;
     }
 
-    final success = await logService.shareLogFile(
-      selectedDate.value,
-      sharePositionOrigin: sharePositionOrigin,
-    );
+    final savedPath = await logService.saveLogToDownloads(selectedDate.value);
 
-    if (!success) {
+    if (savedPath != null) {
       Fluttertoast.showToast(
-        msg: 'Gagal membagikan file log',
-        backgroundColor: Colors.redAccent,
+        msg: 'Log tersimpan di: $savedPath',
+        backgroundColor: const Color(0xFF2E7D32),
         textColor: Colors.white,
+        toastLength: Toast.LENGTH_LONG,
       );
+    } else {
+      // Jika simpan gagal, coba fallback ke share log file
+      final success = await logService.shareLogFile(
+        selectedDate.value,
+        sharePositionOrigin: sharePositionOrigin,
+      );
+
+      if (!success) {
+        Fluttertoast.showToast(
+          msg: 'Gagal mendownload / menyimpan file log',
+          backgroundColor: Colors.redAccent,
+          textColor: Colors.white,
+        );
+      }
     }
   }
 

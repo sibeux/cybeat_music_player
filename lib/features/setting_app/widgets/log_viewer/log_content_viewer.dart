@@ -60,6 +60,7 @@ class LogContentViewer extends StatelessWidget {
           // Filter baris log berdasarkan level dan kata kunci pencarian
           final lines = rawContent.split('\n');
           final filteredLines = lines.where((line) {
+            if (line.isEmpty) return false;
             if (selectedLevelFilter != 'ALL') {
               if (!_matchesLevel(line, selectedLevelFilter)) {
                 return false;
@@ -87,6 +88,8 @@ class LogContentViewer extends StatelessWidget {
             thumbVisibility: true,
             child: ListView.builder(
               itemCount: filteredLines.length,
+              physics: const BouncingScrollPhysics(),
+              addRepaintBoundaries: false,
               itemBuilder: (context, index) {
                 final line = filteredLines[index];
                 return Padding(
@@ -127,7 +130,7 @@ class LogContentViewer extends StatelessWidget {
       textColor = const Color(0xFFFFA8A8);
     }
 
-    return SelectableText(
+    return Text(
       line,
       style: TextStyle(
         fontFamily: 'monospace',
