@@ -6,18 +6,22 @@ class LogFilterBar extends StatelessWidget {
   final TextEditingController searchController;
   final String searchQuery;
   final String selectedLevelFilter;
+  final bool isNewestFirst;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onLevelFilterChanged;
   final VoidCallback onClearSearch;
+  final VoidCallback onToggleSortOrder;
 
   const LogFilterBar({
     super.key,
     required this.searchController,
     required this.searchQuery,
     required this.selectedLevelFilter,
+    required this.isNewestFirst,
     required this.onSearchChanged,
     required this.onLevelFilterChanged,
     required this.onClearSearch,
+    required this.onToggleSortOrder,
   });
 
   @override
@@ -92,6 +96,45 @@ class LogFilterBar extends StatelessWidget {
                     onLevelFilterChanged(val);
                   }
                 },
+              ),
+            ),
+          ),
+          SizedBox(width: 8.w),
+          // Sort Order Toggle Button
+          Tooltip(
+            message: isNewestFirst ? 'Urutan: Terbaru ke Terlama' : 'Urutan: Terlama ke Terbaru',
+            child: InkWell(
+              onTap: onToggleSortOrder,
+              borderRadius: BorderRadius.circular(10.r),
+              child: Container(
+                height: 38.h,
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                decoration: BoxDecoration(
+                  color: isNewestFirst ? HexColor('#8238be').withValues(alpha: 0.1) : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10.r),
+                  border: Border.all(
+                    color: isNewestFirst ? HexColor('#8238be').withValues(alpha: 0.3) : Colors.transparent,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isNewestFirst ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+                      size: 16.sp,
+                      color: isNewestFirst ? HexColor('#8238be') : HexColor('#1e0b2b'),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      isNewestFirst ? 'Terbaru' : 'Terlama',
+                      style: TextStyle(
+                        fontSize: 11.5.sp,
+                        fontWeight: FontWeight.w600,
+                        color: isNewestFirst ? HexColor('#8238be') : HexColor('#1e0b2b'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

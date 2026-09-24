@@ -7,12 +7,14 @@ class LogContentViewer extends StatelessWidget {
   final SettingAppController controller;
   final String searchQuery;
   final String selectedLevelFilter;
+  final bool isNewestFirst;
 
   const LogContentViewer({
     super.key,
     required this.controller,
     required this.searchQuery,
     required this.selectedLevelFilter,
+    this.isNewestFirst = true,
   });
 
   @override
@@ -29,7 +31,7 @@ class LogContentViewer extends StatelessWidget {
         child: Obx(() {
           if (controller.isLoadingLog.value) {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.white70),
+               child: CircularProgressIndicator(color: Colors.white70),
             );
           }
 
@@ -57,22 +59,37 @@ class LogContentViewer extends StatelessWidget {
             );
           }
 
-          // Filter baris log berdasarkan level dan kata kunci pencarian
-          final lines = rawContent.split('\n');
-          final filteredLines = lines.where((line) {
-            if (line.isEmpty) return false;
-            if (selectedLevelFilter != 'ALL') {
-              if (!_matchesLevel(line, selectedLevelFilter)) {
+          // Parse log raw content into distinct log entries (delimited by \n\n)
+          final rawEntries = rawContent.split(RegExp(r'\r?\n\r?\n'));
+          final List<List<String>> parsedEntries = [];
+
+          for (final entry in rawEntries) {
+            final lines = entry
+                .split(RegExp(r'\r?\n'))
+                .map((l) => l.trimRight())
+                .where((l) => l.isNotEmpty)
+                .toList();
+
+            if (lines.isEmpty) continue;
+
+            final matchesFilter = lines.any((line) {
+              if (selectedLevelFilter != 'ALL' && !_matchesLevel(line, selectedLevelFilter)) {
                 return false;
               }
-            }
-            if (searchQuery.isNotEmpty) {
-              return line.toLowerCase().contains(searchQuery.toLowerCase());
-            }
-            return true;
-          }).toList();
+              if (searchQuery.isNotEmpty && !line.toLowerCase().contains(searchQuery.toLowerCase())) {
+                return false;
+              }
+              return true;
+            });
 
-          if (filteredLines.isEmpty) {
+            if (matchesFilter) {
+              parsedEntries.add(lines);
+            }
+          }
+
+          final displayedEntries = isNewestFirst ? parsedEntries.reversed.toList() : parsedEntries;
+
+          if (displayedEntries.isEmpty) {
             return Center(
               child: Text(
                 'Tidak ada log yang cocok dengan filter',
@@ -86,15 +103,25 @@ class LogContentViewer extends StatelessWidget {
 
           return Scrollbar(
             thumbVisibility: true,
-            child: ListView.builder(
-              itemCount: filteredLines.length,
+            child: ListView.separated(
+              itemCount: displayedEntries.length,
               physics: const BouncingScrollPhysics(),
               addRepaintBoundaries: false,
-              itemBuilder: (context, index) {
-                final line = filteredLines[index];
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 2.h),
-                  child: _buildLogLine(line),
+              separatorBuilder: (_, __) => Divider(
+                color: Colors.white.withValues(alpha: 0.08),
+                height: 12.h,
+                thickness: 0.5,
+              ),
+              itemBuilder: (context, entryIndex) {
+                final entryLines = displayedEntries[entryIndex];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: entryLines.map((line) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 1.5.h),
+                      child: _buildLogLine(line),
+                    );
+                  }).toList(),
                 );
               },
             ),

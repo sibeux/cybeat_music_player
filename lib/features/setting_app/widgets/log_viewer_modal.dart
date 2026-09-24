@@ -20,6 +20,7 @@ class _LogViewerModalState extends State<LogViewerModal> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedLevelFilter = 'ALL';
+  bool _isNewestFirst = true;
 
   @override
   void initState() {
@@ -56,11 +57,12 @@ class _LogViewerModalState extends State<LogViewerModal> {
 
           SizedBox(height: 6.h),
 
-          // Filter bar (Search input & Level dropdown)
+          // Filter bar (Search input, Level dropdown & Sort toggle)
           LogFilterBar(
             searchController: _searchController,
             searchQuery: _searchQuery,
             selectedLevelFilter: _selectedLevelFilter,
+            isNewestFirst: _isNewestFirst,
             onSearchChanged: (val) {
               setState(() {
                 _searchQuery = val.trim();
@@ -77,6 +79,11 @@ class _LogViewerModalState extends State<LogViewerModal> {
                 _searchQuery = '';
               });
             },
+            onToggleSortOrder: () {
+              setState(() {
+                _isNewestFirst = !_isNewestFirst;
+              });
+            },
           ),
 
           SizedBox(height: 10.h),
@@ -86,6 +93,7 @@ class _LogViewerModalState extends State<LogViewerModal> {
             controller: controller,
             searchQuery: _searchQuery,
             selectedLevelFilter: _selectedLevelFilter,
+            isNewestFirst: _isNewestFirst,
           ),
         ],
       ),
