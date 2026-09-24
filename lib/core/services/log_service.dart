@@ -17,7 +17,6 @@ class LogService {
 
   Directory? _logDirectory;
   final DateFormat _fileDateFormat = DateFormat('yyyy-MM-dd');
-  final DateFormat _timestampFormat = DateFormat('HH:mm:ss');
 
   // Sequential write queue to prevent concurrent file write conflicts
   Completer<void>? _writeQueue;
