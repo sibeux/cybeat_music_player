@@ -74,8 +74,11 @@ class LogService {
         if (file == null) return;
 
         final buffer = StringBuffer();
-        final timeStr = _timestampFormat.format(now);
-        buffer.write('$timeStr\n$message\n\n');
+        final timestampStr =
+            "${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} "
+            "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}."
+            "${now.millisecond.toString().padLeft(3, '0')}";
+        buffer.write('[$timestampStr] [$level] $message\n\n');
 
         if (error != null) {
           buffer.write('  Exception/Error: $error\n\n');
