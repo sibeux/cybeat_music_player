@@ -33,7 +33,16 @@ class MusicPlayerController extends GetxController {
   var numberOfError = 0;
   int currentIndexShuffle = 0;
   int _playRequestId = 0;
+
+  // --- CANCEL TOKENS ---
   CancelToken? _streamCancelToken;
+  CancelToken? _prefetchCancelToken;
+
+  // --- PRE-FETCH STATE ---
+  String? _prefetchedTrackId;
+  String? _prefetchedStreamUrl;
+  bool _isPrefetching = false;
+  bool _hasTriggeredPrefetchForCurrentTrack = false;
 
   var currentMusicDuration = Duration.zero.obs;
   var currentMusicPosition = Duration.zero.obs;
@@ -106,6 +115,7 @@ class MusicPlayerController extends GetxController {
 
       positionStreamSubscription = player.positionStream.listen((position) {
         updateCurrentMusicPosition(position);
+        _checkAndTriggerDynamicPrefetch();
       });
 
       bufferedStreamSubscription =
@@ -151,6 +161,8 @@ class MusicPlayerController extends GetxController {
 
   @override
   void onClose() {
+    _streamCancelToken?.cancel();
+    _prefetchCancelToken?.cancel();
     // Panggil fungsi cancel di onClose untuk pembersihan akhir
     _cancelSubscriptions();
     super.onClose();
@@ -199,6 +211,111 @@ class MusicPlayerController extends GetxController {
     }
   }
 
+  // ==========================================
+  // DYNAMIC PRE-FETCH LOGIC
+  // ==========================================
+  void _resetPrefetchState() {
+    _prefetchCancelToken?.cancel();
+    _prefetchCancelToken = null;
+    _prefetchedTrackId = null;
+    _prefetchedStreamUrl = null;
+    _isPrefetching = false;
+    _hasTriggeredPrefetchForCurrentTrack = false;
+  }
+
+  Music? _getNextTrackCandidate() {
+    final playlist = currentPlayingPlaylist.isNotEmpty
+        ? currentPlayingPlaylist
+        : Get.find<AudioStateController>().playlist;
+    if (playlist.isEmpty || getCurrentMediaItem == null) return null;
+
+    final rawIndex = getCurrentMediaItem!.extras?['index'];
+    if (rawIndex == null) return null;
+
+    int currentIdx = int.tryParse(rawIndex.toString()) ?? 1;
+    int nextIndex = currentIdx; // 1-based index di extras
+
+    if (isShuffleEnabled.value) {
+      return null;
+    }
+
+    if (nextIndex >= playlist.length) {
+      if (repeatMode.value == 'all') {
+        nextIndex = 0;
+      } else {
+        return null;
+      }
+    }
+
+    return playlist[nextIndex];
+  }
+
+  void _checkAndTriggerDynamicPrefetch() {
+    if (_hasTriggeredPrefetchForCurrentTrack || _isPrefetching) return;
+    if (repeatMode.value == 'one') return;
+
+    final duration = currentMusicDuration.value;
+    final position = currentMusicPosition.value;
+
+    if (duration == Duration.zero) return;
+
+    bool shouldTrigger = false;
+
+    if (duration.inSeconds <= 30) {
+      // Lagu pendek (eye-catch / ringtone): trigger di detik 1-2
+      if (position.inSeconds >= 1) {
+        shouldTrigger = true;
+      }
+    } else {
+      // Lagu normal / panjang (> 30s): trigger saat sisa durasi <= 30 detik
+      final remaining = duration - position;
+      if (remaining.inSeconds <= 30 && remaining.inSeconds > 0) {
+        shouldTrigger = true;
+      }
+    }
+
+    if (shouldTrigger) {
+      _hasTriggeredPrefetchForCurrentTrack = true;
+      _executePrefetchNextTrack();
+    }
+  }
+
+  Future<void> _executePrefetchNextTrack() async {
+    final nextTrack = _getNextTrackCandidate();
+    if (nextTrack == null) return;
+
+    final trackId = nextTrack.musicId.toString();
+    final url = nextTrack.extras?.musicUrl;
+    if (url == null || url.isEmpty) return;
+
+    _isPrefetching = true;
+    _prefetchCancelToken?.cancel();
+    _prefetchCancelToken = CancelToken();
+
+    try {
+      logInfo('⚡ [Pre-fetch] Memulai pre-fetch presigned URL untuk: ${nextTrack.title} ($trackId)');
+      final response = await dio.get(
+        url,
+        queryParameters: {'music_id': trackId},
+        cancelToken: _prefetchCancelToken,
+      );
+
+      final String? streamUrl = response.data?['stream_url'];
+      if (streamUrl != null && streamUrl.isNotEmpty) {
+        _prefetchedTrackId = trackId;
+        _prefetchedStreamUrl = streamUrl;
+        logSuccess('⚡ [Pre-fetch] Berhasil pre-fetch presigned URL untuk: $trackId');
+      }
+    } catch (e) {
+      if (e is DioException && e.type == DioExceptionType.cancel) {
+        return;
+      }
+      logWarning('⚠️ [Pre-fetch] Gagal pre-fetch $trackId: $e');
+    } finally {
+      _isPrefetching = false;
+    }
+  }
+
   void updateCurrentMediaItem(MediaItem mediaItem) {
     _currentMediaItem.value = mediaItem;
   }
@@ -240,7 +357,7 @@ class MusicPlayerController extends GetxController {
     bool isFromButton = true,
   }) async {
     if (isFromButton) {
-      logInfo('User pressed PLAY');
+      logInfo('User pressed PLAY: ${mediaItem.title}');
     }
     updateCurrentMediaItem(mediaItem);
     audioStateController.checkCodecAudio(mediaItem: mediaItem);
@@ -259,36 +376,52 @@ class MusicPlayerController extends GetxController {
       numberOfError = 0; // Hanya reset jika user berinteraksi manual (klik lagu / next manual)
     }
 
+    // Batalkan request dio lagu sebelumnya
     _streamCancelToken?.cancel();
-
     _streamCancelToken = CancelToken();
 
     final int requestId = ++_playRequestId;
 
-    try {
-      isWaitingGetMusicStreamUrl.value = true;
+    // Cek ketersediaan URL dari Pre-fetch Cache
+    String? streamUrl;
+    if (_prefetchedTrackId == mediaItem.id && _prefetchedStreamUrl != null) {
+      streamUrl = _prefetchedStreamUrl;
+      logSuccess('⚡ [Cache Hit] Memutar langsung dari presigned pre-fetch URL: ${mediaItem.id}');
+    }
 
+    // Reset pre-fetch state untuk lagu yang baru aktif
+    _resetPrefetchState();
+
+    try {
       // Segera stop dan reset progress bar ke 0 agar UI tidak terlihat delay/stuck
       // saat menunggu response API.
       await player.stop();
       await player.setAudioSources([]);
       await player.seek(Duration.zero);
 
-      final response = await dio.get(
-        mediaItem.extras!['url'],
-        queryParameters: {
-          'music_id': mediaItem.id,
-        },
-        cancelToken: _streamCancelToken,
-      );
+      if (streamUrl == null) {
+        isWaitingGetMusicStreamUrl.value = true;
+        logInfo('⏳ [On-demand Fetch] Mengambil presigned URL untuk: ${mediaItem.id}');
+
+        final response = await dio.get(
+          mediaItem.extras!['url'],
+          queryParameters: {
+            'music_id': mediaItem.id,
+          },
+          cancelToken: _streamCancelToken,
+        );
+
+        // Kalau ada request yang lebih baru, abaikan hasil ini
+        if (requestId != _playRequestId) return;
+
+        streamUrl = response.data['stream_url'];
+      }
 
       // Kalau ada request yang lebih baru, abaikan hasil ini
       if (requestId != _playRequestId) return;
 
-      final String streamUrl = response.data['stream_url'];
-
       logSuccess(
-          'Streaming ${mediaItem.id} -> ${Uri.parse(streamUrl).path} (exp=${Uri.parse(streamUrl).queryParameters['expires']})');
+          'Streaming ${mediaItem.id} -> ${Uri.parse(streamUrl!).path} (exp=${Uri.parse(streamUrl).queryParameters['expires']})');
 
       const int maxPlayerRetries = 3;
       int playerRetryCount = 0;
@@ -515,6 +648,7 @@ class MusicPlayerController extends GetxController {
 
   void toggleShuffleButton() {
     isShuffleEnabled.value = !isShuffleEnabled.value;
+    _resetPrefetchState();
     if (isShuffleEnabled.value) {
       showToast('Shuffle enabled');
     } else {
@@ -524,6 +658,7 @@ class MusicPlayerController extends GetxController {
 
   void toggleRepeatButton(String repeat) {
     repeatMode.value = repeat;
+    _resetPrefetchState();
     final player = Get.find<AudioStateController>().activePlayer.value;
     if (player != null) {
       if (repeat == 'one') {
