@@ -14,8 +14,35 @@ class RetryInterceptor extends Interceptor {
   });
 
   @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    final method = options.method.toUpperCase();
+    final host = options.uri.host.isNotEmpty ? options.uri.host : options.path;
+    logInfo('$method $host');
+    return handler.next(options);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    final host = response.requestOptions.uri.host.isNotEmpty
+        ? response.requestOptions.uri.host
+        : response.requestOptions.path;
+    logSuccess('$host\nSUCCESS');
+    return handler.next(response);
+  }
+
+  @override
   Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     final requestOptions = err.requestOptions;
+
+    // Format error message (menangkap 'Failed host lookup' / DNS error)
+    final errorMsg = _extractErrorMessage(err);
+    final isRetry = (requestOptions.extra['retry_count'] ?? 0) > 0;
+
+    if (isRetry) {
+      logWarning('retry\n$errorMsg');
+    } else {
+      logError(errorMsg, error: err.error ?? err);
+    }
 
     // Jangan retry jika request dibatalkan secara eksplisit oleh CancelToken
     if (err.type == DioExceptionType.cancel ||
@@ -43,9 +70,6 @@ class RetryInterceptor extends Interceptor {
 
         // Exponential backoff: retry 1 -> 1s, retry 2 -> 2s, retry 3 -> 3s
         final delay = retryInterval * currentRetry;
-        logWarning(
-          'Network issue (${err.message ?? err.error}). Retrying ($currentRetry/$maxRetries) in ${delay.inSeconds}s -> ${requestOptions.uri}',
-        );
 
         await Future.delayed(delay);
 
@@ -74,5 +98,31 @@ class RetryInterceptor extends Interceptor {
     }
 
     return handler.next(err);
+  }
+
+  String _extractErrorMessage(DioException err) {
+    final rawError = err.error?.toString() ?? '';
+    final message = err.message ?? '';
+
+    if (rawError.contains('Failed host lookup') || message.contains('Failed host lookup')) {
+      return 'Failed host lookup';
+    }
+    if (rawError.contains('Connection refused') || message.contains('Connection refused')) {
+      return 'Connection refused';
+    }
+    if (err.type == DioExceptionType.connectionTimeout) {
+      return 'Connection timeout';
+    }
+    if (err.type == DioExceptionType.receiveTimeout) {
+      return 'Receive timeout';
+    }
+    if (err.type == DioExceptionType.sendTimeout) {
+      return 'Send timeout';
+    }
+    if (err.error is SocketException) {
+      final sockErr = err.error as SocketException;
+      return sockErr.message.isNotEmpty ? sockErr.message : 'Network error';
+    }
+    return message.isNotEmpty ? message : (rawError.isNotEmpty ? rawError : 'Network error');
   }
 }

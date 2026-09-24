@@ -239,6 +239,9 @@ class MusicPlayerController extends GetxController {
     required MediaItem mediaItem,
     bool isFromButton = true,
   }) async {
+    if (isFromButton) {
+      logInfo('User pressed PLAY');
+    }
     updateCurrentMediaItem(mediaItem);
     audioStateController.checkCodecAudio(mediaItem: mediaItem);
     audioStateController.checkDominantColor(mediaItem: mediaItem);

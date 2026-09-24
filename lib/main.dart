@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:cybeat_music_player/common/utils/colorize_terminal.dart';
 import 'package:cybeat_music_player/core/controllers/music_player_controller.dart';
 import 'package:cybeat_music_player/core/services/album_service.dart';
+import 'package:cybeat_music_player/core/services/app_lifecycle_and_network_service.dart';
 import 'package:cybeat_music_player/core/services/auth_service.dart';
 import 'package:cybeat_music_player/core/services/log_service.dart';
 import 'package:cybeat_music_player/core/services/secure_storage_service.dart';
@@ -109,6 +110,9 @@ Future<void> main() async {
   // Problem: Jika ditaruh di InitialBinding, bisa terjadi race condition dimana UI dimuat sebelum service selesai init.
   Get.put(SecureStorageService());
   await Get.putAsync(() => AuthService().init());
+
+  // Monitor AppLifecycleState & Network Connectivity
+  AppLifecycleAndNetworkService.instance.init();
 
   runApp(MyApp());
 }

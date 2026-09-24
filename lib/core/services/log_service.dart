@@ -17,7 +17,7 @@ class LogService {
 
   Directory? _logDirectory;
   final DateFormat _fileDateFormat = DateFormat('yyyy-MM-dd');
-  final DateFormat _timestampFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+  final DateFormat _timestampFormat = DateFormat('HH:mm:ss');
 
   // Sequential write queue to prevent concurrent file write conflicts
   Completer<void>? _writeQueue;
@@ -74,14 +74,15 @@ class LogService {
         if (file == null) return;
 
         final buffer = StringBuffer();
-        buffer.write('[${_timestampFormat.format(now)}] [$level] $message\n');
+        final timeStr = _timestampFormat.format(now);
+        buffer.write('$timeStr\n$message\n\n');
 
         if (error != null) {
-          buffer.write('  Exception/Error: $error\n');
+          buffer.write('  Exception/Error: $error\n\n');
         }
 
         if (stackTrace != null) {
-          buffer.write('  StackTrace:\n$stackTrace\n');
+          buffer.write('  StackTrace:\n$stackTrace\n\n');
         }
 
         await file.writeAsString(

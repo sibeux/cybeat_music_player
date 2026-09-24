@@ -106,8 +106,27 @@ class LogContentViewer extends StatelessWidget {
 
   bool _matchesLevel(String line, String level) {
     if (line.contains('[$level]')) return true;
-    if (line.startsWith('  ') && level == 'ERROR') {
-      return true;
+    if (level == 'ERROR') {
+      if (line.toLowerCase().contains('failed host lookup') ||
+          line.toLowerCase().contains('error') ||
+          line.startsWith('  Exception') ||
+          line.startsWith('  StackTrace')) {
+        return true;
+      }
+    } else if (level == 'SUCCESS') {
+      if (line.contains('SUCCESS')) return true;
+    } else if (level == 'WARN') {
+      if (line.startsWith('retry') || line.contains('[WARN]')) return true;
+    } else if (level == 'INFO') {
+      if (line.startsWith('AppLifecycleState') ||
+          line.startsWith('Network') ||
+          line.startsWith('User pressed') ||
+          line.startsWith('GET ') ||
+          line.startsWith('POST ') ||
+          line.startsWith('DELETE ') ||
+          line.contains('[INFO]')) {
+        return true;
+      }
     }
     return false;
   }
@@ -116,14 +135,31 @@ class LogContentViewer extends StatelessWidget {
     Color textColor = const Color(0xFFD4D4D4);
     FontWeight fontWeight = FontWeight.normal;
 
-    if (line.contains('[ERROR]')) {
+    // Check timestamp (HH:mm:ss)
+    final isTimestamp = RegExp(r'^\d{2}:\d{2}:\d{2}$').hasMatch(line.trim());
+
+    if (isTimestamp) {
+      textColor = const Color(0xFF9E9E9E);
+      fontWeight = FontWeight.w600;
+    } else if (line.contains('SUCCESS') || line.contains('[SUCCESS]')) {
+      textColor = const Color(0xFF06D6A0);
+      fontWeight = FontWeight.bold;
+    } else if (line.contains('Failed host lookup') ||
+        line.contains('[ERROR]') ||
+        line.toLowerCase().contains('error') ||
+        line.contains('disconnected')) {
       textColor = const Color(0xFFFF6B6B);
       fontWeight = FontWeight.w600;
-    } else if (line.contains('[WARN]')) {
+    } else if (line.startsWith('retry') || line.contains('[WARN]')) {
       textColor = const Color(0xFFFFD166);
-    } else if (line.contains('[SUCCESS]')) {
-      textColor = const Color(0xFF06D6A0);
-    } else if (line.contains('[INFO]')) {
+      fontWeight = FontWeight.w600;
+    } else if (line.startsWith('AppLifecycleState') ||
+        line.startsWith('Network') ||
+        line.startsWith('User pressed') ||
+        line.startsWith('GET ') ||
+        line.startsWith('POST ') ||
+        line.startsWith('DELETE ') ||
+        line.contains('[INFO]')) {
       textColor = const Color(0xFF80D8FF);
     } else if (line.startsWith('  Exception') ||
         line.startsWith('  StackTrace')) {
