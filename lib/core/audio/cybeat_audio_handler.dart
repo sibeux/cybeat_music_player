@@ -164,11 +164,12 @@ class CybeatAudioHandler extends BaseAudioHandler {
 }
 
 /// Config AudioService untuk notifikasi Android/iOS.
-AudioServiceConfig get cybeatAudioServiceConfig => const AudioServiceConfig(
+AudioServiceConfig get cybeatAudioServiceConfig => AudioServiceConfig(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
       androidNotificationChannelName: 'Audio playback',
       androidNotificationOngoing: true,
-      notificationColor: Color(0xFF1E1E2E),
+      androidStopForegroundOnPause: false,
+      notificationColor: const Color(0xFF1E1E2E),
       androidNotificationIcon: 'mipmap/cybeat_launcher',
       androidShowNotificationBadge: true,
       preloadArtwork: true,

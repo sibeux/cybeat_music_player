@@ -41,6 +41,7 @@ class MusicPlayerController extends GetxController {
   // --- PRE-FETCH STATE ---
   String? _prefetchedTrackId;
   String? _prefetchedStreamUrl;
+  int? _prefetchedCandidateIndex;
   bool _isPrefetching = false;
   bool _hasTriggeredPrefetchForCurrentTrack = false;
 
@@ -219,6 +220,7 @@ class MusicPlayerController extends GetxController {
     _prefetchCancelToken = null;
     _prefetchedTrackId = null;
     _prefetchedStreamUrl = null;
+    _prefetchedCandidateIndex = null;
     _isPrefetching = false;
     _hasTriggeredPrefetchForCurrentTrack = false;
   }
@@ -236,7 +238,17 @@ class MusicPlayerController extends GetxController {
     int nextIndex = currentIdx; // 1-based index di extras
 
     if (isShuffleEnabled.value) {
-      return null;
+      if (playlist.length <= 1) {
+        _prefetchedCandidateIndex = 0;
+        return playlist[0];
+      }
+      final currentZeroIndex = currentIdx - 1;
+      final random = Random();
+      int randomCandidate =
+          (currentZeroIndex + 1 + random.nextInt(playlist.length - 1)) %
+              playlist.length;
+      _prefetchedCandidateIndex = randomCandidate;
+      return playlist[randomCandidate];
     }
 
     if (nextIndex >= playlist.length) {
@@ -247,6 +259,7 @@ class MusicPlayerController extends GetxController {
       }
     }
 
+    _prefetchedCandidateIndex = nextIndex;
     return playlist[nextIndex];
   }
 
@@ -261,13 +274,18 @@ class MusicPlayerController extends GetxController {
 
     bool shouldTrigger = false;
 
-    if (duration.inSeconds <= 30) {
-      // Lagu pendek (eye-catch / ringtone): trigger di detik 1-2
+    if (duration.inSeconds <= 10) {
+      // Lagu sangat pendek (<= 10 detik): trigger segera setelah 500ms pemutaran
+      if (position.inMilliseconds >= 500) {
+        shouldTrigger = true;
+      }
+    } else if (duration.inSeconds <= 30) {
+      // Lagu pendek (10-30 detik): trigger di detik ke-1
       if (position.inSeconds >= 1) {
         shouldTrigger = true;
       }
     } else {
-      // Lagu normal / panjang (> 30s): trigger saat sisa durasi <= 30 detik
+      // Lagu normal / panjang (> 30 detik): trigger saat sisa durasi <= 30 detik
       final remaining = duration - position;
       if (remaining.inSeconds <= 30 && remaining.inSeconds > 0) {
         shouldTrigger = true;
@@ -393,12 +411,6 @@ class MusicPlayerController extends GetxController {
     _resetPrefetchState();
 
     try {
-      // Segera stop dan reset progress bar ke 0 agar UI tidak terlihat delay/stuck
-      // saat menunggu response API.
-      await player.stop();
-      await player.setAudioSources([]);
-      await player.seek(Duration.zero);
-
       if (streamUrl == null) {
         isWaitingGetMusicStreamUrl.value = true;
         logInfo('⏳ [On-demand Fetch] Mengambil presigned URL untuk: ${mediaItem.id}');
@@ -587,19 +599,32 @@ class MusicPlayerController extends GetxController {
     //   return;
     // }
 
-    if (!isShuffleEnabled.value) {
+    int index;
+    if (isShuffleEnabled.value || isFromShuffleButton) {
+      // Jika kita punya hasil pre-fetch yang valid untuk mode shuffle, gunakan index pre-fetch tersebut!
+      if (!isFromShuffleButton &&
+          _prefetchedCandidateIndex != null &&
+          _prefetchedTrackId != null &&
+          _prefetchedCandidateIndex! < playlistLength &&
+          playlist[_prefetchedCandidateIndex!].musicId.toString() ==
+              _prefetchedTrackId) {
+        index = _prefetchedCandidateIndex!;
+      } else {
+        index = playlistLength > 1
+            ? (originalCurrentSongSequence +
+                    1 +
+                    random.nextInt(playlistLength - 1)) %
+                playlistLength
+            : 0;
+      }
+    } else {
       originalCurrentSongSequence += 1;
-    }
-    int index = isShuffleEnabled.value || isFromShuffleButton
-        ? random.nextInt(
-            playlistLength) // 0 sampai 1000 (inklusif 0, eksklusif 1001)
-        : originalCurrentSongSequence;
-
-    if (!isShuffleEnabled.value &&
-        playlistLength < originalCurrentSongSequence + 1) {
-      if (repeatMode.value == 'all') {
-        originalCurrentSongSequence = 0;
-        index = 0;
+      index = originalCurrentSongSequence;
+      if (playlistLength < originalCurrentSongSequence + 1) {
+        if (repeatMode.value == 'all') {
+          originalCurrentSongSequence = 0;
+          index = 0;
+        }
       }
     }
 
