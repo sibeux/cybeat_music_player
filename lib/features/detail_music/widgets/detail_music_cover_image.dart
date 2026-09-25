@@ -23,7 +23,7 @@ class DetailMusicCoverImage extends StatelessWidget {
             borderRadius: BorderRadius.circular(15.r),
             child: CachedNetworkImage(
               imageUrl:
-                  detailMusicController.currentMediaItem!.artUri.toString(),
+                  detailMusicController.currentMediaItem?.artUri?.toString() ?? '',
               fit: BoxFit.cover,
               filterQuality: FilterQuality.low,
               maxHeightDiskCache: 500,

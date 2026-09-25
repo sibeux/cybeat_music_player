@@ -58,6 +58,7 @@ class MusicPlayerController extends GetxController {
   StreamSubscription<PlayerException?>? playerErrorStreamSubscription;
 
   MediaItem? get getCurrentMediaItem => _currentMediaItem.value;
+  Rx<MediaItem?> get rxCurrentMediaItem => _currentMediaItem;
   bool get isLastIndexMusic {
     final list = currentPlayingPlaylist.isNotEmpty
         ? currentPlayingPlaylist
@@ -201,14 +202,10 @@ class MusicPlayerController extends GetxController {
     currentMusicPlayerState.value = processingState ?? ProcessingState.idle;
     isMusicPlayingNow.value = state!.playing;
     
-    // Saat music telah selesai diputar, tunggu 0.5 detik dan ganti lagu berikutnya.
+    // Saat music telah selesai diputar, langsung beralih ke lagu berikutnya
+    // agar Android tidak menganggap service idle dan membunuh proses background.
     if (processingState == ProcessingState.completed && wasNotCompleted) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      // Cek ulang apakah state masih completed. 
-      // Jika user menekan Next/Prev saat jeda 500ms, state sudah berubah (idle/loading)
-      if (currentMusicPlayerState.value == ProcessingState.completed) {
-        seekNextButton(isFromButton: false);
-      }
+      seekNextButton(isFromButton: false);
     }
   }
 
@@ -377,9 +374,12 @@ class MusicPlayerController extends GetxController {
     if (isFromButton) {
       logInfo('User pressed PLAY: ${mediaItem.title}');
     }
+
+    // Update UI state terlebih dahulu agar title/artist/cover langsung tampil.
     updateCurrentMediaItem(mediaItem);
     audioStateController.checkCodecAudio(mediaItem: mediaItem);
     audioStateController.checkDominantColor(mediaItem: mediaItem);
+    audioStateController.audioHandler?.mediaItem.add(mediaItem);
 
     final player = audioStateController.activePlayer.value;
     if (player == null) return;
@@ -394,10 +394,10 @@ class MusicPlayerController extends GetxController {
       numberOfError = 0; // Hanya reset jika user berinteraksi manual (klik lagu / next manual)
     }
 
-    // Batalkan request dio lagu sebelumnya
+    // Batalkan request lagu sebelumnya dan ambil requestId sebelum await apapun,
+    // agar guard requestId aktif selama seluruh async flow.
     _streamCancelToken?.cancel();
     _streamCancelToken = CancelToken();
-
     final int requestId = ++_playRequestId;
 
     // Cek ketersediaan URL dari Pre-fetch Cache
@@ -479,7 +479,14 @@ class MusicPlayerController extends GetxController {
       numberOfError = 0; // Reset counter saat pemutaran berhasil
       isWaitingGetMusicStreamUrl.value = false;
 
-      await player.play();
+      // Gunakan audioHandler.play() agar AudioService memulai foreground service notification.
+      // Jika handler belum siap (null pada cold-start sangat cepat), fallback ke player.play().
+      final handler = audioStateController.audioHandler;
+      if (handler != null) {
+        await handler.play();
+      } else {
+        await player.play();
+      }
     } catch (e, st) {
       if (requestId == _playRequestId) {
         isWaitingGetMusicStreamUrl.value = false;
@@ -570,6 +577,10 @@ class MusicPlayerController extends GetxController {
 
   void seekNextButton(
       {bool isFromButton = true, bool isFromShuffleButton = false}) {
+    // Guard: jika bukan dari shuffle button, getCurrentMediaItem harus ada
+    // karena dipakai untuk menentukan posisi lagu berikutnya.
+    // isFromShuffleButton tidak butuh currentMediaItem (langsung mulai dari index acak).
+    if (!isFromShuffleButton && getCurrentMediaItem == null) return;
     int originalCurrentSongSequence = isFromShuffleButton
         ? 0
         : int.parse(getCurrentMediaItem!.extras!['index']) - 1;
@@ -648,6 +659,7 @@ class MusicPlayerController extends GetxController {
   }
 
   void seekPreviousButton() {
+    if (getCurrentMediaItem == null) return;
     int currentIndex = int.parse(getCurrentMediaItem!.extras!['index']) - 1;
     final playlist = currentPlayingPlaylist.isNotEmpty
         ? currentPlayingPlaylist

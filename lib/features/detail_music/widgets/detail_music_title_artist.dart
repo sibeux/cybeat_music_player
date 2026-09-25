@@ -23,7 +23,7 @@ class DetailMusicTitleArtist extends StatelessWidget {
             SizedBox(
               height: 30.h,
               child: AutoSizeText(
-                detailMusicController.currentMediaItem!.title,
+              detailMusicController.currentMediaItem?.title ?? '',
                 minFontSize: 18,
                 maxFontSize: 18,
                 maxLines: 1,
@@ -32,7 +32,7 @@ class DetailMusicTitleArtist extends StatelessWidget {
                   fontWeight: FontWeight.values[5],
                 ),
                 overflowReplacement: Marquee(
-                  text: detailMusicController.currentMediaItem!.title,
+                  text: detailMusicController.currentMediaItem?.title ?? '',
                   style: TextStyle(
                     fontSize: 18.sp,
                     color: Colors.white,
@@ -59,7 +59,7 @@ class DetailMusicTitleArtist extends StatelessWidget {
             SizedBox(
               height: 30,
               child: AutoSizeText(
-                detailMusicController.currentMediaItem!.artist ?? '',
+                detailMusicController.currentMediaItem?.artist ?? '',
                 minFontSize: 14,
                 maxFontSize: 14,
                 maxLines: 1,
@@ -69,7 +69,7 @@ class DetailMusicTitleArtist extends StatelessWidget {
                   fontWeight: FontWeight.normal,
                 ),
                 overflowReplacement: Marquee(
-                  text: detailMusicController.currentMediaItem!.artist ?? '',
+                  text: detailMusicController.currentMediaItem?.artist ?? '',
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.white,

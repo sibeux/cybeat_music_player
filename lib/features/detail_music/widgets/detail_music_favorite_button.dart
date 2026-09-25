@@ -25,8 +25,9 @@ class DetailMusicFavoriteButton extends StatelessWidget {
         child: Obx(() {
           // Rebuild widget saat button ditekan.
           detailMusicController.uiTrigger.value; // biar ke-track
-          return detailMusicController.currentMediaItem!.extras?['favorite'] ==
-                  '1'
+          final isFavorite =
+              detailMusicController.currentMediaItem?.extras?['favorite'] == '1';
+          return isFavorite
               ? Icon(
                   Icons.star_rounded,
                   color: Colors.amber,

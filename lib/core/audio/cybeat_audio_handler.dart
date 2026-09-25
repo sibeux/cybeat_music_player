@@ -19,9 +19,14 @@ class CybeatAudioHandler extends BaseAudioHandler {
   final AudioPlayer player;
 
   CybeatAudioHandler(this.player) {
+    // Inisialisasi status awal agar AudioService langsung menerima state
+    playbackState.add(_transformEvent(player.playbackEvent));
+
     // Relay PlaybackEvent dari just_audio ke AudioService
     // agar status notifikasi (play/pause/buffering) selalu sync.
-    player.playbackEventStream.map(_transformEvent).pipe(playbackState);
+    player.playbackEventStream.listen((event) {
+      playbackState.add(_transformEvent(event));
+    });
 
     // Relay MediaItem yang sedang diputar ke AudioService
     // agar judul, artis, dan cover di notifikasi terupdate.
@@ -142,15 +147,15 @@ class CybeatAudioHandler extends BaseAudioHandler {
         MediaAction.skipToPrevious,
         MediaAction.rewind,
       },
-      // Compact view: prev | play/pause | next (stop tidak masuk compact)
       androidCompactActionIndices: const [0, 1, 2],
       processingState: const {
-        ProcessingState.idle: AudioProcessingState.idle,
-        ProcessingState.loading: AudioProcessingState.loading,
-        ProcessingState.buffering: AudioProcessingState.buffering,
-        ProcessingState.ready: AudioProcessingState.ready,
-        ProcessingState.completed: AudioProcessingState.completed,
-      }[event.processingState]!,
+            ProcessingState.idle: AudioProcessingState.idle,
+            ProcessingState.loading: AudioProcessingState.loading,
+            ProcessingState.buffering: AudioProcessingState.buffering,
+            ProcessingState.ready: AudioProcessingState.ready,
+            ProcessingState.completed: AudioProcessingState.completed,
+          }[event.processingState] ??
+          AudioProcessingState.idle,
       playing: player.playing,
       // Pakai event.updatePosition + event.updateTime (bukan player.position)
       // agar Android bisa ekstrapolasi posisi: pos = updatePos + speed × (now − updateTime)
@@ -167,10 +172,15 @@ class CybeatAudioHandler extends BaseAudioHandler {
 AudioServiceConfig get cybeatAudioServiceConfig => AudioServiceConfig(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
       androidNotificationChannelName: 'Audio playback',
-      androidNotificationOngoing: true,
+      // androidNotificationOngoing: true DIHAPUS — konflik dengan androidStopForegroundOnPause: false.
+      // audio_service melempar AssertionError jika keduanya di-set bersamaan.
+      // androidStopForegroundOnPause: false sudah cukup menjaga service tetap foreground.
       androidStopForegroundOnPause: false,
+      androidResumeOnClick: true,
       notificationColor: const Color(0xFF1E1E2E),
-      androidNotificationIcon: 'mipmap/cybeat_launcher',
+      // ic_notification: vector drawable monokrom di res/drawable/ic_notification.xml
+      // ic_launcher (mipmap) tidak valid untuk notification icon di Android.
+      androidNotificationIcon: 'drawable/ic_notification',
       androidShowNotificationBadge: true,
       preloadArtwork: true,
     );

@@ -20,7 +20,7 @@ class DetailMusicBackgroundBlur extends StatelessWidget {
           sigmaX: 35,
         ),
         child: CachedNetworkImage(
-          imageUrl: detailMusicController.currentMediaItem!.artUri.toString(),
+          imageUrl: detailMusicController.currentMediaItem?.artUri?.toString() ?? '',
           fit: BoxFit.cover,
           filterQuality: FilterQuality.low,
           color: Colors.black.withValues(alpha: 0.5),

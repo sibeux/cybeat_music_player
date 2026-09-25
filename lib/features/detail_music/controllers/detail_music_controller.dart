@@ -56,7 +56,10 @@ class DetailMusicController extends GetxController {
   String get positionText =>
       formatDuration(isSeeking.value ? dragValue.value : position);
 
-  MediaItem? get currentMediaItem => musicPlayerController.getCurrentMediaItem;
+  /// Membaca dari Rx langsung agar [Obx] bisa track perubahan secara reaktif.
+  /// Jangan pakai `!` di widget — gunakan `?.` atau null-guard karena bisa null
+  /// sebelum lagu pertama kali dipilih.
+  MediaItem? get currentMediaItem => musicPlayerController.rxCurrentMediaItem.value;
   Album? get currentActivePlaylist =>
       musicPlayerController.currentActivePlaylist.value;
   bool get isAlbumMusicScreenActive =>

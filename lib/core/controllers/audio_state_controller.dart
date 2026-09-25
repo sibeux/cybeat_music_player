@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
@@ -32,7 +33,15 @@ class AudioStateController extends GetxController {
   List<MediaItem> queue = [];
 
   /// Handler AudioService untuk notifikasi. Di-init di [onInit].
-  late CybeatAudioHandler audioHandler;
+  CybeatAudioHandler? audioHandler;
+
+  /// Completer sebagai sinyal bahwa [audioHandler] sudah siap dipakai.
+  /// Gunakan [waitForHandler()] di mana saja yang memerlukan audioHandler.
+  final Completer<void> _handlerReady = Completer<void>();
+
+  /// Tunggu hingga [audioHandler] selesai diinisialisasi oleh AudioService.init().
+  /// Aman dipanggil berkali-kali — langsung resolve jika sudah selesai.
+  Future<void> waitForHandler() => _handlerReady.future;
 
   var sampleRate = '--'.obs;
   var bitsPerRawSample = '--'.obs;
@@ -63,20 +72,39 @@ class AudioStateController extends GetxController {
   /// Menginisialisasi AudioPlayer dan mendaftarkan [CybeatAudioHandler] ke AudioService.
   /// Harus async karena [AudioService.init] adalah operasi async.
   /// Dipanggil dari [onInit] secara fire & forget agar tidak memblokir controller init.
+  /// Setelah selesai, [_handlerReady] di-complete agar [waitForHandler()] bisa resolve.
   Future<void> _initAudioService() async {
     final player = AudioPlayer();
     activePlayer.value = player;
 
     _listenToPlaybackEvents(player);
 
-    // Daftarkan handler kustom ke AudioService.
-    // Handler ini yang mengontrol tombol di notifikasi dan lock screen.
-    // Lihat: lib/core/audio/cybeat_audio_handler.dart
-    audioHandler = await AudioService.init(
-      builder: () => CybeatAudioHandler(player),
-      config: cybeatAudioServiceConfig,
-    );
-    logInfo('[AudioService] CybeatAudioHandler berhasil diinisialisasi.');
+    try {
+      // Daftarkan handler kustom ke AudioService.
+      // Handler ini yang mengontrol tombol di notifikasi dan lock screen.
+      // Lihat: lib/core/audio/cybeat_audio_handler.dart
+      audioHandler = await AudioService.init(
+        builder: () => CybeatAudioHandler(player),
+        config: cybeatAudioServiceConfig,
+      );
+
+      // Sinyal bahwa handler sudah siap — semua caller yang await waitForHandler() bisa lanjut.
+      _handlerReady.complete();
+      logInfo('[AudioService] CybeatAudioHandler berhasil diinisialisasi.');
+
+      // Edge case: jika player sudah playing sebelum handler selesai init
+      // (user play sangat cepat saat cold-start), trigger play() lewat handler
+      // agar AudioService memulai foreground service yang sebelumnya terlewat.
+      if (player.playing) {
+        audioHandler!.play();
+      }
+    } catch (e, st) {
+      logError('[AudioService] Gagal inisialisasi: $e', error: e, stack: st);
+      // Complete dengan error agar waitForHandler() tidak hang selamanya.
+      if (!_handlerReady.isCompleted) {
+        _handlerReady.completeError(e, st);
+      }
+    }
   }
 
   void _listenToPlaybackEvents(AudioPlayer player) {
