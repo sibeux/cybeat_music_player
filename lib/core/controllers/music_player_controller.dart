@@ -377,12 +377,19 @@ class MusicPlayerController extends GetxController {
 
     // Update UI state terlebih dahulu agar title/artist/cover langsung tampil.
     updateCurrentMediaItem(mediaItem);
+    currentMusicPosition.value = Duration.zero;
+    currentMusicBuffer.value = Duration.zero;
+    currentMusicDuration.value = mediaItem.duration ?? Duration.zero;
     audioStateController.checkCodecAudio(mediaItem: mediaItem);
     audioStateController.checkDominantColor(mediaItem: mediaItem);
     audioStateController.audioHandler?.mediaItem.add(mediaItem);
 
     final player = audioStateController.activePlayer.value;
     if (player == null) return;
+
+    // Hentikan pemutaran audio lama seketika agar suara tidak terus berlanjut
+    // saat menunggu fetch stream_url / buffering audio baru.
+    player.stop();
 
     activateMusic();
 

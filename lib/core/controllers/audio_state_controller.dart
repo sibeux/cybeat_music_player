@@ -455,31 +455,42 @@ class AudioStateController extends GetxController {
   Future<bool> checkCodecAudio({
     required MediaItem mediaItem,
   }) async {
-    bitsPerRawSample.value = '--';
-    sampleRate.value = '--';
-    bitRate.value = '--';
     try {
-      final Map<String, dynamic> metadata = mediaItem.extras?['metadata'];
-      // Cek dulu apakah udah ada metadata atau belum?
-      // Cek juga apakah metadatanya memang sudah sesuai format?
-      final bool isMetadataExist = metadata['bits_per_raw_sample'] != '--' ||
-          metadata['sample_rate'] != '--' ||
-          metadata['codec_name'] != '--' ||
-          metadata['bit_rate'] != '--';
-      if (metadata['metadata_id_music'] != null && (isMetadataExist)) {
-        bitsPerRawSample.value = metadata['bits_per_raw_sample'];
-        sampleRate.value = metadata['sample_rate'];
-        bitRate.value = metadata['bit_rate'];
-        codecName.value = metadata['codec_name'];
-        musicQuality.value =
-            mediaItem.extras?['is_lossless'] ? 'lossless' : 'lossy';
-        // Kalo ada isinya, gak usah dicek.
-        return true;
-      } else {
-        return false;
+      final Map<String, dynamic>? metadata =
+          mediaItem.extras?['metadata'] as Map<String, dynamic>?;
+      if (metadata != null) {
+        final bool isMetadataExist = metadata['bits_per_raw_sample'] != null &&
+            metadata['bits_per_raw_sample'] != '--' &&
+            metadata['sample_rate'] != null &&
+            metadata['sample_rate'] != '--' &&
+            metadata['codec_name'] != null &&
+            metadata['codec_name'] != '--' &&
+            metadata['bit_rate'] != null &&
+            metadata['bit_rate'] != '--';
+
+        if (isMetadataExist) {
+          bitsPerRawSample.value = metadata['bits_per_raw_sample'].toString();
+          sampleRate.value = metadata['sample_rate'].toString();
+          bitRate.value = metadata['bit_rate'].toString();
+          codecName.value = metadata['codec_name'].toString();
+          musicQuality.value =
+              mediaItem.extras?['is_lossless'] == true ? 'lossless' : 'lossy';
+          return true;
+        }
       }
+      bitsPerRawSample.value = '--';
+      sampleRate.value = '--';
+      bitRate.value = '--';
+      codecName.value = '--';
+      musicQuality.value = '';
+      return false;
     } catch (e) {
       logError('Error onReadCodec: $e');
+      bitsPerRawSample.value = '--';
+      sampleRate.value = '--';
+      bitRate.value = '--';
+      codecName.value = '--';
+      musicQuality.value = '';
       return false;
     }
   }
@@ -487,22 +498,25 @@ class AudioStateController extends GetxController {
   Future<bool> checkDominantColor({
     required MediaItem mediaItem,
   }) async {
-    bgColor.value = '#000000';
-    textColor.value = '#ffffff';
     try {
-      final Map<String, dynamic> dominantColor =
-          mediaItem.extras?['dominant_color'];
-      final bool isDominantColorExist =
-          dominantColor['bg_color'] != '' && dominantColor['text_color'] != '';
-      if (isDominantColorExist) {
-        bgColor.value = dominantColor['bg_color'];
-        textColor.value = dominantColor['text_color'];
-        return true;
-      } else {
-        return false;
+      final Map<String, dynamic>? dominantColor =
+          mediaItem.extras?['dominant_color'] as Map<String, dynamic>?;
+      if (dominantColor != null) {
+        final String bg = dominantColor['bg_color']?.toString() ?? '';
+        final String text = dominantColor['text_color']?.toString() ?? '';
+        if (bg.isNotEmpty && text.isNotEmpty) {
+          bgColor.value = bg;
+          textColor.value = text;
+          return true;
+        }
       }
+      bgColor.value = '#000000';
+      textColor.value = '#ffffff';
+      return false;
     } catch (e, st) {
       logError('Error checkDominantColor: $e, st: $st');
+      bgColor.value = '#000000';
+      textColor.value = '#ffffff';
       return false;
     }
   }
