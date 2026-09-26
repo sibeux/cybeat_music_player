@@ -347,19 +347,6 @@ class MusicPlayerController extends GetxController {
     currentActivePlaylist.value = playlist;
   }
 
-  Future<void> setLastPlayingPlaylist() async {
-    // String endpoint = dotenv.env['PLAYLIST_API_URL'] ?? '';
-    // String api = '$endpoint?play_playlist=${currentActivePlaylist.value?.uid}';
-    try {
-      // await http.post(
-      //   Uri.parse(api),
-      // );
-      isNeedRebuildLastPlaylist.value = true;
-    } catch (e) {
-      logError('Error setLastPlayingPlaylist: $e');
-    }
-  }
-
   Future<void> playMusicNow({
     required AudioStateController audioStateController,
     required MediaItem mediaItem,
@@ -388,7 +375,7 @@ class MusicPlayerController extends GetxController {
     activateMusic();
 
     if (currentActivePlaylist.value?.type != 'offline') {
-      setLastPlayingPlaylist();
+      isNeedRebuildLastPlaylist.value = true;
     }
 
     if (isFromButton) {
@@ -591,25 +578,6 @@ class MusicPlayerController extends GetxController {
     final playlistLength = playlist.length;
     if (playlistLength == 0) return;
     final random = Random();
-
-    // if (isRepeatEnabled.value == 'one') {
-    //   int index = originalCurrentIndexSong;
-    //   final music = playlist[index];
-    //   final mediaItem = MediaItem(
-    //     id: music.musicId.toString(),
-    //     title: music.title,
-    //     album: music.album,
-    //     artUri: Uri.parse(music.cover),
-    //     artist: music.artist,
-    //     extras: music.extras?.toMap() ?? {},
-    //   );
-    //   playMusicNow(
-    //     audioStateController: Get.find<AudioStateController>(),
-    //     mediaItem: mediaItem,
-    //     isFromButton: isFromButton,
-    //   );
-    //   return;
-    // }
 
     int index;
     if (isShuffleEnabled.value || isFromShuffleButton) {
