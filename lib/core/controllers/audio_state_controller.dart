@@ -129,13 +129,13 @@ class AudioStateController extends GetxController {
 
             // [CYBEAT-FLOW-001-B] Cek metadata codec dari data lokal (extras MediaItem).
             // Tidak hit API. Hasilnya dikirim ke backend sebagai flag 'codec_exist'.
-            final isCodecExist = await checkCodecAudio(
+            final isCodecExist = checkCodecAudio(
               mediaItem: currentMediaItem,
             );
 
             // [CYBEAT-FLOW-001-C] Cek dominant color dari data lokal (extras MediaItem).
             // Tidak hit API. Hasilnya dikirim ke backend sebagai flag 'dominant_color_exist'.
-            final isDominantColorExist = await checkDominantColor(
+            final isDominantColorExist = checkDominantColor(
               mediaItem: currentMediaItem,
             );
 
@@ -452,9 +452,9 @@ class AudioStateController extends GetxController {
     }
   }
 
-  Future<bool> checkCodecAudio({
+  bool checkCodecAudio({
     required MediaItem mediaItem,
-  }) async {
+  }) {
     try {
       final Map<String, dynamic>? metadata =
           mediaItem.extras?['metadata'] as Map<String, dynamic>?;
@@ -495,9 +495,9 @@ class AudioStateController extends GetxController {
     }
   }
 
-  Future<bool> checkDominantColor({
+  bool checkDominantColor({
     required MediaItem mediaItem,
-  }) async {
+  }) {
     try {
       final Map<String, dynamic>? dominantColor =
           mediaItem.extras?['dominant_color'] as Map<String, dynamic>?;
