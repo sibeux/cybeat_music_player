@@ -16,32 +16,35 @@ class RetryInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final method = options.method.toUpperCase();
-    final host = options.uri.host.isNotEmpty ? options.uri.host : options.path;
-    logInfo('$method $host');
+    final url = options.uri.toString().isNotEmpty ? options.uri.toString() : options.path;
+    logInfo('$method $url');
     return handler.next(options);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    final host = response.requestOptions.uri.host.isNotEmpty
-        ? response.requestOptions.uri.host
+    final url = response.requestOptions.uri.toString().isNotEmpty
+        ? response.requestOptions.uri.toString()
         : response.requestOptions.path;
-    logSuccess('$host\nSUCCESS');
+    logSuccess('$url\nSUCCESS');
     return handler.next(response);
   }
 
   @override
   Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     final requestOptions = err.requestOptions;
+    final url = requestOptions.uri.toString().isNotEmpty
+        ? requestOptions.uri.toString()
+        : requestOptions.path;
 
     // Format error message (menangkap 'Failed host lookup' / DNS error)
     final errorMsg = _extractErrorMessage(err);
     final isRetry = (requestOptions.extra['retry_count'] ?? 0) > 0;
 
     if (isRetry) {
-      logWarning('retry\n$errorMsg');
+      logWarning('retry ($url)\n$errorMsg');
     } else {
-      logError(errorMsg, error: err.error ?? err);
+      logError('$url\n$errorMsg', error: err.error ?? err);
     }
 
     // Jangan retry jika request dibatalkan secara eksplisit oleh CancelToken
