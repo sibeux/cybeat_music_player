@@ -459,14 +459,14 @@ class AudioStateController extends GetxController {
       final Map<String, dynamic>? metadata =
           mediaItem.extras?['metadata'] as Map<String, dynamic>?;
       if (metadata != null) {
-        final bool isMetadataExist = metadata['bits_per_raw_sample'] != null &&
-            metadata['bits_per_raw_sample'] != '--' &&
-            metadata['sample_rate'] != null &&
-            metadata['sample_rate'] != '--' &&
-            metadata['codec_name'] != null &&
-            metadata['codec_name'] != '--' &&
-            metadata['bit_rate'] != null &&
-            metadata['bit_rate'] != '--';
+        final bool isMetadataExist = (metadata['codec_name'] != null ||
+                metadata['bits_per_raw_sample'] != null &&
+                    metadata['bits_per_raw_sample'] != '--') &&
+            (metadata['sample_rate'] != null &&
+                metadata['sample_rate'] != '--') &&
+            (metadata['codec_name'] != null &&
+                metadata['codec_name'] != '--') &&
+            (metadata['bit_rate'] != null && metadata['bit_rate'] != '--');
 
         if (isMetadataExist) {
           bitsPerRawSample.value = metadata['bits_per_raw_sample'].toString();
