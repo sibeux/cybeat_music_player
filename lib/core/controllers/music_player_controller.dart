@@ -143,12 +143,6 @@ class MusicPlayerController extends GetxController {
           'Player Error code: ${error.code}. Error message: ${error.message}. AudioSource index: ${error.index}',
           error: error,
         );
-        numberOfError += 1;
-        if (numberOfError >= 3) {
-          logError('Too many errors on stream, skipping to next track.', error: error);
-          numberOfError = 0;
-          seekNextButton(isFromButton: false);
-        }
       });
     }
   }
